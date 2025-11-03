@@ -1,0 +1,40 @@
+---
+title: Getting Started
+description: Learn how to use Docyard
+---
+
+# Getting Started
+
+Welcome! This guide will help you get started with Docyard.
+
+## Writing Documentation
+
+Just write markdown files in the `docs/` folder.
+
+### Frontmatter
+
+Each markdown file can have YAML frontmatter:
+
+```yaml
+---
+title: Page Title
+description: Page description
+---
+
+Markdown Syntax
+
+Docyard supports all standard markdown:
+
+- Bold text
+- Italic text
+- Code snippets
+- Links and images
+- Code blocks with syntax highlighting
+
+Next Steps
+
+- Add more markdown files to docs/
+- Organize files into folders
+- Customize your site with docyard.yml
+
+Happy documenting! 📚
