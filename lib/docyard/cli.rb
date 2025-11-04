@@ -20,7 +20,7 @@ module Docyard
     end
 
     desc "serve", "Start the development server"
-    method_option :port, type: :numeric, default: 4567, aliases: "-p", desc: "Port to run the server on"
+    method_option :port, type: :numeric, default: 4200, aliases: "-p", desc: "Port to run the server on"
     method_option :host, type: :string, default: "localhost", aliases: "-h", desc: "Host to bind the server to"
     def serve
       require_relative "server"
