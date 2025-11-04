@@ -54,7 +54,7 @@ module Docyard
         content,
         input: "GFM",
         hard_wrap: false,
-        syntax_highlighter: nil
+        syntax_highlighter: "rouge"
       ).to_html
     end
   end

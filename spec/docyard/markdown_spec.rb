@@ -117,6 +117,13 @@ RSpec.describe Docyard::Markdown do
       html2 = markdown.html
       expect(html1.object_id).to eq(html2.object_id)
     end
+
+    it "adds syntax highlighting classes to code blocks", :aggregate_failures do
+      markdown = described_class.new("```ruby\ndef hello\n  puts 'world'\nend\n```")
+
+      expect(markdown.html).to include("highlight")
+      expect(markdown.html).to include("language-ruby")
+    end
   end
 
   describe "#title" do
