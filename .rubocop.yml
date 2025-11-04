@@ -1,0 +1,26 @@
+plugins:
+  - rubocop-rspec
+  - rubocop-rake
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+    - 'tmp/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - '*.gemspec'
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 120
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes

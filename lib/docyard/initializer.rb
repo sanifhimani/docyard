@@ -18,7 +18,10 @@ module Docyard
     end
 
     def run
-      return error_already_exists if already_initialized?
+      if already_initialized?
+        print_already_exists_error
+        return
+      end
 
       create_structure
       print_success
@@ -47,17 +50,16 @@ module Docyard
       File.write(output_path, content)
     end
 
-    def error_already_exists
+    def print_already_exists_error
       puts "Error: #{DOCS_DIR}/ folder already exists"
       puts "   Remove it first or run docyard in a different directory"
-      false
     end
 
     def print_success
       puts "Docyard initialized successfully!"
       puts ""
       puts "Created:"
-      TEMPLATES.keys.each { |file| puts "  #{DOCS_DIR}/#{file}" }
+      TEMPLATES.each_key { |file| puts "  #{DOCS_DIR}/#{file}" }
       puts ""
       puts "Next steps:"
       puts "  1. Edit your markdown files in #{DOCS_DIR}/"
