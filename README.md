@@ -1,5 +1,8 @@
 # Docyard
 
+[![CI](https://github.com/sanifhimani/docyard/actions/workflows/ci.yml/badge.svg)](https://github.com/sanifhimani/docyard/actions/workflows/ci.yml)
+  [![Gem Version](https://badge.fury.io/rb/docyard.svg)](https://badge.fury.io/rb/docyard)
+
 > Documentation generator for Ruby
 
 ## What is this?
