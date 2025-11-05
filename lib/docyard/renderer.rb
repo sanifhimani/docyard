@@ -5,6 +5,7 @@ require "erb"
 module Docyard
   class Renderer
     LAYOUTS_PATH = File.join(__dir__, "templates", "layouts")
+    ERRORS_PATH = File.join(__dir__, "templates", "errors")
 
     attr_reader :layout_path
 
@@ -34,10 +35,19 @@ module Docyard
     end
 
     def render_not_found
-      render(
-        content: "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>",
-        page_title: "404 - Not Found"
-      )
+      render_error_template(404)
+    end
+
+    def render_server_error(error)
+      @error_message = error.message
+      @backtrace = error.backtrace.join("\n")
+      render_error_template(500)
+    end
+
+    def render_error_template(status)
+      error_template_path = File.join(ERRORS_PATH, "#{status}.html.erb")
+      template = File.read(error_template_path)
+      ERB.new(template).result(binding)
     end
 
     private
