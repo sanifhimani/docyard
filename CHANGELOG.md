@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-11-04
+
 ### Added
 - Hot reload
 - GitHub Flavored Markdown support (tables, task lists, strikethrough)
@@ -23,5 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sanifhimani/docyard/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/sanifhimani/docyard/releases/tag/v0.0.1

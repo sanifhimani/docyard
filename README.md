@@ -5,6 +5,8 @@
 
 > Documentation generator for Ruby
 
+**Early development** - Core features work, but missing sidebar, search, and build command. See [roadmap](#roadmap).
+
 ## Features
 
 - **Hot reload** - Changes appear instantly while you write
