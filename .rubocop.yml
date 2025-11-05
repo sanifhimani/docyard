@@ -15,6 +15,15 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - '*.gemspec'
 
+RSpec/ExampleLength:
+  Max: 10
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/MethodLength:
+  Max: 15
+
 Style/Documentation:
   Enabled: false
 
