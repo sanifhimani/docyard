@@ -27,13 +27,14 @@ RSpec.describe Docyard::Sidebar::Renderer do
         expect(html).to include("<nav>")
         expect(html).to include("<ul>")
         expect(html).to include("<li>")
-        expect(html).to include('<a href="/">My Docs</a>')
+        expect(html).to include('<div class="nav-section">')
       end
 
-      it "renders file link" do
+      it "renders file link", :aggregate_failures do
         html = renderer.render(tree)
 
-        expect(html).to include('<a href="/getting-started">Getting Started</a>')
+        expect(html).to include('<a href="/getting-started"')
+        expect(html).to include(">Getting Started</a>")
       end
     end
 
@@ -41,11 +42,9 @@ RSpec.describe Docyard::Sidebar::Renderer do
       let(:tree) do
         [{
           title: "Guide",
-          path: "/guide",
+          path: nil,
           active: false,
           type: :directory,
-          collapsible: true,
-          collapsed: false,
           children: [
             {
               title: "Setup",
@@ -58,54 +57,64 @@ RSpec.describe Docyard::Sidebar::Renderer do
         }]
       end
 
-      it "renders nested lists", :aggregate_failures do
+      it "renders nested lists with button group", :aggregate_failures do
         html = renderer.render(tree)
 
-        expect(html).to include('<a href="/guide">Guide</a>')
-        expect(html).to include('<a href="/guide/setup">Setup</a>')
+        expect(html).to include('<div class="nav-section-title">GUIDE</div>')
+        expect(html).to include('<a href="/guide/setup"')
+        expect(html).to include(">Setup</a>")
       end
     end
 
-    context "with non-clickable directory" do
+    context "with empty directory" do
       let(:tree) do
         [{
           title: "Reference",
           path: nil,
           active: false,
           type: :directory,
-          collapsible: true,
-          collapsed: false,
           children: []
         }]
       end
 
-      it "renders span instead of link", :aggregate_failures do
+      it "does not render empty sections", :aggregate_failures do
         html = renderer.render(tree)
 
-        expect(html).to include("<span>Reference</span>")
-        expect(html).not_to include('href="/reference"')
+        expect(html).not_to include("REFERENCE")
       end
     end
 
     context "with custom site title" do
       let(:renderer) { described_class.new(site_title: "Custom Title") }
-      let(:tree) { [{ title: "Test", path: "/test", active: false, type: :file, children: [] }] }
+      let(:tree) do
+        [
+          { title: "Custom Title", path: "/", active: false, type: :file, children: [] },
+          { title: "Test", path: "/test", active: false, type: :file, children: [] }
+        ]
+      end
 
-      it "uses custom site title" do
+      it "filters out site title from navigation", :aggregate_failures do
         html = renderer.render(tree)
 
-        expect(html).to include('<a href="/">Custom Title</a>')
+        expect(html).to include('<a href="/test"')
+        expect(html.scan("Custom Title").length).to eq(0)
       end
     end
 
     context "with default site title" do
       let(:renderer) { described_class.new }
-      let(:tree) { [{ title: "Test", path: "/test", active: false, type: :file, children: [] }] }
+      let(:tree) do
+        [
+          { title: "Documentation", path: "/", active: false, type: :file, children: [] },
+          { title: "Test", path: "/test", active: false, type: :file, children: [] }
+        ]
+      end
 
-      it "uses default Documentation title" do
+      it "filters out default Documentation title from navigation", :aggregate_failures do
         html = renderer.render(tree)
 
-        expect(html).to include('<a href="/">Documentation</a>')
+        expect(html).to include('<a href="/test"')
+        expect(html).not_to include(">Documentation</a>")
       end
     end
   end

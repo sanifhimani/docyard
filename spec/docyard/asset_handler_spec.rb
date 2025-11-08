@@ -10,7 +10,7 @@ RSpec.describe Docyard::AssetHandler do
 
         expect(status).to eq(200)
         expect(headers["Content-Type"]).to eq("text/css; charset=utf-8")
-        expect(body.first).to include("body")
+        expect(body.first).to include("@import")
       end
     end
 

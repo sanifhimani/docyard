@@ -1,0 +1,199 @@
+/* Markdown/Prose Styles */
+
+/* Content area for markdown-rendered content */
+.content {
+  color: var(--color-text);
+}
+
+/* Inline code */
+.content code:not(.highlight code) {
+  padding: 0.2em 0.4em;
+  background-color: var(--color-code-bg);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border);
+}
+
+/* Lists */
+.content ul,
+.content ol {
+  margin: var(--space-4) 0;
+  padding-left: var(--space-6);
+}
+
+.content li {
+  margin: var(--space-2) 0;
+}
+
+.content li > ul,
+.content li > ol {
+  margin: var(--space-2) 0;
+}
+
+/* Task lists (GitHub Flavored Markdown) */
+.content ul.task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.content ul.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.content ul.task-list input[type="checkbox"] {
+  margin-top: 0.25em;
+  flex-shrink: 0;
+}
+
+/* Blockquotes */
+.content blockquote {
+  margin: var(--space-6) 0;
+  padding: var(--space-4);
+  padding-left: var(--space-5);
+  border-left: 3px solid var(--color-primary);
+  background-color: var(--color-bg-secondary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text-secondary);
+}
+
+.content blockquote p {
+  margin: var(--space-2) 0;
+}
+
+/* Horizontal rule */
+.content hr {
+  margin: var(--space-8) 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Tables */
+.content table {
+  width: 100%;
+  margin: var(--space-6) 0;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+}
+
+.content thead {
+  background-color: var(--color-bg-secondary);
+}
+
+.content th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.content td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.content tr:last-child td {
+  border-bottom: none;
+}
+
+.content tbody tr:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Images */
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  margin: var(--space-6) 0;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+/* Links in content */
+.content a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-color: var(--color-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--transition-fast);
+}
+
+.content a:hover {
+  color: var(--color-link-hover);
+  text-decoration-color: var(--color-link-hover);
+}
+
+/* Heading anchors */
+.content h2[id],
+.content h3[id],
+.content h4[id],
+.content h5[id],
+.content h6[id] {
+  scroll-margin-top: var(--space-8);
+}
+
+/* Improve spacing between prose elements */
+.content h2 + h3,
+.content h3 + h4,
+.content h4 + h5 {
+  margin-top: var(--space-4);
+}
+
+.content > *:first-child {
+  margin-top: 0;
+}
+
+.content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Definition lists */
+.content dl {
+  margin: var(--space-4) 0;
+}
+
+.content dt {
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--space-4);
+}
+
+.content dd {
+  margin-left: var(--space-6);
+  margin-top: var(--space-2);
+}
+
+/* Keyboard */
+.content kbd {
+  display: inline-block;
+  padding: 0.125em 0.375em;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--color-text);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 0 var(--color-border);
+}
+
+/* Mark/Highlight */
+.content mark {
+  background-color: var(--color-warning-bg);
+  color: var(--color-text);
+  padding: 0.125em 0.25em;
+  border-radius: var(--radius-sm);
+}
+
+/* Abbreviations */
+.content abbr {
+  text-decoration: underline dotted;
+  cursor: help;
+}

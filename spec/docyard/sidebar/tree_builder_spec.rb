@@ -42,7 +42,7 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
 
     context "with directory containing index" do
       before do
-        create_file("guide/index.md", "---\ntitle: Guide\n---")
+        create_file("guide/index.md", "---\ntitle: Guide Overview\n---")
         create_file("guide/setup.md", "---\ntitle: Setup\n---")
       end
 
@@ -58,21 +58,23 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         }]
       end
 
-      it "makes directory clickable", :aggregate_failures do
+      it "treats index as a regular file", :aggregate_failures do
         result = builder.build(file_items)
 
         guide = result[0]
-        expect(guide[:path]).to eq("/guide")
+        expect(guide[:path]).to be_nil
         expect(guide[:type]).to eq(:directory)
-        expect(guide[:collapsible]).to be true
+        expect(guide[:children].length).to eq(2)
       end
 
-      it "excludes index from children", :aggregate_failures do
+      it "includes index in children", :aggregate_failures do
         result = builder.build(file_items)
 
         guide = result[0]
-        expect(guide[:children].length).to eq(1)
-        expect(guide[:children][0][:title]).to eq("Setup")
+        index_child = guide[:children].find { |c| c[:path] == "/guide" }
+
+        expect(index_child).not_to be_nil
+        expect(index_child[:title]).to eq("Home")
       end
     end
 
@@ -127,48 +129,10 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         result = builder.build(file_items)
 
         guide = result[1]
-        setup = guide[:children][0]
+        setup = guide[:children].find { |c| c[:path] == "/guide/setup" }
 
         expect(setup[:active]).to be true
         expect(result[0][:active]).to be false
-      end
-
-      it "keeps ancestor directory expanded" do
-        result = builder.build(file_items)
-
-        guide = result[1]
-        expect(guide[:collapsed]).to be false
-      end
-    end
-
-    context "with collapsed state management" do
-      let(:current_path) { "/other" }
-      let(:file_items) do
-        [
-          {
-            type: :directory,
-            name: "guide",
-            path: "guide",
-            children: [
-              { type: :file, name: "index", path: "guide/index.md" },
-              { type: :file, name: "setup", path: "guide/setup.md" }
-            ]
-          },
-          { type: :file, name: "other", path: "other.md" }
-        ]
-      end
-
-      before do
-        create_file("guide/index.md")
-        create_file("guide/setup.md")
-        create_file("other.md")
-      end
-
-      it "collapses directories not in current path" do
-        result = builder.build(file_items)
-
-        guide = result[0]
-        expect(guide[:collapsed]).to be true
       end
     end
   end

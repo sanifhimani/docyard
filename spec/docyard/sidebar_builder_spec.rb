@@ -41,7 +41,7 @@ RSpec.describe Docyard::SidebarBuilder do
 
     context "with nested structure" do
       before do
-        create_file("guide/index.md", "---\ntitle: Guide\n---")
+        create_file("guide/index.md", "---\ntitle: Guide Overview\n---")
         create_file("guide/setup.md", "---\ntitle: Setup\n---")
       end
 
@@ -50,7 +50,7 @@ RSpec.describe Docyard::SidebarBuilder do
 
         expect(tree.length).to eq(1)
         expect(tree[0][:type]).to eq(:directory)
-        expect(tree[0][:children].length).to eq(1)
+        expect(tree[0][:children].length).to eq(2)
       end
     end
 
@@ -88,25 +88,31 @@ RSpec.describe Docyard::SidebarBuilder do
       let(:config) { { site_title: "My Documentation" } }
 
       before do
-        create_file("test.md")
+        create_file("index.md", "---\ntitle: My Documentation\n---")
+        create_file("test.md", "---\ntitle: Test Page\n---")
       end
 
-      it "uses custom site title" do
+      it "filters site title from navigation", :aggregate_failures do
         html = sidebar.to_html
 
-        expect(html).to include('<a href="/">My Documentation</a>')
+        expect(html).to include('<a href="/test"')
+        expect(html).to include(">Test</a>")
+        expect(html).not_to include(">My Documentation</a>")
       end
     end
 
     context "without site title in config" do
       before do
-        create_file("test.md")
+        create_file("index.md", "---\ntitle: Documentation\n---")
+        create_file("test.md", "---\ntitle: Test Page\n---")
       end
 
-      it "uses default title" do
+      it "filters default title from navigation", :aggregate_failures do
         html = sidebar.to_html
 
-        expect(html).to include('<a href="/">Documentation</a>')
+        expect(html).to include('<a href="/test"')
+        expect(html).to include(">Test</a>")
+        expect(html).not_to include(">Documentation</a>")
       end
     end
   end

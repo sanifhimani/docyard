@@ -1,0 +1,211 @@
+/* Code Block Styles */
+
+/* Code blocks */
+.content pre {
+  margin: var(--space-6) 0;
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+}
+
+.content pre code {
+  display: block;
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  background-color: var(--color-code-bg);
+  color: var(--color-code-text);
+  overflow-x: auto;
+}
+
+/* Syntax highlighting - GitHub style */
+.highlight {
+  background-color: var(--color-code-bg);
+  border-radius: var(--radius-lg);
+}
+
+.highlight pre {
+  margin: 0;
+  border: none;
+}
+
+.highlight table td {
+  padding: 5px;
+}
+
+.highlight table pre {
+  margin: 0;
+}
+
+.highlight,
+.highlight .w {
+  color: #24292f;
+  background-color: #f6f8fa;
+}
+
+/* Keywords */
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.highlight .kt,
+.highlight .kv {
+  color: #cf222e;
+}
+
+.highlight .gr {
+  color: #f6f8fa;
+}
+
+.highlight .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+
+/* Built-in names */
+.highlight .nb,
+.highlight .nc,
+.highlight .no,
+.highlight .nn {
+  color: #953800;
+}
+
+/* Strings and regex */
+.highlight .sr,
+.highlight .na,
+.highlight .nt {
+  color: #116329;
+}
+
+.highlight .gi {
+  color: #116329;
+  background-color: #dafbe1;
+}
+
+.highlight .ges {
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Constants and literals */
+.highlight .kc,
+.highlight .l,
+.highlight .ld,
+.highlight .m,
+.highlight .mb,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .il,
+.highlight .mo,
+.highlight .mx,
+.highlight .sb,
+.highlight .bp,
+.highlight .ne,
+.highlight .nl,
+.highlight .py {
+  color: #0550ae;
+}
+
+/* Variables */
+.highlight .nv,
+.highlight .vc,
+.highlight .vg,
+.highlight .vi,
+.highlight .vm {
+  color: #0550ae;
+}
+
+/* Operators */
+.highlight .o,
+.highlight .ow {
+  color: #0550ae;
+}
+
+/* Headers and subheaders in diffs */
+.highlight .gh,
+.highlight .gu {
+  color: #0550ae;
+  font-weight: bold;
+}
+
+/* Strings */
+.highlight .s,
+.highlight .sa,
+.highlight .sc,
+.highlight .dl,
+.highlight .sd,
+.highlight .s2,
+.highlight .se,
+.highlight .sh,
+.highlight .sx,
+.highlight .s1,
+.highlight .ss {
+  color: #0a3069;
+}
+
+/* Decorators and functions */
+.highlight .nd,
+.highlight .nf,
+.highlight .fm {
+  color: #8250df;
+}
+
+/* Errors */
+.highlight .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+
+/* Comments */
+.highlight .c,
+.highlight .ch,
+.highlight .cd,
+.highlight .cm,
+.highlight .cp,
+.highlight .cpf,
+.highlight .c1,
+.highlight .cs,
+.highlight .gl,
+.highlight .gt {
+  color: #6e7781;
+}
+
+/* Name indicators */
+.highlight .ni,
+.highlight .si {
+  color: #24292f;
+}
+
+/* Generic emphasis */
+.highlight .ge {
+  color: #24292f;
+  font-style: italic;
+}
+
+.highlight .gs {
+  color: #24292f;
+  font-weight: bold;
+}
+
+/* Code block scrollbar */
+.content pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.content pre::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.content pre::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.content pre::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
