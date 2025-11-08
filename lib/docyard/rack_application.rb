@@ -2,6 +2,7 @@
 
 require "json"
 require "rack"
+require_relative "sidebar_builder"
 
 module Docyard
   class RackApplication
@@ -35,7 +36,15 @@ module Docyard
     def handle_documentation_request(path)
       file_path = router.resolve(path)
       status = file_path ? 200 : 404
-      html = file_path ? renderer.render_file(file_path) : renderer.render_not_found
+
+      if file_path
+        sidebar = SidebarBuilder.new(docs_path: docs_path, current_path: path)
+        sidebar_html = sidebar.to_html
+
+        html = renderer.render_file(file_path, sidebar_html: sidebar_html)
+      else
+        html = renderer.render_not_found
+      end
 
       [status, { "Content-Type" => "text/html; charset=utf-8" }, [html]]
     end
