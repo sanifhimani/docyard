@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require "erb"
+
 module Docyard
   module Sidebar
     class Renderer
+      PARTIALS_PATH = File.join(__dir__, "../templates/partials")
+
       attr_reader :site_title
 
       def initialize(site_title: "Documentation")
@@ -12,62 +16,40 @@ module Docyard
       def render(tree)
         return "" if tree.empty?
 
-        html = "<aside class=\"sidebar\" role=\"navigation\" aria-label=\"Documentation navigation\">\n"
-        html += "  <nav>\n"
-        html += render_tree_with_sections(tree)
-        html += "  </nav>\n"
-        html += render_footer
-        html += "</aside>\n"
-        html
+        nav_content = render_tree_with_sections(tree)
+        footer_html = render_partial(:sidebar_footer)
+
+        render_partial(:sidebar, nav_content: nav_content, footer_html: footer_html)
       end
 
       private
 
-      def render_footer
-        <<~HTML
-          <div class="sidebar-footer">
-            #{footer_link}
-          </div>
-        HTML
+      def render_partial(name, locals = {})
+        template_path = File.join(PARTIALS_PATH, "_#{name}.html.erb")
+        template = File.read(template_path)
+
+        locals.each { |key, value| instance_variable_set("@#{key}", value) }
+
+        erb_binding = binding
+        ERB.new(template).result(erb_binding)
       end
 
-      def footer_link
-        <<~HTML
-          <a href="https://github.com/sanifhimani/docyard"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="sidebar-footer-link">
-            <div class="sidebar-footer-text">
-              <p class="sidebar-footer-title">Built with docyard</p>
-            </div>
-            #{external_icon}
-          </a>
-        HTML
-      end
-
-      def external_icon
-        '<svg class="external-icon" xmlns="http://www.w3.org/2000/svg" ' \
-          'viewBox="0 0 256 256" fill="currentColor">' \
-          '<path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32' \
-          "L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72" \
-          "a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16" \
-          'V136A8,8,0,0,0,184,128Z"/>' \
-          "</svg>"
+      def icon(name)
+        render_partial(:icons, icon_name: name)
       end
 
       def render_tree_with_sections(items)
         filtered_items = items.reject { |item| item[:title]&.downcase == site_title.downcase }
         grouped_items = group_by_section(filtered_items)
-        html = ""
 
-        grouped_items.each do |section_name, section_items|
-          html += "  <div class=\"nav-section\">\n"
-          html += "    <div class=\"nav-section-title\">#{section_name}</div>\n" if section_name
-          html += render_tree(section_items)
-          html += "  </div>\n"
-        end
+        grouped_items.map do |section_name, section_items|
+          render_section(section_name, section_items)
+        end.join
+      end
 
-        html
+      def render_section(section_name, section_items)
+        section_content = render_tree(section_items)
+        render_partial(:nav_section, section_name: section_name, section_content: section_content)
       end
 
       def group_by_section(items)
@@ -101,47 +83,27 @@ module Docyard
       def render_tree(items)
         return "" if items.empty?
 
-        html = "  <ul>\n"
-        items.each { |item| html += render_item(item) }
-        html += "  </ul>\n"
-        html
+        list_items = items.map { |item| render_item(item) }.join
+        render_partial(:nav_list, list_items: list_items)
       end
 
       def render_item(item)
-        html = "    <li>\n"
+        item_content = if item[:children].empty?
+                         render_leaf_item(item)
+                       else
+                         render_group_item(item)
+                       end
 
-        html += if item[:children].empty?
-                  render_leaf_item(item)
-                else
-                  render_group_item(item)
-                end
-
-        html += "    </li>\n"
-        html
+        render_partial(:nav_item, item_content: item_content)
       end
 
       def render_leaf_item(item)
-        active_class = item[:active] ? " class=\"active\"" : ""
-        "      <a href=\"#{item[:path]}\"#{active_class}>#{item[:title]}</a>\n"
+        render_partial(:nav_leaf, path: item[:path], title: item[:title], active: item[:active])
       end
 
       def render_group_item(item)
-        html = "      <button class=\"nav-group-toggle\" aria-expanded=\"true\" type=\"button\">\n"
-        html += "        <span>#{item[:title]}</span>\n"
-        html += nav_group_icon
-        html += "      </button>\n"
-        html += "      <div class=\"nav-group-children\">\n"
-        html += render_tree(item[:children])
-        html += "      </div>\n"
-        html
-      end
-
-      def nav_group_icon
-        '<svg class="nav-group-icon" xmlns="http://www.w3.org/2000/svg" ' \
-          'viewBox="0 0 256 256" fill="currentColor">' \
-          '<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,' \
-          '90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/>' \
-          "</svg>\n"
+        children_html = render_tree(item[:children])
+        render_partial(:nav_group, title: item[:title], children_html: children_html)
       end
     end
   end
