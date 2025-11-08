@@ -8,22 +8,21 @@
 <link rel="stylesheet" href="/assets/css/syntax.css">
 </head>
 <body>
-<header>
-    <h1>Documentation</h1>
-</header>
+<div class="layout">
+  <%= @sidebar_html %>
 
-<nav>
-    <!-- Sidebar will go here -->
-</nav>
+  <div class="layout-main">
+    <main class="content">
+      <%= @content %>
+    </main>
 
-<main>
-    <%= @content %>
-</main>
+    <footer class="footer">
+      <p>Built with Docyard</p>
+    </footer>
+  </div>
+</div>
 
-<footer>
-    <p>Built with Docyard</p>
-</footer>
-
+<script src="/assets/js/theme.js"></script>
 <script src="/assets/js/reload.js"></script>
 </body>
 </html>

@@ -63,7 +63,7 @@ module Docyard
       puts ""
       puts "Next steps:"
       puts "  1. Edit your markdown files in #{DOCS_DIR}/"
-      puts "  2. Run 'docyard serve' to preview (not implemented yet)"
+      puts "  2. Run 'docyard serve' to preview your documentation locally"
     end
   end
 end
