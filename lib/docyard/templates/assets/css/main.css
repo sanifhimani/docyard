@@ -1,5 +1,10 @@
-body {
-  margin: 0;
-  font-family: sans-serif;
-  line-height: 1.6;
-}
+/* Docyard Default Theme */
+
+/* Import order matters - each layer builds on the previous */
+@import url('reset.css');
+@import url('variables.css');
+@import url('typography.css');
+@import url('layout.css');
+@import url('components.css');
+@import url('markdown.css');
+@import url('code.css');
