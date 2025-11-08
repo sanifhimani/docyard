@@ -9,18 +9,23 @@ module Docyard
     end
 
     def resolve(request_path)
-      clean_path = request_path.delete_prefix("/")
-      clean_path = "index" if clean_path.empty?
+      clean_path = sanitize_path(request_path)
 
-      clean_path = clean_path.delete_suffix(".md")
+      file_path = File.join(docs_path, "#{clean_path}#{Constants::MARKDOWN_EXTENSION}")
+      return Routing::ResolutionResult.found(file_path) if File.file?(file_path)
 
-      file_path = File.join(docs_path, "#{clean_path}.md")
-      return file_path if File.file?(file_path)
+      index_path = File.join(docs_path, clean_path, "#{Constants::INDEX_FILE}#{Constants::MARKDOWN_EXTENSION}")
+      return Routing::ResolutionResult.found(index_path) if File.file?(index_path)
 
-      index_path = File.join(docs_path, clean_path, "index.md")
-      return index_path if File.file?(index_path)
+      Routing::ResolutionResult.not_found
+    end
 
-      nil
+    private
+
+    def sanitize_path(request_path)
+      clean = request_path.delete_prefix("/")
+      clean = Constants::INDEX_FILE if clean.empty?
+      clean.delete_suffix(Constants::MARKDOWN_EXTENSION)
     end
   end
 end

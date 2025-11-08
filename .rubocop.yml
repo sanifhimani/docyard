@@ -33,3 +33,6 @@ Layout/LineLength:
 Style/StringLiterals:
   Enabled: true
   EnforcedStyle: double_quotes
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented

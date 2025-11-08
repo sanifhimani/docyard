@@ -39,7 +39,7 @@
 .external-icon {
   width: 0.75rem;
   height: 0.75rem;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   opacity: 0;
   transition: opacity var(--transition-fast);
   flex-shrink: 0;
@@ -256,4 +256,3 @@
     display: flex;
   }
 }
-

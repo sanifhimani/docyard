@@ -4,24 +4,21 @@ module Docyard
   module Sidebar
     class TitleExtractor
       def extract(file_path)
-        return titleize(File.basename(file_path, ".md")) unless File.file?(file_path)
+        return titleize_filename(file_path) unless File.file?(file_path)
 
         content = File.read(file_path)
         markdown = Markdown.new(content)
-        markdown.title || titleize(File.basename(file_path, ".md"))
-      rescue StandardError
-        titleize(File.basename(file_path, ".md"))
+        markdown.title || titleize_filename(file_path)
+      rescue StandardError => e
+        Docyard.logger.warn "Failed to extract title from #{file_path}: #{e.message}"
+        titleize_filename(file_path)
       end
 
       private
 
-      def titleize(string)
-        return "Home" if string == "index"
-
-        string.gsub(/[-_]/, " ")
-              .split
-              .map(&:capitalize)
-              .join(" ")
+      def titleize_filename(file_path)
+        filename = File.basename(file_path, Constants::MARKDOWN_EXTENSION)
+        Utils::TextFormatter.titleize(filename)
       end
     end
   end

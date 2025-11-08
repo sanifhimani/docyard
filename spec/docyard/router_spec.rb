@@ -10,47 +10,59 @@ RSpec.describe Docyard::Router do
     end
 
     context "when mapping root path" do
-      it "maps / to docs/index.md" do
+      it "maps / to docs/index.md", :aggregate_failures do
         allow(File).to receive(:file?).with("docs/index.md").and_return(true)
 
-        expect(router.resolve("/")).to eq("docs/index.md")
+        result = router.resolve("/")
+        expect(result).to be_found
+        expect(result.file_path).to eq("docs/index.md")
       end
     end
 
     context "when mapping page paths" do
-      it "maps /getting-started to docs/getting-started.md" do
+      it "maps /getting-started to docs/getting-started.md", :aggregate_failures do
         allow(File).to receive(:file?).with("docs/getting-started.md").and_return(true)
 
-        expect(router.resolve("/getting-started")).to eq("docs/getting-started.md")
+        result = router.resolve("/getting-started")
+        expect(result).to be_found
+        expect(result.file_path).to eq("docs/getting-started.md")
       end
 
-      it "maps /getting-started.md to docs/getting-started.md (strips .md extension)" do
+      it "maps /getting-started.md to docs/getting-started.md (strips .md extension)", :aggregate_failures do
         allow(File).to receive(:file?).with("docs/getting-started.md").and_return(true)
 
-        expect(router.resolve("/getting-started.md")).to eq("docs/getting-started.md")
+        result = router.resolve("/getting-started.md")
+        expect(result).to be_found
+        expect(result.file_path).to eq("docs/getting-started.md")
       end
     end
 
     context "when mapping nested paths" do
-      it "maps /guide/setup to docs/guide/setup.md" do
+      it "maps /guide/setup to docs/guide/setup.md", :aggregate_failures do
         allow(File).to receive(:file?).with("docs/guide/setup.md").and_return(true)
 
-        expect(router.resolve("/guide/setup")).to eq("docs/guide/setup.md")
+        result = router.resolve("/guide/setup")
+        expect(result).to be_found
+        expect(result.file_path).to eq("docs/guide/setup.md")
       end
     end
 
     context "when trying directory index" do
-      it "maps /guide to docs/guide/index.md" do
+      it "maps /guide to docs/guide/index.md", :aggregate_failures do
         allow(File).to receive(:file?).with("docs/guide.md").and_return(false)
         allow(File).to receive(:file?).with("docs/guide/index.md").and_return(true)
 
-        expect(router.resolve("/guide")).to eq("docs/guide/index.md")
+        result = router.resolve("/guide")
+        expect(result).to be_found
+        expect(result.file_path).to eq("docs/guide/index.md")
       end
     end
 
     context "when file does not exist" do
-      it "returns nil" do
-        expect(router.resolve("/nonexistent")).to be_nil
+      it "returns not_found result", :aggregate_failures do
+        result = router.resolve("/nonexistent")
+        expect(result).to be_not_found
+        expect(result.file_path).to be_nil
       end
     end
   end
