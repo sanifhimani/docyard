@@ -23,7 +23,7 @@ module Docyard
     def stop
       @listener&.stop
     rescue StandardError => e
-      puts "[Docyard] Error stopping file watcher: #{e.class} - #{e.message}"
+      Docyard.logger.error "Error stopping file watcher: #{e.class} - #{e.message}"
     end
 
     def changed_since?(timestamp)
@@ -36,7 +36,7 @@ module Docyard
       return if modified.empty? && added.empty? && removed.empty?
 
       @last_modified_time = Time.now
-      puts "[Docyard] Files changed, triggering reload..."
+      Docyard.logger.info "Files changed, triggering reload..."
     end
   end
 end

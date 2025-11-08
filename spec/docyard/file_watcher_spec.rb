@@ -50,8 +50,11 @@ RSpec.describe Docyard::FileWatcher do
       listener = instance_double(Listen::Listener, stop: nil)
       watcher.instance_variable_set(:@listener, listener)
       allow(listener).to receive(:stop).and_raise(StandardError, "test error")
+      allow(Docyard.logger).to receive(:error)
 
-      expect { watcher.stop }.to output(/Error stopping file watcher/).to_stdout
+      watcher.stop
+
+      expect(Docyard.logger).to have_received(:error).with(/Error stopping file watcher/)
     end
   end
 end

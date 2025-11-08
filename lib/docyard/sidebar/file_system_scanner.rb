@@ -27,8 +27,8 @@ module Docyard
 
       def sorted_entries(full_path, relative_path)
         Dir.children(full_path)
-           .reject { |entry| hidden_or_ignored?(entry, relative_path) }
-           .sort_by { |entry| sort_key(entry) }
+          .reject { |entry| hidden_or_ignored?(entry, relative_path) }
+          .sort_by { |entry| sort_key(entry) }
       end
 
       def build_item(entry, base_path, relative_path, full_path)

@@ -7,7 +7,7 @@ module Docyard
 
       def initialize(docs_path:, current_path:, title_extractor: TitleExtractor.new)
         @docs_path = docs_path
-        @current_path = normalize_path(current_path)
+        @current_path = Utils::PathResolver.normalize(current_path)
         @title_extractor = title_extractor
       end
 
@@ -31,7 +31,7 @@ module Docyard
         dir_path = File.join(relative_base, item[:name])
 
         {
-          title: titleize(item[:name]),
+          title: Utils::TextFormatter.titleize(item[:name]),
           path: nil,
           active: false,
           type: :directory,
@@ -42,9 +42,9 @@ module Docyard
       end
 
       def transform_file(item, relative_base)
-        file_path = File.join(relative_base, "#{item[:name]}.md")
+        file_path = File.join(relative_base, "#{item[:name]}#{Constants::MARKDOWN_EXTENSION}")
         full_file_path = File.join(docs_path, file_path)
-        url_path = url_for(file_path.delete_suffix(".md"))
+        url_path = Utils::PathResolver.to_url(file_path.delete_suffix(Constants::MARKDOWN_EXTENSION))
 
         {
           title: title_extractor.extract(full_file_path),
@@ -53,40 +53,6 @@ module Docyard
           type: :file,
           children: []
         }
-      end
-
-      def titleize(string)
-        string.gsub(/[-_]/, " ")
-              .split
-              .map(&:capitalize)
-              .join(" ")
-      end
-
-      def url_for(relative_path)
-        path = relative_path
-               .delete_suffix(".md")
-               .delete_suffix("/index")
-
-        path = "/" if path.empty?
-        path = "/#{path}" unless path.start_with?("/")
-
-        path
-      end
-
-      def normalize_path(path)
-        return "/" if path.nil? || path.empty?
-
-        path = path.delete_suffix(".md")
-        path = "/" if path.empty?
-        path = "/#{path}" unless path.start_with?("/")
-
-        path
-      end
-
-      def path_is_ancestor_of_current?(dir_path)
-        return false if dir_path.nil?
-
-        current_path.start_with?(dir_path) && current_path != dir_path
       end
     end
   end
