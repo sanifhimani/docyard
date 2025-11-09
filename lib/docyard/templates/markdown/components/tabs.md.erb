@@ -30,6 +30,109 @@ bun add docyard
 ```
 :::
 
+## Tab Icons
+
+Tabs automatically display icons to make them more visually distinctive and easier to scan. Icons can be specified manually or detected automatically from code blocks.
+
+### Auto-Detected Icons
+
+When your tab contains a code block, Docyard automatically detects the programming language and displays the appropriate icon:
+
+:::tabs
+== JavaScript
+```javascript
+const greeting = "Hello, World!";
+console.log(greeting);
+```
+
+== Python
+```python
+greeting = "Hello, World!"
+print(greeting)
+```
+
+== Ruby
+```ruby
+greeting = "Hello, World!"
+puts greeting
+```
+
+== Go
+```go
+package main
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}
+```
+:::
+
+The following languages are automatically detected and display their brand icons:
+
+| Language | Aliases | Icon Source |
+|----------|---------|-------------|
+| JavaScript | `js` | Simple Icons |
+| TypeScript | `ts` | Simple Icons |
+| Python | `py` | Simple Icons |
+| Ruby | `rb` | Simple Icons |
+| Go | `golang` | Simple Icons |
+| Rust | `rs` | Simple Icons |
+| PHP | - | Simple Icons |
+| HTML | `html5`, `htm` | Simple Icons |
+| CSS | - | Simple Icons |
+| C | - | Simple Icons |
+| C++ | `cpp`, `cxx`, `c++` | Simple Icons |
+| SQL | - | PostgreSQL icon |
+| Bash | `sh`, `shell` | Simple Icons |
+| Swift | - | Simple Icons |
+| Kotlin | `kt` | Simple Icons |
+| Elixir | `ex` | Simple Icons |
+| Dart | - | Simple Icons |
+| Scala | - | Simple Icons |
+
+### Manual Icons
+
+You can specify a custom icon using the `:icon-name:` syntax at the start of your tab name:
+
+:::tabs
+== :package: npm
+```bash
+npm install docyard
+```
+
+== :cube: yarn
+```bash
+yarn add docyard
+```
+
+== :rocket: Quick Start
+Get started in seconds with our CLI tool.
+
+== :gear: Configuration
+Customize Docyard to fit your needs.
+:::
+
+Manual icons use the [Phosphor Icons](https://phosphoricons.com) library, giving you access to hundreds of beautiful icons.
+
+### Icon Fallback
+
+If a tab doesn't have a manual icon specified and doesn't contain a recognized code block, it will display a generic code icon from Phosphor Icons.
+
+:::tabs
+== Overview
+This tab shows markdown content without a code block, so it gets the default code icon.
+
+== JavaScript
+```javascript
+// This tab auto-detects the JavaScript icon
+console.log("Hello!");
+```
+
+== :star: Featured
+Manual icon takes precedence over auto-detection.
+:::
+
 ## Programming Language Examples
 
 Show the same functionality in different programming languages:
