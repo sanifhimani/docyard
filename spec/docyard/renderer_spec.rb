@@ -19,6 +19,22 @@ RSpec.describe Docyard::Renderer do
     end
   end
 
+  describe "#render_partial" do
+    it "renders a partial template", :aggregate_failures do
+      html = renderer.render_partial("_theme_toggle")
+
+      expect(html).to include("theme-toggle")
+      expect(html).to include("theme-toggle-track")
+    end
+
+    it "renders a partial with locals", :aggregate_failures do
+      html = renderer.render_partial("_icons", icon_name: :external)
+
+      expect(html).to include("svg")
+      expect(html).to include("external-icon")
+    end
+  end
+
   describe "#render_not_found" do
     it "renders 404 page", :aggregate_failures do
       html = renderer.render_not_found

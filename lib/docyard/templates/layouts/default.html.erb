@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="<%= @page_description || 'Documentation' %>">
   <title><%= @page_title || 'Documentation' %></title>
+
+  <!-- Prevent flash of wrong theme -->
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') ||
+                   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    })();
+  </script>
+
   <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
@@ -17,6 +27,8 @@
       <a href="/" class="header-logo">
         <span class="header-title"><%= @site_title || 'Documentation' %></span>
       </a>
+
+      <%= render_partial('_theme_toggle') %>
     </div>
   </header>
 

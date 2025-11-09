@@ -35,7 +35,7 @@
 }
 
 .highlight table td {
-  padding: 5px;
+  padding: 0.3125rem;
 }
 
 .highlight table pre {
@@ -196,7 +196,7 @@
 
 /* Code block scrollbar */
 .content pre::-webkit-scrollbar {
-  height: 8px;
+  height: 0.5rem;
 }
 
 .content pre::-webkit-scrollbar-track {
@@ -211,4 +211,152 @@
 
 .content pre::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-tertiary);
+}
+
+/* Dark Mode Syntax Highlighting - GitHub Dark */
+.dark .highlight,
+.dark .highlight .w {
+  color: #e6edf3;
+  background-color: #161b22;
+}
+
+/* Keywords */
+.dark .highlight .k,
+.dark .highlight .kd,
+.dark .highlight .kn,
+.dark .highlight .kp,
+.dark .highlight .kr,
+.dark .highlight .kt,
+.dark .highlight .kv {
+  color: #ff7b72;
+}
+
+.dark .highlight .gr {
+  color: #161b22;
+}
+
+.dark .highlight .gd {
+  color: #ffa198;
+  background-color: #490202;
+}
+
+/* Built-in names */
+.dark .highlight .nb,
+.dark .highlight .nc,
+.dark .highlight .no,
+.dark .highlight .nn {
+  color: #ffa657;
+}
+
+/* Strings and regex */
+.dark .highlight .sr,
+.dark .highlight .na,
+.dark .highlight .nt {
+  color: #7ee787;
+}
+
+.dark .highlight .gi {
+  color: #7ee787;
+  background-color: #0f3b17;
+}
+
+/* Constants and literals */
+.dark .highlight .kc,
+.dark .highlight .l,
+.dark .highlight .ld,
+.dark .highlight .m,
+.dark .highlight .mb,
+.dark .highlight .mf,
+.dark .highlight .mh,
+.dark .highlight .mi,
+.dark .highlight .il,
+.dark .highlight .mo,
+.dark .highlight .mx,
+.dark .highlight .sb,
+.dark .highlight .bp,
+.dark .highlight .ne,
+.dark .highlight .nl,
+.dark .highlight .py {
+  color: #79c0ff;
+}
+
+/* Variables */
+.dark .highlight .nv,
+.dark .highlight .vc,
+.dark .highlight .vg,
+.dark .highlight .vi,
+.dark .highlight .vm {
+  color: #79c0ff;
+}
+
+/* Operators */
+.dark .highlight .o,
+.dark .highlight .ow {
+  color: #79c0ff;
+}
+
+/* Headers and subheaders in diffs */
+.dark .highlight .gh,
+.dark .highlight .gu {
+  color: #79c0ff;
+  font-weight: bold;
+}
+
+/* Strings */
+.dark .highlight .s,
+.dark .highlight .sa,
+.dark .highlight .sc,
+.dark .highlight .dl,
+.dark .highlight .sd,
+.dark .highlight .s2,
+.dark .highlight .se,
+.dark .highlight .sh,
+.dark .highlight .sx,
+.dark .highlight .s1,
+.dark .highlight .ss {
+  color: #a5d6ff;
+}
+
+/* Decorators and functions */
+.dark .highlight .nd,
+.dark .highlight .nf,
+.dark .highlight .fm {
+  color: #d2a8ff;
+}
+
+/* Errors */
+.dark .highlight .err {
+  color: #161b22;
+  background-color: #ffa198;
+}
+
+/* Comments */
+.dark .highlight .c,
+.dark .highlight .ch,
+.dark .highlight .cd,
+.dark .highlight .cm,
+.dark .highlight .cp,
+.dark .highlight .cpf,
+.dark .highlight .c1,
+.dark .highlight .cs,
+.dark .highlight .gl,
+.dark .highlight .gt {
+  color: #8b949e;
+}
+
+/* Name indicators */
+.dark .highlight .ni,
+.dark .highlight .si {
+  color: #e6edf3;
+}
+
+/* Generic emphasis */
+.dark .highlight .ge {
+  color: #e6edf3;
+  font-style: italic;
+}
+
+.dark .highlight .gs {
+  color: #e6edf3;
+  font-weight: bold;
 }
