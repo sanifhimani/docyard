@@ -6,6 +6,7 @@ source "https://rubygems.org"
 gemspec
 
 group :development, :test do
+  gem "benchmark", "~> 0.5"
   gem "rspec", "~> 3.0"
   gem "rubocop", "~> 1.0"
   gem "rubocop-rake", "~> 0.7"

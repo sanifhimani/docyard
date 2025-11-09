@@ -22,6 +22,7 @@ module Docyard
       return forbidden_response if directory_traversal?(asset_path)
 
       return serve_components_css if asset_path == "css/components.css"
+      return serve_components_js if asset_path == "js/components.js"
 
       file_path = build_file_path(asset_path)
       return not_found_response unless File.file?(file_path)
@@ -61,6 +62,19 @@ module Docyard
 
       css_files = Dir.glob(File.join(components_dir, "*.css"))
       css_files.map { |file| File.read(file) }.join("\n\n")
+    end
+
+    def serve_components_js
+      content = concatenate_component_js
+      [200, { "Content-Type" => "application/javascript; charset=utf-8" }, [content]]
+    end
+
+    def concatenate_component_js
+      components_dir = File.join(ASSETS_PATH, "js", "components")
+      return "" unless Dir.exist?(components_dir)
+
+      js_files = Dir.glob(File.join(components_dir, "*.js"))
+      js_files.map { |file| File.read(file) }.join("\n\n")
     end
 
     def detect_content_type(file_path)

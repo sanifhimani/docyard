@@ -53,26 +53,25 @@
 }
 
 /* Code blocks inside callouts */
-.docyard-callout .docyard-callout__body .highlight {
-  background-color: var(--color-bg) !important;
-  border: 1px solid var(--color-border) !important;
-  border-radius: var(--radius-md) !important;
+.docyard-callout__body .highlight {
+  margin: var(--space-4) 0;
+  border-radius: var(--radius-md);
 }
 
-.dark .docyard-callout .docyard-callout__body .highlight {
-  background-color: var(--color-bg) !important;
+.docyard-callout__body pre.highlight {
+  margin: 0;
 }
 
-.docyard-callout .docyard-callout__body .highlight pre {
-  background-color: transparent !important;
-  border: none !important;
-  margin: 0 !important;
+.docyard-callout__body pre {
+  margin: 0;
+  border-radius: var(--radius-md);
 }
 
-.docyard-callout .docyard-callout__body pre code,
-.docyard-callout .docyard-callout__body .highlight code,
-.docyard-callout .docyard-callout__body .highlight .w {
-  background-color: transparent !important;
+.docyard-callout__body pre code {
+  display: block;
+  padding: var(--space-4);
+  overflow-x: auto;
+  background-color: var(--color-bg-secondary) !important;
 }
 
 .docyard-callout__body :not(pre)>code {
