@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-11-08
+
+### Added
+- Automatic sidebar navigation with nested folders
+- Collapsible sidebar sections with active page highlighting
+- Sidebar scroll position persistence
+- Modern responsive theme with mobile hamburger menu
+- Structured logging system with configurable levels
+- Custom error classes for better error handling
+- Constants module for shared application values
+- Utility modules for path resolution and text formatting
+- Improved initial templates with nested docs structure
+
+### Changed
+- Refactored sidebar rendering to use partial templates
+- Modular CSS architecture (split into variables, reset, typography, components, layout)
+- Enhanced router with routing resolution result pattern
+
+### Removed
+- Legacy syntax.css in favor of modular code.css
+
 ## [0.1.0] - 2025-11-04
 
 ### Added
@@ -25,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/sanifhimani/docyard/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sanifhimani/docyard/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/sanifhimani/docyard/releases/tag/v0.0.1
