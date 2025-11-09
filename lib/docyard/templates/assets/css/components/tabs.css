@@ -1,0 +1,262 @@
+/* Tabs Component - Modern Design */
+
+.docyard-tabs {
+  margin: var(--space-6) 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dark .docyard-tabs {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Tab List Wrapper - Contains scroll indicators */
+.docyard-tabs__list-wrapper {
+  position: relative;
+  background: var(--color-bg-secondary);
+}
+
+/* Tab List Container */
+.docyard-tabs__list {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  background: transparent;
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 0;
+}
+
+.docyard-tabs__list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Bottom border line - sits behind tabs */
+.docyard-tabs__list::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+/* Individual Tab Button */
+.docyard-tabs__tab {
+  padding: var(--space-4) var(--space-4);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-sans);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.5;
+  z-index: 1;
+}
+
+.docyard-tabs__tab:hover {
+  color: var(--color-primary);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.dark .docyard-tabs__tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.docyard-tabs__tab[aria-selected="true"] {
+  color: var(--color-primary);
+  background: var(--color-bg);
+}
+
+/* Cover the border-bottom for active tab */
+.docyard-tabs__tab[aria-selected="true"]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-bg);
+  z-index: 2;
+}
+
+/* Focus indicator for keyboard navigation */
+.docyard-tabs__tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+/* Scroll Indicators - Gradient overlays showing more content */
+.docyard-tabs__scroll-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.docyard-tabs__scroll-indicator--left {
+  left: 0;
+  background: linear-gradient(to right,
+      var(--color-bg-secondary),
+      transparent);
+}
+
+.docyard-tabs__scroll-indicator--right {
+  right: 0;
+  background: linear-gradient(to left,
+      var(--color-bg-secondary),
+      transparent);
+}
+
+.docyard-tabs__scroll-indicator.is-visible {
+  opacity: 1;
+}
+
+/* Slide indicator - vibrant accent line */
+.docyard-tabs__indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, width;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Tab Panel Container */
+.docyard-tabs__panel {
+  padding: var(--space-6);
+  display: none;
+  outline: none;
+  background: var(--color-bg);
+}
+
+.docyard-tabs__panel p {
+  margin-bottom: 0;
+}
+
+.docyard-tabs__panel[aria-hidden="false"] {
+  display: block;
+}
+
+/* Ensure proper spacing for content inside panels */
+.docyard-tabs__panel>*:first-child {
+  margin-top: 0;
+}
+
+.docyard-tabs__panel>*:last-child {
+  margin-bottom: 0;
+}
+
+/* Code blocks inside tabs - seamless integration */
+.docyard-tabs__panel .highlight,
+.docyard-tabs__panel pre {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  padding: 0 !important;
+  background-color: var(--color-bg) !important;
+  box-shadow: none !important;
+}
+
+/* Apply secondary background when highlighter-rouge has siblings */
+.docyard-tabs__panel .highlighter-rouge:not(:only-child) .highlight pre code {
+  margin: var(--space-3) 0 !important;
+  padding: var(--space-4) !important;
+  background-color: var(--color-bg-secondary) !important;
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03) !important;
+}
+
+.docyard-tabs__panel pre code {
+  padding: 0 !important;
+  display: block;
+  overflow-x: auto;
+  background-color: var(--color-bg) !important;
+  border-radius: 0;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.docyard-tabs__panel pre code .w {
+  background-color: var(--color-bg) !important;
+}
+
+/* Inline code inside tabs */
+.docyard-tabs__panel :not(pre)>code {
+  background-color: var(--color-code-bg);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+}
+
+/* Mobile responsive - preserve design language */
+@media (max-width: 640px) {
+  .docyard-tabs {
+    margin: var(--space-4) 0;
+  }
+
+  .docyard-tabs__list {
+    padding: 0 var(--space-3);
+    gap: var(--space-1);
+  }
+
+  .docyard-tabs__tab {
+    padding: var(--space-3) var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+
+  .docyard-tabs__panel {
+    padding: var(--space-4);
+  }
+
+  .docyard-tabs__panel pre code {
+    font-size: var(--font-size-sm);
+  }
+
+  .docyard-tabs__panel .highlighter-rouge:not(:only-child) .highlight pre code {
+    padding: var(--space-3) !important;
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .docyard-tabs__tab {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .docyard-tabs {
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .docyard-tabs__tab[aria-selected="true"] {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+}

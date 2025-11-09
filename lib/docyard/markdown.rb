@@ -6,6 +6,7 @@ require "yaml"
 require_relative "components/registry"
 require_relative "components/base_processor"
 require_relative "components/callout_processor"
+require_relative "components/tabs_processor"
 require_relative "components/icon_processor"
 
 module Docyard

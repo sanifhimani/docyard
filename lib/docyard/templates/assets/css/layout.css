@@ -127,6 +127,9 @@
   display: flex;
   min-height: calc(100vh - var(--header-height));
   padding-top: var(--header-height);
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Sidebar */
@@ -175,6 +178,7 @@
   margin-left: var(--sidebar-width);
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* Content wrapper */
@@ -184,6 +188,8 @@ main.content {
   width: 100%;
   padding: var(--space-16) var(--space-10);
   margin: 0 auto;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* Mobile Layout */

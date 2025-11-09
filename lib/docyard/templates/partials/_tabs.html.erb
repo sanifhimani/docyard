@@ -1,0 +1,31 @@
+<div class="docyard-tabs" data-tabs="<%= @group_id %>">
+  <div class="docyard-tabs__list-wrapper">
+    <div role="tablist" aria-label="Code examples" class="docyard-tabs__list">
+      <% @tabs.each_with_index do |tab, index| %>
+        <button
+          role="tab"
+          aria-selected="<%= index == 0 ? 'true' : 'false' %>"
+          aria-controls="tabpanel-<%= @group_id %>-<%= index %>"
+          id="tab-<%= @group_id %>-<%= index %>"
+          class="docyard-tabs__tab"
+          tabindex="<%= index == 0 ? '0' : '-1' %>"
+        >
+          <%= tab[:name] %>
+        </button>
+      <% end %>
+      <div class="docyard-tabs__indicator" aria-hidden="true"></div>
+    </div>
+  </div>
+  <% @tabs.each_with_index do |tab, index| %>
+    <div
+      role="tabpanel"
+      id="tabpanel-<%= @group_id %>-<%= index %>"
+      aria-labelledby="tab-<%= @group_id %>-<%= index %>"
+      aria-hidden="<%= index == 0 ? 'false' : 'true' %>"
+      class="docyard-tabs__panel"
+      tabindex="0"
+    >
+      <%= tab[:content] %>
+    </div>
+  <% end %>
+</div>

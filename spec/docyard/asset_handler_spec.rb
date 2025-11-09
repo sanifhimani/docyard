@@ -57,18 +57,16 @@ RSpec.describe Docyard::AssetHandler do
         expect(status).to eq(200)
         expect(headers["Content-Type"]).to eq("text/css; charset=utf-8")
 
-        # Verify all component CSS files are included
-        expect(content).to include("Callouts/Admonitions") # from callout.css
-        expect(content).to include("Icon System") # from icon.css
-        expect(content).to include("Navigation Components") # from navigation.css
-        expect(content).to include("Theme Toggle") # from theme-toggle.css
+        expect(content).to include("Callouts/Admonitions")
+        expect(content).to include("Icon System")
+        expect(content).to include("Navigation Components")
+        expect(content).to include("Theme Toggle")
       end
 
       it "concatenates files in alphabetical order", :aggregate_failures do
         _status, _headers, body = handler.serve("/assets/css/components.css")
         content = body.first
 
-        # Check that files appear in alphabetical order (callout, icon, navigation, theme-toggle)
         callout_pos = content.index("Callouts/Admonitions")
         icon_pos = content.index("Icon System")
         navigation_pos = content.index("Navigation Components")
@@ -83,8 +81,46 @@ RSpec.describe Docyard::AssetHandler do
         _status, _headers, body = handler.serve("/assets/css/components.css")
         content = body.first
 
-        # Files should be separated by \n\n (closing brace, blank line, next file's comment)
         expect(content).to match(%r{\}\n\n/\*})
+      end
+    end
+
+    context "when serving components.js (concatenated)" do
+      it "returns 200 with concatenated JS from all component files", :aggregate_failures do
+        status, headers, body = handler.serve("/assets/js/components.js")
+        content = body.first
+
+        expect(status).to eq(200)
+        expect(headers["Content-Type"]).to eq("application/javascript; charset=utf-8")
+
+        expect(content).to include("TabsManager")
+        expect(content).to include("class TabsManager")
+        expect(content).to include("initializeTabs")
+      end
+
+      it "concatenates files properly", :aggregate_failures do
+        _status, _headers, body = handler.serve("/assets/js/components.js")
+        content = body.first
+
+        expect(content).to include("constructor(container)")
+        expect(content).to include("activateTab")
+        expect(content).to include("handleKeyDown")
+        expect(content).to include("localStorage")
+      end
+
+      it "separates component files with blank lines", :aggregate_failures do
+        _status, _headers, body = handler.serve("/assets/js/components.js")
+        content = body.first
+
+        expect(content).to be_a(String)
+        expect(content.length).to be > 0
+      end
+
+      it "includes auto-initialization code", :aggregate_failures do
+        _status, _headers, body = handler.serve("/assets/js/components.js")
+        content = body.first
+
+        expect(content).to include("DOMContentLoaded", "querySelectorAll", ".docyard-tabs")
       end
     end
   end
