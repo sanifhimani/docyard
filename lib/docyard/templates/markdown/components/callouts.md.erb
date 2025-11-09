@@ -1,0 +1,204 @@
+# Callouts
+
+Docyard supports beautiful callouts (also known as admonitions) to highlight important information in your documentation. Callouts support both VitePress-style syntax and GitHub-style alerts.
+
+## Callout Types
+
+There are 5 callout types, each with a distinct color and icon:
+
+### Note (Blue)
+
+Use **note** callouts for neutral, informational content that provides additional context.
+
+::: note
+This is a note callout with the default title.
+:::
+
+::: note Custom Title
+You can customize the title of any callout type.
+:::
+
+### Tip (Green)
+
+Use **tip** callouts for helpful advice, best practices, or pro tips.
+
+::: tip
+This is a helpful tip to improve your documentation.
+:::
+
+::: tip Best Practice
+Always include callouts to make important information stand out!
+:::
+
+### Important (Purple)
+
+Use **important** callouts for crucial information that requires special attention.
+
+::: important
+This information is important and should not be overlooked.
+:::
+
+::: important Critical Information
+Pay special attention to this section of the documentation.
+:::
+
+### Warning (Orange)
+
+Use **warning** callouts when users need to be careful or aware of potential issues.
+
+::: warning
+Be careful when following these instructions as they may affect your system.
+:::
+
+::: warning Potential Issues
+Make sure to backup your data before proceeding with this operation.
+:::
+
+### Danger (Red)
+
+Use **danger** callouts for critical warnings about dangerous operations or severe consequences.
+
+::: danger
+This operation is dangerous and may result in data loss. Proceed with extreme caution.
+:::
+
+::: danger Do Not Do This
+Never run this command in production without thorough testing!
+:::
+
+## GitHub-Style Alerts
+
+Docyard also supports GitHub-style alert syntax for compatibility with existing documentation.
+
+> [!NOTE]
+> This is a GitHub-style note alert. It renders exactly the same as the VitePress syntax.
+
+> [!TIP]
+> GitHub alerts are automatically converted to beautifully styled callouts!
+
+> [!IMPORTANT]
+> You can use either syntax - both produce the same visual result.
+
+> [!WARNING]
+> GitHub-style warnings work just like VitePress warnings.
+
+> [!CAUTION]
+> The CAUTION type maps to the danger callout style.
+
+## Rich Content Support
+
+Callouts support all markdown features, making them extremely versatile.
+
+### Inline Formatting
+
+::: note
+Callouts support **bold text**, *italic text*, `inline code`, and [links](https://github.com).
+:::
+
+### Lists
+
+::: tip Key Features
+Here are the main benefits of using callouts:
+
+- Improved readability
+- Visual hierarchy
+- Better user engagement
+- Accessible design with ARIA roles
+- Dark mode support
+:::
+
+### Code Blocks
+
+::: important
+You can include code examples inside callouts:
+
+```ruby
+class Docyard::CalloutProcessor
+  def self.preprocess(markdown)
+    # Process callout syntax
+  end
+end
+```
+
+The code will be syntax-highlighted just like regular code blocks.
+:::
+
+### Multi-Paragraph Content
+
+::: warning
+This callout contains multiple paragraphs to demonstrate complex content.
+
+Each paragraph is properly spaced and rendered. You can include as much content as you need.
+
+You can even mix paragraphs with other elements like lists or code blocks.
+:::
+
+### Nested Content
+
+::: tip Advanced Usage
+Callouts can contain complex nested structures:
+
+1. **First step**: Install Docyard
+   ```bash
+   gem install docyard
+   ```
+
+2. **Second step**: Initialize your project
+   ```bash
+   docyard init my-docs
+   ```
+
+3. **Third step**: Start the development server
+   ```bash
+   docyard serve
+   ```
+
+And you're ready to go!
+:::
+
+## Multiple Callouts
+
+You can use multiple callouts in sequence to create rich, informative documentation:
+
+::: note Prerequisites
+Before starting this tutorial, make sure you have Ruby 3.0+ installed.
+:::
+
+::: tip
+Use `ruby --version` to check your Ruby version.
+:::
+
+::: warning
+If you're using a Ruby version older than 3.0, some features may not work correctly.
+:::
+
+## Accessibility
+
+All callouts include proper ARIA roles for screen readers:
+
+- Note, Tip, and Important callouts use `role="note"`
+- Warning and Danger callouts use `role="alert"` for higher priority
+
+## Dark Mode
+
+Callouts automatically adapt to dark mode with enhanced colors and subtle glow effects for better visibility.
+
+## Comparison Table
+
+| Callout Type | Color  | Icon            | When to Use                          |
+|--------------|--------|-----------------|--------------------------------------|
+| Note         | Blue   | Info            | General information, context         |
+| Tip          | Green  | Lightbulb       | Helpful advice, best practices       |
+| Important    | Purple | Warning Circle  | Critical information, key points     |
+| Warning      | Orange | Warning         | Caution, potential issues            |
+| Danger       | Red    | Siren           | Severe warnings, dangerous operations|
+
+## Examples in Action
+
+::: note Documentation Tip
+Throughout the Docyard documentation, you'll see callouts used to highlight key information, provide helpful tips, and warn about potential issues.
+:::
+
+::: tip
+Try creating your own callouts in your documentation to see how they improve readability and user engagement!
+:::

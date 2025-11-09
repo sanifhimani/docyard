@@ -14,7 +14,8 @@ module Docyard
       "getting-started/quick-start.md" => "getting-started/quick-start.md.erb",
       "core-concepts/file-structure.md" => "core-concepts/file-structure.md.erb",
       "core-concepts/markdown.md" => "core-concepts/markdown.md.erb",
-      "core-concepts/icons.md" => "core-concepts/icons.md.erb"
+      "core-concepts/icons.md" => "core-concepts/icons.md.erb",
+      "components/callouts.md" => "components/callouts.md.erb"
     }.freeze
 
     def initialize(path = ".")
