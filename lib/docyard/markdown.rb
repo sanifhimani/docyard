@@ -8,6 +8,7 @@ require_relative "components/base_processor"
 require_relative "components/callout_processor"
 require_relative "components/tabs_processor"
 require_relative "components/icon_processor"
+require_relative "components/code_block_processor"
 
 module Docyard
   class Markdown
