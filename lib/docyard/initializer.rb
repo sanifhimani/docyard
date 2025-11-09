@@ -9,7 +9,11 @@ module Docyard
 
     TEMPLATES = {
       "index.md" => "index.md.erb",
-      "getting-started.md" => "getting-started.md.erb"
+      "getting-started/introduction.md" => "getting-started/introduction.md.erb",
+      "getting-started/installation.md" => "getting-started/installation.md.erb",
+      "getting-started/quick-start.md" => "getting-started/quick-start.md.erb",
+      "core-concepts/file-structure.md" => "core-concepts/file-structure.md.erb",
+      "core-concepts/markdown.md" => "core-concepts/markdown.md.erb"
     }.freeze
 
     def initialize(path = ".")
@@ -45,6 +49,9 @@ module Docyard
     def copy_template(template_name, output_name)
       template_path = File.join(TEMPLATE_DIR, template_name)
       output_path = File.join(@docs_path, output_name)
+
+      output_dir = File.dirname(output_path)
+      FileUtils.mkdir_p(output_dir) unless File.directory?(output_dir)
 
       content = File.read(template_path)
       File.write(output_path, content)
