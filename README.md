@@ -13,6 +13,7 @@
 - **Hot reload** - Changes appear instantly while you write
 - **GitHub Flavored Markdown** - Tables, task lists, strikethrough
 - **Syntax highlighting** - 100+ languages via Rouge
+- **Icon system** - 1000+ Phosphor icons with simple `:icon:` syntax
 - **YAML frontmatter** - Add metadata to your pages
 - **Customizable error pages** - Make 404/500 pages your own
 
@@ -119,6 +120,33 @@ Write links with `.md` extension, they'll be automatically cleaned:
 [Guide](./guide/index.md)                → /guide
 ```
 
+### Using Icons
+
+Docyard includes 1000+ Phosphor icons that work out of the box. Just type `:icon-name:` in your markdown:
+
+```markdown
+:check: Zero configuration
+:lightning: Hot reload
+:rocket-launch: Fast and lightweight
+
+Use different weights:
+:heart:         → regular weight (default)
+:heart:bold:    → bold weight
+:heart:fill:    → filled version
+```
+
+Available icons: `heart`, `check`, `x`, `warning`, `info`, `question`, `arrow-right`, `arrow-left`, `arrow-up`, `arrow-down`, `code`, `terminal`, `package`, `rocket-launch`, `star`, `lightning`, `moon-stars`, `sun`, `link-external`, `copy`, `github`, and many more.
+
+Weights: `regular` (default), `bold`, `fill`, `light`, `thin`, `duotone`
+
+Icons automatically match your text size and color.
+
+**Adding new icons:**
+
+1. Get the SVG path from [phosphoricons.com](https://phosphoricons.com)
+2. Add to `lib/docyard/icons/phosphor.rb` under the appropriate weight
+3. Format: `"icon-name" => '<path d="..."/>',`
+
 ### Directory Structure
 
 ```
@@ -170,10 +198,12 @@ bundle exec rubocop
 
 ## Roadmap
 
-**Next up:**
+**Recently shipped:**
 - Dark mode with theme toggle
-- Markdown components (callouts, code groups, collapsible sections)
 - Icon system
+
+**Next up:**
+- Markdown components (callouts, code groups, collapsible sections)
 - Client-side search
 - Static site generation (`docyard build`)
 

@@ -1,0 +1,125 @@
+# Icons
+
+Docyard includes 1000+ Phosphor icons that work seamlessly in your markdown. Icons automatically match your text size and inherit colors from the surrounding content.
+
+## Basic Usage
+
+Simply type `:icon-name:` anywhere in your markdown:
+
+```markdown
+:check: Task completed
+:warning: Important note
+:rocket-launch: Ready to launch
+```
+
+Result:
+
+:check: Task completed
+
+:warning: Important note
+
+:rocket-launch: Ready to launch
+
+## Icon Weights
+
+Phosphor icons come in 6 different weights. Specify the weight after the icon name:
+
+```markdown
+:heart: Regular (default)
+:heart:bold: Bold weight
+:heart:fill: Filled version
+:heart:light: Light weight
+:heart:thin: Thin weight
+:heart:duotone: Duotone style
+```
+
+Result:
+
+:heart: Regular · :heart:bold: Bold · :heart:fill: Fill · :heart:light: Light · :heart:thin: Thin · :heart:duotone: Duotone
+
+## Common Use Cases
+
+### Feature Lists
+
+```markdown
+:check: Zero configuration
+:lightning: Hot reload
+:code: Syntax highlighting
+:moon-stars: Dark mode support
+:package: Ruby-native
+```
+
+:check: Zero configuration
+
+:lightning: Hot reload
+
+:code: Syntax highlighting
+
+:moon-stars: Dark mode support
+
+:package: Ruby-native
+
+### Callouts and Alerts
+
+```markdown
+:warning: **Warning:** Make sure to back up your data first.
+
+:info: **Tip:** You can combine icons with any markdown formatting.
+
+:x: **Error:** Connection failed. Please try again.
+```
+
+:warning: **Warning:** Make sure to back up your data first.
+
+:info: **Tip:** You can combine icons with any markdown formatting.
+
+:x: **Error:** Connection failed. Please try again.
+
+### Navigation and Links
+
+```markdown
+:arrow-right: [Next: File Structure](file-structure)
+:arrow-left: [Previous: Installation](../getting-started/installation)
+:link-external: [View on GitHub](https://github.com)
+```
+
+:arrow-right: [Next: File Structure](file-structure)
+
+:arrow-left: [Previous: Installation](../getting-started/installation)
+
+:link-external: [View on GitHub](https://github.com)
+
+## Available Icons
+
+### UI & Actions
+:check: `check` · :x: `x` · :warning: `warning` · :info: `info` · :question: `question` · :copy: `copy`
+
+### Arrows & Navigation
+:arrow-right: `arrow-right` · :arrow-left: `arrow-left` · :arrow-up: `arrow-up` · :arrow-down: `arrow-down`
+
+### Development
+:code: `code` · :terminal: `terminal` · :package: `package` · :github: `github`
+
+### General
+:heart: `heart` · :star: `star` · :rocket-launch: `rocket-launch` · :lightning: `lightning`
+
+### Theme
+:sun: `sun` · :moon-stars: `moon-stars`
+
+### Links
+:link-external: `link-external`
+
+## Tips
+
+1. **Size Matching**: Icons automatically scale to match surrounding text size (headings, paragraphs, etc.)
+2. **Color Inheritance**: Icons use `currentColor`, so they inherit text color from parent elements
+3. **Unknown Icons**: If an icon doesn't exist, the `:icon-name:` syntax stays as plain text
+4. **Code Blocks**: Icon syntax inside code blocks won't be processed (as expected)
+
+## More Icons
+
+Docyard ships with 20 essential icons by default. The full Phosphor icon set includes 1000+ icons. View all available icons at [phosphoricons.com](https://phosphoricons.com).
+
+## Attribution
+
+Icons provided by [Phosphor Icons](https://phosphoricons.com) under the MIT License.

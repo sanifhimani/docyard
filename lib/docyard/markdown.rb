@@ -3,6 +3,7 @@
 require "kramdown"
 require "kramdown-parser-gfm"
 require "yaml"
+require_relative "icon_processor"
 
 module Docyard
   class Markdown
@@ -50,12 +51,14 @@ module Docyard
     end
 
     def render_html
-      Kramdown::Document.new(
+      raw_html = Kramdown::Document.new(
         content,
         input: "GFM",
         hard_wrap: false,
         syntax_highlighter: "rouge"
       ).to_html
+
+      IconProcessor.process(raw_html)
     end
   end
 end
