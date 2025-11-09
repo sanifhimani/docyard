@@ -19,6 +19,13 @@ RSpec.describe Docyard::Server do
       expect(server.host).to eq("0.0.0.0")
       expect(server.docs_path).to eq("custom")
     end
+
+    it "loads configuration", :aggregate_failures do
+      server = described_class.new(docs_path: "docs")
+
+      expect(server.config).to be_a(Docyard::Config)
+      expect(server.config.site.title).to eq("Documentation")
+    end
   end
 
   describe "Rack environment building" do

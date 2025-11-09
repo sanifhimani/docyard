@@ -4,22 +4,25 @@ require "webrick"
 require "stringio"
 require_relative "file_watcher"
 require_relative "rack_application"
+require_relative "config"
 
 module Docyard
   class Server
     DEFAULT_PORT = 4200
     DEFAULT_HOST = "localhost"
 
-    attr_reader :port, :host, :docs_path
+    attr_reader :port, :host, :docs_path, :config
 
     def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs")
       @port = port
       @host = host
       @docs_path = docs_path
+      @config = Config.load
       @file_watcher = FileWatcher.new(File.expand_path(docs_path))
       @app = RackApplication.new(
         docs_path: File.expand_path(docs_path),
-        file_watcher: @file_watcher
+        file_watcher: @file_watcher,
+        config: @config
       )
     end
 

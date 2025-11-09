@@ -6,6 +6,7 @@ module Docyard
   class Initializer
     DOCS_DIR = "docs"
     TEMPLATE_DIR = File.join(__dir__, "templates", "markdown")
+    CONFIG_TEMPLATE_DIR = File.join(__dir__, "templates", "config")
 
     TEMPLATES = {
       "index.md" => "index.md.erb",
@@ -47,6 +48,8 @@ module Docyard
       TEMPLATES.each do |output_name, template_name|
         copy_template(template_name, output_name)
       end
+
+      create_example_config
     end
 
     def copy_template(template_name, output_name)
@@ -60,6 +63,16 @@ module Docyard
       File.write(output_path, content)
     end
 
+    def create_example_config
+      config_path = File.join(@path, "docyard.yml")
+      return if File.exist?(config_path)
+
+      template_path = File.join(CONFIG_TEMPLATE_DIR, "docyard.yml.erb")
+      config_content = File.read(template_path)
+
+      File.write(config_path, config_content)
+    end
+
     def print_already_exists_error
       puts "Error: #{DOCS_DIR}/ folder already exists"
       puts "   Remove it first or run docyard in a different directory"
@@ -70,10 +83,12 @@ module Docyard
       puts ""
       puts "Created:"
       TEMPLATES.each_key { |file| puts "  #{DOCS_DIR}/#{file}" }
+      puts "  docyard.yml (configuration - optional)"
       puts ""
       puts "Next steps:"
       puts "  1. Edit your markdown files in #{DOCS_DIR}/"
-      puts "  2. Run 'docyard serve' to preview your documentation locally"
+      puts "  2. Customize docyard.yml (optional)"
+      puts "  3. Run 'docyard serve' to preview your documentation locally"
     end
   end
 end

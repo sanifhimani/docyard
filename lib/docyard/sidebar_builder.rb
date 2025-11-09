@@ -9,7 +9,7 @@ module Docyard
   class SidebarBuilder
     attr_reader :docs_path, :current_path, :config
 
-    def initialize(docs_path:, current_path: "/", config: {})
+    def initialize(docs_path:, current_path: "/", config: nil)
       @docs_path = docs_path
       @current_path = current_path
       @config = config
@@ -43,8 +43,16 @@ module Docyard
 
     def renderer
       @renderer ||= Sidebar::Renderer.new(
-        site_title: config[:site_title] || "Documentation"
+        site_title: extract_site_title
       )
+    end
+
+    def extract_site_title
+      if config.is_a?(Hash)
+        config[:site_title] || "Documentation"
+      else
+        config&.site&.title || "Documentation"
+      end
     end
   end
 end

@@ -26,6 +26,29 @@ RSpec.describe Docyard::RackApplication do
         expect(headers["Content-Type"]).to eq("text/html; charset=utf-8")
         expect(body.first).to include("404 - Page Not Found")
       end
+
+      it "uses default site title when no config provided", :aggregate_failures do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        _status, _headers, body = app.call(env)
+
+        expect(body.first).to include("<title>")
+        expect(body.first).to include("Documentation")
+      end
+
+      it "uses config site title when provided" do
+        Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "docyard.yml"), "site:\n  title: 'Custom Docs'")
+          config = Docyard::Config.load(temp_dir)
+
+          app_with_config = described_class.new(docs_path: docs_path, file_watcher: file_watcher, config: config)
+          env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+          _status, _headers, body = app_with_config.call(env)
+
+          expect(body.first).to include("Custom Docs")
+        end
+      end
     end
 
     context "with asset request" do
