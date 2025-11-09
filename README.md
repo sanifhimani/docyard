@@ -13,7 +13,7 @@
 - **Hot reload** - Changes appear instantly while you write
 - **GitHub Flavored Markdown** - Tables, task lists, strikethrough
 - **Syntax highlighting** - 100+ languages via Rouge
-- **Icon system** - 1000+ Phosphor icons with simple `:icon:` syntax
+- **Icon system** - 24 essential Phosphor icons with simple `:icon:` syntax
 - **YAML frontmatter** - Add metadata to your pages
 - **Customizable error pages** - Make 404/500 pages your own
 
@@ -122,7 +122,7 @@ Write links with `.md` extension, they'll be automatically cleaned:
 
 ### Using Icons
 
-Docyard includes 1000+ Phosphor icons that work out of the box. Just type `:icon-name:` in your markdown:
+Docyard includes 24 essential Phosphor icons that work out of the box. Just type `:icon-name:` in your markdown:
 
 ```markdown
 :check: Zero configuration
@@ -135,7 +135,7 @@ Use different weights:
 :heart:fill:    → filled version
 ```
 
-Available icons: `heart`, `check`, `x`, `warning`, `info`, `question`, `arrow-right`, `arrow-left`, `arrow-up`, `arrow-down`, `code`, `terminal`, `package`, `rocket-launch`, `star`, `lightning`, `moon-stars`, `sun`, `link-external`, `copy`, `github`, and many more.
+Available icons: `heart`, `check`, `x`, `warning`, `info`, `question`, `arrow-right`, `arrow-left`, `arrow-up`, `arrow-down`, `code`, `terminal`, `package`, `rocket-launch`, `star`, `lightning`, `moon-stars`, `sun`, `link-external`, `copy`, `github`, `file`, `terminal-window`, `warning-circle`.
 
 Weights: `regular` (default), `bold`, `fill`, `light`, `thin`, `duotone`
 

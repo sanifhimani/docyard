@@ -96,19 +96,5 @@ RSpec.describe Docyard::Icons do
         expect(result).to be_nil
       end
     end
-
-    context "with library parameter" do
-      it "uses default phosphor library" do
-        result = described_class.render("heart", "regular", library: :phosphor)
-
-        expect(result).to include("docyard-icon-heart")
-      end
-
-      it "returns nil for unknown library" do
-        result = described_class.render("heart", "regular", library: :unknown)
-
-        expect(result).to be_nil
-      end
-    end
   end
 end

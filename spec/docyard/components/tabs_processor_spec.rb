@@ -218,6 +218,271 @@ RSpec.describe Docyard::Components::TabsProcessor do
     end
   end
 
+  describe "icon functionality" do
+    context "with manual icon syntax" do
+      it "extracts icon from tab name with :icon-name: syntax", :aggregate_failures do
+        markdown = ":::tabs\n== :package: npm\n```bash\nnpm install\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should include icon rendering
+        expect(result).to include('class="docyard-tabs__icon"')
+        # Should use Phosphor icon
+        expect(result).to include('viewBox="0 0 256 256"')
+        # Should clean the tab name (remove :package:)
+        expect(result).to match(%r{>\s*npm\s*</button>}m)
+      end
+
+      it "handles multiple tabs with different manual icons", :aggregate_failures do
+        markdown = ":::tabs\n== :package: npm\nnpm install\n\n== :cube: yarn\nyarn add\n\n" \
+                   "== :rocket: Quick Start\nGet started quickly\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result.scan('class="docyard-tabs__icon"').length).to eq(3)
+        expect(result).to match(%r{>\s*npm\s*</button>}m)
+        expect(result).to match(%r{>\s*yarn\s*</button>}m)
+        expect(result).to match(%r{>\s*Quick Start\s*</button>}m)
+      end
+
+      it "preserves icon name in icon data", :aggregate_failures do
+        markdown = ":::tabs\n== :star: Featured\nContent\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("star")
+        expect(result).to match(%r{>\s*Featured\s*</button>}m)
+      end
+
+      it "handles icon names with hyphens", :aggregate_failures do
+        markdown = ":::tabs\n== :arrow-right: Next Step\nContent\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("arrow-right")
+        expect(result).to match(%r{>\s*Next Step\s*</button>}m)
+      end
+
+      it "manual icon takes precedence over auto-detection", :aggregate_failures do
+        markdown = ":::tabs\n== :star: Featured\n```javascript\nconsole.log();\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should use manual Phosphor icon, not file extension
+        expect(result).to include("star")
+        expect(result).to include('viewBox="0 0 256 256"')
+      end
+    end
+
+    context "with auto-detected icons for code-only tabs" do
+      it "detects terminal commands (bash)", :aggregate_failures do
+        markdown = ":::tabs\n== Install\n```bash\nnpm install docyard\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        expect(result).to include("terminal-window")
+        # Should use Phosphor icon
+        expect(result).to include('viewBox="0 0 256 256"')
+      end
+
+      it "detects terminal commands (sh)", :aggregate_failures do
+        markdown = ":::tabs\n== Script\n```sh\necho 'test'\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        expect(result).to include("terminal-window")
+      end
+
+      it "detects file extension for JavaScript", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```javascript\nconsole.log('test');\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        # For now, file extension icons fallback to "file" icon until VSCode icons are added
+        expect(result).to include("file")
+      end
+
+      it "detects file extension for TypeScript", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```typescript\nconst x: number = 1;\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        expect(result).to include("file")
+      end
+
+      it "detects file extension for Python", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```python\nprint('test')\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        expect(result).to include("file")
+      end
+    end
+
+    context "with language alias mapping to file extensions" do
+      it "maps js to .js extension", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```js\nconst x = 1;\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        # File extension icons (currently fallback to "file")
+        expect(result).to include("file")
+      end
+
+      it "maps ts to .ts extension", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```ts\nconst x: number = 1;\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("file")
+      end
+
+      it "maps py to .py extension", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```py\nx = 1\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("file")
+      end
+
+      it "maps rb to .rb extension", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```rb\nx = 1\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("file")
+      end
+
+      it "maps shell commands to terminal-window (Phosphor)", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```sh\necho test\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("terminal-window")
+        expect(result).to include('viewBox="0 0 256 256"')
+      end
+
+      it "maps bash to terminal-window (Phosphor)", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```bash\necho test\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("terminal-window")
+        expect(result).to include('viewBox="0 0 256 256"')
+      end
+
+      it "maps html to .html extension", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```html\n<div></div>\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("file")
+      end
+
+      it "maps yml to .yaml extension", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```yml\nkey: value\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("file")
+      end
+    end
+
+    context "with no icon for mixed or plain content" do
+      it "shows NO icon when tab has plain text (no code)", :aggregate_failures do
+        markdown = ":::tabs\n== Overview\nJust regular text content\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should NOT have icon
+        expect(result).not_to include('class="docyard-tabs__icon"')
+      end
+    end
+
+    context "with fallback behavior for unknown languages" do
+      it "uses fallback file icon for unrecognized language", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```unknownlang\nsome code\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        expect(result).to include("file")
+        expect(result).to include('viewBox="0 0 256 256"')
+      end
+    end
+
+    context "with edge cases" do
+      it "handles invalid icon syntax (missing closing colon)", :aggregate_failures do
+        markdown = ":::tabs\n== :package Tab Name\nContent\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should treat as regular tab name
+        expect(result).to include(":package Tab Name")
+      end
+
+      it "handles empty icon name", :aggregate_failures do
+        markdown = ":::tabs\n== :: Tab Name\nContent\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should not extract icon from invalid syntax
+        expect(result).to include(":: Tab Name")
+      end
+
+      it "handles tab with mixed content (code and text) - NO icon", :aggregate_failures do
+        markdown = ":::tabs\n== Tab\nSome text\n\n```javascript\ncode();\n```\n\nMore text\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should NOT show icon because content is mixed (code + text)
+        expect(result).not_to include('class="docyard-tabs__icon"')
+      end
+
+      it "handles tab with multiple code blocks - NO icon", :aggregate_failures do
+        markdown = ":::tabs\n== Tab\n```javascript\njs code\n```\n\n```python\npy code\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should NOT show icon because content has multiple blocks
+        expect(result).not_to include('class="docyard-tabs__icon"')
+      end
+
+      it "handles code block at the end of mixed content - NO icon", :aggregate_failures do
+        markdown = ":::tabs\n== Tab\nIntro text here\n\n```ruby\nputs 'hi'\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        # Should NOT show icon because content is mixed (text + code)
+        expect(result).not_to include('class="docyard-tabs__icon"')
+      end
+
+      it "is case insensitive for language detection", :aggregate_failures do
+        markdown = ":::tabs\n== Tab\n```JavaScript\nconsole.log();\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        # File extension icon (currently returns "file" fallback)
+        expect(result).to include("file")
+      end
+
+      it "handles whitespace around icon syntax", :aggregate_failures do
+        markdown = ":::tabs\n== :package:   Tab Name\nContent\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include("package")
+        expect(result).to match(%r{>\s*Tab Name\s*</button>}m)
+      end
+    end
+
+    context "with all supported file extensions and terminal" do
+      it "supports common programming languages (currently shows file icon)", :aggregate_failures do
+        languages = %w[javascript typescript python ruby go rust php html css json yaml toml sql graphql]
+
+        languages.each do |lang|
+          markdown = ":::tabs\n== Code\n```#{lang}\ncode\n```\n:::"
+          result = processor.preprocess(markdown)
+
+          expect(result).to include('class="docyard-tabs__icon"'), "Expected icon for #{lang}"
+          # File extension icons (currently fallback to "file" until VSCode icons added)
+          expect(result).to include("file"), "Expected file icon for #{lang}"
+        end
+      end
+
+      it "supports terminal commands with terminal-window icon", :aggregate_failures do
+        shell_langs = %w[bash sh shell]
+
+        shell_langs.each do |shell|
+          markdown = ":::tabs\n== Command\n```#{shell}\necho test\n```\n:::"
+          result = processor.preprocess(markdown)
+
+          expect(result).to include('class="docyard-tabs__icon"'), "Expected icon for #{shell}"
+          expect(result).to include("terminal-window"), "Expected terminal-window icon for #{shell}"
+          expect(result).to include('viewBox="0 0 256 256"'), "Expected Phosphor viewBox for #{shell}"
+        end
+      end
+    end
+  end
+
   describe "accessibility" do
     it "uses semantic HTML roles", :aggregate_failures do
       markdown = <<~MD
