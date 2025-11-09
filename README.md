@@ -5,10 +5,11 @@
 
 > Documentation generator for Ruby
 
-**Early development** - Core features work, but missing sidebar, search, and build command. See [roadmap](#roadmap).
+**Early development** - Core features work, but missing search and build command. See [roadmap](#roadmap).
 
 ## Features
 
+- **Sidebar navigation** - Automatic sidebar with nested folders and collapsible sections
 - **Hot reload** - Changes appear instantly while you write
 - **GitHub Flavored Markdown** - Tables, task lists, strikethrough
 - **Syntax highlighting** - 100+ languages via Rouge
@@ -56,8 +57,14 @@ docyard init
 This creates:
 ```
 docs/
-  index.md           # Home page
-  getting-started.md # Sample page
+  index.md                          # Home page
+  getting-started/
+    introduction.md                 # Getting started guide
+    installation.md                 # Installation instructions
+    quick-start.md                  # Quick start guide
+  core-concepts/
+    file-structure.md              # File structure guide
+    markdown.md                     # Markdown guide
 ```
 
 ### Start Development Server
@@ -163,11 +170,12 @@ bundle exec rubocop
 
 ## Roadmap
 
-- Sidebar navigation
-- Search
-- Dark mode
-- Build command
-- Config file
+**Next up:**
+- Dark mode with theme toggle
+- Markdown components (callouts, code groups, collapsible sections)
+- Icon system
+- Client-side search
+- Static site generation (`docyard build`)
 
 ## Contributing
 
