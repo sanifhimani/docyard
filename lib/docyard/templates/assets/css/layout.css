@@ -7,12 +7,16 @@
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  background-color: var(--color-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
   z-index: var(--z-header);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .header {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 .header.hide-on-scroll {
@@ -41,7 +45,7 @@
 }
 
 .header-title {
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
   letter-spacing: -0.02em;
@@ -75,7 +79,7 @@
     top: var(--header-height);
     left: 0;
     right: 0;
-    height: 48px;
+    height: 3rem;
     background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
     padding: 0 var(--space-6);
@@ -189,7 +193,7 @@ main.content {
   }
 
   .layout {
-    padding-top: calc(var(--header-height) + 48px);
+    padding-top: calc(var(--header-height) + 3rem);
   }
 
   .sidebar {

@@ -6,6 +6,7 @@ module Docyard
   class Renderer
     LAYOUTS_PATH = File.join(__dir__, "templates", "layouts")
     ERRORS_PATH = File.join(__dir__, "templates", "errors")
+    PARTIALS_PATH = File.join(__dir__, "templates", "partials")
 
     attr_reader :layout_path
 
@@ -49,6 +50,15 @@ module Docyard
     def render_error_template(status)
       error_template_path = File.join(ERRORS_PATH, "#{status}.html.erb")
       template = File.read(error_template_path)
+      ERB.new(template).result(binding)
+    end
+
+    def render_partial(name, locals = {})
+      partial_path = File.join(PARTIALS_PATH, "#{name}.html.erb")
+      template = File.read(partial_path)
+
+      locals.each { |key, value| instance_variable_set("@#{key}", value) }
+
       ERB.new(template).result(binding)
     end
 
