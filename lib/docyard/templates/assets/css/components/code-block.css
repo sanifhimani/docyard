@@ -1,0 +1,196 @@
+/* Code Block Component with Copy Button */
+
+.docyard-code-block {
+  position: relative;
+  margin: var(--space-6) 0;
+}
+
+.docyard-code-block .highlight {
+  margin: 0;
+}
+
+/* Inside tabs - remove wrapper margin when code block is only child */
+.docyard-tabs__panel:has(> [class*="language-"]:only-child) .docyard-code-block {
+  margin: 0;
+}
+
+/* Inside tabs with mixed content - use normal spacing */
+.docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) .docyard-code-block {
+  margin: var(--space-4) 0;
+}
+
+/* Inside callouts - use callout's spacing */
+.docyard-callout__body .docyard-code-block {
+  margin: var(--space-4) 0;
+}
+
+.docyard-callout__body .docyard-code-block:first-child {
+  margin-top: 0;
+}
+
+.docyard-callout__body .docyard-code-block:last-child {
+  margin-bottom: 0;
+}
+
+.docyard-code-block__copy {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.docyard-code-block:hover .docyard-code-block__copy {
+  opacity: 1;
+  visibility: visible;
+}
+
+.docyard-code-block__copy:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-text-tertiary);
+  color: var(--color-text);
+}
+
+.docyard-code-block__copy:active {
+  transform: scale(0.95);
+}
+
+.docyard-code-block__copy:focus-visible {
+  opacity: 1;
+  visibility: visible;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Icon sizing */
+.docyard-code-block__copy svg {
+  width: 16px;
+  height: 16px;
+  transition: all 0.2s ease;
+}
+
+/* Success state */
+.docyard-code-block__copy.is-success {
+  opacity: 1;
+  visibility: visible;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  animation: success-pulse 0.4s ease;
+}
+
+.docyard-code-block__copy.is-success:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: white;
+}
+
+.docyard-code-block__copy.is-success svg {
+  animation: check-pop 0.3s ease;
+}
+
+/* Success animation */
+@keyframes success-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Error state */
+.docyard-code-block__copy.is-error {
+  opacity: 1;
+  visibility: visible;
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.docyard-code-block__copy.is-error:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+/* Mobile: Always show copy button */
+@media (max-width: 1024px) {
+  .docyard-code-block__copy {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Dark mode adjustments */
+.dark .docyard-code-block__copy {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-border);
+}
+
+.dark .docyard-code-block__copy:hover {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-text-tertiary);
+}
+
+/* Keep success state using primary colors in dark mode */
+.dark .docyard-code-block__copy.is-success {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.dark .docyard-code-block__copy.is-success:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.dark .docyard-code-block__copy.is-error {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* Reduced motion support - WCAG accessibility requirement */
+@media (prefers-reduced-motion: reduce) {
+  .docyard-code-block__copy,
+  .docyard-code-block__copy svg {
+    transition: none;
+    animation: none;
+  }
+
+  .docyard-code-block__copy:active {
+    transform: none;
+  }
+}

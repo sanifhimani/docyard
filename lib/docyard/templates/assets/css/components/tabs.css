@@ -167,10 +167,15 @@
 
 /* Tab Panel Container */
 .docyard-tabs__panel {
-  padding: var(--space-6);
+  padding: 0;
   display: none;
   outline: none;
   background: var(--color-bg);
+}
+
+/* If panel has mixed content (not just code block), add padding to panel */
+.docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) {
+  padding: var(--space-6);
 }
 
 .docyard-tabs__panel p {
@@ -201,9 +206,13 @@
   box-shadow: none !important;
 }
 
+/* If panel has ONLY code block, add padding to the highlight element */
+.docyard-tabs__panel:has(> [class*="language-"]:only-child) pre {
+  padding: var(--space-6) !important;
+}
+
 /* Apply secondary background when highlighter-rouge has siblings */
 .docyard-tabs__panel .highlighter-rouge:not(:only-child) .highlight pre code {
-  margin: var(--space-3) 0 !important;
   padding: var(--space-4) !important;
   background-color: var(--color-bg-secondary) !important;
   border-radius: var(--radius-lg) !important;
