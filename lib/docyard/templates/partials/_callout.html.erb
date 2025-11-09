@@ -1,0 +1,11 @@
+<div class="docyard-callout docyard-callout--<%= @type %>" role="<%= %w[danger warning].include?(@type) ? 'alert' : 'note' %>">
+  <div class="docyard-callout__icon" aria-hidden="true">
+    <%= @icon_svg %>
+  </div>
+  <div class="docyard-callout__content">
+    <div class="docyard-callout__title"><%= @title %></div>
+    <div class="docyard-callout__body">
+      <%= @content_html %>
+    </div>
+  </div>
+</div>
