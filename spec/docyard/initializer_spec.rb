@@ -26,9 +26,29 @@ RSpec.describe Docyard::Initializer do
       expect(File.exist?(File.join(temp_dir, "docs", "index.md"))).to be true
     end
 
-    it "creates getting-started.md" do
+    it "creates getting-started directory with introduction.md" do
       initializer.run
-      expect(File.exist?(File.join(temp_dir, "docs", "getting-started.md"))).to be true
+      expect(File.exist?(File.join(temp_dir, "docs", "getting-started", "introduction.md"))).to be true
+    end
+
+    it "creates getting-started directory with installation.md" do
+      initializer.run
+      expect(File.exist?(File.join(temp_dir, "docs", "getting-started", "installation.md"))).to be true
+    end
+
+    it "creates getting-started directory with quick-start.md" do
+      initializer.run
+      expect(File.exist?(File.join(temp_dir, "docs", "getting-started", "quick-start.md"))).to be true
+    end
+
+    it "creates core-concepts directory with file-structure.md" do
+      initializer.run
+      expect(File.exist?(File.join(temp_dir, "docs", "core-concepts", "file-structure.md"))).to be true
+    end
+
+    it "creates core-concepts directory with markdown.md" do
+      initializer.run
+      expect(File.exist?(File.join(temp_dir, "docs", "core-concepts", "markdown.md"))).to be true
     end
 
     it "returns true on success" do
