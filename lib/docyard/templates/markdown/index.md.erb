@@ -1,22 +1,86 @@
----
-title: Home
-description: Welcome to your documentation site
----
+# Welcome to Docyard
 
-# Welcome to Docyard!
+A modern, zero-config documentation generator for Ruby developers.
 
-This is your documentation homepage. Edit this file to customize it.
+## Features
 
-## What is Docyard?
-
-Docyard is a beautiful, zero-config documentation generator built with Ruby.
+- **Auto-generated Navigation** - Sidebar built from your folder structure
+- **Hot Reload** - Changes appear instantly while you write
+- **GitHub Flavored Markdown** - Full GFM support with tables and task lists
+- **Syntax Highlighting** - 100+ languages powered by Rouge
+- **Zero Configuration** - Works out of the box with sensible defaults
+- **Mobile Responsive** - Beautiful on desktop, tablet, and mobile
 
 ## Quick Start
 
-1. Edit the markdown files in `docs/`
-2. Run `docyard serve` to preview your site
-3. Run `docyard build` to generate static HTML
+Get up and running in under a minute:
 
-## Learn More
+```bash
+# Install
+gem install docyard
 
-Check out the [Getting Started](getting-started.md) guide.
+# Initialize
+docyard init
+
+# Start dev server
+docyard serve
+```
+
+Visit `http://localhost:4200` to see your docs.
+
+
+## Example Code
+
+Ruby with syntax highlighting:
+
+```ruby
+class DocumentationSite
+  attr_reader :title, :pages
+
+  def initialize(title)
+    @title = title
+    @pages = []
+  end
+
+  def add_page(path, content)
+    pages << { path: path, content: content }
+  end
+
+  def build
+    pages.each { |page| render_page(page) }
+  end
+end
+```
+
+
+JavaScript example:
+
+```javascript
+function buildDocs(config) {
+  const { title, theme } = config;
+  console.log(`Building ${title} with ${theme} theme`);
+  return { success: true };
+}
+```
+
+## Documentation Structure
+
+| Section | Description |
+|---------|-------------|
+| Getting Started | Installation and quick start guide |
+| Core Concepts | Learn about file structure and markdown |
+
+## What's Next?
+
+> Get started by exploring the documentation in the sidebar, or jump straight to the [Quick Start Guide](getting-started/quick-start).
+
+### Learn the Basics
+
+1. [Introduction](getting-started/introduction) - Learn what Docyard can do
+2. [Installation](getting-started/installation) - Install Docyard on your system
+3. [Quick Start](getting-started/quick-start) - Create your first site
+
+### Understand Core Concepts
+
+- [File Structure](core-concepts/file-structure) - How to organize your docs
+- [Markdown](core-concepts/markdown) - Supported markdown features

@@ -1,0 +1,90 @@
+# Markdown Support
+
+Docyard supports GitHub Flavored Markdown with syntax highlighting.
+
+## Headings
+
+```markdown
+# H1 Heading
+## H2 Heading
+### H3 Heading
+```
+
+
+## Text Formatting
+
+**Bold text** with `**bold**`
+*Italic text* with `*italic*`
+~~Strikethrough~~ with `~~strikethrough~~`
+
+## Lists
+
+Unordered lists:
+
+- Item 1
+- Item 2
+  - Nested item
+  - Another nested
+
+Ordered lists:
+
+1. First step
+2. Second step
+3. Third step
+
+## Code
+
+Inline code: `const x = 42`
+
+Code blocks with syntax highlighting:
+
+```ruby
+class DocumentationGenerator
+  def initialize(title)
+    @title = title
+  end
+
+  def build
+    puts "Building #{@title}..."
+  end
+end
+```
+
+```javascript
+function generateDocs(title) {
+  console.log(`Building ${title}...`);
+  return { success: true };
+}
+```
+
+
+## Tables
+
+| Feature | Status | Priority |
+|---------|--------|----------|
+| Sidebar | Done | High |
+| Search | Planned | Medium |
+| Dark Mode | Planned | High |
+
+## Links
+
+[External link](https://github.com)
+[Internal link](file-structure)
+[Link to section](../getting-started/installation)
+
+## Blockquotes
+
+> This is a blockquote. Use it to highlight important information or callouts.
+
+## Images
+
+```markdown
+![Alt text](/path/to/image.png)
+```
+
+
+## Task Lists
+
+- [x] Completed task
+- [ ] Incomplete task
+- [ ] Another task

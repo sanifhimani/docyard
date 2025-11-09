@@ -1,0 +1,61 @@
+# File Structure
+
+Understanding how Docyard organizes your documentation.
+
+## Basic Structure
+
+```bash
+docs/
+├── index.md              # Home page
+├── getting-started/      # Section folder
+│   ├── introduction.md
+│   └── quick-start.md
+└── guides/              # Another section
+    └── tutorial.md
+```
+
+## Navigation Rules
+
+- **Folders become sections** in the sidebar navigation
+- **Files become pages** within those sections
+- Files are sorted alphabetically
+- `index.md` in the root is your home page
+
+## File Naming
+
+File names are automatically converted to page titles:
+
+- `quick-start.md` → "Quick Start"
+- `api-reference.md` → "Api Reference"
+- `getting_started.md` → "Getting Started"
+
+## Custom Titles
+
+Override the auto-generated title using an H1 heading:
+
+```markdown
+# Custom Page Title
+
+Your content here...
+```
+
+## Hidden Files
+
+Files and folders starting with `_` or `.` are ignored:
+
+- `_draft.md` - Not included
+- `.notes.md` - Not included
+- `published.md` - Included
+
+## Nested Sections
+
+You can nest folders to create sub-sections:
+
+```bash
+docs/
+└── api/
+    ├── classes/
+    │   └── generator.md
+    └── modules/
+        └── utils.md
+```
