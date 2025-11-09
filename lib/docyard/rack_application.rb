@@ -6,9 +6,10 @@ require_relative "sidebar_builder"
 
 module Docyard
   class RackApplication
-    def initialize(docs_path:, file_watcher:)
+    def initialize(docs_path:, file_watcher:, config: nil)
       @docs_path = docs_path
       @file_watcher = file_watcher
+      @config = config
       @router = Router.new(docs_path: docs_path)
       @renderer = Renderer.new
       @asset_handler = AssetHandler.new
@@ -20,7 +21,7 @@ module Docyard
 
     private
 
-    attr_reader :docs_path, :file_watcher, :router, :renderer, :asset_handler
+    attr_reader :docs_path, :file_watcher, :config, :router, :renderer, :asset_handler
 
     def handle_request(env)
       path = env["PATH_INFO"]
@@ -37,13 +38,42 @@ module Docyard
       result = router.resolve(path)
 
       if result.found?
-        sidebar = SidebarBuilder.new(docs_path: docs_path, current_path: path)
-        html = renderer.render_file(result.file_path, sidebar_html: sidebar.to_html)
-        [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
+        render_documentation_page(result.file_path, path)
       else
-        html = renderer.render_not_found
-        [Constants::STATUS_NOT_FOUND, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
+        render_not_found_page
       end
+    end
+
+    def render_documentation_page(file_path, current_path)
+      html = renderer.render_file(
+        file_path,
+        sidebar_html: build_sidebar(current_path),
+        site_title: site_title,
+        site_description: site_description
+      )
+
+      [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
+    end
+
+    def render_not_found_page
+      html = renderer.render_not_found
+      [Constants::STATUS_NOT_FOUND, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
+    end
+
+    def build_sidebar(current_path)
+      SidebarBuilder.new(
+        docs_path: docs_path,
+        current_path: current_path,
+        config: config
+      ).to_html
+    end
+
+    def site_title
+      config&.site&.title || "Documentation"
+    end
+
+    def site_description
+      config&.site&.description || ""
     end
 
     def handle_reload_check(env)

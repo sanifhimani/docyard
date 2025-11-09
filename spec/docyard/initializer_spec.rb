@@ -55,6 +55,27 @@ RSpec.describe Docyard::Initializer do
       expect(initializer.run).to be true
     end
 
+    it "creates docyard.yml config file", :aggregate_failures do
+      initializer.run
+
+      config_path = File.join(temp_dir, "docyard.yml")
+      expect(File.exist?(config_path)).to be true
+
+      config_content = File.read(config_path)
+      expect(config_content).to include("site:")
+      expect(config_content).to include("build:")
+      expect(config_content).to include("My Documentation")
+    end
+
+    it "does not overwrite existing docyard.yml" do
+      existing_config = File.join(temp_dir, "docyard.yml")
+      File.write(existing_config, "existing: config")
+
+      initializer.run
+
+      expect(File.read(existing_config)).to eq("existing: config")
+    end
+
     context "when docs already exists" do
       before do
         FileUtils.mkdir_p(File.join(temp_dir, "docs"))

@@ -8,14 +8,14 @@ RSpec.describe Docyard::Renderer do
       html = renderer.render(content: "<p>Test content</p>", page_title: "Test Page")
 
       expect(html).to include("<p>Test content</p>")
-      expect(html).to include("<title>Test Page</title>")
+      expect(html).to include("<title>Test Page | Documentation</title>")
       expect(html).to include("<!DOCTYPE html>")
     end
 
     it "uses default title when not provided" do
       html = renderer.render(content: "<p>Content</p>")
 
-      expect(html).to include("<title>Documentation</title>")
+      expect(html).to include("<title>Documentation | Documentation</title>")
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe Docyard::Renderer do
 
         expect(html).to include("<h1")
         expect(html).to include("Hello")
-        expect(html).to include("<title>Test</title>")
+        expect(html).to include("<title>Test | Documentation</title>")
       end
     end
 
@@ -73,7 +73,7 @@ RSpec.describe Docyard::Renderer do
       it "uses default title" do
         html = renderer.render_file(temp_file.path)
 
-        expect(html).to include("<title>Documentation</title>")
+        expect(html).to include("<title>Documentation | Documentation</title>")
       end
     end
 

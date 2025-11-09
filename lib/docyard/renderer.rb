@@ -14,7 +14,7 @@ module Docyard
       @layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
     end
 
-    def render_file(file_path, sidebar_html: "")
+    def render_file(file_path, sidebar_html: "", site_title: "Documentation", site_description: "")
       markdown_content = File.read(file_path)
       markdown = Markdown.new(markdown_content)
 
@@ -23,16 +23,26 @@ module Docyard
       render(
         content: html_content,
         page_title: markdown.title || "Documentation",
-        sidebar_html: sidebar_html
+        sidebar_html: sidebar_html,
+        site_title: site_title,
+        site_description: site_description
       )
     end
 
-    def render(content:, page_title: "Documentation", sidebar_html: "")
+    def render(
+      content:,
+      page_title: "Documentation",
+      sidebar_html: "",
+      site_title: "Documentation",
+      site_description: ""
+    )
       template = File.read(layout_path)
 
       @content = content
       @page_title = page_title
       @sidebar_html = sidebar_html
+      @site_title = site_title
+      @site_description = site_description
 
       ERB.new(template).result(binding)
     end

@@ -1,0 +1,202 @@
+---
+title: Configuration
+---
+
+# Configuration
+
+Docyard uses convention over configuration. You can start using Docyard without any configuration file - it just works!
+
+## Optional Configuration
+
+Create a `docyard.yml` file in your project root to customize your documentation site.
+
+```yaml
+site:
+  title: "My Documentation"
+  description: "Documentation for my project"
+
+build:
+  output_dir: "dist"
+  base_url: "/"
+```
+
+## Configuration Reference
+
+### Site Settings
+
+Configure your site metadata and branding.
+
+#### `site.title`
+
+The title of your documentation site. Shown in the browser tab and header.
+
+- **Type:** String
+- **Default:** `"Documentation"`
+
+```yaml
+site:
+  title: "My Project Docs"
+```
+
+#### `site.description`
+
+Meta description for SEO and social sharing.
+
+- **Type:** String
+- **Default:** `""`
+
+```yaml
+site:
+  description: "Complete documentation for My Project"
+```
+
+#### `site.logo`
+
+Path to your logo image. Displayed in the site header.
+
+- **Type:** String (file path)
+- **Default:** None
+- **Supported formats:** SVG, PNG, JPG
+
+```yaml
+site:
+  logo: "docs/assets/logo.svg"
+```
+
+::: tip
+Use SVG format for your logo for best quality at all screen sizes.
+:::
+
+#### `site.logo_dark`
+
+Optional dark mode variant of your logo.
+
+- **Type:** String (file path)
+- **Default:** None
+
+```yaml
+site:
+  logo: "docs/assets/logo.svg"
+  logo_dark: "docs/assets/logo-dark.svg"
+```
+
+#### `site.favicon`
+
+Path to your favicon.
+
+- **Type:** String (file path)
+- **Default:** None
+- **Supported formats:** `.ico`, `.png`
+
+```yaml
+site:
+  favicon: "docs/assets/favicon.ico"
+```
+
+### Build Settings
+
+Configure static site generation.
+
+#### `build.output_dir`
+
+Directory where the built site will be generated.
+
+- **Type:** String
+- **Default:** `"dist"`
+- **Note:** Cannot contain slashes
+
+```yaml
+build:
+  output_dir: "dist"  # or "_site", "public", etc.
+```
+
+#### `build.base_url`
+
+Base URL for your site. Important for subdirectory deployments.
+
+- **Type:** String
+- **Default:** `"/"`
+- **Note:** Must start with `/`
+
+```yaml
+# For root deployment
+build:
+  base_url: "/"
+
+# For GitHub Pages project site
+build:
+  base_url: "/my-repo/"
+```
+
+::: important
+Set `base_url` correctly for subdirectory deployments (like GitHub Pages project sites) or your assets won't load correctly.
+:::
+
+#### `build.clean`
+
+Whether to clean the output directory before building.
+
+- **Type:** Boolean
+- **Default:** `true`
+
+```yaml
+build:
+  clean: true  # Recommended
+```
+
+## Examples
+
+### Basic Configuration
+
+Minimal config with just a custom title:
+
+```yaml
+site:
+  title: "Acme Documentation"
+```
+
+### Full Branding
+
+Complete branding with logo and favicon:
+
+```yaml
+site:
+  title: "Acme Inc."
+  description: "API documentation for Acme services"
+  logo: "docs/assets/logo.svg"
+  logo_dark: "docs/assets/logo-dark.svg"
+  favicon: "docs/assets/favicon.ico"
+```
+
+### GitHub Pages Deployment
+
+Configuration for GitHub Pages subdirectory:
+
+```yaml
+site:
+  title: "My Project"
+
+build:
+  base_url: "/my-repo/"
+```
+
+### Custom Output Directory
+
+Using a different output directory:
+
+```yaml
+build:
+  output_dir: "public"
+  base_url: "/"
+```
+
+## No Configuration Required
+
+If you don't create a `docyard.yml` file, Docyard will work with sensible defaults:
+
+- Site title: `"Documentation"`
+- Output directory: `dist/`
+- Base URL: `/`
+- Clean build: `true`
+
+This means you can run `docyard serve` immediately after `docyard init` without any additional configuration!
