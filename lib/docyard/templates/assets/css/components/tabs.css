@@ -62,7 +62,7 @@
   font-family: var(--font-sans);
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
   position: relative;
   white-space: nowrap;
   flex-shrink: 0;
@@ -280,7 +280,8 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .docyard-tabs__tab {
+  .docyard-tabs__tab,
+  .docyard-tabs__indicator {
     transition: none;
   }
 }

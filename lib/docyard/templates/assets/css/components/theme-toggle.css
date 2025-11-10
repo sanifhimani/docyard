@@ -59,3 +59,11 @@
 .dark .theme-toggle-thumb {
   transform: translateX(1.5rem);
 }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-track,
+  .theme-toggle-thumb {
+    transition: none;
+  }
+}

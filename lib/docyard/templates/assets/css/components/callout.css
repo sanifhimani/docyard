@@ -6,7 +6,7 @@
   margin: var(--space-6) 0;
   border: 1px solid;
   border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-base), background-color var(--transition-base);
 }
 
 .docyard-callout__icon {
