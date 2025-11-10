@@ -3,6 +3,7 @@
 require "json"
 require "rack"
 require_relative "sidebar_builder"
+require_relative "constants"
 
 module Docyard
   class RackApplication
@@ -48,8 +49,7 @@ module Docyard
       html = renderer.render_file(
         file_path,
         sidebar_html: build_sidebar(current_path),
-        site_title: site_title,
-        site_description: site_description
+        branding: branding_options
       )
 
       [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
@@ -68,12 +68,51 @@ module Docyard
       ).to_html
     end
 
-    def site_title
-      config&.site&.title || "Documentation"
+    def branding_options
+      return default_branding unless config
+
+      default_branding.merge(config_branding_options)
     end
 
-    def site_description
-      config&.site&.description || ""
+    def default_branding
+      {
+        site_title: Constants::DEFAULT_SITE_TITLE,
+        site_description: "",
+        logo: Constants::DEFAULT_LOGO_PATH,
+        logo_dark: Constants::DEFAULT_LOGO_DARK_PATH,
+        favicon: nil,
+        display_logo: true,
+        display_title: true
+      }
+    end
+
+    def config_branding_options
+      site = config.site
+      branding = config.branding
+
+      {
+        site_title: site.title || Constants::DEFAULT_SITE_TITLE,
+        site_description: site.description || "",
+        logo: resolve_logo(branding.logo, branding.logo_dark),
+        logo_dark: resolve_logo_dark(branding.logo, branding.logo_dark),
+        favicon: branding.favicon
+      }.merge(appearance_options(branding.appearance))
+    end
+
+    def appearance_options(appearance)
+      appearance ||= {}
+      {
+        display_logo: appearance["logo"] != false,
+        display_title: appearance["title"] != false
+      }
+    end
+
+    def resolve_logo(logo, logo_dark)
+      logo || logo_dark || Constants::DEFAULT_LOGO_PATH
+    end
+
+    def resolve_logo_dark(logo, logo_dark)
+      logo_dark || logo || Constants::DEFAULT_LOGO_DARK_PATH
     end
 
     def handle_reload_check(env)

@@ -1,0 +1,44 @@
+/* Site Logo */
+.site-logo-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  margin-right: 0.1rem;
+}
+
+.site-logo {
+  height: 2rem;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.site-logo-light {
+  display: block;
+}
+
+.site-logo-dark {
+  display: none;
+}
+
+.dark .site-logo-light {
+  display: none;
+}
+
+.dark .site-logo-dark {
+  display: block;
+}
+
+
+@media (max-width: 1024px) {
+  .site-logo {
+    height: 1.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-logo {
+    height: 1.5rem;
+  }
+}

@@ -123,5 +123,28 @@ RSpec.describe Docyard::AssetHandler do
         expect(content).to include("DOMContentLoaded", "querySelectorAll", ".docyard-tabs")
       end
     end
+
+    context "when serving user assets from docs/assets" do
+      it "serves user asset when it exists in docs/assets", :aggregate_failures do
+        docs_assets_dir = File.join(Dir.pwd, "docs", "assets")
+        FileUtils.mkdir_p(docs_assets_dir)
+        user_logo = File.join(docs_assets_dir, "test-user-logo.svg")
+        File.write(user_logo, "<svg>User Logo</svg>")
+
+        status, _headers, body = handler.serve("/assets/test-user-logo.svg")
+
+        expect(status).to eq(200)
+        expect(body.first).to eq("<svg>User Logo</svg>")
+      ensure
+        FileUtils.rm_f(user_logo) if user_logo && File.exist?(user_logo)
+      end
+
+      it "falls back to default assets when user asset not found", :aggregate_failures do
+        status, _headers, body = handler.serve("/assets/css/main.css")
+
+        expect(status).to eq(200)
+        expect(body.first).to include("@import")
+      end
+    end
   end
 end

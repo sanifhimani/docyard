@@ -17,6 +17,54 @@ RSpec.describe Docyard::Renderer do
 
       expect(html).to include("<title>Documentation | Documentation</title>")
     end
+
+    it "renders with logo when provided", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { logo: "logo.svg" })
+
+      expect(html).to include('src="/logo.svg"')
+      expect(html).to include("site-logo-light")
+    end
+
+    it "renders with dark mode logo when provided", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { logo_dark: "logo-dark.svg" })
+
+      expect(html).to include('src="/logo-dark.svg"')
+      expect(html).to include("site-logo-dark")
+    end
+
+    it "renders with favicon when provided" do
+      html = renderer.render(content: "<p>Content</p>", branding: { favicon: "favicon.ico" })
+
+      expect(html).to include('href="/favicon.ico"')
+    end
+
+    it "renders with default logo when not provided", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>")
+
+      expect(html).to include("site-logo")
+      expect(html).to include('src="/assets/logo.svg"')
+    end
+
+    it "renders without logo when display_logo is false", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { display_logo: false })
+
+      expect(html).not_to include("site-logo")
+      expect(html).to include("header-title")
+    end
+
+    it "renders logo only when display_title is false", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { display_title: false })
+
+      expect(html).to include("site-logo")
+      expect(html).not_to include("header-title")
+    end
+
+    it "renders logo and title when both display flags are true", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { display_logo: true, display_title: true })
+
+      expect(html).to include("site-logo")
+      expect(html).to include("header-title")
+    end
   end
 
   describe "#render_partial" do

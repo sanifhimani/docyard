@@ -2,16 +2,23 @@
 
 require "yaml"
 require_relative "config/validator"
+require_relative "constants"
 
 module Docyard
   class Config
     DEFAULT_CONFIG = {
       "site" => {
-        "title" => "Documentation",
-        "description" => "",
+        "title" => Constants::DEFAULT_SITE_TITLE,
+        "description" => ""
+      },
+      "branding" => {
         "logo" => nil,
         "logo_dark" => nil,
-        "favicon" => nil
+        "favicon" => nil,
+        "appearance" => {
+          "logo" => true,
+          "title" => true
+        }
       },
       "build" => {
         "output_dir" => "dist",
@@ -40,6 +47,10 @@ module Docyard
 
     def site
       @site ||= ConfigSection.new(data["site"])
+    end
+
+    def branding
+      @branding ||= ConfigSection.new(data["branding"])
     end
 
     def build
@@ -71,7 +82,13 @@ module Docyard
 
     def deep_merge(hash1, hash2)
       hash1.merge(hash2) do |_key, v1, v2|
-        v1.is_a?(Hash) && v2.is_a?(Hash) ? deep_merge(v1, v2) : v2
+        if v2.nil?
+          v1
+        elsif v1.is_a?(Hash) && v2.is_a?(Hash)
+          deep_merge(v1, v2)
+        else
+          v2
+        end
       end
     end
 
@@ -94,11 +111,15 @@ module Docyard
 
   class ConfigSection
     def initialize(data)
-      @data = data
+      @data = data || {}
+    end
+
+    def appearance
+      @data["appearance"]
     end
 
     def method_missing(method, *args)
-      return @data[method.to_s] if args.empty? && @data.key?(method.to_s)
+      return @data[method.to_s] if args.empty?
 
       super
     end

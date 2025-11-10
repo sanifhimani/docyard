@@ -19,5 +19,10 @@ module Docyard
     STATUS_OK = 200
     STATUS_NOT_FOUND = 404
     STATUS_INTERNAL_ERROR = 500
+
+    DEFAULT_SITE_TITLE = "Documentation"
+    DEFAULT_LOGO_PATH = "assets/logo.svg"
+    DEFAULT_LOGO_DARK_PATH = "assets/logo-dark.svg"
+    DEFAULT_FAVICON_PATH = "assets/favicon.svg"
   end
 end

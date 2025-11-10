@@ -3,6 +3,7 @@
 module Docyard
   class AssetHandler
     ASSETS_PATH = File.join(__dir__, "templates", "assets")
+    USER_ASSETS_PATH = "docs/assets"
 
     CONTENT_TYPES = {
       ".css" => "text/css; charset=utf-8",
@@ -41,6 +42,9 @@ module Docyard
     end
 
     def build_file_path(asset_path)
+      user_path = File.join(USER_ASSETS_PATH, asset_path)
+      return user_path if File.file?(user_path)
+
       File.join(ASSETS_PATH, asset_path)
     end
 
