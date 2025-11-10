@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-01-09
+
+### Added
+- Configuration system with optional `docyard.yml` file (#20)
+- Logo and favicon support with light/dark mode switching (#21)
+- Dark mode with theme toggle and system preference detection (#14)
+- Icon system with 24 Phosphor icons and `:icon:` syntax (#15)
+- Callouts/Admonitions with 5 types (note, tip, important, warning, danger) (#16)
+- Tabs component with keyboard navigation and icon auto-detection (#17, #18)
+- Copy button for code blocks with visual feedback (#19)
+- Component-based architecture with processors for extensibility
+- Asset handler with dynamic concatenation of component files
+
+### Changed
+- CSS architecture now uses CSS variables for comprehensive theming
+- Markdown processing enhanced with preprocessor/postprocessor pattern
+
 ## [0.2.0] - 2025-11-08
 
 ### Added
@@ -46,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/sanifhimani/docyard/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sanifhimani/docyard/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sanifhimani/docyard/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/sanifhimani/docyard/releases/tag/v0.0.1
