@@ -10,6 +10,7 @@ module Docyard
 
       def validate!
         validate_site_section
+        validate_branding_section
         validate_build_section
 
         raise ConfigError, format_errors if @errors.any?
@@ -22,9 +23,19 @@ module Docyard
 
         validate_string(site["title"], "site.title")
         validate_string(site["description"], "site.description")
-        validate_file_path(site["logo"], "site.logo")
-        validate_file_path(site["logo_dark"], "site.logo_dark")
-        validate_file_path(site["favicon"], "site.favicon")
+      end
+
+      def validate_branding_section
+        branding = @config["branding"]
+        return unless branding
+
+        validate_file_path_or_url(branding["logo"], "branding.logo")
+        validate_file_path_or_url(branding["logo_dark"], "branding.logo_dark")
+        validate_file_path_or_url(branding["favicon"], "branding.favicon")
+
+        appearance = branding["appearance"] || {}
+        validate_boolean(appearance["logo"], "branding.appearance.logo")
+        validate_boolean(appearance["title"], "branding.appearance.title")
       end
 
       def validate_build_section
@@ -63,7 +74,14 @@ module Docyard
       def validate_file_path(value, field_name)
         return if value.nil?
         return add_file_path_type_error(value, field_name) unless value.is_a?(String)
-        return if File.exist?(value)
+
+        file_path = if File.absolute_path?(value)
+                      value
+                    else
+                      File.join("docs", value)
+                    end
+
+        return if File.exist?(file_path)
 
         add_file_not_found_error(value, field_name)
       end
@@ -82,7 +100,7 @@ module Docyard
           field: field_name,
           error: "file not found",
           got: value,
-          fix: "Create the file or update the path"
+          fix: "Place the file in docs/ directory and use a relative path (e.g., 'assets/logo.svg')"
         )
       end
 
@@ -109,6 +127,27 @@ module Docyard
           got: value,
           fix: "Change to '/#{value}'"
         )
+      end
+
+      def validate_file_path_or_url(value, field_name)
+        return if value.nil?
+        return add_file_path_type_error(value, field_name) unless value.is_a?(String)
+
+        return if url?(value)
+
+        file_path = if File.absolute_path?(value)
+                      value
+                    else
+                      File.join("docs", value)
+                    end
+
+        return if File.exist?(file_path)
+
+        add_file_not_found_error(value, field_name)
+      end
+
+      def url?(value)
+        value.match?(%r{\Ahttps?://})
       end
 
       def add_error(error_data)

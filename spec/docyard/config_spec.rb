@@ -14,7 +14,8 @@ RSpec.describe Docyard::Config do
 
         expect(config.site.title).to eq("Documentation")
         expect(config.site.description).to eq("")
-        expect(config.site.logo).to be_nil
+        expect(config.branding.logo).to be_nil
+        expect(config.branding.appearance).to eq({ "logo" => true, "title" => true })
         expect(config.build.output_dir).to eq("dist")
         expect(config.build.base_url).to eq("/")
         expect(config.build.clean).to be true
@@ -188,11 +189,11 @@ RSpec.describe Docyard::Config do
 
     context "with missing logo file" do
       it "raises ConfigError" do
-        config_content = "site:\n  logo: 'nonexistent.svg'"
+        config_content = "branding:\n  logo: 'nonexistent.svg'"
         File.write(File.join(temp_dir, "docyard.yml"), config_content)
 
         expect { described_class.load(temp_dir) }
-          .to raise_error(Docyard::ConfigError, /site\.logo.*file not found/m)
+          .to raise_error(Docyard::ConfigError, /branding\.logo.*file not found/m)
       end
     end
 
@@ -201,10 +202,64 @@ RSpec.describe Docyard::Config do
         logo_path = File.join(temp_dir, "logo.svg")
         File.write(logo_path, "<svg></svg>")
 
-        config_content = "site:\n  logo: '#{logo_path}'"
+        config_content = "branding:\n  logo: '#{logo_path}'"
         File.write(File.join(temp_dir, "docyard.yml"), config_content)
 
         expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+    end
+
+    context "with logo URL" do
+      it "validates successfully for http URL" do
+        config_content = "branding:\n  logo: 'http://example.com/logo.svg'"
+        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+
+      it "validates successfully for https URL" do
+        config_content = "branding:\n  logo: 'https://cdn.example.com/logo.svg'"
+        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+    end
+
+    context "with favicon URL" do
+      it "validates successfully for https URL" do
+        config_content = "branding:\n  favicon: 'https://cdn.example.com/favicon.ico'"
+        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+    end
+
+    context "with logo_dark URL" do
+      it "validates successfully" do
+        config_content = "branding:\n  logo_dark: 'https://cdn.example.com/logo-dark.svg'"
+        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+    end
+
+    context "with invalid appearance.logo" do
+      it "raises ConfigError for non-boolean value" do
+        config_content = "branding:\n  appearance:\n    logo: 'yes'"
+        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+
+        expect { described_class.load(temp_dir) }
+          .to raise_error(Docyard::ConfigError, /branding\.appearance\.logo/)
+      end
+    end
+
+    context "with invalid appearance.title" do
+      it "raises ConfigError for non-boolean value" do
+        config_content = "branding:\n  appearance:\n    title: 1"
+        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+
+        expect { described_class.load(temp_dir) }
+          .to raise_error(Docyard::ConfigError, /branding\.appearance\.title/)
       end
     end
 
