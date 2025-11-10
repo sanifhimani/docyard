@@ -5,15 +5,22 @@
 
 > Documentation generator for Ruby
 
-**Early development** - Core features work, but missing search and build command. See [roadmap](#roadmap).
+**Early development** - Core features and components work, but missing search and build command. See [roadmap](#roadmap).
 
 ## Features
 
+- **Configuration system** - Optional `docyard.yml` for site metadata, branding, and build settings
+- **Dark mode** - Beautiful light/dark theme with system preference detection
 - **Sidebar navigation** - Automatic sidebar with nested folders and collapsible sections
 - **Hot reload** - Changes appear instantly while you write
 - **GitHub Flavored Markdown** - Tables, task lists, strikethrough
 - **Syntax highlighting** - 100+ languages via Rouge
-- **Icon system** - 24 essential Phosphor icons with simple `:icon:` syntax
+- **Markdown components**:
+  - **Callouts** - 5 types (note, tip, important, warning, danger) with GitHub alerts syntax
+  - **Tabs** - Code blocks, package managers, and custom tabs with keyboard navigation
+  - **Icons** - 24 Phosphor icons with `:icon:` syntax
+- **Code block enhancements** - Copy button with visual feedback
+- **Custom branding** - Logo and favicon with light/dark mode support
 - **YAML frontmatter** - Add metadata to your pages
 - **Customizable error pages** - Make 404/500 pages your own
 
@@ -198,13 +205,17 @@ bundle exec rubocop
 
 ## Roadmap
 
-**Recently shipped:**
+**v0.3.0 - Recently shipped:**
+- Configuration system (docyard.yml)
+- Logo and favicon support
 - Dark mode with theme toggle
-- Icon system
+- Icon system (24 Phosphor icons)
+- Callouts/Admonitions
+- Tabs component
+- Copy button for code blocks
 
-**Next up:**
-- Markdown components (callouts, code groups, collapsible sections)
-- Client-side search
+**Next up (v0.4.0):**
+- Sidebar customization
 - Static site generation (`docyard build`)
 
 ## Contributing
