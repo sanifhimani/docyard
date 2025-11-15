@@ -47,7 +47,7 @@
   background-color: var(--color-bg);
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base), opacity var(--transition-base), visibility var(--transition-base);
   opacity: 0;
   visibility: hidden;
 }
@@ -78,7 +78,7 @@
 .docyard-code-block__copy svg {
   width: 16px;
   height: 16px;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 /* Success state */
