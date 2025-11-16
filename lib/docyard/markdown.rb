@@ -41,6 +41,18 @@ module Docyard
       frontmatter["description"]
     end
 
+    def sidebar_icon
+      frontmatter.dig("sidebar", "icon")
+    end
+
+    def sidebar_text
+      frontmatter.dig("sidebar", "text")
+    end
+
+    def sidebar_collapsed
+      frontmatter.dig("sidebar", "collapsed")
+    end
+
     private
 
     def parse_frontmatter

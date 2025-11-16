@@ -76,10 +76,11 @@ RSpec.describe Docyard::Renderer do
     end
 
     it "renders a partial with locals", :aggregate_failures do
-      html = renderer.render_partial("_icons", icon_name: :external)
+      html = renderer.render_partial("_icon", name: "rocket-launch", icon_data: '<path d="test"/>')
 
       expect(html).to include("svg")
-      expect(html).to include("external-icon")
+      expect(html).to include("docyard-icon")
+      expect(html).to include("rocket-launch")
     end
   end
 

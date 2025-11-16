@@ -14,6 +14,63 @@ branding:
   #   logo: true                          # Show logo (true/false)
   #   title: true                         # Show site title (true/false)
 
+# Sidebar navigation structure
+# Customize the order and organization of your documentation pages
+# sidebar:
+#   items:
+#     # Simple slug reference (auto-detects title from frontmatter)
+#     - introduction
+#     - quick-start
+#
+#     # Custom text and icon (see https://phosphoricons.com for icon names)
+#     - installation:
+#         text: "Installation Guide"
+#         icon: "rocket-launch"
+#
+#     # Nested groups (folder-based or file with sub-items)
+#     - getting-started:
+#         text: "Getting Started"
+#         icon: "play"
+#         items:
+#           - introduction
+#           - installation
+#           - configuration
+#
+#     # Advanced nested structure
+#     - guides:
+#         text: "User Guides"
+#         icon: "book-open"
+#         collapsed: false              # Start expanded (default: false)
+#         items:
+#           - basics:
+#               text: "The Basics"
+#               items:
+#                 - creating-pages
+#                 - markdown-syntax
+#                 - frontmatter
+#           - advanced:
+#               text: "Advanced Topics"
+#               items:
+#                 - custom-components
+#                 - theming
+#
+#     # External links
+#     - text: "GitHub"
+#       link: "https://github.com/yourusername/yourproject"
+#       icon: "github-logo"
+#       target: "_blank"                # Opens in new tab (default for external links)
+#
+#     - text: "API Reference"
+#       link: "https://api.yourproject.com"
+#       icon: "code"
+#
+# Notes:
+# - Items are ordered as listed here
+# - Without sidebar config, pages are auto-generated from docs/ structure
+# - You can override text/icon in file frontmatter with sidebar.text and sidebar.icon
+# - Icons are optional - see https://phosphoricons.com for available icons
+# - Use collapsed: true to start groups in collapsed state
+
 build:
   output_dir: "dist"
   base_url: "/"

@@ -25,7 +25,9 @@ module Docyard
         "base_url" => "/",
         "clean" => true
       },
-      "sidebar" => nil
+      "sidebar" => {
+        "items" => []
+      }
     }.freeze
 
     attr_reader :data, :file_path
@@ -58,7 +60,7 @@ module Docyard
     end
 
     def sidebar
-      data["sidebar"]
+      @sidebar ||= ConfigSection.new(data["sidebar"])
     end
 
     private
