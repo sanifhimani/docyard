@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-01-16
+
+### Added
+- **Static site generation** - Build system with `docyard build` command (#27)
+- **Preview server** - Test builds locally with `docyard preview` command (#27)
+- **Asset bundling** - CSS/JS minification with content hashing for cache busting (#27)
+- **SEO files** - Automatic generation of sitemap.xml and robots.txt (#27)
+- **Base URL support** - Deploy to subdirectories with configurable base_url (#27)
+- **Sidebar customization** - Config-driven navigation with custom ordering, icons, and external links (#26)
+- **Improved init templates** - Practical, helpful templates showcasing all features (#28)
+- **Clean init output** - Minimal, helpful success message with clear next steps (#28)
+
+### Changed
+- Init command now creates focused, practical templates (4 files vs 9 previously) (#28)
+- Templates now only include implemented features (no images/HTML/escaping) (#28)
+- Config file (docyard.yml) is cleaner with better comments and examples (#28)
+
+### Fixed
+- Code block CSS transition performance with GPU acceleration (#25)
+- Component CSS accessibility and performance improvements (#24)
+- Table responsive styling with proper wrapper element (#23)
+
 ## [0.3.0] - 2025-01-09
 
 ### Added
@@ -63,7 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/sanifhimani/docyard/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/sanifhimani/docyard/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sanifhimani/docyard/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/sanifhimani/docyard/compare/v0.0.1...v0.1.0

@@ -5,40 +5,56 @@
 
 > Documentation generator for Ruby
 
-**Early development** - Core features and components work, but missing search and build command. See [roadmap](#roadmap).
+Build beautiful documentation sites with hot reload, dark mode, and powerful markdown components.
 
 ## Features
 
-- **Configuration system** - Optional `docyard.yml` for site metadata, branding, and build settings
-- **Dark mode** - Beautiful light/dark theme with system preference detection
-- **Sidebar navigation** - Automatic sidebar with nested folders and collapsible sections
+### Core
+- **Static site generation** - Build static sites with `docyard build`
 - **Hot reload** - Changes appear instantly while you write
+- **Dark mode** - Beautiful light/dark theme with system preference detection
+- **Configuration system** - Optional `docyard.yml` for site metadata, branding, and build settings
+- **Custom branding** - Logo and favicon with light/dark mode support
+- **Base URL support** - Deploy to subdirectories or custom paths
+
+### Navigation
+- **Sidebar navigation** - Automatic sidebar with nested folders and collapsible sections
+- **Sidebar customization** - Custom ordering, icons, and external links via config
+- **Active page highlighting** - Always know where you are
+
+### Markdown
 - **GitHub Flavored Markdown** - Tables, task lists, strikethrough
-- **Syntax highlighting** - 100+ languages via Rouge
+- **Syntax highlighting** - 100+ languages via Rouge with copy button
 - **Markdown components**:
   - **Callouts** - 5 types (note, tip, important, warning, danger) with GitHub alerts syntax
   - **Tabs** - Code blocks, package managers, and custom tabs with keyboard navigation
   - **Icons** - 24 Phosphor icons with `:icon:` syntax
-- **Code block enhancements** - Copy button with visual feedback
-- **Custom branding** - Logo and favicon with light/dark mode support
 - **YAML frontmatter** - Add metadata to your pages
-- **Customizable error pages** - Make 404/500 pages your own
+
+### Production
+- **Asset bundling** - Minified CSS/JS with content hashing for cache busting
+- **SEO** - Automatic sitemap.xml and robots.txt generation
+- **Preview server** - Test production builds locally before deploying
+- **Mobile responsive** - Looks great on all devices
 
 ## Quick Start
 
 ```bash
-# Install the gem
+# Install
 gem install docyard
 
-# Create a new docs project
-mkdir my-docs && cd my-docs
+# Initialize
 docyard init
 
-# Start the dev server
+# Start dev server
 docyard serve
+# → http://localhost:4200
 
-# Visit http://localhost:4200
+# Build for production
+docyard build
 ```
+
+Your site is ready to deploy! Upload the `dist/` folder to any static host.
 
 ## Installation
 
@@ -67,21 +83,27 @@ This creates:
 docs/
   index.md                          # Home page
   getting-started/
-    introduction.md                 # Getting started guide
-    installation.md                 # Installation instructions
-    quick-start.md                  # Quick start guide
-  core-concepts/
-    file-structure.md              # File structure guide
-    markdown.md                     # Markdown guide
+    installation.md                 # Installation guide
+  guides/
+    markdown-features.md            # Markdown features showcase
+    configuration.md                # Configuration guide
+docyard.yml                         # Optional configuration
 ```
 
-### Start Development Server
+### Commands
 
 ```bash
+# Development server with hot reload
 docyard serve
-
-# Custom port and host
 docyard serve --port 3000 --host 0.0.0.0
+
+# Build for production
+docyard build
+docyard build --no-clean  # Don't clean output directory
+
+# Preview production build
+docyard preview
+docyard preview --port 4001
 ```
 
 ### Writing Docs
@@ -205,18 +227,18 @@ bundle exec rubocop
 
 ## Roadmap
 
-**v0.3.0 - Recently shipped:**
-- Configuration system (docyard.yml)
-- Logo and favicon support
-- Dark mode with theme toggle
-- Icon system (24 Phosphor icons)
-- Callouts/Admonitions
-- Tabs component
-- Copy button for code blocks
+**v0.4.0 - Just shipped:**
+- Static site generation with `docyard build`
+- Asset bundling with minification and cache busting
+- SEO files (sitemap.xml, robots.txt)
+- Preview server for testing builds
+- Sidebar customization via config
+- Improved init templates
 
-**Next up (v0.4.0):**
-- Sidebar customization
-- Static site generation (`docyard build`)
+**Next up:**
+- Search functionality
+- Table of contents
+- More markdown components
 
 ## Contributing
 
