@@ -1,1 +1,9 @@
-<a href="<%= @path %>"<%= ' class="active"' if @active %>><%= @title %></a>
+<a href="<%= @path %>"<%= ' class="active"' if @active %><%= " target=\"#{@target}\" rel=\"noopener noreferrer\"" if @target && @target != "_self" %>>
+  <% if @icon %>
+    <span class="nav-item-icon"><%= icon(@icon) %></span>
+  <% end %>
+  <span class="nav-item-text"><%= @title %></span>
+  <% if @target == "_blank" %>
+    <span class="nav-item-external"><%= icon(:link_external) %></span>
+  <% end %>
+</a>

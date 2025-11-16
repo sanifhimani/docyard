@@ -34,7 +34,7 @@ RSpec.describe Docyard::Sidebar::Renderer do
         html = renderer.render(tree)
 
         expect(html).to include('<a href="/getting-started"')
-        expect(html).to include(">Getting Started</a>")
+        expect(html).to include(">Getting Started</span>")
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Docyard::Sidebar::Renderer do
 
         expect(html).to include('<div class="nav-section-title">GUIDE</div>')
         expect(html).to include('<a href="/guide/setup"')
-        expect(html).to include(">Setup</a>")
+        expect(html).to include(">Setup</span>")
       end
     end
 

@@ -150,4 +150,108 @@ RSpec.describe Docyard::Markdown do
       end
     end
   end
+
+  describe "#sidebar_icon" do
+    context "when sidebar.icon exists in frontmatter" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          title: Test
+          sidebar:
+            icon: rocket-launch
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the icon" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_icon).to eq("rocket-launch")
+      end
+    end
+
+    context "when sidebar section does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.sidebar_icon).to be_nil
+      end
+    end
+
+    context "when frontmatter does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("# Content")
+        expect(markdown.sidebar_icon).to be_nil
+      end
+    end
+  end
+
+  describe "#sidebar_text" do
+    context "when sidebar.text exists in frontmatter" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          title: Full Title
+          sidebar:
+            text: Short
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the sidebar text" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_text).to eq("Short")
+      end
+    end
+
+    context "when sidebar.text does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.sidebar_text).to be_nil
+      end
+    end
+  end
+
+  describe "#sidebar_collapsed" do
+    context "when sidebar.collapsed is true" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          sidebar:
+            collapsed: true
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns true" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_collapsed).to be true
+      end
+    end
+
+    context "when sidebar.collapsed is false" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          sidebar:
+            collapsed: false
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns false" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_collapsed).to be false
+      end
+    end
+
+    context "when sidebar.collapsed does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.sidebar_collapsed).to be_nil
+      end
+    end
+  end
 end

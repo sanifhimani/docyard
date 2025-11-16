@@ -80,7 +80,8 @@ RSpec.describe Docyard::SidebarBuilder do
         html = sidebar.to_html
 
         expect(html).to include("<nav>")
-        expect(html).to include('<a href="/getting-started">Getting Started</a>')
+        expect(html).to include('<a href="/getting-started">')
+        expect(html).to include(">Getting Started</span>")
       end
     end
 
@@ -96,8 +97,8 @@ RSpec.describe Docyard::SidebarBuilder do
         html = sidebar.to_html
 
         expect(html).to include('<a href="/test"')
-        expect(html).to include(">Test</a>")
-        expect(html).not_to include(">My Documentation</a>")
+        expect(html).to include(">Test</span>")
+        expect(html).not_to include(">My Documentation</span>")
       end
     end
 
@@ -111,8 +112,8 @@ RSpec.describe Docyard::SidebarBuilder do
         html = sidebar.to_html
 
         expect(html).to include('<a href="/test"')
-        expect(html).to include(">Test</a>")
-        expect(html).not_to include(">Documentation</a>")
+        expect(html).to include(">Test</span>")
+        expect(html).not_to include(">Documentation</span>")
       end
     end
   end

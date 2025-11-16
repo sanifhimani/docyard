@@ -1,7 +1,13 @@
-<button class="nav-group-toggle" aria-expanded="true" type="button">
-  <span><%= @title %></span>
-  <%= icon(:chevron) %>
+<% collapsed = @collapsed || false %>
+<button class="nav-group-toggle" aria-expanded="<%= collapsed ? 'false' : 'true' %>" type="button">
+  <span class="nav-group-title">
+    <% if @icon %>
+      <span class="nav-item-icon"><%= icon(@icon) %></span>
+    <% end %>
+    <span class="nav-item-text"><%= @title %></span>
+  </span>
+  <span class="nav-group-icon"><%= icon(:caret_right) %></span>
 </button>
-<div class="nav-group-children">
+<div class="nav-group-children<%= ' collapsed' if collapsed %>">
   <%= @children_html %>
 </div>

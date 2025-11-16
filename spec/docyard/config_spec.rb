@@ -19,7 +19,7 @@ RSpec.describe Docyard::Config do
         expect(config.build.output_dir).to eq("dist")
         expect(config.build.base_url).to eq("/")
         expect(config.build.clean).to be true
-        expect(config.sidebar).to be_nil
+        expect(config.sidebar.items).to eq([])
       end
 
       it "indicates that config file does not exist" do
@@ -121,20 +121,21 @@ RSpec.describe Docyard::Config do
     it "returns sidebar config" do
       config_content = <<~YAML
         sidebar:
-          - introduction
-          - guide
+          items:
+            - introduction
+            - guide
       YAML
       File.write(File.join(temp_dir, "docyard.yml"), config_content)
 
       config = described_class.load(temp_dir)
 
-      expect(config.sidebar).to eq(%w[introduction guide])
+      expect(config.sidebar.items).to eq(%w[introduction guide])
     end
 
-    it "returns nil when sidebar not configured" do
+    it "returns empty items when sidebar not configured" do
       config = described_class.load(temp_dir)
 
-      expect(config.sidebar).to be_nil
+      expect(config.sidebar.items).to eq([])
     end
   end
 

@@ -34,8 +34,8 @@ module Docyard
         ERB.new(template).result(erb_binding)
       end
 
-      def icon(name)
-        render_partial(:icons, icon_name: name)
+      def icon(name, weight = "regular")
+        Icons.render(name.to_s.tr("_", "-"), weight) || ""
       end
 
       def render_tree_with_sections(items)
@@ -98,12 +98,25 @@ module Docyard
       end
 
       def render_leaf_item(item)
-        render_partial(:nav_leaf, path: item[:path], title: item[:title], active: item[:active])
+        render_partial(
+          :nav_leaf,
+          path: item[:path],
+          title: item[:title],
+          active: item[:active],
+          icon: item[:icon],
+          target: item[:target]
+        )
       end
 
       def render_group_item(item)
         children_html = render_tree(item[:children])
-        render_partial(:nav_group, title: item[:title], children_html: children_html)
+        render_partial(
+          :nav_group,
+          title: item[:title],
+          children_html: children_html,
+          icon: item[:icon],
+          collapsed: item[:collapsed]
+        )
       end
     end
   end

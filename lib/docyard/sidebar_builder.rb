@@ -4,6 +4,7 @@ require_relative "sidebar/file_system_scanner"
 require_relative "sidebar/title_extractor"
 require_relative "sidebar/tree_builder"
 require_relative "sidebar/renderer"
+require_relative "sidebar/config_parser"
 
 module Docyard
   class SidebarBuilder
@@ -26,8 +27,42 @@ module Docyard
     private
 
     def build_tree
+      if config_sidebar_items?
+        build_tree_from_config
+      else
+        build_tree_from_filesystem
+      end
+    end
+
+    def build_tree_from_config
+      config_parser.parse.map(&:to_h)
+    end
+
+    def build_tree_from_filesystem
       file_items = scanner.scan
       tree_builder.build(file_items)
+    end
+
+    def config_sidebar_items?
+      config_sidebar_items&.any?
+    end
+
+    def config_sidebar_items
+      return [] unless config
+
+      if config.is_a?(Hash)
+        config.dig("sidebar", "items") || config.dig(:sidebar, :items) || []
+      else
+        config.sidebar&.items || []
+      end
+    end
+
+    def config_parser
+      @config_parser ||= Sidebar::ConfigParser.new(
+        config_sidebar_items,
+        docs_path: docs_path,
+        current_path: current_path
+      )
     end
 
     def scanner
