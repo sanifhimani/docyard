@@ -78,8 +78,17 @@ module Docyard
 
     def renderer
       @renderer ||= Sidebar::Renderer.new(
-        site_title: extract_site_title
+        site_title: extract_site_title,
+        base_url: extract_base_url
       )
+    end
+
+    def extract_base_url
+      if config.is_a?(Hash)
+        config.dig(:build, :base_url) || "/"
+      else
+        config&.build&.base_url || "/"
+      end
     end
 
     def extract_site_title

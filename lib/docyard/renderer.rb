@@ -9,10 +9,11 @@ module Docyard
     ERRORS_PATH = File.join(__dir__, "templates", "errors")
     PARTIALS_PATH = File.join(__dir__, "templates", "partials")
 
-    attr_reader :layout_path
+    attr_reader :layout_path, :base_url
 
-    def initialize(layout: "default")
+    def initialize(layout: "default", base_url: "/")
       @layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
+      @base_url = normalize_base_url(base_url)
     end
 
     def render_file(file_path, sidebar_html: "", branding: {})
@@ -66,10 +67,23 @@ module Docyard
     def asset_path(path)
       return path if path.nil? || path.start_with?("http://", "https://")
 
-      "/#{path}"
+      "#{base_url}#{path}"
+    end
+
+    def link_path(path)
+      return path if path.nil? || path.start_with?("http://", "https://")
+
+      "#{base_url.chomp('/')}#{path}"
     end
 
     private
+
+    def normalize_base_url(url)
+      return "/" if url.nil? || url.empty?
+
+      url = "/#{url}" unless url.start_with?("/")
+      url.end_with?("/") ? url : "#{url}/"
+    end
 
     def assign_content_variables(content, page_title, sidebar_html)
       @content = content

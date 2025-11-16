@@ -22,5 +22,13 @@ require_relative "docyard/initializer"
 require_relative "docyard/server"
 require_relative "docyard/cli"
 
+# Build components
+require_relative "docyard/builder"
+require_relative "docyard/build/static_generator"
+require_relative "docyard/build/asset_bundler"
+require_relative "docyard/build/file_copier"
+require_relative "docyard/build/sitemap_generator"
+require_relative "docyard/preview_server"
+
 module Docyard
 end
