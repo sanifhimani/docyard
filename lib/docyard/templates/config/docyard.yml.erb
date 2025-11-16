@@ -1,77 +1,42 @@
 # Docyard Configuration
-# All fields are optional - remove what you don't need
+# Documentation: https://github.com/yourusername/docyard
 
+# Site Information
 site:
   title: "My Documentation"
   description: "Documentation for my project"
 
-# Custom branding (paths relative to docs/ directory, or use URLs)
+# Custom Branding (Optional)
+# Paths relative to docs/ directory, or use URLs for CDN-hosted assets
 branding:
-  # logo: "assets/logo.svg"              # or "https://cdn.example.com/logo.svg" (defaults to Docyard logo)
-  # logo_dark: "assets/logo-dark.svg"    # Dark mode logo (optional)
-  # favicon: "assets/favicon.svg"        # Browser tab icon (defaults to Docyard favicon)
+  # logo: "assets/logo.svg"              # Light mode logo
+  # logo_dark: "assets/logo-dark.svg"    # Dark mode logo (optional, falls back to 'logo')
+  # favicon: "assets/favicon.svg"        # Browser tab icon
   # appearance:
-  #   logo: true                          # Show logo (true/false)
-  #   title: true                         # Show site title (true/false)
+  #   logo: true                          # Show logo in header
+  #   title: true                         # Show site title in header
 
-# Sidebar navigation structure
+# Sidebar Navigation (Optional)
 # Customize the order and organization of your documentation pages
+# Without this, sidebar is auto-generated from docs/ folder structure
 # sidebar:
 #   items:
-#     # Simple slug reference (auto-detects title from frontmatter)
-#     - introduction
-#     - quick-start
+#     - installation                     # Simple page reference
 #
-#     # Custom text and icon (see https://phosphoricons.com for icon names)
-#     - installation:
-#         text: "Installation Guide"
-#         icon: "rocket-launch"
-#
-#     # Nested groups (folder-based or file with sub-items)
-#     - getting-started:
-#         text: "Getting Started"
-#         icon: "play"
+#     - guides:                          # Nested group
+#         text: "User Guides"
+#         icon: "book-open"              # Icon from phosphoricons.com
 #         items:
-#           - introduction
-#           - installation
+#           - markdown-features
 #           - configuration
 #
-#     # Advanced nested structure
-#     - guides:
-#         text: "User Guides"
-#         icon: "book-open"
-#         collapsed: false              # Start expanded (default: false)
-#         items:
-#           - basics:
-#               text: "The Basics"
-#               items:
-#                 - creating-pages
-#                 - markdown-syntax
-#                 - frontmatter
-#           - advanced:
-#               text: "Advanced Topics"
-#               items:
-#                 - custom-components
-#                 - theming
-#
-#     # External links
-#     - text: "GitHub"
-#       link: "https://github.com/yourusername/yourproject"
+#     - text: "GitHub"                   # External link
+#       link: "https://github.com/youruser/yourrepo"
 #       icon: "github-logo"
-#       target: "_blank"                # Opens in new tab (default for external links)
-#
-#     - text: "API Reference"
-#       link: "https://api.yourproject.com"
-#       icon: "code"
-#
-# Notes:
-# - Items are ordered as listed here
-# - Without sidebar config, pages are auto-generated from docs/ structure
-# - You can override text/icon in file frontmatter with sidebar.text and sidebar.icon
-# - Icons are optional - see https://phosphoricons.com for available icons
-# - Use collapsed: true to start groups in collapsed state
+#       target: "_blank"
 
+# Build Configuration
 build:
-  output_dir: "dist"
-  base_url: "/"
-  clean: true
+  output_dir: "dist"      # Output directory for static files
+  base_url: "/"           # Base URL for deployment (e.g., "/docs/" for subdirectory)
+  clean: true             # Clean output directory before building

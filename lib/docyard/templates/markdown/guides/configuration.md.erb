@@ -1,0 +1,202 @@
+# Configuration
+
+Customize your documentation site with `docyard.yml`.
+
+## Getting Started
+
+Docyard works without any configuration, but you can customize it by creating a `docyard.yml` file in your project root.
+
+::: tip
+The `docyard init` command creates a `docyard.yml` file with helpful examples.
+:::
+
+## Basic Configuration
+
+```yaml
+site:
+  title: "My Documentation"
+  description: "Documentation for my project"
+```
+
+## Branding
+
+### Custom Logo
+
+Add your own logo:
+
+```yaml
+branding:
+  logo: "assets/logo.svg"           # Light mode logo
+  logo_dark: "assets/logo-dark.svg" # Dark mode logo (optional)
+  favicon: "assets/favicon.svg"      # Browser tab icon
+```
+
+::: note File Paths
+- Paths are relative to the `docs/` directory
+- Or use full URLs: `https://cdn.example.com/logo.svg`
+- Supported formats: SVG, PNG, JPG
+:::
+
+### Logo Visibility
+
+Control what appears in the header:
+
+```yaml
+branding:
+  appearance:
+    logo: true   # Show/hide logo
+    title: true  # Show/hide site title
+```
+
+## Sidebar Navigation
+
+Customize the sidebar structure and order:
+
+```yaml
+sidebar:
+  items:
+    # Simple page reference
+    - installation
+
+    # Page with custom text
+    - quick-start:
+        text: "Quick Start Guide"
+
+    # Page with icon
+    - configuration:
+        text: "Configuration"
+        icon: "gear"
+
+    # Nested group
+    - guides:
+        text: "User Guides"
+        icon: "book-open"
+        items:
+          - markdown-features
+          - customization
+
+    # External link
+    - text: "GitHub"
+      link: "https://github.com/yourusername/yourproject"
+      icon: "github-logo"
+      target: "_blank"
+```
+
+::: tip Icons
+Browse available icons at [phosphoricons.com](https://phosphoricons.com). Just use the icon name (e.g., `rocket-launch`, `book-open`).
+:::
+
+### Collapsible Groups
+
+Control whether groups start expanded or collapsed:
+
+```yaml
+sidebar:
+  items:
+    - api:
+        text: "API Reference"
+        collapsed: true  # Start collapsed
+        items:
+          - authentication
+          - endpoints
+          - errors
+```
+
+## Build Configuration
+
+Configure the build output:
+
+```yaml
+build:
+  output_dir: "dist"      # Output directory for built site
+  base_url: "/"           # Base URL for deployment
+  clean: true             # Clean output directory before building
+```
+
+### Base URL
+
+Set the base URL for subdirectory deployments:
+
+```yaml
+build:
+  base_url: "/docs/"  # For example.com/docs/
+```
+
+::: warning Base URL
+If deploying to a subdirectory, make sure base_url matches your deployment path. Otherwise assets won't load correctly.
+:::
+
+## Complete Example
+
+Here's a full configuration file:
+
+```yaml
+site:
+  title: "Acme API Documentation"
+  description: "Official API documentation for Acme"
+
+branding:
+  logo: "assets/logo.svg"
+  logo_dark: "assets/logo-dark.svg"
+  favicon: "assets/favicon.svg"
+  appearance:
+    logo: true
+    title: true
+
+sidebar:
+  items:
+    - index
+
+    - getting-started:
+        text: "Getting Started"
+        icon: "rocket-launch"
+        items:
+          - installation
+          - authentication
+          - quick-start
+
+    - guides:
+        text: "Guides"
+        icon: "book-open"
+        items:
+          - making-requests
+          - error-handling
+          - rate-limiting
+
+    - api:
+        text: "API Reference"
+        icon: "code"
+        collapsed: false
+        items:
+          - users
+          - products
+          - orders
+
+    - text: "GitHub"
+      link: "https://github.com/acme/api"
+      icon: "github-logo"
+      target: "_blank"
+
+build:
+  output_dir: "dist"
+  base_url: "/api/"
+  clean: true
+```
+
+## Configuration Tips
+
+::: tip Best Practices
+1. **Start simple** - Add configuration as you need it
+2. **Use icons consistently** - Pick a set and stick with it
+3. **Organize logically** - Group related pages together
+4. **Test base_url** - Preview with `docyard preview` before deploying
+5. **Keep it maintainable** - Don't over-configure
+:::
+
+## Next Steps
+
+::: note
+- Learn about [markdown features](markdown-features)
+- Check the [installation guide](../getting-started/installation)
+- Start customizing your site!
+:::
