@@ -12,21 +12,21 @@
       <ul class="docyard-toc__list">
         <% @toc.each do |heading| %>
           <li class="docyard-toc__item docyard-toc__item--level-<%= heading[:level] %>">
-            <a href="#<%= heading[:id] %>" class="docyard-toc__link" data-heading-id="<%= heading[:id] %>">
+            <a href="#<%= heading[:id] %>" class="docyard-toc__link" data-heading-id="<%= heading[:id] %>" title="<%= heading[:text] %>">
               <%= heading[:text] %>
             </a>
             <% unless heading[:children].empty? %>
               <ul class="docyard-toc__list">
                 <% heading[:children].each do |child| %>
                   <li class="docyard-toc__item docyard-toc__item--level-<%= child[:level] %>">
-                    <a href="#<%= child[:id] %>" class="docyard-toc__link" data-heading-id="<%= child[:id] %>">
+                    <a href="#<%= child[:id] %>" class="docyard-toc__link" data-heading-id="<%= child[:id] %>" title="<%= child[:text] %>">
                       <%= child[:text] %>
                     </a>
                     <% unless child[:children].empty? %>
                       <ul class="docyard-toc__list">
                         <% child[:children].each do |grandchild| %>
                           <li class="docyard-toc__item docyard-toc__item--level-<%= grandchild[:level] %>">
-                            <a href="#<%= grandchild[:id] %>" class="docyard-toc__link" data-heading-id="<%= grandchild[:id] %>">
+                            <a href="#<%= grandchild[:id] %>" class="docyard-toc__link" data-heading-id="<%= grandchild[:id] %>" title="<%= grandchild[:text] %>">
                               <%= grandchild[:text] %>
                             </a>
                           </li>
