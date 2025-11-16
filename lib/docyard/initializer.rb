@@ -10,14 +10,9 @@ module Docyard
 
     TEMPLATES = {
       "index.md" => "index.md.erb",
-      "getting-started/introduction.md" => "getting-started/introduction.md.erb",
       "getting-started/installation.md" => "getting-started/installation.md.erb",
-      "getting-started/quick-start.md" => "getting-started/quick-start.md.erb",
-      "core-concepts/file-structure.md" => "core-concepts/file-structure.md.erb",
-      "core-concepts/markdown.md" => "core-concepts/markdown.md.erb",
-      "components/callouts.md" => "components/callouts.md.erb",
-      "components/icons.md" => "components/icons.md.erb",
-      "components/tabs.md" => "components/tabs.md.erb"
+      "guides/markdown-features.md" => "guides/markdown-features.md.erb",
+      "guides/configuration.md" => "guides/configuration.md.erb"
     }.freeze
 
     def initialize(path = ".")
@@ -79,16 +74,87 @@ module Docyard
     end
 
     def print_success
-      puts "Docyard initialized successfully!"
+      print_banner
+      print_created_files
+      print_next_steps
+    end
+
+    def print_banner
       puts ""
-      puts "Created:"
-      TEMPLATES.each_key { |file| puts "  #{DOCS_DIR}/#{file}" }
-      puts "  docyard.yml (configuration - optional)"
+      puts "┌─────────────────────────────────────────────────────────────┐"
+      puts "│  ✓ Docyard initialized successfully                        │"
+      puts "└─────────────────────────────────────────────────────────────┘"
       puts ""
+    end
+
+    def print_created_files
+      puts "Created files:"
+      puts ""
+      print_file_tree
+      puts ""
+    end
+
+    def print_next_steps
       puts "Next steps:"
-      puts "  1. Edit your markdown files in #{DOCS_DIR}/"
-      puts "  2. Customize docyard.yml (optional)"
-      puts "  3. Run 'docyard serve' to preview your documentation locally"
+      puts ""
+      puts "  Start development server:"
+      puts "    docyard serve"
+      puts "    → http://localhost:4200"
+      puts ""
+      puts "  Build for production:"
+      puts "    docyard build"
+      puts ""
+      puts "  Preview production build:"
+      puts "    docyard preview"
+      puts ""
+    end
+
+    def print_file_tree
+      puts "  ├── docs/"
+
+      grouped_files = TEMPLATES.keys.group_by { |file| File.dirname(file) }
+      sorted_dirs = grouped_files.keys.sort
+
+      sorted_dirs.each_with_index do |dir, dir_idx|
+        print_directory_group(dir, grouped_files[dir], dir_idx == sorted_dirs.length - 1)
+      end
+
+      puts "  └── docyard.yml"
+    end
+
+    def print_directory_group(dir, files, is_last_dir)
+      sorted_files = files.sort
+
+      if dir == "."
+        print_root_files(sorted_files, is_last_dir)
+      else
+        print_subdirectory(dir, sorted_files, is_last_dir)
+      end
+    end
+
+    def print_root_files(files, is_last_dir)
+      files.each_with_index do |file, idx|
+        is_last = idx == files.length - 1 && is_last_dir
+        prefix = is_last ? "  │   └──" : "  │   ├──"
+        puts "#{prefix} #{file}"
+      end
+    end
+
+    def print_subdirectory(dir, files, is_last_dir)
+      dir_prefix = is_last_dir ? "  │   └──" : "  │   ├──"
+      puts "#{dir_prefix} #{dir}/"
+
+      files.each_with_index do |file, idx|
+        print_subdirectory_file(file, idx, files.length, is_last_dir)
+      end
+    end
+
+    def print_subdirectory_file(file, idx, total, is_last_dir)
+      is_last_file = idx == total - 1
+      file_prefix = is_last_dir ? "  │       " : "  │   │   "
+      file_prefix += is_last_file ? "└──" : "├──"
+      basename = File.basename(file)
+      puts "#{file_prefix} #{basename}"
     end
   end
 end

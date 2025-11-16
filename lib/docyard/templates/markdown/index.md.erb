@@ -1,86 +1,82 @@
-# Welcome to Docyard
+# Welcome to Your Documentation
 
-A modern, zero-config documentation generator for Ruby developers.
+This is your documentation homepage. Docyard transforms your Markdown files into beautiful, searchable documentation.
 
-## Features
+## Quick Example
 
-- **Auto-generated Navigation** - Sidebar built from your folder structure
-- **Hot Reload** - Changes appear instantly while you write
-- **GitHub Flavored Markdown** - Full GFM support with tables and task lists
-- **Syntax Highlighting** - 100+ languages powered by Rouge
-- **Zero Configuration** - Works out of the box with sensible defaults
-- **Mobile Responsive** - Beautiful on desktop, tablet, and mobile
+Here's what you can do with Docyard:
 
-## Quick Start
-
-Get up and running in under a minute:
-
-```bash
-# Install
-gem install docyard
-
-# Initialize
-docyard init
-
-# Start dev server
-docyard serve
-```
-
-Visit `http://localhost:4200` to see your docs.
-
-
-## Example Code
-
-Ruby with syntax highlighting:
+### Code Blocks with Syntax Highlighting
 
 ```ruby
-class DocumentationSite
-  attr_reader :title, :pages
+class User
+  attr_reader :name, :email
 
-  def initialize(title)
-    @title = title
-    @pages = []
+  def initialize(name, email)
+    @name = name
+    @email = email
   end
 
-  def add_page(path, content)
-    pages << { path: path, content: content }
-  end
-
-  def build
-    pages.each { |page| render_page(page) }
+  def greet
+    "Hello, #{name}!"
   end
 end
 ```
 
+### Callouts for Important Information
 
-JavaScript example:
+::: tip Pro Tip
+Use callouts to highlight important information. Available types: `note`, `tip`, `important`, `warning`, and `danger`.
+:::
 
-```javascript
-function buildDocs(config) {
-  const { title, theme } = config;
-  console.log(`Building ${title} with ${theme} theme`);
-  return { success: true };
-}
+::: warning
+Make sure to read the [Configuration Guide](guides/configuration) before deploying to production.
+:::
+
+### Tabs for Multiple Options
+
+Show installation instructions for different package managers:
+
+:::tabs
+== npm
+```bash
+npm install your-package
 ```
+
+== yarn
+```bash
+yarn add your-package
+```
+
+== pnpm
+```bash
+pnpm add your-package
+```
+:::
+
+### Icons
+
+Use inline icons from [Phosphor Icons](https://phosphoricons.com): :rocket-launch: :check: :warning: :heart:
+
+## Getting Started
+
+::: note Next Steps
+1. Edit the files in `docs/` to create your documentation
+2. Run `docyard serve` to preview changes in real-time
+3. Customize `docyard.yml` to configure branding and navigation
+4. Run `docyard build` when ready to deploy
+:::
 
 ## Documentation Structure
 
 | Section | Description |
 |---------|-------------|
-| Getting Started | Installation and quick start guide |
-| Core Concepts | Learn about file structure and markdown |
+| [Installation](getting-started/installation) | Get up and running quickly |
+| [Markdown Features](guides/markdown-features) | Learn about all supported features |
+| [Configuration](guides/configuration) | Customize appearance and navigation |
 
-## What's Next?
+## Need Help?
 
-> Get started by exploring the documentation in the sidebar, or jump straight to the [Quick Start Guide](getting-started/quick-start).
-
-### Learn the Basics
-
-1. [Introduction](getting-started/introduction) - Learn what Docyard can do
-2. [Installation](getting-started/installation) - Install Docyard on your system
-3. [Quick Start](getting-started/quick-start) - Create your first site
-
-### Understand Core Concepts
-
-- [File Structure](core-concepts/file-structure) - How to organize your docs
-- [Markdown](core-concepts/markdown) - Supported markdown features
+- Check out the [Markdown Features](guides/markdown-features) guide
+- Learn about [customization options](guides/configuration)
+- Explore the sidebar to see all available pages

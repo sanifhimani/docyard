@@ -1,0 +1,247 @@
+# Markdown Features
+
+Docyard supports GitHub Flavored Markdown (GFM) plus powerful custom components.
+
+## Basic Formatting
+
+Use standard markdown syntax for formatting:
+
+**Bold text** with `**bold**` or `__bold__`
+
+*Italic text* with `*italic*` or `_italic_`
+
+`Inline code` with \`backticks\`
+
+~~Strikethrough~~ with `~~text~~`
+
+## Headings
+
+```markdown
+# H1 Heading
+## H2 Heading
+### H3 Heading
+#### H4 Heading
+```
+
+## Lists
+
+Unordered lists:
+
+- Item one
+- Item two
+  - Nested item
+  - Another nested item
+- Item three
+
+Ordered lists:
+
+1. First step
+2. Second step
+3. Third step
+
+Task lists:
+
+- [x] Completed task
+- [ ] Pending task
+- [ ] Another pending task
+
+## Code Blocks
+
+Syntax highlighting for 100+ languages powered by Rouge:
+
+```javascript
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet('World'));
+```
+
+```python
+def greet(name):
+    return f"Hello, {name}!"
+
+print(greet('World'))
+```
+
+```ruby
+def greet(name)
+  "Hello, #{name}!"
+end
+
+puts greet('World')
+```
+
+Each code block includes a copy button for easy copying.
+
+## Tables
+
+Create responsive tables with GFM syntax:
+
+| Feature | Supported | Notes |
+|---------|-----------|-------|
+| Syntax highlighting | ✓ | 100+ languages |
+| Hot reload | ✓ | Instant updates |
+| Dark mode | ✓ | Auto-switching |
+| Mobile responsive | ✓ | Works everywhere |
+
+Tables automatically wrap on mobile devices.
+
+## Blockquotes
+
+> Standard blockquote for citations or highlights.
+>
+> Supports multiple paragraphs.
+
+## Links
+
+[Link to a page](../getting-started/installation)
+
+[External link](https://github.com)
+
+## Callouts
+
+Use callouts to highlight important information:
+
+::: note
+Informational content that provides additional context.
+:::
+
+::: tip Best Practice
+Helpful advice or recommendations for users.
+:::
+
+::: important
+Critical information that requires special attention.
+:::
+
+::: warning
+Caution about potential issues or things to watch out for.
+:::
+
+::: danger
+Severe warnings about dangerous operations or critical issues.
+:::
+
+### Custom Titles
+
+::: tip Performance Optimization
+You can customize the title of any callout type.
+:::
+
+### Rich Content
+
+::: important Key Requirements
+Callouts support all markdown features:
+
+- **Lists** and formatting
+- `Code snippets`
+- [Links](/)
+- Code blocks with syntax highlighting
+
+```ruby
+def example
+  puts "Code works inside callouts!"
+end
+```
+:::
+
+## Tabs
+
+Display multiple code examples or options in tabs:
+
+:::tabs
+== JavaScript
+```javascript
+const config = {
+  apiUrl: 'https://api.example.com',
+  timeout: 5000
+};
+```
+
+== TypeScript
+```typescript
+interface Config {
+  apiUrl: string;
+  timeout: number;
+}
+
+const config: Config = {
+  apiUrl: 'https://api.example.com',
+  timeout: 5000
+};
+```
+
+== Ruby
+```ruby
+config = {
+  api_url: 'https://api.example.com',
+  timeout: 5000
+}
+```
+:::
+
+### Package Manager Tabs
+
+Perfect for installation instructions:
+
+:::tabs
+== npm
+```bash
+npm install your-package
+```
+
+== yarn
+```bash
+yarn add your-package
+```
+
+== pnpm
+```bash
+pnpm add your-package
+```
+
+== bun
+```bash
+bun add your-package
+```
+:::
+
+Tabs automatically detect package managers and display appropriate icons.
+
+## Icons
+
+Use inline icons from [Phosphor Icons](https://phosphoricons.com):
+
+:rocket-launch: :check: :warning: :heart: :star: :code: :book-open: :gear:
+
+Just wrap the icon name in colons:
+
+```markdown
+:rocket-launch: :check: :warning:
+```
+
+Browse all available icons at [phosphoricons.com](https://phosphoricons.com).
+
+## Horizontal Rules
+
+Use three or more dashes, asterisks, or underscores:
+
+---
+
+## Best Practices
+
+::: tip Writing Great Documentation
+1. **Use headings hierarchically** - Don't skip levels (H1 → H3)
+2. **Add code examples** - Show, don't just tell
+3. **Use callouts sparingly** - Highlight only important information
+4. **Keep it concise** - Respect your readers' time
+5. **Link related pages** - Help users navigate your docs
+:::
+
+## Next Steps
+
+::: note
+- Learn how to [customize your site](configuration)
+- Explore the [installation guide](../getting-started/installation)
+:::
