@@ -65,11 +65,45 @@
   border-radius: var(--radius-sm);
 }
 
-/* Secondary Header (Mobile Navigation Bar) */
+/* Secondary Header (Tablet & Mobile Navigation Bar) */
 .secondary-header {
   display: none;
 }
 
+/* Tablet: Show secondary header with TOC toggle only */
+@media (max-width: 1280px) and (min-width: 1025px) {
+  .secondary-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: fixed;
+    top: var(--header-height);
+    left: var(--sidebar-width);
+    right: 0;
+    height: 3rem;
+    min-height: 3rem;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 var(--space-6);
+    z-index: var(--z-secondary-header);
+    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  }
+
+  .secondary-header.shift-up {
+    top: 0;
+  }
+
+  .secondary-header-menu {
+    display: none;
+  }
+
+  .layout {
+    padding-top: calc(var(--header-height) + 3rem);
+  }
+}
+
+/* Mobile: Show menu button + TOC toggle */
 @media (max-width: 1024px) {
   .secondary-header {
     display: flex;
@@ -80,6 +114,7 @@
     left: 0;
     right: 0;
     height: 3rem;
+    min-height: 3rem;
     background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
     padding: 0 var(--space-6);
@@ -107,6 +142,7 @@
     transition: background-color 0.2s ease;
     font-family: var(--font-sans);
     margin-left: calc(-1 * var(--space-2));
+    outline: none;
   }
 
   .secondary-header-menu:hover {
@@ -115,6 +151,12 @@
 
   .secondary-header-menu:active {
     background-color: var(--color-border);
+  }
+
+  .secondary-header-menu:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
 
   .secondary-header-menu .icon {
@@ -176,9 +218,17 @@
 .layout-main {
   flex: 1;
   margin-left: var(--sidebar-width);
+  margin-right: var(--toc-width, 0);
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+
+/* Tablet Layout (1024px - 1280px) */
+@media (max-width: 1280px) and (min-width: 1025px) {
+  .layout-main {
+    margin-right: 0;
+  }
 }
 
 /* Content wrapper */
@@ -200,6 +250,7 @@ main.content {
 
   .layout {
     padding-top: calc(var(--header-height) + 3rem);
+    flex-direction: column;
   }
 
   .sidebar {
@@ -223,8 +274,14 @@ main.content {
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   }
 
+  .docyard-toc {
+    order: 1;
+  }
+
   .layout-main {
     margin-left: 0;
+    margin-right: 0;
+    order: 2;
   }
 
   main.content {

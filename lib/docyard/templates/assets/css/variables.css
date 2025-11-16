@@ -98,6 +98,7 @@
 
   /* Layout */
   --sidebar-width: 288px;
+  --toc-width: 280px;
   --header-height: 64px;
   --content-max-width: 800px;
   --layout-max-width: 1440px;

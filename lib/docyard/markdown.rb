@@ -10,6 +10,8 @@ require_relative "components/tabs_processor"
 require_relative "components/icon_processor"
 require_relative "components/code_block_processor"
 require_relative "components/table_wrapper_processor"
+require_relative "components/heading_anchor_processor"
+require_relative "components/table_of_contents_processor"
 
 module Docyard
   class Markdown
@@ -51,6 +53,10 @@ module Docyard
 
     def sidebar_collapsed
       frontmatter.dig("sidebar", "collapsed")
+    end
+
+    def toc
+      @toc ||= Thread.current[:docyard_toc] || []
     end
 
     private
