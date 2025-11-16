@@ -1,0 +1,77 @@
+.content h2[id],
+.content h3[id],
+.content h4[id],
+.content h5[id],
+.content h6[id] {
+  position: relative;
+  scroll-margin-top: 100px;
+}
+
+/* Tablet: Account for both primary + secondary header */
+@media (max-width: 1280px) and (min-width: 1025px) {
+  .content h2[id],
+  .content h3[id],
+  .content h4[id],
+  .content h5[id],
+  .content h6[id] {
+    scroll-margin-top: calc(var(--header-height) + 3rem + var(--space-4));
+  }
+}
+
+.heading-anchor {
+  float: left;
+  margin-left: -0.75em;
+  padding-right: 0.25em;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-primary);
+  text-decoration: none !important;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+}
+
+.heading-anchor:hover,
+.heading-anchor:focus {
+  opacity: 1;
+  text-decoration: none !important;
+}
+
+.heading-anchor:active,
+.heading-anchor:visited {
+  text-decoration: none !important;
+}
+
+.heading-anchor:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.content h2[id]:hover .heading-anchor,
+.content h3[id]:hover .heading-anchor,
+.content h4[id]:hover .heading-anchor,
+.content h5[id]:hover .heading-anchor,
+.content h6[id]:hover .heading-anchor {
+  opacity: 1;
+}
+
+@media (max-width: 1024px) {
+  .heading-anchor {
+    position: static;
+    margin-left: var(--space-2);
+    float: none;
+    opacity: 0.6;
+  }
+
+  .heading-anchor:hover,
+  .heading-anchor:focus {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heading-anchor {
+    transition: none;
+  }
+}

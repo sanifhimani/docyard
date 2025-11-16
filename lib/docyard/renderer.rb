@@ -21,19 +21,21 @@ module Docyard
       markdown = Markdown.new(markdown_content)
 
       html_content = strip_md_from_links(markdown.html)
+      toc = markdown.toc
 
       render(
         content: html_content,
         page_title: markdown.title || Constants::DEFAULT_SITE_TITLE,
         sidebar_html: sidebar_html,
+        toc: toc,
         branding: branding
       )
     end
 
-    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, sidebar_html: "", branding: {})
+    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, sidebar_html: "", toc: [], branding: {})
       template = File.read(layout_path)
 
-      assign_content_variables(content, page_title, sidebar_html)
+      assign_content_variables(content, page_title, sidebar_html, toc)
       assign_branding_variables(branding)
 
       ERB.new(template).result(binding)
@@ -85,10 +87,11 @@ module Docyard
       url.end_with?("/") ? url : "#{url}/"
     end
 
-    def assign_content_variables(content, page_title, sidebar_html)
+    def assign_content_variables(content, page_title, sidebar_html, toc)
       @content = content
       @page_title = page_title
       @sidebar_html = sidebar_html
+      @toc = toc
     end
 
     def assign_branding_variables(branding)
