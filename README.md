@@ -20,6 +20,8 @@ Build beautiful documentation sites with hot reload, dark mode, and powerful mar
 ### Navigation
 - **Sidebar navigation** - Automatic sidebar with nested folders and collapsible sections
 - **Sidebar customization** - Custom ordering, icons, and external links via config
+- **Table of Contents** - Auto-generated TOC with heading anchors and smooth scrolling
+- **Previous/Next navigation** - Auto-detection from sidebar with frontmatter override support
 - **Active page highlighting** - Always know where you are
 
 ### Markdown
@@ -139,6 +141,32 @@ description: Page description
 
 Currently supported:
 - `title` - Page title (shown in `<title>` tag)
+- `prev` - Customize or disable previous link
+- `next` - Customize or disable next link
+
+### Customizing Navigation
+
+Control previous/next links per page via frontmatter:
+
+```yaml
+---
+title: My Page
+prev: false                  # Disable previous link
+next:
+  text: Custom Next Page
+  link: /custom-path
+---
+```
+
+Configure labels globally in `docyard.yml`:
+
+```yaml
+navigation:
+  footer:
+    enabled: true
+    prev_text: "← Back"
+    next_text: "Forward →"
+```
 
 ### Linking Between Pages
 
@@ -227,18 +255,15 @@ bundle exec rubocop
 
 ## Roadmap
 
-**v0.4.0 - Just shipped:**
-- Static site generation with `docyard build`
-- Asset bundling with minification and cache busting
-- SEO files (sitemap.xml, robots.txt)
-- Preview server for testing builds
-- Sidebar customization via config
-- Improved init templates
+**v0.5.0 - Just shipped:**
+- Table of Contents with heading anchors
+- Previous/Next page navigation with auto-detection
 
-**Next up:**
-- Search functionality
-- Table of contents
-- More markdown components
+**Next up (v0.6.0+):**
+- Code block enhancements (line numbers, highlighting, diffs)
+- Search functionality (client-side with Cmd/K)
+- Details/collapsible blocks
+- More markdown extensions
 
 ## Contributing
 

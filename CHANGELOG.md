@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2025-01-16
+## [0.5.0] - 2025-11-18
+
+### Added
+- **Table of Contents** - Auto-generated TOC from h2-h4 headings with clickable anchor links and smooth scrolling (#30)
+- **Previous/Next Navigation** - Auto-detection from sidebar order with frontmatter override support and configurable labels (#31)
+
+## [0.4.0] - 2025-11-16
 
 ### Added
 - **Static site generation** - Build system with `docyard build` command (#27)
@@ -29,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Component CSS accessibility and performance improvements (#24)
 - Table responsive styling with proper wrapper element (#23)
 
-## [0.3.0] - 2025-01-09
+## [0.3.0] - 2025-11-09
 
 ### Added
 - Configuration system with optional `docyard.yml` file (#20)
@@ -85,7 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/sanifhimani/docyard/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/sanifhimani/docyard/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/sanifhimani/docyard/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/sanifhimani/docyard/compare/v0.1.0...v0.2.0
