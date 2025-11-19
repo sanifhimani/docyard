@@ -1,0 +1,114 @@
+/* Previous/Next Navigation Footer */
+
+.doc-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.pager-link {
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-decoration: none !important;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+  outline: none;
+  background-color: transparent;
+}
+
+.pager-link:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-background-soft);
+}
+
+.pager-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.pager-link.prev {
+  text-align: left;
+}
+
+.pager-link.next {
+  text-align: right;
+}
+
+.pager-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 0px;
+  text-decoration: none !important;
+}
+
+.pager-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .doc-footer {
+    margin-top: 48px;
+  }
+
+  .pager {
+    grid-template-columns: 1fr;
+  }
+
+  .pager-link.next {
+    margin-left: 0;
+  }
+
+  .pager-link {
+    width: 100%;
+  }
+
+  .pager-title {
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .pager-link {
+    transition: none;
+  }
+}
+
+/* Print: hide navigation */
+@media print {
+  .doc-footer {
+    display: none;
+  }
+}
+
+/* Visually hidden utility (for screen readers) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

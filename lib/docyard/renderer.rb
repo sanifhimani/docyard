@@ -16,7 +16,7 @@ module Docyard
       @base_url = normalize_base_url(base_url)
     end
 
-    def render_file(file_path, sidebar_html: "", branding: {})
+    def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {})
       markdown_content = File.read(file_path)
       markdown = Markdown.new(markdown_content)
 
@@ -26,16 +26,23 @@ module Docyard
       render(
         content: html_content,
         page_title: markdown.title || Constants::DEFAULT_SITE_TITLE,
-        sidebar_html: sidebar_html,
-        toc: toc,
+        navigation: {
+          sidebar_html: sidebar_html,
+          prev_next_html: prev_next_html,
+          toc: toc
+        },
         branding: branding
       )
     end
 
-    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, sidebar_html: "", toc: [], branding: {})
+    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, navigation: {}, branding: {})
       template = File.read(layout_path)
 
-      assign_content_variables(content, page_title, sidebar_html, toc)
+      sidebar_html = navigation[:sidebar_html] || ""
+      prev_next_html = navigation[:prev_next_html] || ""
+      toc = navigation[:toc] || []
+
+      assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
       assign_branding_variables(branding)
 
       ERB.new(template).result(binding)
@@ -87,10 +94,11 @@ module Docyard
       url.end_with?("/") ? url : "#{url}/"
     end
 
-    def assign_content_variables(content, page_title, sidebar_html, toc)
+    def assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
       @content = content
       @page_title = page_title
       @sidebar_html = sidebar_html
+      @prev_next_html = prev_next_html
       @toc = toc
     end
 
