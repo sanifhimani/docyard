@@ -3,6 +3,7 @@
 require "json"
 require "rack"
 require_relative "sidebar_builder"
+require_relative "prev_next_builder"
 require_relative "constants"
 
 module Docyard
@@ -46,9 +47,12 @@ module Docyard
     end
 
     def render_documentation_page(file_path, current_path)
+      sidebar_builder = build_sidebar_instance(current_path)
+
       html = renderer.render_file(
         file_path,
-        sidebar_html: build_sidebar(current_path),
+        sidebar_html: sidebar_builder.to_html,
+        prev_next_html: build_prev_next(sidebar_builder, current_path, file_path),
         branding: branding_options
       )
 
@@ -60,12 +64,30 @@ module Docyard
       [Constants::STATUS_NOT_FOUND, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
     end
 
-    def build_sidebar(current_path)
+    def build_sidebar_instance(current_path)
       SidebarBuilder.new(
         docs_path: docs_path,
         current_path: current_path,
         config: config
+      )
+    end
+
+    def build_prev_next(sidebar_builder, current_path, file_path)
+      markdown_content = File.read(file_path)
+      markdown = Markdown.new(markdown_content)
+
+      PrevNextBuilder.new(
+        sidebar_tree: sidebar_builder.tree,
+        current_path: current_path,
+        frontmatter: markdown.frontmatter,
+        config: navigation_config
       ).to_html
+    end
+
+    def navigation_config
+      return {} unless config
+
+      config.navigation&.footer || {}
     end
 
     def branding_options

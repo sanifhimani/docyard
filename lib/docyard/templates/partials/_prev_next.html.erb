@@ -1,0 +1,23 @@
+<% if @prev || @next %>
+<footer class="doc-footer">
+  <nav class="pager" aria-labelledby="doc-footer-aria-label">
+    <span id="doc-footer-aria-label" class="visually-hidden">Pager</span>
+
+    <% if @prev %>
+    <a href="<%= link_path(@prev[:path]) %>" class="pager-link prev" title="<%= @prev[:title] %>">
+      <span class="pager-label"><%= @prev_text %></span>
+      <span class="pager-title"><%= @prev[:title] %></span>
+    </a>
+    <% else %>
+    <span></span>
+    <% end %>
+
+    <% if @next %>
+    <a href="<%= link_path(@next[:path]) %>" class="pager-link next" title="<%= @next[:title] %>">
+      <span class="pager-label"><%= @next_text %></span>
+      <span class="pager-title"><%= @next[:title] %></span>
+    </a>
+    <% end %>
+  </nav>
+</footer>
+<% end %>

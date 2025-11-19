@@ -27,6 +27,13 @@ module Docyard
       },
       "sidebar" => {
         "items" => []
+      },
+      "navigation" => {
+        "footer" => {
+          "enabled" => true,
+          "prev_text" => "Previous",
+          "next_text" => "Next"
+        }
       }
     }.freeze
 
@@ -61,6 +68,10 @@ module Docyard
 
     def sidebar
       @sidebar ||= ConfigSection.new(data["sidebar"])
+    end
+
+    def navigation
+      @navigation ||= ConfigSection.new(data["navigation"])
     end
 
     private

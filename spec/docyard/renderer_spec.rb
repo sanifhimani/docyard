@@ -65,6 +65,17 @@ RSpec.describe Docyard::Renderer do
       expect(html).to include("site-logo")
       expect(html).to include("header-title")
     end
+
+    it "renders with navigation components", :aggregate_failures do
+      navigation = {
+        sidebar_html: "<nav>Sidebar</nav>",
+        prev_next_html: "<footer>Prev/Next</footer>",
+        toc: [{ text: "Heading", id: "heading", level: 2, children: [] }]
+      }
+      html = renderer.render(content: "<p>Content</p>", navigation: navigation)
+
+      expect(html).to include("<nav>Sidebar</nav>", "<footer>Prev/Next</footer>", "Heading")
+    end
   end
 
   describe "#render_partial" do
