@@ -1,10 +1,25 @@
-<div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %>">
+<% has_diff = @diff_lines&.any? %><div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %><%= ' docyard-code-block--diff' if has_diff %>">
   <% if @show_line_numbers %>
   <div class="docyard-code-block__lines" aria-hidden="true">
-    <% @line_numbers.each do |num| %>
-    <% if @highlights&.include?(num) %><span class="docyard-code-block__line--highlighted"><%= num %></span><% else %><span><%= num %></span><% end %>
+    <% @line_numbers.each_with_index do |num, index| %>
+<%
+  source_line = index + 1
+  diff_type = @diff_lines&.dig(source_line)
+  line_class = case diff_type
+               when :addition then "docyard-code-block__line--diff-add"
+               when :deletion then "docyard-code-block__line--diff-remove"
+               when nil then @highlights&.include?(num) ? "docyard-code-block__line--highlighted" : nil
+               end
+  prefix = case diff_type
+           when :addition then "+"
+           when :deletion then "-"
+           else ""
+           end
+%><% if line_class %><span class="<%= line_class %>"><%= prefix %><%= num %></span><% else %><span><%= num %></span><% end %>
     <% end %>
   </div>
+  <% elsif has_diff %>
+  <div class="docyard-code-block__diff-gutter" aria-hidden="true"><% line_count = @code_block_html.scan(/<span class="docyard-code-line/).count %><% line_count = 1 if line_count.zero? %><% (1..line_count).each do |num| %><% diff_type = @diff_lines&.dig(num) %><% gutter_class = diff_type == :addition ? "docyard-code-block__diff-indicator--add" : (diff_type == :deletion ? "docyard-code-block__diff-indicator--remove" : nil) %><% indicator = diff_type == :addition ? "+" : (diff_type == :deletion ? "-" : "") %><% if gutter_class %><span class="<%= gutter_class %>"><%= indicator %></span><% else %><span>&nbsp;</span><% end %><% end %></div>
   <% end %>
   <div class="docyard-code-block__content">
     <%= @code_block_html %>

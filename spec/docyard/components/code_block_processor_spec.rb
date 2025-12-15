@@ -292,6 +292,121 @@ js line 2</code></pre></div>'
         expect(result.scan("docyard-code-block--highlighted").count).to eq(2)
       end
     end
+
+    context "with diff lines" do
+      it "adds diff class to container when diff lines present" do
+        context[:code_block_diff_lines] = [{ 1 => :addition }]
+        html = '<div class="highlight"><pre><code>added line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--diff")
+      end
+
+      it "wraps addition lines with diff-add class", :aggregate_failures do
+        context[:code_block_diff_lines] = [{ 2 => :addition }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('<span class="docyard-code-line">line 1')
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--diff-add">line 2')
+        expect(result).to include('<span class="docyard-code-line">line 3')
+      end
+
+      it "wraps deletion lines with diff-remove class", :aggregate_failures do
+        context[:code_block_diff_lines] = [{ 1 => :deletion }]
+        html = '<div class="highlight"><pre><code>removed line
+kept line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--diff-remove">removed line')
+        expect(result).to include('<span class="docyard-code-line">kept line')
+      end
+
+      it "handles mixed additions and deletions", :aggregate_failures do
+        context[:code_block_diff_lines] = [{ 1 => :deletion, 2 => :addition }]
+        html = '<div class="highlight"><pre><code>old line
+new line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-line--diff-remove")
+        expect(result).to include("docyard-code-line--diff-add")
+      end
+
+      it "shows diff indicators in gutter with line numbers", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers", highlights: [] }]
+        context[:code_block_diff_lines] = [{ 1 => :addition, 2 => :deletion }]
+        html = '<div class="highlight"><pre><code>added
+removed
+normal</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block__line--diff-add">+1</span>')
+        expect(result).to include('class="docyard-code-block__line--diff-remove">-2</span>')
+        expect(result).to include("<span>3</span>")
+      end
+
+      it "shows diff gutter when no line numbers but has diff", :aggregate_failures do
+        context[:code_block_diff_lines] = [{ 1 => :addition }]
+        html = '<div class="highlight"><pre><code>added line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block__diff-gutter"')
+        expect(result).to include('class="docyard-code-block__diff-indicator--add">+</span>')
+      end
+
+      it "handles diff with custom start line", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers=10", highlights: [] }]
+        context[:code_block_diff_lines] = [{ 1 => :addition }]
+        html = '<div class="highlight"><pre><code>added line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("+10</span>")
+      end
+
+      it "combines diff with line highlighting", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: nil, highlights: [1] }]
+        context[:code_block_diff_lines] = [{ 1 => :addition }]
+        html = '<div class="highlight"><pre><code>both highlighted and added</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-line--highlighted")
+        expect(result).to include("docyard-code-line--diff-add")
+      end
+
+      it "does not add diff class when no diff lines" do
+        context[:code_block_diff_lines] = [{}]
+        html = '<div class="highlight"><pre><code>normal line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include("docyard-code-block--diff")
+      end
+
+      it "handles multiple code blocks with different diff lines", :aggregate_failures do
+        context[:code_block_diff_lines] = [
+          { 1 => :addition },
+          { 1 => :deletion }
+        ]
+        html = [
+          '<div class="highlight"><pre><code>block 1 line</code></pre></div>',
+          '<div class="highlight"><pre><code>block 2 line</code></pre></div>'
+        ].join("\n")
+
+        result = processor.postprocess(html)
+
+        expect(result.scan("docyard-code-block--diff").count).to eq(2)
+      end
+    end
   end
 
   describe "priority" do

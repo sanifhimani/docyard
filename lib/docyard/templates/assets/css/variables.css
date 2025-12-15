@@ -33,6 +33,17 @@
   --color-info: #0969da;
   --color-info-bg: #ddf4ff;
 
+  /* Diff colors - Light Theme */
+  --color-diff-add-bg: rgba(34, 197, 94, 0.15);
+  --color-diff-add-border: #22c55e;
+  --color-diff-add-gutter-bg: rgba(34, 197, 94, 0.2);
+  --color-diff-add-indicator: #166534;
+
+  --color-diff-remove-bg: rgba(239, 68, 68, 0.15);
+  --color-diff-remove-border: #ef4444;
+  --color-diff-remove-gutter-bg: rgba(239, 68, 68, 0.2);
+  --color-diff-remove-indicator: #991b1b;
+
   /* Callout colors - shadcn inspired */
   --callout-note: #0ea5e9;
   --callout-note-text: #0c4a6e;
@@ -164,6 +175,17 @@
   --color-error-bg: #4c1f1f;
   --color-info: #58a6ff;
   --color-info-bg: #1e3a5f;
+
+  /* Diff colors - Dark Theme */
+  --color-diff-add-bg: rgba(34, 197, 94, 0.1);
+  --color-diff-add-border: #22c55e;
+  --color-diff-add-gutter-bg: rgba(34, 197, 94, 0.15);
+  --color-diff-add-indicator: #4ade80;
+
+  --color-diff-remove-bg: rgba(239, 68, 68, 0.1);
+  --color-diff-remove-border: #ef4444;
+  --color-diff-remove-gutter-bg: rgba(239, 68, 68, 0.15);
+  --color-diff-remove-indicator: #f87171;
 
   /* Callout colors - Dark mode shadcn inspired */
   --callout-note: #38bdf8;

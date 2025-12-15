@@ -14,6 +14,7 @@ module Docyard
 
         @block_index = 0
         @options = context[:code_block_options] || []
+        @diff_lines = context[:code_block_diff_lines] || []
         @global_line_numbers = context.dig(:config, "markdown", "lineNumbers") || false
 
         html.gsub(%r{<div class="highlight">(.*?)</div>}m) do
@@ -26,24 +27,33 @@ module Docyard
       private
 
       def process_code_block(original_html, inner_html)
-        code_text = extract_code_text(inner_html)
+        block_data = extract_block_data(inner_html)
+        processed_html = process_html_for_highlighting(original_html, block_data)
+
+        render_code_block_with_copy(block_data.merge(html: processed_html))
+      end
+
+      def extract_block_data(inner_html)
         block_option = @options[@block_index]&.fetch(:option, nil)
-        highlights = @options[@block_index]&.fetch(:highlights, []) || []
-
-        show_line_numbers = determine_line_numbers(block_option)
+        code_text = extract_code_text(inner_html)
         start_line = extract_start_line(block_option)
-        line_numbers = show_line_numbers ? generate_line_numbers(code_text, start_line) : []
+        show_line_numbers = determine_line_numbers(block_option)
 
-        processed_html = highlights.any? ? wrap_highlighted_lines(original_html, highlights, start_line) : original_html
-
-        render_code_block_with_copy(
-          html: processed_html,
+        {
           text: code_text,
+          highlights: @options[@block_index]&.fetch(:highlights, []) || [],
+          diff_lines: @diff_lines[@block_index] || {},
           show_line_numbers: show_line_numbers,
-          line_numbers: line_numbers,
-          highlights: highlights,
+          line_numbers: show_line_numbers ? generate_line_numbers(code_text, start_line) : [],
           start_line: start_line
-        )
+        }
+      end
+
+      def process_html_for_highlighting(original_html, block_data)
+        needs_wrapping = block_data[:highlights].any? || block_data[:diff_lines].any?
+        return original_html unless needs_wrapping
+
+        wrap_lines(original_html, block_data[:highlights], block_data[:diff_lines], block_data[:start_line])
       end
 
       def determine_line_numbers(block_option)
@@ -65,25 +75,32 @@ module Docyard
         (start_line...(start_line + line_count)).to_a
       end
 
-      def wrap_highlighted_lines(html, highlights, start_line)
+      def wrap_lines(html, highlights, diff_lines, start_line)
         html.gsub(%r{<pre[^>]*><code[^>]*>(.*?)</code></pre>}m) do
           pre_match = Regexp.last_match(0)
           code_content = Regexp.last_match(1)
 
           lines = split_code_into_lines(code_content)
-          wrapped_lines = wrap_lines_with_highlight_classes(lines, highlights, start_line)
+          wrapped_lines = wrap_lines_with_classes(lines, highlights, diff_lines, start_line)
 
           pre_match.sub(code_content, wrapped_lines.join)
         end
       end
 
-      def wrap_lines_with_highlight_classes(lines, highlights, start_line)
+      def wrap_lines_with_classes(lines, highlights, diff_lines, start_line)
         lines.each_with_index.map do |line, index|
           line_num = start_line + index
-          highlighted = highlights.include?(line_num)
-          class_attr = highlighted ? "docyard-code-line docyard-code-line--highlighted" : "docyard-code-line"
-          %(<span class="#{class_attr}">#{line}</span>)
+          classes = build_line_classes(line_num, highlights, diff_lines)
+          %(<span class="#{classes}">#{line}</span>)
         end
+      end
+
+      def build_line_classes(line_num, highlights, diff_lines)
+        classes = ["docyard-code-line"]
+        classes << "docyard-code-line--highlighted" if highlights.include?(line_num)
+        classes << "docyard-code-line--diff-add" if diff_lines[line_num] == :addition
+        classes << "docyard-code-line--diff-remove" if diff_lines[line_num] == :deletion
+        classes.join(" ")
       end
 
       def split_code_into_lines(code_content)
@@ -171,6 +188,7 @@ module Docyard
             show_line_numbers: block_data[:show_line_numbers],
             line_numbers: block_data[:line_numbers],
             highlights: block_data[:highlights],
+            diff_lines: block_data[:diff_lines],
             start_line: block_data[:start_line]
           }
         )
