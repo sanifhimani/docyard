@@ -13,7 +13,7 @@ module Docyard
       @file_watcher = file_watcher
       @config = config
       @router = Router.new(docs_path: docs_path)
-      @renderer = Renderer.new(base_url: config&.build&.base_url || "/")
+      @renderer = Renderer.new(base_url: config&.build&.base_url || "/", config: config)
       @asset_handler = AssetHandler.new
     end
 

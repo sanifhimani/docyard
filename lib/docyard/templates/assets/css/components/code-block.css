@@ -9,6 +9,61 @@
   margin: 0;
 }
 
+/* Line Numbers Layout */
+.docyard-code-block--line-numbers {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-code-bg);
+  overflow: hidden;
+}
+
+.docyard-code-block--line-numbers .highlight {
+  border: none;
+  border-radius: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.docyard-code-block__lines {
+  flex-shrink: 0;
+  padding: var(--space-4) 0;
+  border-right: 1px solid var(--color-border);
+  text-align: right;
+  user-select: none;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  background-color: var(--color-code-bg);
+}
+
+.docyard-code-block__lines span {
+  display: block;
+  padding: 0 var(--space-3);
+  min-width: 2.5rem;
+}
+
+.docyard-code-block__content {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.docyard-code-block__content .highlight {
+  background-color: transparent;
+}
+
+/* Dark mode line numbers */
+.dark .docyard-code-block--line-numbers {
+  background-color: #161b22;
+}
+
+.dark .docyard-code-block__lines {
+  background-color: #161b22;
+  border-right-color: var(--color-border);
+}
+
 /* Inside tabs - remove wrapper margin when code block is only child */
 .docyard-tabs__panel:has(> [class*="language-"]:only-child) .docyard-code-block {
   margin: 0;

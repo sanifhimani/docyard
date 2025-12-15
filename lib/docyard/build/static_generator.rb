@@ -10,7 +10,7 @@ module Docyard
       def initialize(config, verbose: false)
         @config = config
         @verbose = verbose
-        @renderer = Renderer.new(base_url: config.build.base_url)
+        @renderer = Renderer.new(base_url: config.build.base_url, config: config)
       end
 
       def generate

@@ -124,6 +124,56 @@ RSpec.describe Docyard::Markdown do
       expect(markdown.html).to include("highlight")
       expect(markdown.html).to include("language-ruby")
     end
+
+    context "with line numbers" do
+      it "renders line numbers when :line-numbers is specified", :aggregate_failures do
+        markdown = described_class.new("```ruby:line-numbers\nputs 'hello'\nputs 'world'\n```")
+
+        expect(markdown.html).to include("docyard-code-block--line-numbers")
+        expect(markdown.html).to include("docyard-code-block__lines")
+        expect(markdown.html).to include("<span>1</span>")
+        expect(markdown.html).to include("<span>2</span>")
+      end
+
+      it "does not render line numbers when :no-line-numbers is specified" do
+        markdown = described_class.new("```ruby:no-line-numbers\nputs 'hello'\n```")
+
+        expect(markdown.html).not_to include("docyard-code-block--line-numbers")
+      end
+
+      it "starts line numbers from custom value with :line-numbers=N", :aggregate_failures do
+        markdown = described_class.new("```ruby:line-numbers=10\nline1\nline2\n```")
+
+        expect(markdown.html).to include("<span>10</span>")
+        expect(markdown.html).to include("<span>11</span>")
+        expect(markdown.html).not_to include("<span>1</span>")
+      end
+
+      it "strips line number options from the code fence", :aggregate_failures do
+        markdown = described_class.new("```ruby:line-numbers\nputs 'hello'\n```")
+
+        expect(markdown.html).to include("language-ruby")
+        expect(markdown.html).not_to include(":line-numbers")
+      end
+    end
+
+    context "with global line numbers config" do
+      let(:config) do
+        instance_double(Docyard::Config, data: { "markdown" => { "lineNumbers" => true } })
+      end
+
+      it "renders line numbers for all code blocks when enabled globally" do
+        markdown = described_class.new("```ruby\nputs 'hello'\n```", config: config)
+
+        expect(markdown.html).to include("docyard-code-block--line-numbers")
+      end
+
+      it "allows :no-line-numbers to override global setting" do
+        markdown = described_class.new("```ruby:no-line-numbers\nputs 'hello'\n```", config: config)
+
+        expect(markdown.html).not_to include("docyard-code-block--line-numbers")
+      end
+    end
   end
 
   describe "#title" do

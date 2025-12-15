@@ -9,16 +9,17 @@ module Docyard
     ERRORS_PATH = File.join(__dir__, "templates", "errors")
     PARTIALS_PATH = File.join(__dir__, "templates", "partials")
 
-    attr_reader :layout_path, :base_url
+    attr_reader :layout_path, :base_url, :config
 
-    def initialize(layout: "default", base_url: "/")
+    def initialize(layout: "default", base_url: "/", config: nil)
       @layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
       @base_url = normalize_base_url(base_url)
+      @config = config
     end
 
     def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {})
       markdown_content = File.read(file_path)
-      markdown = Markdown.new(markdown_content)
+      markdown = Markdown.new(markdown_content, config: config)
 
       html_content = strip_md_from_links(markdown.html)
       toc = markdown.toc

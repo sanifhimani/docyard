@@ -7,7 +7,7 @@ module Docyard
 
       def postprocess(html)
         headings = extract_headings(html)
-        Thread.current[:docyard_toc] = headings
+        context[:toc] = headings
         html
       end
 

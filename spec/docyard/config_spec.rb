@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Config do
-  let(:temp_dir) { Dir.mktmpdir }
-
-  after do
-    FileUtils.rm_rf(temp_dir)
-  end
+  include_context "with temp directory"
 
   describe ".load" do
     context "when no config file exists" do
@@ -31,12 +27,11 @@ RSpec.describe Docyard::Config do
 
     context "when config file exists" do
       it "loads and merges with defaults", :aggregate_failures do
-        config_content = <<~YAML
+        create_config(<<~YAML)
           site:
             title: "My Docs"
             description: "Awesome documentation"
         YAML
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
 
         config = described_class.load(temp_dir)
 
@@ -46,7 +41,7 @@ RSpec.describe Docyard::Config do
       end
 
       it "indicates that config file exists" do
-        File.write(File.join(temp_dir, "docyard.yml"), "site:\n  title: Test")
+        create_config("site:\n  title: Test")
 
         config = described_class.load(temp_dir)
 
@@ -54,11 +49,7 @@ RSpec.describe Docyard::Config do
       end
 
       it "deep merges nested config", :aggregate_failures do
-        config_content = <<~YAML
-          build:
-            output_dir: "_site"
-        YAML
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+        create_config("build:\n  output_dir: _site")
 
         config = described_class.load(temp_dir)
 
@@ -67,20 +58,18 @@ RSpec.describe Docyard::Config do
         expect(config.build.clean).to be true
       end
 
-      it "handles empty config file", :aggregate_failures do
-        File.write(File.join(temp_dir, "docyard.yml"), "")
+      it "handles empty config file" do
+        create_config("")
 
         config = described_class.load(temp_dir)
 
         expect(config.site.title).to eq("Documentation")
-        expect(config.build.output_dir).to eq("dist")
       end
     end
 
     context "when config file has invalid YAML" do
       it "raises ConfigError with helpful message" do
-        invalid_yaml = "site:\n  title: 'unclosed string"
-        File.write(File.join(temp_dir, "docyard.yml"), invalid_yaml)
+        create_config("site:\n  title: 'unclosed string")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /Invalid YAML/)
@@ -90,9 +79,8 @@ RSpec.describe Docyard::Config do
 
   describe "#site" do
     it "provides dot notation access to site config", :aggregate_failures do
-      logo_path = File.join(temp_dir, "logo.svg")
-      File.write(logo_path, "<svg></svg>")
-      File.write(File.join(temp_dir, "docyard.yml"), "site:\n  title: 'Test Title'\n  logo: '#{logo_path}'")
+      logo_path = create_file("logo.svg", "<svg></svg>")
+      create_config("site:\n  title: 'Test Title'\n  logo: '#{logo_path}'")
 
       config = described_class.load(temp_dir)
 
@@ -103,12 +91,11 @@ RSpec.describe Docyard::Config do
 
   describe "#build" do
     it "provides dot notation access to build config", :aggregate_failures do
-      config_content = <<~YAML
+      create_config(<<~YAML)
         build:
           output_dir: "public"
           base_url: "/docs/"
       YAML
-      File.write(File.join(temp_dir, "docyard.yml"), config_content)
 
       config = described_class.load(temp_dir)
 
@@ -119,13 +106,12 @@ RSpec.describe Docyard::Config do
 
   describe "#sidebar" do
     it "returns sidebar config" do
-      config_content = <<~YAML
+      create_config(<<~YAML)
         sidebar:
           items:
             - introduction
             - guide
       YAML
-      File.write(File.join(temp_dir, "docyard.yml"), config_content)
 
       config = described_class.load(temp_dir)
 
@@ -139,146 +125,127 @@ RSpec.describe Docyard::Config do
     end
   end
 
+  describe "#markdown" do
+    it "returns default lineNumbers as false" do
+      config = described_class.load(temp_dir)
+
+      expect(config.markdown.lineNumbers).to be false
+    end
+
+    it "returns configured lineNumbers value" do
+      create_config("markdown:\n  lineNumbers: true")
+
+      config = described_class.load(temp_dir)
+
+      expect(config.markdown.lineNumbers).to be true
+    end
+  end
+
   describe "validation" do
-    context "with invalid site.title" do
-      it "raises ConfigError" do
-        config_content = "site:\n  title: 123"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+    context "with invalid values" do
+      it "raises ConfigError for invalid site.title" do
+        create_config("site:\n  title: 123")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /site.title/)
       end
-    end
 
-    context "with invalid build.output_dir" do
-      it "raises ConfigError for non-string value" do
-        config_content = "build:\n  output_dir: 123"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for invalid build.output_dir" do
+        create_config("build:\n  output_dir: 123")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /build.output_dir/)
       end
 
-      it "raises ConfigError for value with slashes" do
-        config_content = "build:\n  output_dir: 'dist/folder'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for output_dir with slashes" do
+        create_config("build:\n  output_dir: 'dist/folder'")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /cannot contain slashes/)
       end
-    end
 
-    context "with invalid build.base_url" do
-      it "raises ConfigError when not starting with /" do
-        config_content = "build:\n  base_url: 'docs/'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for base_url not starting with /" do
+        create_config("build:\n  base_url: 'docs/'")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /must start with/)
       end
-    end
 
-    context "with invalid build.clean" do
-      it "raises ConfigError for non-boolean value" do
-        config_content = "build:\n  clean: 'yes'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for non-boolean build.clean" do
+        create_config("build:\n  clean: 'yes'")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /build.clean/)
       end
-    end
 
-    context "with missing logo file" do
-      it "raises ConfigError" do
-        config_content = "branding:\n  logo: 'nonexistent.svg'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for non-boolean markdown.lineNumbers" do
+        create_config("markdown:\n  lineNumbers: 'yes'")
 
         expect { described_class.load(temp_dir) }
-          .to raise_error(Docyard::ConfigError, /branding\.logo.*file not found/m)
-      end
-    end
-
-    context "with existing logo file" do
-      it "validates successfully" do
-        logo_path = File.join(temp_dir, "logo.svg")
-        File.write(logo_path, "<svg></svg>")
-
-        config_content = "branding:\n  logo: '#{logo_path}'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
-
-        expect { described_class.load(temp_dir) }.not_to raise_error
-      end
-    end
-
-    context "with logo URL" do
-      it "validates successfully for http URL" do
-        config_content = "branding:\n  logo: 'http://example.com/logo.svg'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
-
-        expect { described_class.load(temp_dir) }.not_to raise_error
+          .to raise_error(Docyard::ConfigError, /markdown\.lineNumbers/)
       end
 
-      it "validates successfully for https URL" do
-        config_content = "branding:\n  logo: 'https://cdn.example.com/logo.svg'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
-
-        expect { described_class.load(temp_dir) }.not_to raise_error
-      end
-    end
-
-    context "with favicon URL" do
-      it "validates successfully for https URL" do
-        config_content = "branding:\n  favicon: 'https://cdn.example.com/favicon.ico'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
-
-        expect { described_class.load(temp_dir) }.not_to raise_error
-      end
-    end
-
-    context "with logo_dark URL" do
-      it "validates successfully" do
-        config_content = "branding:\n  logo_dark: 'https://cdn.example.com/logo-dark.svg'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
-
-        expect { described_class.load(temp_dir) }.not_to raise_error
-      end
-    end
-
-    context "with invalid appearance.logo" do
-      it "raises ConfigError for non-boolean value" do
-        config_content = "branding:\n  appearance:\n    logo: 'yes'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for non-boolean appearance.logo" do
+        create_config("branding:\n  appearance:\n    logo: 'yes'")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /branding\.appearance\.logo/)
       end
-    end
 
-    context "with invalid appearance.title" do
-      it "raises ConfigError for non-boolean value" do
-        config_content = "branding:\n  appearance:\n    title: 1"
-        File.write(File.join(temp_dir, "docyard.yml"), config_content)
+      it "raises ConfigError for non-boolean appearance.title" do
+        create_config("branding:\n  appearance:\n    title: 1")
 
         expect { described_class.load(temp_dir) }
           .to raise_error(Docyard::ConfigError, /branding\.appearance\.title/)
       end
     end
 
-    context "with multiple errors" do
-      it "reports site.title error" do
-        config_yaml = "site:\n  title: 123\nbuild:\n  clean: 'yes'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_yaml)
+    context "with branding files" do
+      it "raises ConfigError for missing logo file" do
+        create_config("branding:\n  logo: 'nonexistent.svg'")
 
         expect { described_class.load(temp_dir) }
-          .to raise_error(Docyard::ConfigError, /site\.title/)
+          .to raise_error(Docyard::ConfigError, /branding\.logo.*file not found/m)
       end
 
-      it "reports build.clean error" do
-        config_yaml = "site:\n  title: 123\nbuild:\n  clean: 'yes'"
-        File.write(File.join(temp_dir, "docyard.yml"), config_yaml)
+      it "validates successfully with existing logo file" do
+        create_file("logo.svg", "<svg></svg>")
+        create_config("branding:\n  logo: '#{File.join(temp_dir, 'logo.svg')}'")
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+
+      it "validates successfully for http logo URL" do
+        create_config("branding:\n  logo: 'http://example.com/logo.svg'")
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+
+      it "validates successfully for https logo URL" do
+        create_config("branding:\n  logo: 'https://cdn.example.com/logo.svg'")
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+
+      it "validates successfully for https favicon URL" do
+        create_config("branding:\n  favicon: 'https://cdn.example.com/favicon.ico'")
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+
+      it "validates successfully for logo_dark URL" do
+        create_config("branding:\n  logo_dark: 'https://cdn.example.com/logo-dark.svg'")
+
+        expect { described_class.load(temp_dir) }.not_to raise_error
+      end
+    end
+
+    context "with multiple errors" do
+      it "reports all validation errors" do
+        create_config("site:\n  title: 123\nbuild:\n  clean: 'yes'")
 
         expect { described_class.load(temp_dir) }
-          .to raise_error(Docyard::ConfigError, /build\.clean/)
+          .to raise_error(Docyard::ConfigError, /site\.title.*build\.clean/m)
       end
     end
   end

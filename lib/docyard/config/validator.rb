@@ -12,6 +12,7 @@ module Docyard
         validate_site_section
         validate_branding_section
         validate_build_section
+        validate_markdown_section
 
         raise ConfigError, format_errors if @errors.any?
       end
@@ -46,6 +47,13 @@ module Docyard
         validate_string(build["base_url"], "build.base_url")
         validate_starts_with_slash(build["base_url"], "build.base_url")
         validate_boolean(build["clean"], "build.clean")
+      end
+
+      def validate_markdown_section
+        markdown = @config["markdown"]
+        return unless markdown
+
+        validate_boolean(markdown["lineNumbers"], "markdown.lineNumbers") if markdown.key?("lineNumbers")
       end
 
       def validate_string(value, field_name)
