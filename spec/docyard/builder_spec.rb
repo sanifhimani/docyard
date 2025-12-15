@@ -1,28 +1,20 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Builder do
-  let(:temp_dir) { Dir.mktmpdir }
-  let(:docs_dir) { File.join(temp_dir, "docs") }
+  include_context "with docs directory"
+
   let(:output_dir) { File.join(temp_dir, "dist") }
 
   before do
-    Dir.chdir(temp_dir) do
-      FileUtils.mkdir_p(docs_dir)
-      File.write(File.join(docs_dir, "index.md"), "# Home\n\nWelcome!")
-      File.write(File.join(docs_dir, "guide.md"), "# Guide\n\nContent")
-
-      File.write("docyard.yml", <<~YAML)
-        site:
-          title: "Test Docs"
-        build:
-          output_dir: "dist"
-          base_url: "/"
-      YAML
-    end
-  end
-
-  after do
-    FileUtils.rm_rf(temp_dir)
+    create_doc("index.md", "# Home\n\nWelcome!")
+    create_doc("guide.md", "# Guide\n\nContent")
+    create_config(<<~YAML)
+      site:
+        title: "Test Docs"
+      build:
+        output_dir: "dist"
+        base_url: "/"
+    YAML
   end
 
   describe "#build" do
@@ -47,8 +39,7 @@ RSpec.describe Docyard::Builder do
           old_file = File.join(output_dir, "old-file.txt")
           File.write(old_file, "old content")
 
-          builder = described_class.new(clean: true, verbose: false)
-          builder.build
+          described_class.new(clean: true, verbose: false).build
 
           expect(File.exist?(old_file)).to be false
         end
@@ -60,8 +51,7 @@ RSpec.describe Docyard::Builder do
           old_file = File.join(output_dir, "old-file.txt")
           File.write(old_file, "old content")
 
-          builder = described_class.new(clean: false, verbose: false)
-          builder.build
+          described_class.new(clean: false, verbose: false).build
 
           expect(File.exist?(old_file)).to be true
         end
@@ -81,8 +71,7 @@ RSpec.describe Docyard::Builder do
     describe "robots.txt generation" do
       it "generates robots.txt with correct content", :aggregate_failures do
         Dir.chdir(temp_dir) do
-          builder = described_class.new(clean: true, verbose: false)
-          builder.build
+          described_class.new(clean: true, verbose: false).build
 
           robots_content = File.read(File.join(output_dir, "robots.txt"))
 
@@ -94,14 +83,13 @@ RSpec.describe Docyard::Builder do
 
       it "uses base_url in sitemap reference" do
         Dir.chdir(temp_dir) do
-          File.write("docyard.yml", <<~YAML)
+          create_config(<<~YAML)
             build:
               output_dir: "dist"
               base_url: "/my-docs/"
           YAML
 
-          builder = described_class.new(clean: true, verbose: false)
-          builder.build
+          described_class.new(clean: true, verbose: false).build
 
           robots_content = File.read(File.join(output_dir, "robots.txt"))
 

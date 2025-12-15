@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Components::TableOfContentsProcessor do
-  let(:processor) { described_class.new }
+  let(:context) { {} }
+  let(:processor) { described_class.new(context) }
 
   describe ".priority" do
     it "has priority 35" do
@@ -18,7 +19,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
         HTML
 
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc).to be_an(Array)
         expect(toc.length).to eq(1)
@@ -27,7 +28,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
       it "captures heading metadata correctly", :aggregate_failures do
         html = '<h2 id="getting-started">Getting Started</h2>'
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:level]).to eq(2)
         expect(toc[0][:id]).to eq("getting-started")
@@ -37,7 +38,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
       it "nests child headings under parents", :aggregate_failures do
         html = '<h2 id="parent">Parent</h2><h3 id="child">Child</h3>'
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:children].length).to eq(1)
         expect(toc[0][:children][0][:id]).to eq("child")
@@ -57,7 +58,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
       it "builds three-level nested hierarchy", :aggregate_failures do
         html = '<h2 id="h2">H2</h2><h3 id="h3">H3</h3><h4 id="h4">H4</h4>'
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:children][0][:children].length).to eq(1)
       end
@@ -65,7 +66,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
       it "handles multiple sections at same level" do
         html = '<h2 id="s1">S1</h2><h3 id="s1a">S1a</h3><h3 id="s1b">S1b</h3>'
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:children].length).to eq(2)
       end
@@ -73,7 +74,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
       it "preserves text across all levels", :aggregate_failures do
         html = '<h2 id="s1">Section 1</h2><h3 id="s1-1">Sub 1.1</h3><h4 id="s1-1-1">Sub 1.1.1</h4>'
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:text]).to eq("Section 1")
         expect(toc[0][:children][0][:text]).to eq("Sub 1.1")
@@ -86,7 +87,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
         HTML
 
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:text]).to eq("Test Heading")
       end
@@ -97,7 +98,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
         HTML
 
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc[0][:text]).to eq("Test Bold Heading")
       end
@@ -111,7 +112,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
         HTML
 
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc.length).to eq(1)
         expect(toc[0][:text]).to eq("Section")
@@ -123,7 +124,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
         html = "<p>Just some content</p>"
 
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc).to eq([])
       end
@@ -137,7 +138,7 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
         HTML
 
         processor.postprocess(html)
-        toc = Thread.current[:docyard_toc]
+        toc = context[:toc]
 
         expect(toc.length).to eq(1)
         expect(toc[0][:text]).to eq("With ID")

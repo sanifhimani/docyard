@@ -11,15 +11,15 @@ module Docyard
           @processors.sort_by! { |p| p.priority || 100 }
         end
 
-        def run_preprocessors(content)
+        def run_preprocessors(content, context = {})
           @processors.reduce(content) do |processed_content, processor_class|
-            processor_class.new.preprocess(processed_content)
+            processor_class.new(context).preprocess(processed_content)
           end
         end
 
-        def run_postprocessors(html)
+        def run_postprocessors(html, context = {})
           @processors.reduce(html) do |processed_html, processor_class|
-            processor_class.new.postprocess(processed_html)
+            processor_class.new(context).postprocess(processed_html)
           end
         end
 

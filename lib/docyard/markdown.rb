@@ -9,6 +9,7 @@ require_relative "components/callout_processor"
 require_relative "components/tabs_processor"
 require_relative "components/icon_processor"
 require_relative "components/code_block_processor"
+require_relative "components/code_block_options_preprocessor"
 require_relative "components/table_wrapper_processor"
 require_relative "components/heading_anchor_processor"
 require_relative "components/table_of_contents_processor"
@@ -17,10 +18,12 @@ module Docyard
   class Markdown
     FRONTMATTER_REGEX = /\A---\s*\n(.*?\n)---\s*\n/m
 
-    attr_reader :raw
+    attr_reader :raw, :config
 
-    def initialize(raw)
+    def initialize(raw, config: nil)
       @raw = raw.freeze
+      @config = config
+      @context = {}
     end
 
     def frontmatter
@@ -56,7 +59,7 @@ module Docyard
     end
 
     def toc
-      @toc ||= Thread.current[:docyard_toc] || []
+      @context[:toc] || []
     end
 
     private
@@ -75,7 +78,9 @@ module Docyard
     end
 
     def render_html
-      preprocessed_content = Components::Registry.run_preprocessors(content)
+      @context[:config] = config&.data
+
+      preprocessed_content = Components::Registry.run_preprocessors(content, @context)
 
       raw_html = Kramdown::Document.new(
         preprocessed_content,
@@ -85,7 +90,7 @@ module Docyard
         parse_block_html: true
       ).to_html
 
-      Components::Registry.run_postprocessors(raw_html)
+      Components::Registry.run_postprocessors(raw_html, @context)
     end
   end
 end

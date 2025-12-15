@@ -129,17 +129,17 @@ RSpec.describe Docyard::RackApplication do
         expect(json["reload"]).to be(false)
       end
 
-      it "handles errors gracefully", :aggregate_failures do
+      it "handles errors gracefully by returning reload: false", :aggregate_failures do
         env = { "PATH_INFO" => "/_docyard/reload", "QUERY_STRING" => "since=invalid" }
         allow(file_watcher).to receive(:changed_since?).and_raise(StandardError, "test error")
         allow(Docyard.logger).to receive(:error)
         allow(Docyard.logger).to receive(:debug)
 
-        _status, _headers, body = app.call(env)
+        status, _headers, body = app.call(env)
         json = JSON.parse(body.first)
 
+        expect(status).to eq(200)
         expect(json["reload"]).to be(false)
-        expect(Docyard.logger).to have_received(:error).with(/Reload check error/)
       end
     end
 

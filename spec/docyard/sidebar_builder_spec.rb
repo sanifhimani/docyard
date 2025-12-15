@@ -1,21 +1,11 @@
 # frozen_string_literal: true
 
-require "fileutils"
-require "tmpdir"
-
 RSpec.describe Docyard::SidebarBuilder do
-  let(:docs_path) { Dir.mktmpdir }
+  include_context "with docs directory"
+
   let(:current_path) { "/" }
   let(:config) { {} }
-  let(:sidebar) { described_class.new(docs_path: docs_path, current_path: current_path, config: config) }
-
-  after { FileUtils.rm_rf(docs_path) }
-
-  def create_file(path, content = "---\ntitle: Test\n---\n\nContent")
-    full_path = File.join(docs_path, path)
-    FileUtils.mkdir_p(File.dirname(full_path))
-    File.write(full_path, content)
-  end
+  let(:sidebar) { described_class.new(docs_path: docs_dir, current_path: current_path, config: config) }
 
   describe "#tree" do
     context "with empty directory" do
@@ -26,8 +16,8 @@ RSpec.describe Docyard::SidebarBuilder do
 
     context "with basic structure" do
       before do
-        create_file("getting-started.md", "---\ntitle: Getting Started\n---")
-        create_file("guide.md", "---\ntitle: Guide\n---")
+        create_doc("getting-started.md", "---\ntitle: Getting Started\n---")
+        create_doc("guide.md", "---\ntitle: Guide\n---")
       end
 
       it "returns tree structure", :aggregate_failures do
@@ -41,8 +31,8 @@ RSpec.describe Docyard::SidebarBuilder do
 
     context "with nested structure" do
       before do
-        create_file("guide/index.md", "---\ntitle: Guide Overview\n---")
-        create_file("guide/setup.md", "---\ntitle: Setup\n---")
+        create_doc("guide/index.md", "---\ntitle: Guide Overview\n---")
+        create_doc("guide/setup.md", "---\ntitle: Setup\n---")
       end
 
       it "builds nested tree", :aggregate_failures do
@@ -55,7 +45,7 @@ RSpec.describe Docyard::SidebarBuilder do
     end
 
     it "caches tree on subsequent calls" do
-      create_file("test.md")
+      create_doc("test.md")
 
       tree1 = sidebar.tree
       tree2 = sidebar.tree
@@ -73,7 +63,7 @@ RSpec.describe Docyard::SidebarBuilder do
 
     context "with files" do
       before do
-        create_file("getting-started.md", "---\ntitle: Getting Started\n---")
+        create_doc("getting-started.md", "---\ntitle: Getting Started\n---")
       end
 
       it "returns HTML string", :aggregate_failures do
@@ -89,8 +79,8 @@ RSpec.describe Docyard::SidebarBuilder do
       let(:config) { { site_title: "My Documentation" } }
 
       before do
-        create_file("index.md", "---\ntitle: My Documentation\n---")
-        create_file("test.md", "---\ntitle: Test Page\n---")
+        create_doc("index.md", "---\ntitle: My Documentation\n---")
+        create_doc("test.md", "---\ntitle: Test Page\n---")
       end
 
       it "filters site title from navigation", :aggregate_failures do
@@ -104,8 +94,8 @@ RSpec.describe Docyard::SidebarBuilder do
 
     context "without site title in config" do
       before do
-        create_file("index.md", "---\ntitle: Documentation\n---")
-        create_file("test.md", "---\ntitle: Test Page\n---")
+        create_doc("index.md", "---\ntitle: Documentation\n---")
+        create_doc("test.md", "---\ntitle: Test Page\n---")
       end
 
       it "filters default title from navigation", :aggregate_failures do
@@ -119,14 +109,14 @@ RSpec.describe Docyard::SidebarBuilder do
   end
 
   describe "integration" do
-    before do
-      create_file("getting-started.md", "---\ntitle: Getting Started\n---\n\nContent")
-      create_file("guide/index.md", "---\ntitle: Guide Overview\n---\n\nContent")
-      create_file("guide/setup.md", "---\ntitle: Setup\n---\n\nContent")
-      create_file("guide/advanced/performance.md", "---\ntitle: Performance\n---\n\nContent")
-    end
-
     let(:current_path) { "/guide/setup" }
+
+    before do
+      create_doc("getting-started.md", "---\ntitle: Getting Started\n---\n\nContent")
+      create_doc("guide/index.md", "---\ntitle: Guide Overview\n---\n\nContent")
+      create_doc("guide/setup.md", "---\ntitle: Setup\n---\n\nContent")
+      create_doc("guide/advanced/performance.md", "---\ntitle: Performance\n---\n\nContent")
+    end
 
     it "generates complete sidebar", :aggregate_failures do
       html = sidebar.to_html

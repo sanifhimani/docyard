@@ -1,5 +1,14 @@
-<div class="docyard-code-block">
-  <%= @code_block_html %>
+<div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %>">
+  <% if @show_line_numbers %>
+  <div class="docyard-code-block__lines" aria-hidden="true">
+    <% @line_numbers.each do |num| %>
+    <span><%= num %></span>
+    <% end %>
+  </div>
+  <% end %>
+  <div class="docyard-code-block__content">
+    <%= @code_block_html %>
+  </div>
   <button class="docyard-code-block__copy" aria-label="Copy code to clipboard" data-code="<%= @code_text %>">
     <%= @copy_icon %>
   </button>

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Components::CodeBlockProcessor do
-  let(:processor) { described_class.new }
+  let(:context) { {} }
+  let(:processor) { described_class.new(context) }
 
   describe "#postprocess" do
     context "with code blocks" do
@@ -112,6 +113,92 @@ RSpec.describe Docyard::Components::CodeBlockProcessor do
         result = processor.postprocess(html)
 
         expect(result).to eq(html)
+      end
+    end
+
+    context "with line numbers" do
+      it "shows line numbers when :line-numbers option is set", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers" }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block docyard-code-block--line-numbers"')
+        expect(result).to include('class="docyard-code-block__lines"')
+        expect(result).to include("<span>1</span>")
+        expect(result).to include("<span>2</span>")
+        expect(result).to include("<span>3</span>")
+      end
+
+      it "does not show line numbers when :no-line-numbers option is set", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":no-line-numbers" }]
+        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include("docyard-code-block--line-numbers")
+        expect(result).not_to include("docyard-code-block__lines")
+      end
+
+      it "starts line numbers from custom value with :line-numbers=N", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers=5" }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("<span>5</span>")
+        expect(result).to include("<span>6</span>")
+        expect(result).not_to include("<span>1</span>")
+      end
+
+      it "shows line numbers when global config is enabled" do
+        context[:config] = { "markdown" => { "lineNumbers" => true } }
+        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--line-numbers")
+      end
+
+      it "block-level :no-line-numbers overrides global config" do
+        context[:config] = { "markdown" => { "lineNumbers" => true } }
+        context[:code_block_options] = [{ lang: "ruby", option: ":no-line-numbers" }]
+        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include("docyard-code-block--line-numbers")
+      end
+
+      it "block-level :line-numbers overrides global config off" do
+        context[:config] = { "markdown" => { "lineNumbers" => false } }
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers" }]
+        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--line-numbers")
+      end
+
+      it "handles multiple code blocks with different options", :aggregate_failures do
+        context[:code_block_options] = [
+          { lang: "ruby", option: ":line-numbers" },
+          { lang: "js", option: nil },
+          { lang: "python", option: ":line-numbers=10" }
+        ]
+        blocks = [
+          '<div class="highlight"><pre><code>ruby code</code></pre></div>',
+          '<div class="highlight"><pre><code>js code</code></pre></div>',
+          '<div class="highlight"><pre><code>python code</code></pre></div>'
+        ]
+        result = processor.postprocess(blocks.join("\n"))
+
+        expect(result.scan("docyard-code-block--line-numbers").count).to eq(2)
+        expect(result).to include("<span>1</span>")
+        expect(result).to include("<span>10</span>")
       end
     end
   end

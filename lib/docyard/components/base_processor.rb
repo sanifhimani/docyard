@@ -12,6 +12,12 @@ module Docyard
         end
       end
 
+      attr_reader :context
+
+      def initialize(context = {})
+        @context = context
+      end
+
       def preprocess(content)
         content
       end

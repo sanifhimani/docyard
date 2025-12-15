@@ -34,6 +34,9 @@ module Docyard
           "prev_text" => "Previous",
           "next_text" => "Next"
         }
+      },
+      "markdown" => {
+        "lineNumbers" => false
       }
     }.freeze
 
@@ -72,6 +75,10 @@ module Docyard
 
     def navigation
       @navigation ||= ConfigSection.new(data["navigation"])
+    end
+
+    def markdown
+      @markdown ||= ConfigSection.new(data["markdown"])
     end
 
     private
