@@ -201,6 +201,97 @@ line 2</code></pre></div>'
         expect(result).to include("<span>10</span>")
       end
     end
+
+    context "with line highlighting" do
+      it "adds highlighted class to container when highlights present" do
+        context[:code_block_options] = [{ lang: "ruby", option: nil, highlights: [1, 3] }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--highlighted")
+      end
+
+      it "wraps lines in span elements with highlight class", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: nil, highlights: [2] }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('<span class="docyard-code-line">line 1')
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--highlighted">line 2')
+        expect(result).to include('<span class="docyard-code-line">line 3')
+      end
+
+      it "highlights line numbers in gutter when line numbers enabled", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers", highlights: [2] }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("<span>1</span>")
+        expect(result).to include('<span class="docyard-code-block__line--highlighted">2</span>')
+        expect(result).to include("<span>3</span>")
+      end
+
+      it "respects custom start line for highlight positions", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers=10", highlights: [11] }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('<span class="docyard-code-line">line 1')
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--highlighted">line 2')
+        expect(result).to include('<span class="docyard-code-line">line 3')
+      end
+
+      it "preserves syntax highlighting spans within lines", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: nil, highlights: [1] }]
+        code = '<span class="k">def</span> <span class="nf">hello</span>'
+        html = %(<div class="highlight"><pre><code>#{code}</code></pre></div>)
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-line--highlighted")
+        expect(result).to include('<span class="k">def</span>')
+        expect(result).to include('<span class="nf">hello</span>')
+      end
+
+      it "does not add highlighted class when no highlights", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include("docyard-code-block--highlighted")
+        expect(result).not_to include("docyard-code-line")
+      end
+
+      it "handles multiple code blocks with different highlights", :aggregate_failures do
+        context[:code_block_options] = [
+          { lang: "ruby", option: nil, highlights: [1] },
+          { lang: "js", option: nil, highlights: [2] }
+        ]
+        html = [
+          '<div class="highlight"><pre><code>ruby line 1
+ruby line 2</code></pre></div>',
+          '<div class="highlight"><pre><code>js line 1
+js line 2</code></pre></div>'
+        ].join("\n")
+
+        result = processor.postprocess(html)
+
+        expect(result.scan("docyard-code-block--highlighted").count).to eq(2)
+      end
+    end
   end
 
   describe "priority" do

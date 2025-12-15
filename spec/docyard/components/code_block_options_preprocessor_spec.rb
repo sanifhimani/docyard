@@ -10,7 +10,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "ruby", option: ":line-numbers" }])
+      expect(context[:code_block_options]).to eq([{ lang: "ruby", option: ":line-numbers", highlights: [] }])
     end
 
     it "extracts :no-line-numbers option from code fence" do
@@ -18,7 +18,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "js", option: ":no-line-numbers" }])
+      expect(context[:code_block_options]).to eq([{ lang: "js", option: ":no-line-numbers", highlights: [] }])
     end
 
     it "extracts :line-numbers=N option from code fence" do
@@ -26,7 +26,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "python", option: ":line-numbers=10" }])
+      expect(context[:code_block_options]).to eq([{ lang: "python", option: ":line-numbers=10", highlights: [] }])
     end
 
     it "handles code fences without options" do
@@ -34,7 +34,66 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil }])
+      expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [] }])
+    end
+
+    context "with line highlighting syntax" do
+      it "extracts single line highlight" do
+        content = "```ruby {3}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [3] }])
+      end
+
+      it "extracts multiple individual lines" do
+        content = "```ruby {1, 3, 5}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [1, 3, 5] }])
+      end
+
+      it "extracts line ranges" do
+        content = "```ruby {2-5}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [2, 3, 4, 5] }])
+      end
+
+      it "extracts mixed individual lines and ranges" do
+        content = "```ruby {1, 3-5, 8}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [1, 3, 4, 5, 8] }])
+      end
+
+      it "combines highlight syntax with options" do
+        content = "```ruby:line-numbers {2, 4}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: ":line-numbers", highlights: [2, 4] }])
+      end
+
+      it "strips highlight syntax from output", :aggregate_failures do
+        content = "```ruby {1, 3-5}\nputs \"hello\"\n```"
+
+        result = processor.preprocess(content)
+
+        expect(result).to include("```ruby")
+        expect(result).not_to include("{1, 3-5}")
+      end
+
+      it "deduplicates overlapping ranges" do
+        content = "```ruby {1-3, 2-4}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [1, 2, 3, 4] }])
+      end
     end
 
     it "strips options from the code fence", :aggregate_failures do
@@ -57,9 +116,9 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       expect(context[:code_block_options]).to eq(
         [
-          { lang: "ruby", option: ":line-numbers" },
-          { lang: "js", option: ":no-line-numbers" },
-          { lang: "python", option: nil }
+          { lang: "ruby", option: ":line-numbers", highlights: [] },
+          { lang: "js", option: ":no-line-numbers", highlights: [] },
+          { lang: "python", option: nil, highlights: [] }
         ]
       )
     end

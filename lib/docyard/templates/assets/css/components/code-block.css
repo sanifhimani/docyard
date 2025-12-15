@@ -50,6 +50,38 @@
   overflow-x: auto;
 }
 
+/* Line Highlighting */
+.docyard-code-line {
+  display: block;
+}
+
+.docyard-code-line--highlighted {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-left: 3px solid var(--color-primary);
+  margin-left: calc(-1 * var(--space-4));
+  margin-right: calc(-1 * var(--space-4));
+  padding-left: calc(var(--space-4) - 3px);
+  padding-right: var(--space-4);
+}
+
+/* Highlighted line number in gutter */
+.docyard-code-block__line--highlighted {
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* With line numbers - adjust margins for the gutter layout */
+.docyard-code-block--line-numbers .docyard-code-line {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.docyard-code-block--line-numbers .docyard-code-line--highlighted {
+  margin-left: calc(-1 * var(--space-4));
+  margin-right: calc(-1 * var(--space-4));
+}
+
 .docyard-code-block__content .highlight {
   background-color: transparent;
 }
