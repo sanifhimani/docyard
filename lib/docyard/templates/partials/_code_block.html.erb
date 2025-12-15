@@ -1,8 +1,8 @@
-<div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %>">
+<div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %>">
   <% if @show_line_numbers %>
   <div class="docyard-code-block__lines" aria-hidden="true">
     <% @line_numbers.each do |num| %>
-    <span><%= num %></span>
+    <% if @highlights&.include?(num) %><span class="docyard-code-block__line--highlighted"><%= num %></span><% else %><span><%= num %></span><% end %>
     <% end %>
   </div>
   <% end %>

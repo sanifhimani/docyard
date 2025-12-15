@@ -12,6 +12,7 @@
   --color-border: #e4e7eb;
   --color-border-secondary: #f3f4f6;
   --color-primary: #2563eb;
+  --color-primary-rgb: 37, 99, 235;
   --color-primary-hover: #1d4ed8;
   --color-primary-light: #eff6ff;
   --color-link: #0969da;
@@ -143,6 +144,7 @@
   --color-border: #30363d;
   --color-border-secondary: #21262d;
   --color-primary: #3b82f6;
+  --color-primary-rgb: 59, 130, 246;
   --color-primary-hover: #60a5fa;
   --color-primary-light: #1e3a8a;
   --color-link: #58a6ff;
