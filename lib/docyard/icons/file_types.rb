@@ -8,7 +8,6 @@ module Docyard
     # License: CC BY-SA 4.0 (see LICENSE.vscode-icons)
     # Copyright (c) 2016 Roberto Huertas
     module FileTypes
-      # SVG content for each file type icon
       # rubocop:disable Layout/LineLength
       ICONS = {
         "css" => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-labelledby="css-logo-title css-logo-description"><title>CSS Logo</title><g style="display:inline"><path fill="#639" d="M1.995 1.994h23.52a4.48 4.48 0 0 1 4.48 4.48v19.04a4.48 4.48 0 0 1-4.48 4.48H6.475a4.48 4.48 0 0 1-4.48-4.48Z"/><path fill="#fff" d="M9.079 24.87v-4.704c0-1.876 1.204-2.884 3.024-2.884 1.792-.028 2.912 1.148 2.856 3.136h-2.072c.056-.756-.28-1.316-.84-1.288-.7 0-.896.476-.896 1.372v4.088c0 .868.28 1.288.896 1.316.644 0 .896-.644.84-1.372h2.072c.112 2.044-1.176 3.248-2.996 3.22-1.764 0-2.884-.98-2.884-2.884zm6.636-.336h1.932c.028.896.308 1.456.924 1.456.616 0 .84-.364.84-1.204 0-.7-.308-1.092-1.064-1.456l-.728-.336c-1.288-.616-1.82-1.372-1.82-2.884 0-1.68 1.064-2.856 2.8-2.856 1.736 0 2.66 1.204 2.688 3.164h-1.876c0-.812-.168-1.372-.784-1.372-.56 0-.84.28-.84.98s.252.98.924 1.26l.672.308c1.428.672 2.044 1.54 2.044 3.164 0 1.932-1.092 2.996-2.884 2.996-1.792 0-2.8-1.232-2.828-3.22zm6.328 0h1.96c0 .896.308 1.456.896 1.456.588 0 .84-.364.84-1.204 0-.7-.28-1.092-1.064-1.456l-.728-.336c-1.288-.616-1.792-1.372-1.792-2.884 0-1.68 1.036-2.856 2.8-2.856 1.764 0 2.632 1.204 2.688 3.164h-1.876c-.028-.812-.196-1.372-.812-1.372-.56 0-.812.28-.812.98s.224.98.896 1.26l.7.308c1.4.672 2.016 1.54 2.016 3.164 0 1.932-1.092 2.996-2.884 2.996-1.792 0-2.8-1.232-2.828-3.22z"/></g></svg>',
@@ -35,7 +34,6 @@ module Docyard
       }.freeze
       # rubocop:enable Layout/LineLength
 
-      # Map of file extensions/aliases to icon names
       EXTENSIONS = {
         "css" => "css",
         "go" => "go",
@@ -62,10 +60,6 @@ module Docyard
         "postgresql" => "pgsql"
       }.freeze
 
-      # Get the SVG content for a file extension
-      #
-      # @param extension [String] The file extension (e.g., "js", "ts")
-      # @return [String, nil] The SVG content, or nil if not found
       def self.svg(extension)
         icon_name = EXTENSIONS[extension.to_s.downcase]
         return nil unless icon_name
@@ -73,17 +67,10 @@ module Docyard
         ICONS[icon_name]
       end
 
-      # Check if an icon exists for a file extension
-      #
-      # @param extension [String] The file extension to check
-      # @return [Boolean] true if icon exists
       def self.exists?(extension)
         EXTENSIONS.key?(extension.to_s.downcase)
       end
 
-      # Get all available file extensions
-      #
-      # @return [Array<String>] Array of supported extensions
       def self.available
         EXTENSIONS.keys.sort
       end

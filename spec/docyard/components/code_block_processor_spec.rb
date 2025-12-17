@@ -407,6 +407,131 @@ normal</code></pre></div>'
         expect(result.scan("docyard-code-block--diff").count).to eq(2)
       end
     end
+
+    context "with custom titles" do
+      it "adds titled class and renders header when title is present", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "js", title: "config.js", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>const x = 1;</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--titled")
+        expect(result).to include('class="docyard-code-block__header"')
+        expect(result).to include('class="docyard-code-block__title"')
+        expect(result).to include("config.js")
+      end
+
+      it "includes title attribute on title span for native tooltip", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "js", title: "long/path/to/file.js", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>const x = 1;</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('title="long/path/to/file.js"')
+        expect(result).to include('class="docyard-code-block__title" title="long/path/to/file.js"')
+      end
+
+      it "renders file extension icon for known languages", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "js", title: "app.js", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>const x = 1;</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block__icon"')
+        expect(result).to include("<svg")
+      end
+
+      it "renders terminal icon for shell languages", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "bash", title: "install.sh", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>echo hello</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block__icon"')
+        expect(result).to include("docyard-icon")
+      end
+
+      it "renders file icon for unknown languages", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "unknownlang", title: "file.xyz", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>content</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block__icon"')
+      end
+
+      it "parses manual icon prefix from title", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "bash", title: ":rocket:Deploy Script", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>echo deploy</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("Deploy Script")
+        expect(result).not_to include(":rocket:")
+        expect(result).to include('class="docyard-code-block__icon"')
+      end
+
+      it "places copy button in header when title present", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "js", title: "config.js", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>const x = 1;</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        header_match = result.match(/class="docyard-code-block__header">(.*?)<\/div>/m)
+        expect(header_match).not_to be_nil
+        expect(header_match[1]).to include('class="docyard-code-block__copy"')
+      end
+
+      it "does not render header when title is nil", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "js", title: nil, option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>const x = 1;</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include("docyard-code-block--titled")
+        expect(result).not_to include("docyard-code-block__header")
+      end
+
+      it "combines title with line numbers", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", title: "app.rb", option: ":line-numbers", highlights: [] }]
+        html = '<div class="highlight"><pre><code>puts "hello"
+puts "world"</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--titled")
+        expect(result).to include("docyard-code-block--line-numbers")
+        expect(result).to include("docyard-code-block__header")
+        expect(result).to include("docyard-code-block__lines")
+        expect(result).to include("app.rb")
+        expect(result).to include("<span>1</span>")
+      end
+
+      it "combines title with diff lines", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "js", title: "config.js", option: nil, highlights: [] }]
+        context[:code_block_diff_lines] = [{ 1 => :addition }]
+        html = '<div class="highlight"><pre><code>added line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--titled")
+        expect(result).to include("docyard-code-block--diff")
+        expect(result).to include("docyard-code-block__header")
+        expect(result).to include("config.js")
+      end
+
+      it "combines title with highlights", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", title: "example.rb", option: nil, highlights: [1] }]
+        html = '<div class="highlight"><pre><code>highlighted line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--titled")
+        expect(result).to include("docyard-code-block--highlighted")
+        expect(result).to include("docyard-code-block__header")
+        expect(result).to include("example.rb")
+      end
+    end
   end
 
   describe "priority" do

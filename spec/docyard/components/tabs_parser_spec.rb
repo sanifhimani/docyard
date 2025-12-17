@@ -51,6 +51,21 @@ RSpec.describe Docyard::Components::TabsParser do
         expect(tabs[0][:content]).to include("const")
       end
 
+      it "adds copy button to code blocks inside tabs", :aggregate_failures do
+        content = <<~CONTENT
+          == JavaScript
+          ```javascript
+          const foo = 'bar';
+          ```
+        CONTENT
+
+        tabs = described_class.parse(content)
+
+        expect(tabs[0][:content]).to include('class="docyard-code-block"')
+        expect(tabs[0][:content]).to include('class="docyard-code-block__copy"')
+        expect(tabs[0][:content]).to include('data-code="')
+      end
+
       it "detects icons for code-only tabs", :aggregate_failures do
         content = <<~CONTENT
           == JavaScript

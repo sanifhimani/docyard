@@ -1,4 +1,4 @@
-/* Tabs Component - Modern Design */
+/* Tabs Component */
 
 .docyard-tabs {
   margin: var(--space-6) 0;
@@ -13,10 +13,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Tab List Wrapper - Contains scroll indicators */
+/* Tab List Wrapper */
 .docyard-tabs__list-wrapper {
   position: relative;
   background: var(--color-bg-secondary);
+}
+
+.dark .docyard-tabs__list-wrapper {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 /* Tab List Container */
@@ -36,7 +40,7 @@
   display: none;
 }
 
-/* Bottom border line - sits behind tabs */
+/* Bottom border line */
 .docyard-tabs__list::after {
   content: '';
   position: absolute;
@@ -81,7 +85,7 @@
 
 .docyard-tabs__tab[aria-selected="true"] {
   color: var(--color-primary);
-  background: var(--color-bg);
+  background: var(--color-code-bg);
 }
 
 /* Cover the border-bottom for active tab */
@@ -92,11 +96,11 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--color-bg);
+  background: var(--color-code-bg);
   z-index: 2;
 }
 
-/* Focus indicator for keyboard navigation */
+/* Focus state */
 .docyard-tabs__tab:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -121,7 +125,7 @@
   height: 100%;
 }
 
-/* Scroll Indicators - Gradient overlays showing more content */
+/* Scroll Indicators */
 .docyard-tabs__scroll-indicator {
   position: absolute;
   top: 0;
@@ -151,7 +155,7 @@
   opacity: 1;
 }
 
-/* Slide indicator - vibrant accent line */
+/* Slide Indicator */
 .docyard-tabs__indicator {
   position: absolute;
   top: 0;
@@ -173,7 +177,7 @@
   background: var(--color-bg);
 }
 
-/* If panel has mixed content (not just code block), add padding to panel */
+/* Panel with mixed content */
 .docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) {
   padding: var(--space-6);
 }
@@ -186,7 +190,7 @@
   display: block;
 }
 
-/* Ensure proper spacing for content inside panels */
+/* Panel content spacing */
 .docyard-tabs__panel>*:first-child {
   margin-top: 0;
 }
@@ -195,43 +199,37 @@
   margin-bottom: 0;
 }
 
-/* Code blocks inside tabs - seamless integration */
-.docyard-tabs__panel .highlight,
-.docyard-tabs__panel pre {
+/* Code blocks inside tabs */
+.docyard-tabs__panel .docyard-code-block {
   margin: 0;
-  border-radius: 0;
+}
+
+/* Panel with only code block */
+.docyard-tabs__panel:has(> [class*="language-"]:only-child) {
+  background: var(--color-code-bg);
+}
+
+/* Reset code block styling in tabs */
+.docyard-tabs__panel .docyard-code-block .highlight {
   border: none;
-  padding: 0 !important;
-  background-color: var(--color-bg) !important;
-  box-shadow: none !important;
-}
-
-/* If panel has ONLY code block, add padding to the highlight element */
-.docyard-tabs__panel:has(> [class*="language-"]:only-child) pre {
-  padding: var(--space-6) !important;
-}
-
-/* Apply secondary background when highlighter-rouge has siblings */
-.docyard-tabs__panel .highlighter-rouge:not(:only-child) .highlight pre code {
-  padding: var(--space-4) !important;
-  background-color: var(--color-bg-secondary) !important;
-  border-radius: var(--radius-lg) !important;
-  border: 1px solid var(--color-border) !important;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03) !important;
-}
-
-.docyard-tabs__panel pre code {
-  padding: 0 !important;
-  display: block;
-  overflow-x: auto;
-  background-color: var(--color-bg) !important;
   border-radius: 0;
-  border: none !important;
-  box-shadow: none !important;
+  box-shadow: none;
+  background: transparent;
 }
 
-.docyard-tabs__panel pre code .w {
-  background-color: var(--color-bg) !important;
+/* Code-only panel padding */
+.docyard-tabs__panel:has(> [class*="language-"]:only-child) .highlight pre {
+  padding: var(--space-6);
+  background: transparent;
+}
+
+/* Code blocks with siblings */
+.docyard-tabs__panel .docyard-code-block:not(:only-child) .highlight {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  margin: var(--space-4) 0;
+  background: var(--color-code-bg);
 }
 
 /* Inline code inside tabs */
@@ -242,7 +240,7 @@
   font-size: 0.9em;
 }
 
-/* Mobile responsive - preserve design language */
+/* Mobile responsive */
 @media (max-width: 640px) {
   .docyard-tabs {
     margin: var(--space-4) 0;
@@ -256,7 +254,7 @@
   .docyard-tabs__tab {
     padding: var(--space-3) var(--space-3);
     font-size: var(--font-size-sm);
-    gap: var(--space-1-5);
+    gap: var(--space-2);
   }
 
   .docyard-tabs__icon .docyard-icon {

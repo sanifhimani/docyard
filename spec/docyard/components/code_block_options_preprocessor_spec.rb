@@ -10,7 +10,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "ruby", option: ":line-numbers", highlights: [] }])
+      expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: ":line-numbers", highlights: [] }])
     end
 
     it "extracts :no-line-numbers option from code fence" do
@@ -18,7 +18,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "js", option: ":no-line-numbers", highlights: [] }])
+      expect(context[:code_block_options]).to eq([{ lang: "js", title: nil, option: ":no-line-numbers", highlights: [] }])
     end
 
     it "extracts :line-numbers=N option from code fence" do
@@ -26,7 +26,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "python", option: ":line-numbers=10", highlights: [] }])
+      expect(context[:code_block_options]).to eq([{ lang: "python", title: nil, option: ":line-numbers=10", highlights: [] }])
     end
 
     it "handles code fences without options" do
@@ -34,7 +34,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       processor.preprocess(content)
 
-      expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [] }])
+      expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: nil, highlights: [] }])
     end
 
     context "with line highlighting syntax" do
@@ -43,7 +43,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
         processor.preprocess(content)
 
-        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [3] }])
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: nil, highlights: [3] }])
       end
 
       it "extracts multiple individual lines" do
@@ -51,7 +51,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
         processor.preprocess(content)
 
-        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [1, 3, 5] }])
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: nil, highlights: [1, 3, 5] }])
       end
 
       it "extracts line ranges" do
@@ -59,7 +59,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
         processor.preprocess(content)
 
-        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [2, 3, 4, 5] }])
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: nil, highlights: [2, 3, 4, 5] }])
       end
 
       it "extracts mixed individual lines and ranges" do
@@ -67,7 +67,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
         processor.preprocess(content)
 
-        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [1, 3, 4, 5, 8] }])
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: nil, highlights: [1, 3, 4, 5, 8] }])
       end
 
       it "combines highlight syntax with options" do
@@ -75,7 +75,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
         processor.preprocess(content)
 
-        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: ":line-numbers", highlights: [2, 4] }])
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: ":line-numbers", highlights: [2, 4] }])
       end
 
       it "strips highlight syntax from output", :aggregate_failures do
@@ -92,7 +92,7 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
         processor.preprocess(content)
 
-        expect(context[:code_block_options]).to eq([{ lang: "ruby", option: nil, highlights: [1, 2, 3, 4] }])
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: nil, option: nil, highlights: [1, 2, 3, 4] }])
       end
     end
 
@@ -116,9 +116,9 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
 
       expect(context[:code_block_options]).to eq(
         [
-          { lang: "ruby", option: ":line-numbers", highlights: [] },
-          { lang: "js", option: ":no-line-numbers", highlights: [] },
-          { lang: "python", option: nil, highlights: [] }
+          { lang: "ruby", title: nil, option: ":line-numbers", highlights: [] },
+          { lang: "js", title: nil, option: ":no-line-numbers", highlights: [] },
+          { lang: "python", title: nil, option: nil, highlights: [] }
         ]
       )
     end
@@ -131,6 +131,73 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
       expect(result).to include("# Header")
       expect(result).to include("Some paragraph text.")
       expect(result).to include("More text.")
+    end
+
+    context "with custom title syntax" do
+      it "extracts title from brackets" do
+        content = "```js [config.js]\nconst x = 1;\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "js", title: "config.js", option: nil, highlights: [] }])
+      end
+
+      it "extracts title with spaces" do
+        content = "```bash [My Script]\necho hello\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "bash", title: "My Script", option: nil, highlights: [] }])
+      end
+
+      it "combines title with options" do
+        content = "```ruby [app.rb]:line-numbers\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: "app.rb", option: ":line-numbers", highlights: [] }])
+      end
+
+      it "combines title with highlights" do
+        content = "```js [index.js] {1, 3}\nconst x = 1;\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "js", title: "index.js", option: nil, highlights: [1, 3] }])
+      end
+
+      it "combines title with options and highlights" do
+        content = "```ruby [config.rb]:line-numbers {2-4}\nputs \"hello\"\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ruby", title: "config.rb", option: ":line-numbers", highlights: [2, 3, 4] }])
+      end
+
+      it "strips title from output", :aggregate_failures do
+        content = "```js [filename.js]\nconst x = 1;\n```"
+
+        result = processor.preprocess(content)
+
+        expect(result).to include("```js")
+        expect(result).not_to include("[filename.js]")
+      end
+
+      it "handles title with special characters" do
+        content = "```ts [src/utils/helper.ts]\nconst x = 1;\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "ts", title: "src/utils/helper.ts", option: nil, highlights: [] }])
+      end
+
+      it "handles title with manual icon prefix" do
+        content = "```bash [:rocket:Deploy Script]\necho deploy\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([{ lang: "bash", title: ":rocket:Deploy Script", option: nil, highlights: [] }])
+      end
     end
   end
 

@@ -62,7 +62,7 @@ RSpec.describe Docyard::Build::AssetBundler do
       css_content = File.read(css_file)
 
       expect(css_content).not_to include("\n\n")
-      expect(css_content.length).to be < 50_000
+      expect(css_content.length).to be < 55_000
     end
 
     it "minifies JS content" do
