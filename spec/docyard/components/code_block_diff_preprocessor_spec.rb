@@ -176,6 +176,16 @@ RSpec.describe Docyard::Components::CodeBlockDiffPreprocessor do
 
       expect(context[:code_block_diff_lines]).to eq([{ 1 => :addition }])
     end
+
+    it "strips diff marker when followed by focus marker on same line", :aggregate_failures do
+      content = "```javascript\nconst x = 1; // [!code ++] // [!code focus]\n```"
+
+      result = processor.preprocess(content)
+
+      expect(context[:code_block_diff_lines]).to eq([{ 1 => :addition }])
+      expect(result).to include("// [!code focus]")
+      expect(result).not_to include("[!code ++]")
+    end
   end
 
   describe "priority" do

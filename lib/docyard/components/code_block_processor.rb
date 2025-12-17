@@ -26,6 +26,7 @@ module Docyard
         @block_index = 0
         @options = context[:code_block_options] || []
         @diff_lines = context[:code_block_diff_lines] || []
+        @focus_lines = context[:code_block_focus_lines] || []
         @global_line_numbers = context.dig(:config, "markdown", "lineNumbers") || false
         @tabs_ranges = TabsRangeFinder.find_ranges(html)
       end
@@ -86,6 +87,7 @@ module Docyard
           text: code_text,
           highlights: opts[:highlights],
           diff_lines: @diff_lines[@block_index] || {},
+          focus_lines: @focus_lines[@block_index] || {},
           show_line_numbers: show_line_numbers,
           line_numbers: show_line_numbers ? generate_line_numbers(code_text, start_line) : [],
           start_line: start_line,
@@ -96,10 +98,11 @@ module Docyard
       end
 
       def process_html_for_highlighting(original_html, block_data)
-        needs_wrapping = block_data[:highlights].any? || block_data[:diff_lines].any?
+        needs_wrapping = block_data[:highlights].any? || block_data[:diff_lines].any? || block_data[:focus_lines].any?
         return original_html unless needs_wrapping
 
-        wrap_lines(original_html, block_data[:highlights], block_data[:diff_lines], block_data[:start_line])
+        wrap_lines(original_html, block_data[:highlights], block_data[:diff_lines], block_data[:focus_lines],
+                   block_data[:start_line])
       end
 
       def determine_line_numbers(block_option)
@@ -125,37 +128,32 @@ module Docyard
         @tabs_ranges.any? { |range| range.cover?(position) }
       end
 
-      def wrap_lines(html, highlights, diff_lines, start_line)
+      def wrap_lines(html, highlights, diff_lines, focus_lines, start_line)
         html.gsub(%r{<pre[^>]*><code[^>]*>(.*?)</code></pre>}m) do
           pre_match = Regexp.last_match(0)
           code_content = Regexp.last_match(1)
-
-          lines = split_code_into_lines(code_content)
-          wrapped_lines = wrap_lines_with_classes(lines, highlights, diff_lines, start_line)
-
+          lines = CodeLineParser.new(code_content).parse
+          wrapped_lines = wrap_lines_with_classes(lines, highlights, diff_lines, focus_lines, start_line)
           pre_match.sub(code_content, wrapped_lines.join)
         end
       end
 
-      def wrap_lines_with_classes(lines, highlights, diff_lines, start_line)
+      def wrap_lines_with_classes(lines, highlights, diff_lines, focus_lines, start_line)
         lines.each_with_index.map do |line, index|
-          line_num = start_line + index
-          classes = build_line_classes(line_num, highlights, diff_lines)
+          source_line = index + 1
+          display_line = start_line + index
+          classes = build_line_classes(source_line, display_line, highlights, diff_lines, focus_lines)
           %(<span class="#{classes}">#{line}</span>)
         end
       end
 
-      def build_line_classes(line_num, highlights, diff_lines)
+      def build_line_classes(source_line, display_line, highlights, diff_lines, focus_lines)
         classes = ["docyard-code-line"]
-        classes << "docyard-code-line--highlighted" if highlights.include?(line_num)
-        classes << "docyard-code-line--diff-add" if diff_lines[line_num] == :addition
-        classes << "docyard-code-line--diff-remove" if diff_lines[line_num] == :deletion
+        classes << "docyard-code-line--highlighted" if highlights.include?(display_line)
+        classes << "docyard-code-line--diff-add" if diff_lines[source_line] == :addition
+        classes << "docyard-code-line--diff-remove" if diff_lines[source_line] == :deletion
+        classes << "docyard-code-line--focus" if focus_lines[source_line]
         classes.join(" ")
-      end
-
-      def split_code_into_lines(code_content)
-        parser = CodeLineParser.new(code_content)
-        parser.parse
       end
 
       def extract_code_text(html)
@@ -177,6 +175,7 @@ module Docyard
           line_numbers: block_data[:line_numbers],
           highlights: block_data[:highlights],
           diff_lines: block_data[:diff_lines],
+          focus_lines: block_data[:focus_lines],
           start_line: block_data[:start_line],
           title: block_data[:title],
           icon: block_data[:icon],

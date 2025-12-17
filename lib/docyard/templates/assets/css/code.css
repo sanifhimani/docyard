@@ -42,10 +42,14 @@
   margin: 0;
 }
 
-.highlight,
-.highlight .w {
+.highlight {
   color: #24292f;
   background-color: #f6f8fa;
+}
+
+.highlight .w {
+  color: #24292f;
+  background-color: transparent;
 }
 
 /* Keywords */
@@ -214,10 +218,14 @@
 }
 
 /* Dark Mode Syntax Highlighting - GitHub Dark */
-.dark .highlight,
-.dark .highlight .w {
+.dark .highlight {
   color: #e6edf3;
   background-color: #161b22;
+}
+
+.dark .highlight .w {
+  color: #e6edf3;
+  background-color: transparent;
 }
 
 /* Keywords */

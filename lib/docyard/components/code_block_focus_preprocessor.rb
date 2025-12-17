@@ -4,17 +4,17 @@ require_relative "base_processor"
 
 module Docyard
   module Components
-    class CodeBlockDiffPreprocessor < BaseProcessor
-      self.priority = 6 # After CodeBlockOptionsPreprocessor (5)
+    class CodeBlockFocusPreprocessor < BaseProcessor
+      self.priority = 7
 
-      DIFF_MARKER_PATTERN = %r{
+      FOCUS_MARKER_PATTERN = %r{
         (?:
-          //\s*\[!code\s*([+-]{2})\]              |  # // [!code ++]
-          \#\s*\[!code\s*([+-]{2})\]                |  # \# [!code ++]
-          /\*\s*\[!code\s*([+-]{2})\]\s*\*/      |  # /* [!code ++] */
-          --\s*\[!code\s*([+-]{2})\]                |  # -- [!code ++]
-          <!--\s*\[!code\s*([+-]{2})\]\s*-->       |  # <!-- [!code ++] -->
-          ;\s*\[!code\s*([+-]{2})\]                    # ; [!code ++]
+          //\s*\[!code\s+focus\]              |
+          \#\s*\[!code\s+focus\]              |
+          /\*\s*\[!code\s+focus\]\s*\*/       |
+          --\s*\[!code\s+focus\]              |
+          <!--\s*\[!code\s+focus\]\s*-->      |
+          ;\s*\[!code\s+focus\]
         )[^\S\n]*
       }x
 
@@ -22,7 +22,7 @@ module Docyard
       TABS_BLOCK_REGEX = /^:::[ \t]*tabs[ \t]*\n.*?^:::[ \t]*$/m
 
       def preprocess(content)
-        context[:code_block_diff_lines] ||= []
+        context[:code_block_focus_lines] ||= []
         @block_index = 0
         @tabs_ranges = find_tabs_ranges(content)
 
@@ -34,32 +34,30 @@ module Docyard
       def process_code_block(match)
         return match[0] if inside_tabs?(match.begin(0))
 
-        diff_info = extract_diff_lines(match[2])
-        context[:code_block_diff_lines][@block_index] = diff_info[:lines]
+        focus_info = extract_focus_lines(match[2])
+        context[:code_block_focus_lines][@block_index] = focus_info[:lines]
         @block_index += 1
-        match[0].sub(match[2], diff_info[:cleaned_content])
+        match[0].sub(match[2], focus_info[:cleaned_content])
       end
 
-      def extract_diff_lines(code_content)
+      def extract_focus_lines(code_content)
         lines = code_content.lines
-        diff_lines = {}
+        focus_lines = {}
         cleaned_lines = []
 
         lines.each_with_index do |line, index|
           line_num = index + 1
 
-          if (match = line.match(DIFF_MARKER_PATTERN))
-            diff_type = match.captures.compact.first
-            diff_lines[line_num] = diff_type == "++" ? :addition : :deletion
-
-            cleaned_line = line.gsub(DIFF_MARKER_PATTERN, "")
+          if line.match?(FOCUS_MARKER_PATTERN)
+            focus_lines[line_num] = true
+            cleaned_line = line.gsub(FOCUS_MARKER_PATTERN, "")
             cleaned_lines << cleaned_line
           else
             cleaned_lines << line
           end
         end
 
-        { lines: diff_lines, cleaned_content: cleaned_lines.join }
+        { lines: focus_lines, cleaned_content: cleaned_lines.join }
       end
 
       def inside_tabs?(position)

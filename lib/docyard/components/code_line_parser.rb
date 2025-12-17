@@ -7,6 +7,7 @@ module Docyard
         @code_content = code_content
         @lines = []
         @current_line = ""
+        @open_tags = []
         @in_tag = false
         @tag_buffer = ""
       end
@@ -36,6 +37,13 @@ module Docyard
         if @in_tag
           @in_tag = false
           @tag_buffer += char
+
+          if @tag_buffer.start_with?("</")
+            @open_tags.pop
+          elsif !@tag_buffer.end_with?("/>")
+            @open_tags << @tag_buffer
+          end
+
           @current_line += @tag_buffer
           @tag_buffer = ""
         else
@@ -44,8 +52,9 @@ module Docyard
       end
 
       def handle_newline
-        @lines << "#{@current_line}\n"
-        @current_line = ""
+        closing_tags = @open_tags.reverse.map { |tag| closing_tag_for(tag) }.join
+        @lines << "#{@current_line}#{closing_tags}\n"
+        @current_line = @open_tags.join
       end
 
       def handle_regular_char(char)
@@ -60,6 +69,11 @@ module Docyard
         @lines << @current_line unless @current_line.empty?
         @lines << "" if @lines.empty?
         @lines
+      end
+
+      def closing_tag_for(open_tag)
+        tag_name = open_tag.match(/<(\w+)/)[1]
+        "</#{tag_name}>"
       end
     end
   end
