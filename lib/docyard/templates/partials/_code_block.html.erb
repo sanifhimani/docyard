@@ -1,4 +1,4 @@
-<% has_diff = @diff_lines&.any? %><% has_title = !@title.nil? && !@title.empty? %><div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %><%= ' docyard-code-block--diff' if has_diff %><%= ' docyard-code-block--titled' if has_title %>">
+<% has_diff = @diff_lines&.any? %><% has_focus = @focus_lines&.any? %><% has_title = !@title.nil? && !@title.empty? %><div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %><%= ' docyard-code-block--diff' if has_diff %><%= ' docyard-code-block--has-focus' if has_focus %><%= ' docyard-code-block--titled' if has_title %>">
   <% if has_title %>
   <div class="docyard-code-block__header">
     <% if @icon %>

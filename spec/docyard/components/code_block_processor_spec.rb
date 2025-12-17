@@ -408,6 +408,108 @@ normal</code></pre></div>'
       end
     end
 
+    context "with focus lines" do
+      it "adds has-focus class to container when focus lines present" do
+        context[:code_block_focus_lines] = [{ 1 => true }]
+        html = '<div class="highlight"><pre><code>focused line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--has-focus")
+      end
+
+      it "wraps focus lines with focus class", :aggregate_failures do
+        context[:code_block_focus_lines] = [{ 2 => true }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('<span class="docyard-code-line">line 1')
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--focus">line 2')
+        expect(result).to include('<span class="docyard-code-line">line 3')
+      end
+
+      it "handles multiple focus lines", :aggregate_failures do
+        context[:code_block_focus_lines] = [{ 1 => true, 3 => true }]
+        html = '<div class="highlight"><pre><code>focused 1
+normal
+focused 2</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--focus">focused 1')
+        expect(result).to include('<span class="docyard-code-line">normal')
+        expect(result).to include('<span class="docyard-code-line docyard-code-line--focus">focused 2')
+      end
+
+      it "does not add has-focus class when no focus lines" do
+        context[:code_block_focus_lines] = [{}]
+        html = '<div class="highlight"><pre><code>normal line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include("docyard-code-block--has-focus")
+      end
+
+      it "combines focus with line numbers", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers", highlights: [] }]
+        context[:code_block_focus_lines] = [{ 2 => true }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2
+line 3</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--has-focus")
+        expect(result).to include("docyard-code-block--line-numbers")
+        expect(result).to include("docyard-code-line--focus")
+      end
+
+      it "combines focus with diff lines", :aggregate_failures do
+        context[:code_block_diff_lines] = [{ 1 => :addition }]
+        context[:code_block_focus_lines] = [{ 1 => true }]
+        html = '<div class="highlight"><pre><code>focused addition</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--has-focus")
+        expect(result).to include("docyard-code-block--diff")
+        expect(result).to include("docyard-code-line--focus")
+        expect(result).to include("docyard-code-line--diff-add")
+      end
+
+      it "combines focus with highlights", :aggregate_failures do
+        context[:code_block_options] = [{ lang: "ruby", option: nil, highlights: [1] }]
+        context[:code_block_focus_lines] = [{ 1 => true }]
+        html = '<div class="highlight"><pre><code>focused highlighted</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to include("docyard-code-block--has-focus")
+        expect(result).to include("docyard-code-block--highlighted")
+        expect(result).to include("docyard-code-line--focus")
+        expect(result).to include("docyard-code-line--highlighted")
+      end
+
+      it "handles multiple code blocks with different focus lines", :aggregate_failures do
+        context[:code_block_focus_lines] = [
+          { 1 => true },
+          { 2 => true }
+        ]
+        html = [
+          '<div class="highlight"><pre><code>block 1 line</code></pre></div>',
+          '<div class="highlight"><pre><code>block 2 line 1
+block 2 line 2</code></pre></div>'
+        ].join("\n")
+
+        result = processor.postprocess(html)
+
+        expect(result.scan("docyard-code-block--has-focus").count).to eq(2)
+      end
+    end
+
     context "with custom titles" do
       it "adds titled class and renders header when title is present", :aggregate_failures do
         context[:code_block_options] = [{ lang: "js", title: "config.js", option: nil, highlights: [] }]

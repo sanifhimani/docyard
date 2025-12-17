@@ -94,11 +94,14 @@
 
 /* Line Numbers Layout */
 .docyard-code-block--line-numbers {
-  display: flex;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background-color: var(--color-code-bg);
   overflow: hidden;
+}
+
+.docyard-code-block--line-numbers .docyard-code-block__body {
+  display: flex;
 }
 
 .docyard-code-block--line-numbers .highlight {
@@ -188,11 +191,14 @@
 
 /* Diff-only gutter */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  display: flex;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background-color: var(--color-code-bg);
   overflow: hidden;
+}
+
+.docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
+  display: flex;
 }
 
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .highlight {
@@ -264,6 +270,24 @@
 
 .docyard-code-block__content .highlight {
   background-color: transparent;
+}
+
+/* Focus Effect */
+.docyard-code-block--has-focus .docyard-code-line {
+  opacity: 0.4;
+  filter: blur(0.5px);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.docyard-code-block--has-focus .docyard-code-line.docyard-code-line--focus {
+  opacity: 1;
+  filter: none;
+}
+
+/* On hover, reveal all lines */
+.docyard-code-block--has-focus:hover .docyard-code-line {
+  opacity: 1;
+  filter: none;
 }
 
 /* Dark mode line numbers */
@@ -514,5 +538,9 @@
 
   .docyard-code-block__copy:active {
     transform: none;
+  }
+
+  .docyard-code-block--has-focus .docyard-code-line {
+    transition: none;
   }
 }
