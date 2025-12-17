@@ -1,4 +1,4 @@
-/* Code Block Component with Copy Button */
+/* Code Block Component */
 
 .docyard-code-block {
   position: relative;
@@ -7,6 +7,89 @@
 
 .docyard-code-block .highlight {
   margin: 0;
+}
+
+/* Titled Code Block Layout */
+.docyard-code-block--titled {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--color-code-bg);
+}
+
+.docyard-code-block--titled .docyard-code-block__body {
+  display: block;
+}
+
+.docyard-code-block--titled .docyard-code-block__content {
+  display: block;
+}
+
+.docyard-code-block--titled .highlight {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.docyard-code-block--titled .highlight pre {
+  margin: 0;
+}
+
+.docyard-code-block--titled .highlight pre code {
+  display: block;
+  padding: var(--space-4);
+}
+
+/* Code Block Header */
+.docyard-code-block__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.docyard-code-block__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.docyard-code-block__icon .docyard-icon {
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+}
+
+.docyard-code-block__icon .docyard-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.docyard-code-block__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Copy button in header */
+.docyard-code-block__header .docyard-code-block__copy {
+  position: relative;
+  top: auto;
+  right: auto;
+  flex-shrink: 0;
+}
+
+/* Body wrapper for titled blocks */
+.docyard-code-block__body {
+  position: relative;
 }
 
 /* Line Numbers Layout */
@@ -64,7 +147,7 @@
   padding-right: var(--space-4);
 }
 
-/* Highlighted line number in gutter */
+/* Highlighted line number */
 .docyard-code-block__line--highlighted {
   background-color: rgba(var(--color-primary-rgb), 0.15);
   color: var(--color-primary);
@@ -90,7 +173,7 @@
   padding-right: var(--space-4);
 }
 
-/* Diff gutter indicators in line numbers */
+/* Diff gutter indicators */
 .docyard-code-block__line--diff-add {
   background-color: var(--color-diff-add-gutter-bg);
   color: var(--color-diff-add-indicator);
@@ -103,7 +186,7 @@
   font-weight: 500;
 }
 
-/* Diff-only gutter (no line numbers) */
+/* Diff-only gutter */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
   display: flex;
   border: 1px solid var(--color-border);
@@ -150,7 +233,7 @@
   font-weight: 600;
 }
 
-/* With line numbers - adjust margins for the gutter layout */
+/* With line numbers */
 .docyard-code-block--line-numbers .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -167,7 +250,7 @@
   margin-right: calc(-1 * var(--space-4));
 }
 
-/* With diff gutter (no line numbers) - adjust margins */
+/* With diff gutter */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -203,17 +286,56 @@
   border-right-color: var(--color-border);
 }
 
-/* Inside tabs - remove wrapper margin when code block is only child */
+/* Dark mode titled block */
+.dark .docyard-code-block--titled {
+  background-color: #161b22;
+}
+
+.dark .docyard-code-block__header {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Titled block with line numbers */
+.docyard-code-block--titled.docyard-code-block--line-numbers {
+  display: block;
+  border: 1px solid var(--color-border);
+}
+
+.docyard-code-block--titled.docyard-code-block--line-numbers .docyard-code-block__body {
+  display: flex;
+}
+
+.docyard-code-block--titled.docyard-code-block--line-numbers .highlight {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Titled block with diff */
+.docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
+  display: block;
+  border: 1px solid var(--color-border);
+}
+
+.docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
+  display: flex;
+}
+
+.docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) .highlight {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Inside tabs */
 .docyard-tabs__panel:has(> [class*="language-"]:only-child) .docyard-code-block {
   margin: 0;
 }
 
-/* Inside tabs with mixed content - use normal spacing */
+/* Inside tabs with mixed content */
 .docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) .docyard-code-block {
   margin: var(--space-4) 0;
 }
 
-/* Inside callouts - use callout's spacing */
+/* Inside callouts */
 .docyard-callout__body .docyard-code-block {
   margin: var(--space-4) 0;
 }
@@ -241,14 +363,7 @@
   background-color: var(--color-bg);
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base), opacity var(--transition-base), visibility var(--transition-base);
-  opacity: 0;
-  visibility: hidden;
-}
-
-.docyard-code-block:hover .docyard-code-block__copy {
-  opacity: 1;
-  visibility: visible;
+  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
 }
 
 .docyard-code-block__copy:hover {
@@ -262,8 +377,6 @@
 }
 
 .docyard-code-block__copy:focus-visible {
-  opacity: 1;
-  visibility: visible;
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -341,11 +454,26 @@
   color: white;
 }
 
-/* Mobile: Always show copy button */
-@media (max-width: 1024px) {
-  .docyard-code-block__copy {
-    opacity: 1;
-    visibility: visible;
+/* Mobile responsive - header */
+@media (max-width: 640px) {
+  .docyard-code-block__header {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .docyard-code-block__icon .docyard-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .docyard-code-block__header .docyard-code-block__copy {
+    width: 28px;
+    height: 28px;
+  }
+
+  .docyard-code-block__header .docyard-code-block__copy svg {
+    width: 14px;
+    height: 14px;
   }
 }
 
@@ -360,7 +488,7 @@
   border-color: var(--color-text-tertiary);
 }
 
-/* Keep success state using primary colors in dark mode */
+/* Dark mode success state */
 .dark .docyard-code-block__copy.is-success {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
@@ -376,7 +504,7 @@
   border-color: #ef4444;
 }
 
-/* Reduced motion support - WCAG accessibility requirement */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .docyard-code-block__copy,
   .docyard-code-block__copy svg {

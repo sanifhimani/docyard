@@ -1,4 +1,16 @@
-<% has_diff = @diff_lines&.any? %><div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %><%= ' docyard-code-block--diff' if has_diff %>">
+<% has_diff = @diff_lines&.any? %><% has_title = !@title.nil? && !@title.empty? %><div class="docyard-code-block<%= ' docyard-code-block--line-numbers' if @show_line_numbers %><%= ' docyard-code-block--highlighted' if @highlights&.any? %><%= ' docyard-code-block--diff' if has_diff %><%= ' docyard-code-block--titled' if has_title %>">
+  <% if has_title %>
+  <div class="docyard-code-block__header">
+    <% if @icon %>
+    <span class="docyard-code-block__icon"><% if @icon_source == "file-extension" %><%= Docyard::Icons.render_file_extension(@icon) %><% elsif @icon_source == "phosphor" %><%= Docyard::Icons.render(@icon) %><% end %></span>
+    <% end %>
+    <span class="docyard-code-block__title" title="<%= @title %>"><%= @title %></span>
+    <button class="docyard-code-block__copy" aria-label="Copy code to clipboard" data-code="<%= @code_text %>">
+      <%= @copy_icon %>
+    </button>
+  </div>
+  <% end %>
+  <div class="docyard-code-block__body">
   <% if @show_line_numbers %>
   <div class="docyard-code-block__lines" aria-hidden="true">
     <% @line_numbers.each_with_index do |num, index| %>
@@ -24,7 +36,10 @@
   <div class="docyard-code-block__content">
     <%= @code_block_html %>
   </div>
+  <% unless has_title %>
   <button class="docyard-code-block__copy" aria-label="Copy code to clipboard" data-code="<%= @code_text %>">
     <%= @copy_icon %>
   </button>
+  <% end %>
+  </div>
 </div>
