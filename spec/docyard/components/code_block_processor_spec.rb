@@ -477,7 +477,7 @@ normal</code></pre></div>'
 
         result = processor.postprocess(html)
 
-        header_match = result.match(/class="docyard-code-block__header">(.*?)<\/div>/m)
+        header_match = result.match(%r{class="docyard-code-block__header">(.*?)</div>}m)
         expect(header_match).not_to be_nil
         expect(header_match[1]).to include('class="docyard-code-block__copy"')
       end
