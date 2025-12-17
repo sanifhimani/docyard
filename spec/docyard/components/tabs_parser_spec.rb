@@ -399,9 +399,9 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:content]).to include('docyard-code-block--has-focus')
-        expect(tabs[0][:content]).to include('docyard-code-line--focus')
-        expect(tabs[0][:content]).not_to include('[!code focus]')
+        expect(tabs[0][:content]).to include("docyard-code-block--has-focus")
+        expect(tabs[0][:content]).to include("docyard-code-line--focus")
+        expect(tabs[0][:content]).not_to include("[!code focus]")
       end
 
       it "processes diff markers inside tabs", :aggregate_failures do
@@ -415,11 +415,11 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:content]).to include('docyard-code-block--diff')
-        expect(tabs[0][:content]).to include('docyard-code-line--diff-add')
-        expect(tabs[0][:content]).to include('docyard-code-line--diff-remove')
-        expect(tabs[0][:content]).not_to include('[!code ++]')
-        expect(tabs[0][:content]).not_to include('[!code --]')
+        expect(tabs[0][:content]).to include("docyard-code-block--diff")
+        expect(tabs[0][:content]).to include("docyard-code-line--diff-add")
+        expect(tabs[0][:content]).to include("docyard-code-line--diff-remove")
+        expect(tabs[0][:content]).not_to include("[!code ++]")
+        expect(tabs[0][:content]).not_to include("[!code --]")
       end
 
       it "processes line highlights inside tabs", :aggregate_failures do
@@ -434,8 +434,8 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:content]).to include('docyard-code-block--highlighted')
-        expect(tabs[0][:content]).to include('docyard-code-line--highlighted')
+        expect(tabs[0][:content]).to include("docyard-code-block--highlighted")
+        expect(tabs[0][:content]).to include("docyard-code-line--highlighted")
       end
 
       it "processes line numbers inside tabs", :aggregate_failures do
@@ -449,8 +449,8 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:content]).to include('docyard-code-block--line-numbers')
-        expect(tabs[0][:content]).to include('docyard-code-block__lines')
+        expect(tabs[0][:content]).to include("docyard-code-block--line-numbers")
+        expect(tabs[0][:content]).to include("docyard-code-block__lines")
       end
 
       it "processes titles inside tabs", :aggregate_failures do
@@ -463,9 +463,9 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:content]).to include('docyard-code-block--titled')
-        expect(tabs[0][:content]).to include('docyard-code-block__title')
-        expect(tabs[0][:content]).to include('utils/helper.js')
+        expect(tabs[0][:content]).to include("docyard-code-block--titled")
+        expect(tabs[0][:content]).to include("docyard-code-block__title")
+        expect(tabs[0][:content]).to include("utils/helper.js")
       end
 
       it "processes focus markers with Python comment style", :aggregate_failures do
@@ -479,51 +479,27 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:content]).to include('docyard-code-line--focus')
-        expect(tabs[0][:content]).not_to include('[!code focus]')
+        expect(tabs[0][:content]).to include("docyard-code-line--focus")
+        expect(tabs[0][:content]).not_to include("[!code focus]")
       end
 
       it "processes combined features inside tabs", :aggregate_failures do
-        content = <<~CONTENT
-          == TypeScript
-          ```typescript [config.ts]:line-numbers {1}
-          const x = 1;
-          const y = 2;  // [!code focus]
-          const z = 3;  // [!code ++]
-          ```
-        CONTENT
+        content = ["== TypeScript", "```typescript [config.ts]:line-numbers {1}", "const x = 1;",
+                   "const y = 2;  // [!code focus]", "const z = 3;  // [!code ++]", "```"].join("\n")
+        tab_content = described_class.parse(content)[0][:content]
 
-        tabs = described_class.parse(content)
-        tab_content = tabs[0][:content]
-
-        expect(tab_content).to include('docyard-code-block--titled')
-        expect(tab_content).to include('docyard-code-block--line-numbers')
-        expect(tab_content).to include('docyard-code-block--highlighted')
-        expect(tab_content).to include('docyard-code-block--has-focus')
-        expect(tab_content).to include('docyard-code-block--diff')
-        expect(tab_content).to include('config.ts')
+        expect(tab_content).to include("docyard-code-block--titled", "docyard-code-block--line-numbers")
+        expect(tab_content).to include("docyard-code-block--highlighted", "docyard-code-block--has-focus")
+        expect(tab_content).to include("docyard-code-block--diff", "config.ts")
       end
 
       it "processes multiple code blocks with different features in same tab", :aggregate_failures do
-        content = <<~CONTENT
-          == Examples
-          First code:
-          ```js
-          const x = 1;  // [!code focus]
-          ```
+        content = ["== Examples", "```js", "const x = 1;  // [!code focus]", "```", "",
+                   "```py", "y = 2  # [!code ++]", "```"].join("\n")
+        tab_content = described_class.parse(content)[0][:content]
 
-          Second code:
-          ```py
-          y = 2  # [!code ++]
-          ```
-        CONTENT
-
-        tabs = described_class.parse(content)
-        tab_content = tabs[0][:content]
-
-        expect(tab_content.scan('docyard-code-block').length).to be >= 2
-        expect(tab_content).to include('docyard-code-line--focus')
-        expect(tab_content).to include('docyard-code-line--diff-add')
+        expect(tab_content.scan("docyard-code-block").length).to be >= 2
+        expect(tab_content).to include("docyard-code-line--focus", "docyard-code-line--diff-add")
       end
     end
   end
