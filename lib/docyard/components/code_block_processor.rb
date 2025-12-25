@@ -5,12 +5,14 @@ require_relative "../language_mapping"
 require_relative "../renderer"
 require_relative "base_processor"
 require_relative "code_block_icon_detector"
-require_relative "code_line_parser"
+require_relative "code_block_line_wrapper"
 require_relative "tabs_range_finder"
 
 module Docyard
   module Components
     class CodeBlockProcessor < BaseProcessor
+      include CodeBlockLineWrapper
+
       self.priority = 20
 
       def postprocess(html)
@@ -27,6 +29,8 @@ module Docyard
         @options = context[:code_block_options] || []
         @diff_lines = context[:code_block_diff_lines] || []
         @focus_lines = context[:code_block_focus_lines] || []
+        @error_lines = context[:code_block_error_lines] || []
+        @warning_lines = context[:code_block_warning_lines] || []
         @global_line_numbers = context.dig(:config, "markdown", "lineNumbers") || false
         @tabs_ranges = TabsRangeFinder.find_ranges(html)
       end
@@ -88,6 +92,8 @@ module Docyard
           highlights: opts[:highlights],
           diff_lines: @diff_lines[@block_index] || {},
           focus_lines: @focus_lines[@block_index] || {},
+          error_lines: @error_lines[@block_index] || {},
+          warning_lines: @warning_lines[@block_index] || {},
           show_line_numbers: show_line_numbers,
           line_numbers: show_line_numbers ? generate_line_numbers(code_text, start_line) : [],
           start_line: start_line,
@@ -98,11 +104,12 @@ module Docyard
       end
 
       def process_html_for_highlighting(original_html, block_data)
-        needs_wrapping = block_data[:highlights].any? || block_data[:diff_lines].any? || block_data[:focus_lines].any?
+        needs_wrapping = block_data[:highlights].any? || block_data[:diff_lines].any? ||
+                         block_data[:focus_lines].any? || block_data[:error_lines].any? ||
+                         block_data[:warning_lines].any?
         return original_html unless needs_wrapping
 
-        wrap_lines(original_html, block_data[:highlights], block_data[:diff_lines], block_data[:focus_lines],
-                   block_data[:start_line])
+        wrap_code_block(original_html, block_data)
       end
 
       def determine_line_numbers(block_option)
@@ -128,34 +135,6 @@ module Docyard
         @tabs_ranges.any? { |range| range.cover?(position) }
       end
 
-      def wrap_lines(html, highlights, diff_lines, focus_lines, start_line)
-        html.gsub(%r{<pre[^>]*><code[^>]*>(.*?)</code></pre>}m) do
-          pre_match = Regexp.last_match(0)
-          code_content = Regexp.last_match(1)
-          lines = CodeLineParser.new(code_content).parse
-          wrapped_lines = wrap_lines_with_classes(lines, highlights, diff_lines, focus_lines, start_line)
-          pre_match.sub(code_content, wrapped_lines.join)
-        end
-      end
-
-      def wrap_lines_with_classes(lines, highlights, diff_lines, focus_lines, start_line)
-        lines.each_with_index.map do |line, index|
-          source_line = index + 1
-          display_line = start_line + index
-          classes = build_line_classes(source_line, display_line, highlights, diff_lines, focus_lines)
-          %(<span class="#{classes}">#{line}</span>)
-        end
-      end
-
-      def build_line_classes(source_line, display_line, highlights, diff_lines, focus_lines)
-        classes = ["docyard-code-line"]
-        classes << "docyard-code-line--highlighted" if highlights.include?(display_line)
-        classes << "docyard-code-line--diff-add" if diff_lines[source_line] == :addition
-        classes << "docyard-code-line--diff-remove" if diff_lines[source_line] == :deletion
-        classes << "docyard-code-line--focus" if focus_lines[source_line]
-        classes.join(" ")
-      end
-
       def extract_code_text(html)
         text = html.gsub(/<[^>]+>/, "")
         text = CGI.unescapeHTML(text)
@@ -167,20 +146,23 @@ module Docyard
       end
 
       def template_locals(block_data)
-        {
-          code_block_html: block_data[:html],
-          code_text: escape_html_attribute(block_data[:text]),
-          copy_icon: Icons.render("copy", "regular") || "",
-          show_line_numbers: block_data[:show_line_numbers],
-          line_numbers: block_data[:line_numbers],
-          highlights: block_data[:highlights],
-          diff_lines: block_data[:diff_lines],
-          focus_lines: block_data[:focus_lines],
-          start_line: block_data[:start_line],
-          title: block_data[:title],
-          icon: block_data[:icon],
-          icon_source: block_data[:icon_source]
-        }
+        base_locals(block_data).merge(line_feature_locals(block_data)).merge(title_locals(block_data))
+      end
+
+      def base_locals(block_data)
+        { code_block_html: block_data[:html], code_text: escape_html_attribute(block_data[:text]),
+          copy_icon: Icons.render("copy", "regular") || "", show_line_numbers: block_data[:show_line_numbers],
+          line_numbers: block_data[:line_numbers], start_line: block_data[:start_line] }
+      end
+
+      def line_feature_locals(block_data)
+        { highlights: block_data[:highlights], diff_lines: block_data[:diff_lines],
+          focus_lines: block_data[:focus_lines], error_lines: block_data[:error_lines],
+          warning_lines: block_data[:warning_lines] }
+      end
+
+      def title_locals(block_data)
+        { title: block_data[:title], icon: block_data[:icon], icon_source: block_data[:icon_source] }
       end
 
       def escape_html_attribute(text)

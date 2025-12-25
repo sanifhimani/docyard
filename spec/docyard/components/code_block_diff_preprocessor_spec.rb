@@ -186,6 +186,171 @@ RSpec.describe Docyard::Components::CodeBlockDiffPreprocessor do
       expect(result).to include("// [!code focus]")
       expect(result).not_to include("[!code ++]")
     end
+
+    context "with error markers" do
+      it "detects // [!code error] markers" do
+        content = "```javascript\nconsole.log('error'); // [!code error]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects # [!code error] markers" do
+        content = "```ruby\nputs 'error' # [!code error]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects /* [!code error] */ markers" do
+        content = "```css\ncolor: red; /* [!code error] */\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects -- [!code error] markers" do
+        content = "```sql\nSELECT * FROM users -- [!code error]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects <!-- [!code error] --> markers" do
+        content = "```html\n<div>error</div> <!-- [!code error] -->\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects ; [!code error] markers" do
+        content = "```lisp\n(error \"msg\") ; [!code error]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true }])
+      end
+
+      it "strips error markers from output", :aggregate_failures do
+        content = "```javascript\nconsole.log('error'); // [!code error]\n```"
+
+        result = processor.preprocess(content)
+
+        expect(result).to include("console.log('error');")
+        expect(result).not_to include("[!code error]")
+      end
+    end
+
+    context "with warning markers" do
+      it "detects // [!code warning] markers" do
+        content = "```javascript\nconsole.warn('warning'); // [!code warning]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects # [!code warning] markers" do
+        content = "```ruby\nputs 'warning' # [!code warning]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects /* [!code warning] */ markers" do
+        content = "```css\ncolor: orange; /* [!code warning] */\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects -- [!code warning] markers" do
+        content = "```sql\nUPDATE users SET admin = true -- [!code warning]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects <!-- [!code warning] --> markers" do
+        content = "```html\n<div>warning</div> <!-- [!code warning] -->\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true }])
+      end
+
+      it "detects ; [!code warning] markers" do
+        content = "```lisp\n(warn \"msg\") ; [!code warning]\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true }])
+      end
+
+      it "strips warning markers from output", :aggregate_failures do
+        content = "```javascript\nconsole.warn('warning'); // [!code warning]\n```"
+
+        result = processor.preprocess(content)
+
+        expect(result).to include("console.warn('warning');")
+        expect(result).not_to include("[!code warning]")
+      end
+    end
+
+    context "with combined markers" do
+      it "handles diff, error, and warning on different lines", :aggregate_failures do
+        content = <<~MARKDOWN
+          ```javascript
+          const a = 1; // [!code ++]
+          const b = 2; // [!code error]
+          const c = 3; // [!code warning]
+          const d = 4;
+          ```
+        MARKDOWN
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_diff_lines]).to eq([{ 1 => :addition }])
+        expect(context[:code_block_error_lines]).to eq([{ 2 => true }])
+        expect(context[:code_block_warning_lines]).to eq([{ 3 => true }])
+      end
+
+      it "handles multiple error lines" do
+        content = <<~MARKDOWN
+          ```javascript
+          const a = 1; // [!code error]
+          const b = 2;
+          const c = 3; // [!code error]
+          ```
+        MARKDOWN
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_error_lines]).to eq([{ 1 => true, 3 => true }])
+      end
+
+      it "handles multiple warning lines" do
+        content = <<~MARKDOWN
+          ```javascript
+          const a = 1; // [!code warning]
+          const b = 2;
+          const c = 3; // [!code warning]
+          ```
+        MARKDOWN
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_warning_lines]).to eq([{ 1 => true, 3 => true }])
+      end
+    end
   end
 
   describe "priority" do

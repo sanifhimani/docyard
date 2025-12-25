@@ -176,6 +176,25 @@
   padding-right: var(--space-4);
 }
 
+/* Error/Warning line styles */
+.docyard-code-line--error {
+  background-color: var(--color-code-error-bg, rgba(239, 68, 68, 0.15));
+  border-left: 3px solid var(--color-code-error-border, #ef4444);
+  margin-left: calc(-1 * var(--space-4));
+  margin-right: calc(-1 * var(--space-4));
+  padding-left: calc(var(--space-4) - 3px);
+  padding-right: var(--space-4);
+}
+
+.docyard-code-line--warning {
+  background-color: var(--color-code-warning-bg, rgba(245, 158, 11, 0.15));
+  border-left: 3px solid var(--color-code-warning-border, #f59e0b);
+  margin-left: calc(-1 * var(--space-4));
+  margin-right: calc(-1 * var(--space-4));
+  padding-left: calc(var(--space-4) - 3px);
+  padding-right: var(--space-4);
+}
+
 /* Diff gutter indicators */
 .docyard-code-block__line--diff-add {
   background-color: var(--color-diff-add-gutter-bg);
@@ -186,6 +205,19 @@
 .docyard-code-block__line--diff-remove {
   background-color: var(--color-diff-remove-gutter-bg);
   color: var(--color-diff-remove-indicator);
+  font-weight: 500;
+}
+
+/* Error/Warning line number indicators */
+.docyard-code-block__line--error {
+  background-color: var(--color-code-error-gutter-bg, rgba(239, 68, 68, 0.2));
+  color: var(--color-code-error-indicator, #991b1b);
+  font-weight: 500;
+}
+
+.docyard-code-block__line--warning {
+  background-color: var(--color-code-warning-gutter-bg, rgba(245, 158, 11, 0.2));
+  color: var(--color-code-warning-indicator, #78350f);
   font-weight: 500;
 }
 
@@ -239,24 +271,22 @@
   font-weight: 600;
 }
 
-/* With line numbers */
+/* With line numbers - reset margins, they extend via negative margin */
 .docyard-code-block--line-numbers .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
 }
 
-.docyard-code-block--line-numbers .docyard-code-line--highlighted {
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-}
-
+.docyard-code-block--line-numbers .docyard-code-line--highlighted,
 .docyard-code-block--line-numbers .docyard-code-line--diff-add,
-.docyard-code-block--line-numbers .docyard-code-line--diff-remove {
+.docyard-code-block--line-numbers .docyard-code-line--diff-remove,
+.docyard-code-block--line-numbers .docyard-code-line--error,
+.docyard-code-block--line-numbers .docyard-code-line--warning {
   margin-left: calc(-1 * var(--space-4));
   margin-right: calc(-1 * var(--space-4));
 }
 
-/* With diff gutter */
+/* With diff gutter - reset margins, they extend via negative margin */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -266,6 +296,21 @@
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line--diff-remove {
   margin-left: calc(-1 * var(--space-4));
   margin-right: calc(-1 * var(--space-4));
+}
+
+/* Error/Warning blocks without line numbers */
+.docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff),
+.docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-code-bg);
+  overflow: hidden;
+}
+
+.docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) .highlight,
+.docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) .highlight {
+  border: none;
+  border-radius: 0;
 }
 
 .docyard-code-block__content .highlight {
@@ -349,14 +394,22 @@
   min-width: 0;
 }
 
-/* Inside tabs */
-.docyard-tabs__panel:has(> [class*="language-"]:only-child) .docyard-code-block {
-  margin: 0;
+/* Inside tabs - with :has() support */
+@supports selector(:has(*)) {
+  .docyard-tabs__panel:has(> [class*="language-"]:only-child) .docyard-code-block {
+    margin: 0;
+  }
+
+  .docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) .docyard-code-block {
+    margin: var(--space-4) 0;
+  }
 }
 
-/* Inside tabs with mixed content */
-.docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) .docyard-code-block {
-  margin: var(--space-4) 0;
+/* Inside tabs - fallback for browsers without :has() */
+@supports not selector(:has(*)) {
+  .docyard-tabs__panel .docyard-code-block {
+    margin: var(--space-4) 0;
+  }
 }
 
 /* Inside callouts */

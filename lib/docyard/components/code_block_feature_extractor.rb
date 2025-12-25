@@ -1,31 +1,13 @@
 # frozen_string_literal: true
 
+require_relative "code_block_patterns"
+
 module Docyard
   module Components
     module CodeBlockFeatureExtractor
+      include CodeBlockPatterns
+
       CODE_FENCE_REGEX = /^```(\w+)(?:\s*\[([^\]]+)\])?(:\S+)?(?:\s*\{([^}\n]+)\})?[ \t]*\n(.*?)^```/m
-
-      DIFF_MARKER_PATTERN = %r{
-        (?:
-          //\s*\[!code\s*([+-]{2})\]              |
-          \#\s*\[!code\s*([+-]{2})\]              |
-          /\*\s*\[!code\s*([+-]{2})\]\s*\*/       |
-          --\s*\[!code\s*([+-]{2})\]              |
-          <!--\s*\[!code\s*([+-]{2})\]\s*-->      |
-          ;\s*\[!code\s*([+-]{2})\]
-        )[^\S\n]*
-      }x
-
-      FOCUS_MARKER_PATTERN = %r{
-        (?:
-          //\s*\[!code\s+focus\]              |
-          \#\s*\[!code\s+focus\]              |
-          /\*\s*\[!code\s+focus\]\s*\*/       |
-          --\s*\[!code\s+focus\]              |
-          <!--\s*\[!code\s+focus\]\s*-->      |
-          ;\s*\[!code\s+focus\]
-        )[^\S\n]*
-      }x
 
       module_function
 
@@ -43,11 +25,13 @@ module Docyard
         code_content = match[5]
         diff_info = extract_diff_lines(code_content)
         focus_info = extract_focus_lines(diff_info[:cleaned_content])
+        error_info = extract_error_lines(focus_info[:cleaned_content])
+        warning_info = extract_warning_lines(error_info[:cleaned_content])
 
-        build_block_result(match, diff_info, focus_info)
+        build_block_result(match, diff_info, focus_info, error_info, warning_info)
       end
 
-      def build_block_result(match, diff_info, focus_info)
+      def build_block_result(match, diff_info, focus_info, error_info, warning_info)
         {
           lang: match[1],
           title: match[2],
@@ -55,7 +39,9 @@ module Docyard
           highlights: parse_highlights(match[4]),
           diff_lines: diff_info[:lines],
           focus_lines: focus_info[:lines],
-          cleaned_content: focus_info[:cleaned_content]
+          error_lines: error_info[:lines],
+          warning_lines: warning_info[:lines],
+          cleaned_content: warning_info[:cleaned_content]
         }
       end
 
@@ -93,23 +79,34 @@ module Docyard
       end
 
       def extract_focus_lines(code_content)
+        extract_marker_lines(code_content, FOCUS_MARKER_PATTERN)
+      end
+
+      def extract_error_lines(code_content)
+        extract_marker_lines(code_content, ERROR_MARKER_PATTERN)
+      end
+
+      def extract_warning_lines(code_content)
+        extract_marker_lines(code_content, WARNING_MARKER_PATTERN)
+      end
+
+      def extract_marker_lines(code_content, pattern)
         lines = code_content.lines
-        focus_lines = {}
+        marker_lines = {}
         cleaned_lines = []
 
         lines.each_with_index do |line, index|
           line_num = index + 1
 
-          if line.match?(FOCUS_MARKER_PATTERN)
-            focus_lines[line_num] = true
-            cleaned_line = line.gsub(FOCUS_MARKER_PATTERN, "")
-            cleaned_lines << cleaned_line
+          if line.match?(pattern)
+            marker_lines[line_num] = true
+            cleaned_lines << line.gsub(pattern, "")
           else
             cleaned_lines << line
           end
         end
 
-        { lines: focus_lines, cleaned_content: cleaned_lines.join }
+        { lines: marker_lines, cleaned_content: cleaned_lines.join }
       end
     end
   end
