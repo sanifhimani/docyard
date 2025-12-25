@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2025-12-25
+
+### Added
+- **Line Numbers** - Display line numbers on code blocks with `:line-numbers` or `:line-numbers=N` syntax, plus global config option (#33)
+- **Line Highlighting** - Highlight specific lines in code blocks with `{1,3,5-7}` syntax (#34)
+- **Diff Markers** - Show additions/deletions with `// [!code ++]` and `// [!code --]` comments, supports all major comment styles (#35)
+- **Code Block Titles** - Add filename titles to code blocks with `[filename.js]` syntax, auto-detects file icons (#36)
+- **Focus Mode** - Dim surrounding code with `// [!code focus]` to highlight important lines (#37)
+- **Error/Warning Markers** - Highlight problematic lines with `// [!code error]` and `// [!code warning]` (#38)
+- **Code Snippet Imports** - Import code from external files with `<<< @/filepath` syntax (#39)
+- **VS Code Regions** - Import specific code sections with `<<< @/filepath#region-name` (#39)
+- **Line Range Extraction** - Extract specific lines from imports with `<<< @/filepath{2-10}` (#39)
+- **Language Override** - Override auto-detected language in imports with `<<< @/filepath{js}` (#39)
+
+### Changed
+- Code block processor refactored for better maintainability with shared patterns module
+- Improved code block CSS with support for all new marker types
+
 ## [0.5.0] - 2025-11-18
 
 ### Added
@@ -91,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/sanifhimani/docyard/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/sanifhimani/docyard/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/sanifhimani/docyard/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/sanifhimani/docyard/compare/v0.2.0...v0.3.0
