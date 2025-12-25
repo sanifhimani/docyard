@@ -99,15 +99,18 @@
   position: relative;
 }
 
-.sidebar nav ul ul li:has(> a.active)::before {
-  content: '';
-  position: absolute;
-  left: calc(-1 * var(--space-4));
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background-color: var(--color-primary);
-  z-index: 1;
+/* Active indicator with :has() support */
+@supports selector(:has(*)) {
+  .sidebar nav ul ul li:has(> a.active)::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--space-4));
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--color-primary);
+    z-index: 1;
+  }
 }
 
 .sidebar nav ul ul a {
