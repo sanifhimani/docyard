@@ -177,11 +177,7 @@
   background: var(--color-bg);
 }
 
-/* Panel with mixed content */
-.docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) {
-  padding: var(--space-6);
-}
-
+/* Panel base styles */
 .docyard-tabs__panel p {
   margin-bottom: 0;
 }
@@ -204,11 +200,6 @@
   margin: 0;
 }
 
-/* Panel with only code block */
-.docyard-tabs__panel:has(> [class*="language-"]:only-child) {
-  background: var(--color-code-bg);
-}
-
 /* Reset code block styling in tabs */
 .docyard-tabs__panel .docyard-code-block .highlight {
   border: none;
@@ -217,10 +208,27 @@
   background: transparent;
 }
 
-/* Code-only panel padding */
-.docyard-tabs__panel:has(> [class*="language-"]:only-child) .highlight pre {
-  padding: var(--space-6);
-  background: transparent;
+/* Panel styles with :has() support */
+@supports selector(:has(*)) {
+  .docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) {
+    padding: var(--space-6);
+  }
+
+  .docyard-tabs__panel:has(> [class*="language-"]:only-child) {
+    background: var(--color-code-bg);
+  }
+
+  .docyard-tabs__panel:has(> [class*="language-"]:only-child) .highlight pre {
+    padding: var(--space-6);
+    background: transparent;
+  }
+}
+
+/* Fallback for browsers without :has() */
+@supports not selector(:has(*)) {
+  .docyard-tabs__panel {
+    padding: var(--space-6);
+  }
 }
 
 /* Code blocks with siblings */

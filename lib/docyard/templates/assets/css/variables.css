@@ -44,6 +44,16 @@
   --color-diff-remove-gutter-bg: rgba(239, 68, 68, 0.2);
   --color-diff-remove-indicator: #991b1b;
 
+  /* Code error/warning colors - Light Theme */
+  --color-code-error-bg: rgba(239, 68, 68, 0.15);
+  --color-code-error-border: #ef4444;
+  --color-code-error-gutter-bg: rgba(239, 68, 68, 0.2);
+  --color-code-error-indicator: #991b1b;
+  --color-code-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-code-warning-border: #f59e0b;
+  --color-code-warning-gutter-bg: rgba(245, 158, 11, 0.2);
+  --color-code-warning-indicator: #78350f;
+
   /* Callout colors - shadcn inspired */
   --callout-note: #0ea5e9;
   --callout-note-text: #0c4a6e;
@@ -186,6 +196,16 @@
   --color-diff-remove-border: #ef4444;
   --color-diff-remove-gutter-bg: rgba(239, 68, 68, 0.15);
   --color-diff-remove-indicator: #f87171;
+
+  /* Code error/warning colors - Dark Theme */
+  --color-code-error-bg: rgba(239, 68, 68, 0.1);
+  --color-code-error-border: #ef4444;
+  --color-code-error-gutter-bg: rgba(239, 68, 68, 0.15);
+  --color-code-error-indicator: #f87171;
+  --color-code-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-code-warning-border: #f59e0b;
+  --color-code-warning-gutter-bg: rgba(245, 158, 11, 0.15);
+  --color-code-warning-indicator: #fbbf24;
 
   /* Callout colors - Dark mode shadcn inspired */
   --callout-note: #38bdf8;

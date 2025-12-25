@@ -99,19 +99,21 @@ module Docyard
       end
 
       def needs_line_wrapping?(block_data)
-        block_data[:highlights]&.any? ||
-          block_data[:diff_lines]&.any? ||
-          block_data[:focus_lines]&.any?
+        %i[highlights diff_lines focus_lines error_lines warning_lines].any? do |key|
+          block_data[key]&.any?
+        end
       end
 
       def wrap_code_block_lines(html, block_data)
-        CodeBlockLineWrapper.wrap_code_block(
-          html,
-          block_data[:highlights] || [],
-          block_data[:diff_lines] || {},
-          block_data[:focus_lines] || {},
-          extract_start_line(block_data[:option])
-        )
+        wrapper_data = {
+          highlights: block_data[:highlights] || [],
+          diff_lines: block_data[:diff_lines] || {},
+          focus_lines: block_data[:focus_lines] || {},
+          error_lines: block_data[:error_lines] || {},
+          warning_lines: block_data[:warning_lines] || {},
+          start_line: extract_start_line(block_data[:option])
+        }
+        CodeBlockLineWrapper.wrap_code_block(html, wrapper_data)
       end
 
       def build_full_locals(processed_html, code_text, block_data)
@@ -139,7 +141,9 @@ module Docyard
         {
           highlights: block_data[:highlights] || [],
           diff_lines: block_data[:diff_lines] || {},
-          focus_lines: block_data[:focus_lines] || {}
+          focus_lines: block_data[:focus_lines] || {},
+          error_lines: block_data[:error_lines] || {},
+          warning_lines: block_data[:warning_lines] || {}
         }
       end
 

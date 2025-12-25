@@ -1,28 +1,22 @@
 # frozen_string_literal: true
 
 require_relative "base_processor"
+require_relative "code_block_patterns"
 
 module Docyard
   module Components
     class CodeBlockDiffPreprocessor < BaseProcessor
-      self.priority = 6 # After CodeBlockOptionsPreprocessor (5)
+      include CodeBlockPatterns
 
-      DIFF_MARKER_PATTERN = %r{
-        (?:
-          //\s*\[!code\s*([+-]{2})\]              |  # // [!code ++]
-          \#\s*\[!code\s*([+-]{2})\]                |  # \# [!code ++]
-          /\*\s*\[!code\s*([+-]{2})\]\s*\*/      |  # /* [!code ++] */
-          --\s*\[!code\s*([+-]{2})\]                |  # -- [!code ++]
-          <!--\s*\[!code\s*([+-]{2})\]\s*-->       |  # <!-- [!code ++] -->
-          ;\s*\[!code\s*([+-]{2})\]                    # ; [!code ++]
-        )[^\S\n]*
-      }x
+      self.priority = 6
 
       CODE_BLOCK_REGEX = /^```(\w*).*?\n(.*?)^```/m
       TABS_BLOCK_REGEX = /^:::[ \t]*tabs[ \t]*\n.*?^:::[ \t]*$/m
 
       def preprocess(content)
         context[:code_block_diff_lines] ||= []
+        context[:code_block_error_lines] ||= []
+        context[:code_block_warning_lines] ||= []
         @block_index = 0
         @tabs_ranges = find_tabs_ranges(content)
 
@@ -34,32 +28,63 @@ module Docyard
       def process_code_block(match)
         return match[0] if inside_tabs?(match.begin(0))
 
-        diff_info = extract_diff_lines(match[2])
-        context[:code_block_diff_lines][@block_index] = diff_info[:lines]
+        result = extract_all_markers(match[2])
+        store_extracted_markers(result)
         @block_index += 1
-        match[0].sub(match[2], diff_info[:cleaned_content])
+        match[0].sub(match[2], result[:cleaned_content])
+      end
+
+      def store_extracted_markers(result)
+        context[:code_block_diff_lines][@block_index] = result[:diff_lines]
+        context[:code_block_error_lines][@block_index] = result[:error_lines]
+        context[:code_block_warning_lines][@block_index] = result[:warning_lines]
+      end
+
+      def extract_all_markers(code_content)
+        diff_info = extract_diff_lines(code_content)
+        error_info = extract_error_lines(diff_info[:cleaned_content])
+        warning_info = extract_warning_lines(error_info[:cleaned_content])
+
+        {
+          diff_lines: diff_info[:lines],
+          error_lines: error_info[:lines],
+          warning_lines: warning_info[:lines],
+          cleaned_content: warning_info[:cleaned_content]
+        }
       end
 
       def extract_diff_lines(code_content)
+        extract_marker_lines(code_content, DIFF_MARKER_PATTERN) do |match|
+          diff_type = match.captures.compact.first
+          diff_type == "++" ? :addition : :deletion
+        end
+      end
+
+      def extract_error_lines(code_content)
+        extract_marker_lines(code_content, ERROR_MARKER_PATTERN) { true }
+      end
+
+      def extract_warning_lines(code_content)
+        extract_marker_lines(code_content, WARNING_MARKER_PATTERN) { true }
+      end
+
+      def extract_marker_lines(code_content, pattern)
         lines = code_content.lines
-        diff_lines = {}
+        marker_lines = {}
         cleaned_lines = []
 
         lines.each_with_index do |line, index|
           line_num = index + 1
 
-          if (match = line.match(DIFF_MARKER_PATTERN))
-            diff_type = match.captures.compact.first
-            diff_lines[line_num] = diff_type == "++" ? :addition : :deletion
-
-            cleaned_line = line.gsub(DIFF_MARKER_PATTERN, "")
-            cleaned_lines << cleaned_line
+          if (match = line.match(pattern))
+            marker_lines[line_num] = yield(match)
+            cleaned_lines << line.gsub(pattern, "")
           else
             cleaned_lines << line
           end
         end
 
-        { lines: diff_lines, cleaned_content: cleaned_lines.join }
+        { lines: marker_lines, cleaned_content: cleaned_lines.join }
       end
 
       def inside_tabs?(position)

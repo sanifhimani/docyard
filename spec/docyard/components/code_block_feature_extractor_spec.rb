@@ -186,6 +186,76 @@ RSpec.describe Docyard::Components::CodeBlockFeatureExtractor do
       end
     end
 
+    context "with error markers" do
+      it "extracts error lines with // comment style", :aggregate_failures do
+        markdown = "```js\nconst x = 1;\nconst y = 2;  // [!code error]\n```"
+        result = described_class.process_markdown(markdown)
+
+        expect(result[:blocks][0][:error_lines]).to eq({ 2 => true })
+        expect(result[:cleaned_markdown]).to include("const y = 2;")
+        expect(result[:cleaned_markdown]).not_to include("[!code error]")
+      end
+
+      it "extracts error lines with # comment style" do
+        markdown = "```py\nx = 1\ny = 2  # [!code error]\n```"
+        result = described_class.process_markdown(markdown)
+
+        expect(result[:blocks][0][:error_lines]).to eq({ 2 => true })
+      end
+
+      it "extracts multiple error lines" do
+        markdown = "```js\nconst x = 1;  // [!code error]\nconst y = 2;\nconst z = 3;  // [!code error]\n```"
+        result = described_class.process_markdown(markdown)
+
+        expect(result[:blocks][0][:error_lines]).to eq({ 1 => true, 3 => true })
+      end
+    end
+
+    context "with warning markers" do
+      it "extracts warning lines with // comment style", :aggregate_failures do
+        markdown = "```js\nconst x = 1;\nconst y = 2;  // [!code warning]\n```"
+        result = described_class.process_markdown(markdown)
+
+        expect(result[:blocks][0][:warning_lines]).to eq({ 2 => true })
+        expect(result[:cleaned_markdown]).to include("const y = 2;")
+        expect(result[:cleaned_markdown]).not_to include("[!code warning]")
+      end
+
+      it "extracts warning lines with # comment style" do
+        markdown = "```py\nx = 1\ny = 2  # [!code warning]\n```"
+        result = described_class.process_markdown(markdown)
+
+        expect(result[:blocks][0][:warning_lines]).to eq({ 2 => true })
+      end
+
+      it "extracts multiple warning lines" do
+        markdown = "```js\nconst x = 1;  // [!code warning]\nconst y = 2;\nconst z = 3;  // [!code warning]\n```"
+        result = described_class.process_markdown(markdown)
+
+        expect(result[:blocks][0][:warning_lines]).to eq({ 1 => true, 3 => true })
+      end
+    end
+
+    context "with all marker types" do
+      it "extracts diff, focus, error, and warning on different lines", :aggregate_failures do
+        markdown = <<~MD.chomp
+          ```js
+          const a = 1;  // [!code ++]
+          const b = 2;  // [!code focus]
+          const c = 3;  // [!code error]
+          const d = 4;  // [!code warning]
+          ```
+        MD
+        result = described_class.process_markdown(markdown)
+
+        block = result[:blocks][0]
+        expect(block[:diff_lines]).to eq({ 1 => :addition })
+        expect(block[:focus_lines]).to eq({ 2 => true })
+        expect(block[:error_lines]).to eq({ 3 => true })
+        expect(block[:warning_lines]).to eq({ 4 => true })
+      end
+    end
+
     context "with multiple code blocks" do
       it "processes each code block independently", :aggregate_failures do
         markdown = <<~MD

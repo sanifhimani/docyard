@@ -501,6 +501,71 @@ RSpec.describe Docyard::Components::TabsParser do
         expect(tab_content.scan("docyard-code-block").length).to be >= 2
         expect(tab_content).to include("docyard-code-line--focus", "docyard-code-line--diff-add")
       end
+
+      it "processes error markers inside tabs", :aggregate_failures do
+        content = <<~CONTENT
+          == JavaScript
+          ```javascript
+          const x = 1;
+          const y = 2;  // [!code error]
+          ```
+        CONTENT
+
+        tabs = described_class.parse(content)
+
+        expect(tabs[0][:content]).to include("docyard-code-block--has-error")
+        expect(tabs[0][:content]).to include("docyard-code-line--error")
+        expect(tabs[0][:content]).not_to include("[!code error]")
+      end
+
+      it "processes warning markers inside tabs", :aggregate_failures do
+        content = <<~CONTENT
+          == JavaScript
+          ```javascript
+          const x = 1;
+          const y = 2;  // [!code warning]
+          ```
+        CONTENT
+
+        tabs = described_class.parse(content)
+
+        expect(tabs[0][:content]).to include("docyard-code-block--has-warning")
+        expect(tabs[0][:content]).to include("docyard-code-line--warning")
+        expect(tabs[0][:content]).not_to include("[!code warning]")
+      end
+
+      it "processes error markers with Python comment style in tabs", :aggregate_failures do
+        content = <<~CONTENT
+          == Python
+          ```python
+          x = 1
+          y = 2  # [!code error]
+          ```
+        CONTENT
+
+        tabs = described_class.parse(content)
+
+        expect(tabs[0][:content]).to include("docyard-code-line--error")
+        expect(tabs[0][:content]).not_to include("[!code error]")
+      end
+
+      it "processes all marker types with container classes", :aggregate_failures do
+        content = "== JS\n```js\nconst a = 1;  // [!code ++]\nconst b = 2;  // [!code focus]\n" \
+                  "const c = 3;  // [!code error]\nconst d = 4;  // [!code warning]\n```"
+        tab_content = described_class.parse(content)[0][:content]
+
+        expect(tab_content).to include("docyard-code-block--diff", "docyard-code-block--has-focus")
+        expect(tab_content).to include("docyard-code-block--has-error", "docyard-code-block--has-warning")
+      end
+
+      it "processes all marker types with line classes", :aggregate_failures do
+        content = "== JS\n```js\nconst a = 1;  // [!code ++]\nconst b = 2;  // [!code focus]\n" \
+                  "const c = 3;  // [!code error]\nconst d = 4;  // [!code warning]\n```"
+        tab_content = described_class.parse(content)[0][:content]
+
+        expect(tab_content).to include("docyard-code-line--diff-add", "docyard-code-line--focus")
+        expect(tab_content).to include("docyard-code-line--error", "docyard-code-line--warning")
+      end
     end
   end
 end
