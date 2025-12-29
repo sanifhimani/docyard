@@ -26,9 +26,23 @@
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 100%;
   padding: var(--space-5) var(--space-6);
+}
+
+.header-logo {
+  flex-shrink: 0;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--space-6);
+}
+
+.header-actions {
+  flex-shrink: 0;
 }
 
 .header-left {

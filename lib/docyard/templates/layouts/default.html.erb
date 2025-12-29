@@ -43,7 +43,15 @@
         <% end %>
       </a>
 
-      <%= render_partial('_theme_toggle') %>
+      <% if @search_enabled %>
+      <div class="header-center">
+        <%= render_partial('_search_trigger') %>
+      </div>
+      <% end %>
+
+      <div class="header-actions">
+        <%= render_partial('_theme_toggle') %>
+      </div>
     </div>
   </header>
 
@@ -68,7 +76,7 @@
 
     <!-- Main content area -->
     <div class="layout-main">
-      <main id="main-content" class="content">
+      <main id="main-content" class="content" data-pagefind-body>
         <%= @content %>
 
         <!-- Previous/Next Navigation -->
@@ -79,6 +87,10 @@
     <!-- Table of contents -->
     <%= render_partial('_table_of_contents') %>
   </div>
+
+  <% if @search_enabled %>
+  <%= render_partial('_search_modal') %>
+  <% end %>
 
   <script src="/assets/js/theme.js"></script>
   <script src="/assets/js/components.js"></script>
