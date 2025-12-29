@@ -5,6 +5,7 @@ require "stringio"
 require_relative "file_watcher"
 require_relative "rack_application"
 require_relative "config"
+require_relative "dev_search_indexer"
 
 module Docyard
   class Server
@@ -19,15 +20,14 @@ module Docyard
       @docs_path = docs_path
       @config = Config.load
       @file_watcher = FileWatcher.new(File.expand_path(docs_path))
-      @app = RackApplication.new(
-        docs_path: File.expand_path(docs_path),
-        file_watcher: @file_watcher,
-        config: @config
-      )
+      @search_indexer = nil
+      @app = nil
     end
 
     def start
       validate_docs_directory!
+      generate_search_index
+      initialize_app
       print_server_info
       @file_watcher.start
 
@@ -35,10 +35,32 @@ module Docyard
       trap("INT") { shutdown_server }
 
       http_server.start
-      @file_watcher.stop
+      cleanup
     end
 
     private
+
+    def generate_search_index
+      @search_indexer = DevSearchIndexer.new(
+        docs_path: File.expand_path(docs_path),
+        config: @config
+      )
+      @search_indexer.generate
+    end
+
+    def initialize_app
+      @app = RackApplication.new(
+        docs_path: File.expand_path(docs_path),
+        file_watcher: @file_watcher,
+        config: @config,
+        pagefind_path: @search_indexer&.pagefind_path
+      )
+    end
+
+    def cleanup
+      @file_watcher.stop
+      @search_indexer&.cleanup
+    end
 
     def validate_docs_directory!
       return if File.directory?(docs_path)
