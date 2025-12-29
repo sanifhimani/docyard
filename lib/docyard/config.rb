@@ -37,6 +37,11 @@ module Docyard
       },
       "markdown" => {
         "lineNumbers" => false
+      },
+      "search" => {
+        "enabled" => true,
+        "placeholder" => "Search documentation...",
+        "exclude" => []
       }
     }.freeze
 
@@ -79,6 +84,10 @@ module Docyard
 
     def markdown
       @markdown ||= ConfigSection.new(data["markdown"])
+    end
+
+    def search
+      @search ||= ConfigSection.new(data["search"])
     end
 
     private
