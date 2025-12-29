@@ -105,16 +105,30 @@ module Docyard
       end
 
       def config_branding_options
-        site = config.site
-        branding = config.branding
+        site_options.merge(logo_options).merge(search_options).merge(appearance_options(config.branding.appearance))
+      end
 
+      def site_options
         {
-          site_title: site.title || Constants::DEFAULT_SITE_TITLE,
-          site_description: site.description || "",
+          site_title: config.site.title || Constants::DEFAULT_SITE_TITLE,
+          site_description: config.site.description || "",
+          favicon: config.branding.favicon
+        }
+      end
+
+      def logo_options
+        branding = config.branding
+        {
           logo: resolve_logo(branding.logo, branding.logo_dark),
-          logo_dark: resolve_logo_dark(branding.logo, branding.logo_dark),
-          favicon: branding.favicon
-        }.merge(appearance_options(branding.appearance))
+          logo_dark: resolve_logo_dark(branding.logo, branding.logo_dark)
+        }
+      end
+
+      def search_options
+        {
+          search_enabled: config.search.enabled != false,
+          search_placeholder: config.search.placeholder || "Search documentation..."
+        }
       end
 
       def appearance_options(appearance)
