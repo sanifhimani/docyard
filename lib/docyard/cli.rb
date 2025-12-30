@@ -41,7 +41,8 @@ module Docyard
     desc "serve", "Start the development server"
     method_option :port, type: :numeric, default: 4200, aliases: "-p", desc: "Port to run the server on"
     method_option :host, type: :string, default: "localhost", aliases: "-h", desc: "Host to bind the server to"
-    method_option :search, type: :boolean, default: false, aliases: "-s", desc: "Enable search indexing (slower startup)"
+    method_option :search, type: :boolean, default: false, aliases: "-s",
+                           desc: "Enable search indexing (slower startup)"
     def serve
       require_relative "server"
       server = Docyard::Server.new(
