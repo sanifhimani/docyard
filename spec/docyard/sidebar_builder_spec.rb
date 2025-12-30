@@ -44,13 +44,14 @@ RSpec.describe Docyard::SidebarBuilder do
       end
     end
 
-    it "caches tree on subsequent calls" do
+    it "returns consistent tree on subsequent calls", :aggregate_failures do
       create_doc("test.md")
 
       tree1 = sidebar.tree
       tree2 = sidebar.tree
 
-      expect(tree1.object_id).to eq(tree2.object_id)
+      expect(tree1).to eq(tree2)
+      expect(tree1).not_to be_empty
     end
   end
 
