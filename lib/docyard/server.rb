@@ -12,12 +12,13 @@ module Docyard
     DEFAULT_PORT = 4200
     DEFAULT_HOST = "localhost"
 
-    attr_reader :port, :host, :docs_path, :config
+    attr_reader :port, :host, :docs_path, :config, :search_enabled
 
-    def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs")
+    def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs", search: false)
       @port = port
       @host = host
       @docs_path = docs_path
+      @search_enabled = search
       @config = Config.load
       @file_watcher = FileWatcher.new(File.expand_path(docs_path))
       @search_indexer = nil
@@ -26,7 +27,7 @@ module Docyard
 
     def start
       validate_docs_directory!
-      generate_search_index
+      generate_search_index if @search_enabled
       initialize_app
       print_server_info
       @file_watcher.start
@@ -73,6 +74,7 @@ module Docyard
       puts "Starting Docyard server..."
       puts "=> Serving docs from: #{docs_path}/"
       puts "=> Running at: http://#{host}:#{port}"
+      puts "=> Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}"
       puts "=> Press Ctrl+C to stop\n"
     end
 

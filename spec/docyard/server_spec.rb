@@ -19,6 +19,18 @@ RSpec.describe Docyard::Server do
       expect(server.host).to eq("0.0.0.0")
     end
 
+    it "disables search by default" do
+      server = described_class.new(docs_path: temp_dir)
+
+      expect(server.search_enabled).to be(false)
+    end
+
+    it "accepts search option" do
+      server = described_class.new(docs_path: temp_dir, search: true)
+
+      expect(server.search_enabled).to be(true)
+    end
+
     it "loads configuration", :aggregate_failures do
       create_config("site:\n  title: Test Documentation")
       Dir.chdir(temp_dir) do

@@ -18,7 +18,7 @@ module Docyard
         puts "\n[✓] Found #{markdown_files.size} markdown files"
 
         progress = TTY::ProgressBar.new(
-          "Generating pages [:bar] :current/:total (:percent%)",
+          "Generating pages [:bar] :current/:total (:percent)",
           total: markdown_files.size,
           width: 50
         )

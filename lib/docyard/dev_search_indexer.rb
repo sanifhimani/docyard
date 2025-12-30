@@ -3,6 +3,7 @@
 require "fileutils"
 require "tmpdir"
 require "open3"
+require "tty-progressbar"
 
 module Docyard
   class DevSearchIndexer
@@ -56,8 +57,15 @@ module Docyard
       markdown_files = Dir.glob(File.join(docs_path, "**", "*.md"))
       renderer = Renderer.new(base_url: "/", config: config)
 
+      progress = TTY::ProgressBar.new(
+        "Indexing search [:bar] :current/:total (:percent)",
+        total: markdown_files.size,
+        width: 50
+      )
+
       markdown_files.each do |file_path|
         generate_html_file(file_path, renderer)
+        progress.advance
       end
     end
 
