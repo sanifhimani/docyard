@@ -134,6 +134,71 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         expect(setup[:active]).to be true
         expect(result[0][:active]).to be false
       end
+
+      it "expands parent directory when child is active" do
+        result = builder.build(file_items)
+
+        guide = result[1]
+        expect(guide[:collapsed]).to be false
+      end
+    end
+
+    context "with trailing slash in current path" do
+      let(:current_path) { "/guide/setup/" }
+      let(:file_items) do
+        [
+          {
+            type: :directory,
+            name: "guide",
+            path: "guide",
+            children: [
+              { type: :file, name: "setup", path: "guide/setup.md" }
+            ]
+          }
+        ]
+      end
+
+      before do
+        create_file("guide/setup.md")
+      end
+
+      it "marks page as active even with trailing slash", :aggregate_failures do
+        result = builder.build(file_items)
+
+        guide = result[0]
+        setup = guide[:children][0]
+
+        expect(setup[:active]).to be true
+      end
+    end
+
+    context "with no active children" do
+      let(:current_path) { "/" }
+      let(:file_items) do
+        [
+          { type: :file, name: "index", path: "index.md" },
+          {
+            type: :directory,
+            name: "guide",
+            path: "guide",
+            children: [
+              { type: :file, name: "setup", path: "guide/setup.md" }
+            ]
+          }
+        ]
+      end
+
+      before do
+        create_file("index.md")
+        create_file("guide/setup.md")
+      end
+
+      it "collapses directory when no child is active" do
+        result = builder.build(file_items)
+
+        guide = result[1]
+        expect(guide[:collapsed]).to be true
+      end
     end
   end
 end

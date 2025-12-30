@@ -37,6 +37,14 @@ RSpec.describe Docyard::Utils::PathResolver do
     it "handles nested paths" do
       expect(described_class.normalize("/guide/setup.md")).to eq("/guide/setup")
     end
+
+    it "removes trailing slash" do
+      expect(described_class.normalize("/guide/setup/")).to eq("/guide/setup")
+    end
+
+    it "handles trailing slash with index" do
+      expect(described_class.normalize("/guide/index/")).to eq("/guide")
+    end
   end
 
   describe ".to_url" do
