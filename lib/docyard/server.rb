@@ -5,29 +5,30 @@ require "stringio"
 require_relative "file_watcher"
 require_relative "rack_application"
 require_relative "config"
+require_relative "dev_search_indexer"
 
 module Docyard
   class Server
     DEFAULT_PORT = 4200
     DEFAULT_HOST = "localhost"
 
-    attr_reader :port, :host, :docs_path, :config
+    attr_reader :port, :host, :docs_path, :config, :search_enabled
 
-    def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs")
+    def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs", search: false)
       @port = port
       @host = host
       @docs_path = docs_path
+      @search_enabled = search
       @config = Config.load
       @file_watcher = FileWatcher.new(File.expand_path(docs_path))
-      @app = RackApplication.new(
-        docs_path: File.expand_path(docs_path),
-        file_watcher: @file_watcher,
-        config: @config
-      )
+      @search_indexer = nil
+      @app = nil
     end
 
     def start
       validate_docs_directory!
+      generate_search_index if @search_enabled
+      initialize_app
       print_server_info
       @file_watcher.start
 
@@ -35,10 +36,32 @@ module Docyard
       trap("INT") { shutdown_server }
 
       http_server.start
-      @file_watcher.stop
+      cleanup
     end
 
     private
+
+    def generate_search_index
+      @search_indexer = DevSearchIndexer.new(
+        docs_path: File.expand_path(docs_path),
+        config: @config
+      )
+      @search_indexer.generate
+    end
+
+    def initialize_app
+      @app = RackApplication.new(
+        docs_path: File.expand_path(docs_path),
+        file_watcher: @file_watcher,
+        config: @config,
+        pagefind_path: @search_indexer&.pagefind_path
+      )
+    end
+
+    def cleanup
+      @file_watcher.stop
+      @search_indexer&.cleanup
+    end
 
     def validate_docs_directory!
       return if File.directory?(docs_path)
@@ -51,6 +74,7 @@ module Docyard
       puts "Starting Docyard server..."
       puts "=> Serving docs from: #{docs_path}/"
       puts "=> Running at: http://#{host}:#{port}"
+      puts "=> Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}"
       puts "=> Press Ctrl+C to stop\n"
     end
 

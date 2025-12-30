@@ -104,13 +104,27 @@ module Docyard
     end
 
     def assign_branding_variables(branding)
+      assign_site_branding(branding)
+      assign_display_options(branding)
+      assign_search_options(branding)
+    end
+
+    def assign_site_branding(branding)
       @site_title = branding[:site_title] || Constants::DEFAULT_SITE_TITLE
       @site_description = branding[:site_description] || ""
       @logo = branding[:logo] || Constants::DEFAULT_LOGO_PATH
       @logo_dark = branding[:logo_dark]
       @favicon = branding[:favicon] || Constants::DEFAULT_FAVICON_PATH
+    end
+
+    def assign_display_options(branding)
       @display_logo = branding[:display_logo].nil? || branding[:display_logo]
       @display_title = branding[:display_title].nil? || branding[:display_title]
+    end
+
+    def assign_search_options(branding)
+      @search_enabled = branding[:search_enabled].nil? || branding[:search_enabled]
+      @search_placeholder = branding[:search_placeholder] || "Search documentation..."
     end
 
     def strip_md_from_links(html)

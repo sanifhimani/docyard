@@ -18,7 +18,7 @@ module Docyard
         puts "\n[✓] Found #{markdown_files.size} markdown files"
 
         progress = TTY::ProgressBar.new(
-          "Generating pages [:bar] :current/:total (:percent%)",
+          "Generating pages [:bar] :current/:total (:percent)",
           total: markdown_files.size,
           width: 50
         )
@@ -89,48 +89,7 @@ module Docyard
       end
 
       def branding_options
-        default_branding.merge(config_branding_options)
-      end
-
-      def default_branding
-        {
-          site_title: Constants::DEFAULT_SITE_TITLE,
-          site_description: "",
-          logo: Constants::DEFAULT_LOGO_PATH,
-          logo_dark: Constants::DEFAULT_LOGO_DARK_PATH,
-          favicon: nil,
-          display_logo: true,
-          display_title: true
-        }
-      end
-
-      def config_branding_options
-        site = config.site
-        branding = config.branding
-
-        {
-          site_title: site.title || Constants::DEFAULT_SITE_TITLE,
-          site_description: site.description || "",
-          logo: resolve_logo(branding.logo, branding.logo_dark),
-          logo_dark: resolve_logo_dark(branding.logo, branding.logo_dark),
-          favicon: branding.favicon
-        }.merge(appearance_options(branding.appearance))
-      end
-
-      def appearance_options(appearance)
-        appearance ||= {}
-        {
-          display_logo: appearance["logo"] != false,
-          display_title: appearance["title"] != false
-        }
-      end
-
-      def resolve_logo(logo, logo_dark)
-        logo || logo_dark || Constants::DEFAULT_LOGO_PATH
-      end
-
-      def resolve_logo_dark(logo, logo_dark)
-        logo_dark || logo || Constants::DEFAULT_LOGO_DARK_PATH
+        BrandingResolver.new(config).resolve
       end
 
       def log(message)

@@ -96,12 +96,22 @@ RSpec.describe Docyard::RackApplication do
     end
 
     context "with asset request" do
-      it "delegates to asset handler" do
-        env = { "PATH_INFO" => "/assets/css/main.css", "QUERY_STRING" => "" }
+      it "serves CSS assets with correct content type", :aggregate_failures do
+        env = { "PATH_INFO" => "/assets/css/layout.css", "QUERY_STRING" => "" }
+
+        status, headers, body = app.call(env)
+
+        expect(status).to eq(200)
+        expect(headers["Content-Type"]).to eq("text/css; charset=utf-8")
+        expect(body.first).to include("--color-")
+      end
+
+      it "returns 404 for non-existent assets" do
+        env = { "PATH_INFO" => "/assets/nonexistent.css", "QUERY_STRING" => "" }
 
         status, _headers, _body = app.call(env)
 
-        expect(status).to eq(200).or eq(404)
+        expect(status).to eq(404)
       end
     end
 

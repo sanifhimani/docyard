@@ -29,6 +29,7 @@ module Docyard
 
       def transform_directory(item, relative_base)
         dir_path = File.join(relative_base, item[:name])
+        children = transform_items(item[:children], dir_path)
 
         {
           title: Utils::TextFormatter.titleize(item[:name]),
@@ -36,9 +37,15 @@ module Docyard
           active: false,
           type: :directory,
           collapsible: true,
-          collapsed: false,
-          children: transform_items(item[:children], dir_path)
+          collapsed: !active_child?(children),
+          children: children
         }
+      end
+
+      def active_child?(children)
+        children.any? do |child|
+          child[:active] || active_child?(child[:children] || [])
+        end
       end
 
       def transform_file(item, relative_base)

@@ -27,6 +27,15 @@ RSpec.describe Docyard::Router do
         expect(result.file_path).to eq(File.join(docs_dir, "getting-started.md"))
       end
 
+      it "maps /getting-started/ to docs/getting-started.md (strips trailing slash)", :aggregate_failures do
+        create_doc("getting-started.md")
+
+        result = router.resolve("/getting-started/")
+
+        expect(result).to be_found
+        expect(result.file_path).to eq(File.join(docs_dir, "getting-started.md"))
+      end
+
       it "maps /getting-started.md to docs/getting-started.md (strips .md)", :aggregate_failures do
         create_doc("getting-started.md")
 
@@ -42,6 +51,15 @@ RSpec.describe Docyard::Router do
         create_doc("guide/setup.md")
 
         result = router.resolve("/guide/setup")
+
+        expect(result).to be_found
+        expect(result.file_path).to eq(File.join(docs_dir, "guide/setup.md"))
+      end
+
+      it "maps /guide/setup/ to docs/guide/setup.md (strips trailing slash)", :aggregate_failures do
+        create_doc("guide/setup.md")
+
+        result = router.resolve("/guide/setup/")
 
         expect(result).to be_found
         expect(result.file_path).to eq(File.join(docs_dir, "guide/setup.md"))

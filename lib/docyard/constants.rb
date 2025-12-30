@@ -9,6 +9,7 @@ module Docyard
 
     RELOAD_ENDPOINT = "/_docyard/reload"
     ASSETS_PREFIX = "/assets/"
+    PAGEFIND_PREFIX = "/pagefind/"
 
     INDEX_FILE = "index"
     INDEX_TITLE = "Home"

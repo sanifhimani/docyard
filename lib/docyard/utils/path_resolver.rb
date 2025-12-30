@@ -6,7 +6,8 @@ module Docyard
       def self.normalize(path)
         return "/" if path.nil? || path.empty?
 
-        normalized = path.delete_suffix(".md")
+        normalized = path.delete_suffix("/")
+          .delete_suffix(".md")
           .delete_suffix("/index")
 
         normalized = "" if normalized == "index"

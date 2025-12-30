@@ -22,8 +22,9 @@ module Docyard
       bundles_created = bundle_assets
       assets_copied = copy_static_files
       generate_seo_files
+      pages_indexed = generate_search_index
 
-      display_summary(pages_built, bundles_created, assets_copied)
+      display_summary(pages_built, bundles_created, assets_copied, pages_indexed)
       true
     rescue StandardError => e
       error "Build failed: #{e.message}"
@@ -68,7 +69,13 @@ module Docyard
       sitemap_gen.generate
 
       File.write(File.join(config.build.output_dir, "robots.txt"), robots_txt_content)
-      log "[✓] Generated robots.txt"
+      log "[+] Generated robots.txt"
+    end
+
+    def generate_search_index
+      require_relative "build/search_indexer"
+      indexer = Build::SearchIndexer.new(config, verbose: verbose)
+      indexer.index
     end
 
     def robots_txt_content
@@ -83,13 +90,17 @@ module Docyard
       ROBOTS
     end
 
-    def display_summary(pages, bundles, assets)
+    def display_summary(pages, bundles, assets, indexed = 0)
       elapsed = Time.now - start_time
 
       puts "\n#{'=' * 50}"
       puts "Build complete in #{format('%.2f', elapsed)}s"
       puts "Output: #{config.build.output_dir}/"
-      puts "#{pages} pages, #{bundles} bundles, #{assets} static files"
+
+      summary = "#{pages} pages, #{bundles} bundles, #{assets} static files"
+      summary += ", #{indexed} pages indexed" if indexed.positive?
+      puts summary
+
       puts "=" * 50
     end
 
