@@ -101,7 +101,7 @@ RSpec.describe Docyard::DevSearchIndexer do
         expect(result).to end_with("pagefind")
       end
 
-      it "creates a temp directory" do
+      it "creates a temp directory", :aggregate_failures do
         indexer.generate
         expect(indexer.temp_dir).not_to be_nil
         expect(Dir.exist?(indexer.temp_dir)).to be true
@@ -145,9 +145,7 @@ RSpec.describe Docyard::DevSearchIndexer do
         # Track what args were passed to pagefind
         captured_args = nil
         allow(Open3).to receive(:capture3) do |*args|
-          if args.first == "npx" && args[1] == "pagefind" && args[2] != "--version"
-            captured_args = args
-          end
+          captured_args = args if args.first == "npx" && args[1] == "pagefind" && args[2] != "--version"
           ["Running pagefind...", "", instance_double(Process::Status, success?: true)]
         end
 
@@ -170,15 +168,15 @@ RSpec.describe Docyard::DevSearchIndexer do
           .and_return(["", "Error: Invalid site", instance_double(Process::Status, success?: false)])
       end
 
-      it "returns nil" do
+      it "returns nil", :aggregate_failures do
         expect { indexer.generate }.to output(/Search index generation failed/).to_stderr
         expect(indexer.pagefind_path).to be_nil
       end
 
-      it "cleans up the temp directory" do
+      it "cleans up the temp directory", :aggregate_failures do
         expect { indexer.generate }.to output.to_stderr
         # temp_dir is set but directory is removed
-        expect(indexer.temp_dir).to be_nil.or satisfy { |dir| dir && !Dir.exist?(dir) }
+        expect(indexer.temp_dir).to be_nil.or(satisfy { |dir| dir && !Dir.exist?(dir) })
       end
     end
   end
@@ -197,7 +195,7 @@ RSpec.describe Docyard::DevSearchIndexer do
         indexer.generate
       end
 
-      it "removes the temp directory" do
+      it "removes the temp directory", :aggregate_failures do
         temp_path = indexer.temp_dir
         expect(Dir.exist?(temp_path)).to be true
 

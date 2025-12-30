@@ -65,7 +65,7 @@ RSpec.describe Docyard::Build::AssetBundler do
       expect(css_content.length).to be < 65_000
     end
 
-    it "minifies JS content" do
+    it "minifies JS content", :aggregate_failures do
       bundler = described_class.new(config, verbose: false)
       bundler.bundle
 

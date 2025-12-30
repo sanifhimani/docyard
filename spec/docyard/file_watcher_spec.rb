@@ -18,7 +18,7 @@ RSpec.describe Docyard::FileWatcher do
       expect(watcher.changed_since?(past_time)).to be(true)
     end
 
-    it "correctly compares against last_modified_time" do
+    it "correctly compares against last_modified_time", :aggregate_failures do
       # Verify the comparison logic works correctly
       expect(watcher.changed_since?(watcher.last_modified_time - 1)).to be(true)
       expect(watcher.changed_since?(watcher.last_modified_time + 1)).to be(false)
