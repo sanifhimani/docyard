@@ -91,12 +91,7 @@ module Docyard
     end
 
     def branding_options
-      {
-        site_title: config.site.title || Constants::DEFAULT_SITE_TITLE,
-        site_description: config.site.description || "",
-        search_enabled: true,
-        search_placeholder: config.search.placeholder || "Search documentation..."
-      }
+      BrandingResolver.new(config).resolve
     end
 
     def run_pagefind
