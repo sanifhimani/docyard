@@ -37,14 +37,14 @@ module Docyard
           active: false,
           type: :directory,
           collapsible: true,
-          collapsed: !has_active_child?(children),
+          collapsed: !active_child?(children),
           children: children
         }
       end
 
-      def has_active_child?(children)
+      def active_child?(children)
         children.any? do |child|
-          child[:active] || has_active_child?(child[:children] || [])
+          child[:active] || active_child?(child[:children] || [])
         end
       end
 
