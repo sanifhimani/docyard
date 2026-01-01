@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-01-01
+
+### Added
+- **Full-text Search** - Pagefind-powered search with Cmd/Ctrl+K modal, keyboard navigation, and highlighting (#41)
+- **Search Configuration** - Customize placeholder text, enable/disable search, and exclude paths via `docyard.yml` (#41)
+- **Dev Server Search** - Opt-in search indexing during development with `--search` flag (#41)
+
+### Changed
+- Major codebase reorganization for improved maintainability (#42)
+- Components reorganized into `processors/` and `support/` subdirectories (#42)
+- Consolidated `server/`, `rendering/`, `navigation/`, `config/`, and `search/` modules (#42)
+- Extracted shared utilities into `utils/` module (#42)
+
 ## [0.6.0] - 2025-12-25
 
 ### Added
@@ -109,7 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/sanifhimani/docyard/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/sanifhimani/docyard/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/sanifhimani/docyard/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/sanifhimani/docyard/compare/v0.3.0...v0.4.0
