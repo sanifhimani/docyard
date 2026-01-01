@@ -14,12 +14,11 @@ RSpec.describe Docyard::FileWatcher do
 
     it "returns true for timestamps before initialization" do
       past_time = Time.now - 10
-      # Watcher sets last_modified_time on initialization
+
       expect(watcher.changed_since?(past_time)).to be(true)
     end
 
     it "correctly compares against last_modified_time", :aggregate_failures do
-      # Verify the comparison logic works correctly
       expect(watcher.changed_since?(watcher.last_modified_time - 1)).to be(true)
       expect(watcher.changed_since?(watcher.last_modified_time + 1)).to be(false)
     end

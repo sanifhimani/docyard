@@ -2,7 +2,7 @@
 
 module Docyard
   class AssetHandler
-    ASSETS_PATH = File.join(__dir__, "templates", "assets")
+    ASSETS_PATH = File.join(__dir__, "../templates", "assets")
     USER_ASSETS_PATH = "docs/assets"
 
     CONTENT_TYPES = {

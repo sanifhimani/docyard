@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Docyard::Routing::ResolutionResult do
+RSpec.describe Docyard::ResolutionResult do
   describe ".found" do
     it "creates a found result", :aggregate_failures do
       result = described_class.found("path/to/file.md")

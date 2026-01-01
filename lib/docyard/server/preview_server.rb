@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "webrick"
-require_relative "config"
+require_relative "../config"
 
 module Docyard
   class PreviewServer

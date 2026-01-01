@@ -12,12 +12,12 @@ module Docyard
       clean_path = sanitize_path(request_path)
 
       file_path = File.join(docs_path, "#{clean_path}#{Constants::MARKDOWN_EXTENSION}")
-      return Routing::ResolutionResult.found(file_path) if File.file?(file_path)
+      return ResolutionResult.found(file_path) if File.file?(file_path)
 
       index_path = File.join(docs_path, clean_path, "#{Constants::INDEX_FILE}#{Constants::MARKDOWN_EXTENSION}")
-      return Routing::ResolutionResult.found(index_path) if File.file?(index_path)
+      return ResolutionResult.found(index_path) if File.file?(index_path)
 
-      Routing::ResolutionResult.not_found
+      ResolutionResult.not_found
     end
 
     private

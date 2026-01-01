@@ -4,8 +4,7 @@ require "webrick"
 require "stringio"
 require_relative "file_watcher"
 require_relative "rack_application"
-require_relative "config"
-require_relative "dev_search_indexer"
+require_relative "../config"
 
 module Docyard
   class Server
@@ -42,7 +41,7 @@ module Docyard
     private
 
     def generate_search_index
-      @search_indexer = DevSearchIndexer.new(
+      @search_indexer = Search::DevIndexer.new(
         docs_path: File.expand_path(docs_path),
         config: @config
       )

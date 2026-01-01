@@ -2,10 +2,10 @@
 
 require "json"
 require "rack"
-require_relative "sidebar_builder"
-require_relative "prev_next_builder"
-require_relative "branding_resolver"
-require_relative "constants"
+require_relative "../navigation/sidebar_builder"
+require_relative "../navigation/prev_next_builder"
+require_relative "../config/branding_resolver"
+require_relative "../config/constants"
 
 module Docyard
   class RackApplication
