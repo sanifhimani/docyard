@@ -50,11 +50,7 @@ module Docyard
     def config_sidebar_items
       return [] unless config
 
-      if config.is_a?(Hash)
-        config.dig("sidebar", "items") || config.dig(:sidebar, :items) || []
-      else
-        config.sidebar&.items || []
-      end
+      config.sidebar&.items || []
     end
 
     def config_parser
@@ -84,19 +80,11 @@ module Docyard
     end
 
     def extract_base_url
-      if config.is_a?(Hash)
-        config.dig(:build, :base_url) || "/"
-      else
-        config&.build&.base_url || "/"
-      end
+      config&.build&.base_url || "/"
     end
 
     def extract_site_title
-      if config.is_a?(Hash)
-        config[:site_title] || "Documentation"
-      else
-        config&.site&.title || "Documentation"
-      end
+      config&.site&.title || "Documentation"
     end
   end
 end

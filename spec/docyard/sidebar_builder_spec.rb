@@ -4,7 +4,7 @@ RSpec.describe Docyard::SidebarBuilder do
   include_context "with docs directory"
 
   let(:current_path) { "/" }
-  let(:config) { {} }
+  let(:config) { Docyard::Config.load(temp_dir) }
   let(:sidebar) { described_class.new(docs_path: docs_dir, current_path: current_path, config: config) }
 
   describe "#tree" do
@@ -77,7 +77,13 @@ RSpec.describe Docyard::SidebarBuilder do
     end
 
     context "with custom site title in config" do
-      let(:config) { { site_title: "My Documentation" } }
+      let(:config) do
+        create_config(<<~YAML)
+          site:
+            title: "My Documentation"
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
 
       before do
         create_doc("index.md", "---\ntitle: My Documentation\n---")

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "renderer"
-require_relative "utils/path_resolver"
+require_relative "../rendering/renderer"
+require_relative "../utils/path_resolver"
 
 module Docyard
   class PrevNextBuilder

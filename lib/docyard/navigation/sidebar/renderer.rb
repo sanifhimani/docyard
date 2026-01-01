@@ -5,7 +5,9 @@ require "erb"
 module Docyard
   module Sidebar
     class Renderer
-      PARTIALS_PATH = File.join(__dir__, "../templates/partials")
+      include Utils::UrlHelpers
+
+      PARTIALS_PATH = File.join(__dir__, "../../templates/partials")
 
       attr_reader :site_title, :base_url
 
@@ -37,19 +39,6 @@ module Docyard
 
       def icon(name, weight = "regular")
         Icons.render(name.to_s.tr("_", "-"), weight) || ""
-      end
-
-      def link_path(path)
-        return path if path.nil? || path.start_with?("http://", "https://")
-
-        "#{base_url.chomp('/')}#{path}"
-      end
-
-      def normalize_base_url(url)
-        return "/" if url.nil? || url.empty?
-
-        url = "/#{url}" unless url.start_with?("/")
-        url.end_with?("/") ? url : "#{url}/"
       end
 
       def render_tree_with_sections(items)
