@@ -73,8 +73,7 @@ module Docyard
     end
 
     def generate_search_index
-      require_relative "build/search_indexer"
-      indexer = Build::SearchIndexer.new(config, verbose: verbose)
+      indexer = Search::BuildIndexer.new(config, verbose: verbose)
       indexer.index
     end
 

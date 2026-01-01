@@ -224,11 +224,8 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== :package: npm\n```bash\nnpm install\n```\n:::"
         result = processor.preprocess(markdown)
 
-        # Should include icon rendering
         expect(result).to include('class="docyard-tabs__icon"')
-        # Should use Phosphor icon
         expect(result).to include('viewBox="0 0 256 256"')
-        # Should clean the tab name (remove :package:)
         expect(result).to match(%r{>\s*npm\s*</button>}m)
       end
 
@@ -263,7 +260,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== :star: Featured\n```javascript\nconsole.log();\n```\n:::"
         result = processor.preprocess(markdown)
 
-        # Should use manual Phosphor icon, not file extension
         expect(result).to include("star")
         expect(result).to include('viewBox="0 0 256 256"')
       end
@@ -276,7 +272,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
 
         expect(result).to include('class="docyard-tabs__icon"')
         expect(result).to include("terminal-window")
-        # Should use Phosphor icon
         expect(result).to include('viewBox="0 0 256 256"')
       end
 
@@ -293,7 +288,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-tabs__icon"')
-        # For now, file extension icons fallback to "file" icon until VSCode icons are added
         expect(result).to include("file")
       end
 
@@ -319,7 +313,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Code\n```js\nconst x = 1;\n```\n:::"
         result = processor.preprocess(markdown)
 
-        # File extension icons (currently fallback to "file")
         expect(result).to include("file")
       end
 
@@ -380,7 +373,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Overview\nJust regular text content\n:::"
         result = processor.preprocess(markdown)
 
-        # Should NOT have icon
         expect(result).not_to include('class="docyard-tabs__icon"')
       end
     end
@@ -401,7 +393,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== :package Tab Name\nContent\n:::"
         result = processor.preprocess(markdown)
 
-        # Should treat as regular tab name
         expect(result).to include(":package Tab Name")
       end
 
@@ -409,7 +400,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== :: Tab Name\nContent\n:::"
         result = processor.preprocess(markdown)
 
-        # Should not extract icon from invalid syntax
         expect(result).to include(":: Tab Name")
       end
 
@@ -417,7 +407,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Tab\nSome text\n\n```javascript\ncode();\n```\n\nMore text\n:::"
         result = processor.preprocess(markdown)
 
-        # Should NOT show icon because content is mixed (code + text)
         expect(result).not_to include('class="docyard-tabs__icon"')
       end
 
@@ -425,7 +414,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Tab\n```javascript\njs code\n```\n\n```python\npy code\n```\n:::"
         result = processor.preprocess(markdown)
 
-        # Should NOT show icon because content has multiple blocks
         expect(result).not_to include('class="docyard-tabs__icon"')
       end
 
@@ -433,7 +421,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Tab\nIntro text here\n\n```ruby\nputs 'hi'\n```\n:::"
         result = processor.preprocess(markdown)
 
-        # Should NOT show icon because content is mixed (text + code)
         expect(result).not_to include('class="docyard-tabs__icon"')
       end
 
@@ -441,7 +428,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Tab\n```JavaScript\nconsole.log();\n```\n:::"
         result = processor.preprocess(markdown)
 
-        # File extension icon (currently returns "file" fallback)
         expect(result).to include("file")
       end
 
@@ -463,7 +449,6 @@ RSpec.describe Docyard::Components::TabsProcessor do
           result = processor.preprocess(markdown)
 
           expect(result).to include('class="docyard-tabs__icon"'), "Expected icon for #{lang}"
-          # File extension icons (currently fallback to "file" until VSCode icons added)
           expect(result).to include("file"), "Expected file icon for #{lang}"
         end
       end

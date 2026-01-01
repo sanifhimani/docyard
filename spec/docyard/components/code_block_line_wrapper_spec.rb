@@ -146,7 +146,6 @@ line3
 
     context "with start line offset" do
       it "respects start line for highlights", :aggregate_failures do
-        # highlights use display line numbers (10, 11, 12...)
         result = described_class.wrap_code_block(basic_html, block_data(highlights: [11], start_line: 10))
 
         expect(result).to include('<span class="docyard-code-line">line1')
@@ -155,7 +154,6 @@ line3
       end
 
       it "uses source line numbers for diff and focus", :aggregate_failures do
-        # diff/focus use source line numbers (1, 2, 3...) regardless of start_line
         data = block_data(diff_lines: { 2 => :addition }, focus_lines: { 3 => true }, start_line: 10)
         result = described_class.wrap_code_block(basic_html, data)
 
@@ -167,11 +165,6 @@ line3
   end
 
   describe ".build_line_classes" do
-    # build_line_classes(source_line, display_line, block_data)
-    # block_data contains: highlights, diff_lines, focus_lines, error_lines, warning_lines, start_line
-    # - source_line: used for diff_lines, focus_lines, error_lines, warning_lines lookups
-    # - display_line: used for highlights lookups
-
     def block_data(overrides = {})
       {
         highlights: [],

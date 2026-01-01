@@ -291,7 +291,6 @@ RSpec.describe Docyard::LanguageMapping do
     end
 
     it "has no duplicate values for same extension", :aggregate_failures do
-      # All aliases should map to the same value
       expect(described_class::LANGUAGE_TO_EXTENSION["javascript"]).to eq(
         described_class::LANGUAGE_TO_EXTENSION["js"]
       )

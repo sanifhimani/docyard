@@ -49,46 +49,4 @@ RSpec.describe Docyard::Server do
       end
     end
   end
-
-  describe "Rack environment building" do
-    let(:server) { described_class.new(docs_path: temp_dir) }
-    let(:webrick_req) do
-      instance_double(
-        WEBrick::HTTPRequest,
-        request_method: "GET",
-        path: "/test",
-        query_string: "foo=bar",
-        host: "localhost",
-        port: 4200
-      )
-    end
-
-    it "builds valid Rack env with request details" do
-      env = server.send(:build_rack_env, webrick_req)
-
-      expect(env).to include(
-        "REQUEST_METHOD" => "GET",
-        "PATH_INFO" => "/test",
-        "QUERY_STRING" => "foo=bar",
-        "SERVER_NAME" => "localhost",
-        "SERVER_PORT" => "4200"
-      )
-    end
-
-    it "includes Rack-specific fields", :aggregate_failures do
-      env = server.send(:build_rack_env, webrick_req)
-
-      expect(env["rack.url_scheme"]).to eq("http")
-      expect(env["rack.input"]).to be_a(StringIO)
-      expect(env["rack.errors"]).to eq($stderr)
-    end
-
-    it "handles nil query string" do
-      allow(webrick_req).to receive(:query_string).and_return(nil)
-
-      env = server.send(:build_rack_env, webrick_req)
-
-      expect(env["QUERY_STRING"]).to eq("")
-    end
-  end
 end

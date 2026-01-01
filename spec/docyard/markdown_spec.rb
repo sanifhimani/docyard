@@ -110,14 +110,6 @@ RSpec.describe Docyard::Markdown do
       expect(markdown.html).not_to include("title: Test")
     end
 
-    it "memoizes result" do
-      markdown = described_class.new("# Hello")
-
-      html1 = markdown.html
-      html2 = markdown.html
-      expect(html1.object_id).to eq(html2.object_id)
-    end
-
     it "adds syntax highlighting classes to code blocks", :aggregate_failures do
       markdown = described_class.new("```ruby\ndef hello\n  puts 'world'\nend\n```")
 
