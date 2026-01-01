@@ -2,7 +2,6 @@
 
 RSpec.describe Docyard::Logging do
   after do
-    # Reset logger between tests
     described_class.logger = nil
   end
 
