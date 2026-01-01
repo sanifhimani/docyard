@@ -2,7 +2,7 @@
 
 require "yaml"
 require_relative "config/validator"
-require_relative "constants"
+require_relative "config/constants"
 
 module Docyard
   class Config
