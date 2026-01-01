@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 require "erb"
-require_relative "constants"
+require_relative "../config/constants"
 
 module Docyard
   class Renderer
-    LAYOUTS_PATH = File.join(__dir__, "templates", "layouts")
-    ERRORS_PATH = File.join(__dir__, "templates", "errors")
-    PARTIALS_PATH = File.join(__dir__, "templates", "partials")
+    include Utils::UrlHelpers
+
+    LAYOUTS_PATH = File.join(__dir__, "../templates", "layouts")
+    ERRORS_PATH = File.join(__dir__, "../templates", "errors")
+    PARTIALS_PATH = File.join(__dir__, "../templates", "partials")
 
     attr_reader :layout_path, :base_url, :config
 
@@ -80,20 +82,7 @@ module Docyard
       "#{base_url}#{path}"
     end
 
-    def link_path(path)
-      return path if path.nil? || path.start_with?("http://", "https://")
-
-      "#{base_url.chomp('/')}#{path}"
-    end
-
     private
-
-    def normalize_base_url(url)
-      return "/" if url.nil? || url.empty?
-
-      url = "/#{url}" unless url.start_with?("/")
-      url.end_with?("/") ? url : "#{url}/"
-    end
 
     def assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
       @content = content
