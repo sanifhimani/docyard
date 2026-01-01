@@ -128,7 +128,6 @@ RSpec.describe Docyard::Components::TabsParser do
         content = "==\nContent with == prefix\n\n==\nEmpty name\n\n== Valid Tab\nValid content"
         tabs = described_class.parse(content)
 
-        # First tab name is "==", second filtered (empty name), third is "Valid Tab"
         expect(tabs.length).to eq(2)
         expect(tabs[0][:name]).to eq("==")
         expect(tabs[1][:name]).to eq("Valid Tab")
@@ -355,7 +354,6 @@ RSpec.describe Docyard::Components::TabsParser do
         content = "Just some content without tabs"
         tabs = described_class.parse(content)
 
-        # Content without "==" separator gets treated as a single tab name with no content
         expect(tabs.length).to eq(1)
         expect(tabs[0][:name]).to eq("Just some content without tabs")
         expect(tabs[0][:content]).to eq("")
@@ -382,7 +380,6 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        # Should filter out invalid tabs
         expect(tabs.all? { |tab| !tab[:name].nil? && !tab[:name].empty? }).to be true
       end
     end

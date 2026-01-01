@@ -72,7 +72,6 @@ RSpec.describe Docyard::Build::AssetBundler do
       js_file = Dir.glob(File.join(output_dir, "assets", "bundle.*.js")).first
       js_content = File.read(js_file)
 
-      # Check that JS is minified (no multiple newlines, reduced size)
       expect(js_content).not_to include("\n\n")
       expect(js_content.length).to be < 30_000
     end

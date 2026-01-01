@@ -3,7 +3,6 @@
 RSpec.describe Docyard::Components::Registry do
   after do
     described_class.reset!
-    # Re-register all default processors after reset
     [
       Docyard::Components::CodeBlockOptionsPreprocessor,
       Docyard::Components::TabsProcessor,

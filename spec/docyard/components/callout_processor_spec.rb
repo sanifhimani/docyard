@@ -77,7 +77,6 @@ RSpec.describe Docyard::Components::CalloutProcessor do
         markdown = "::: note\nContent\n:::"
         result = processor.preprocess(markdown)
 
-        # Check that the icon SVG is present
         expect(result).to include("<svg")
         expect(result).to include('class="docyard-callout__icon"')
       end
