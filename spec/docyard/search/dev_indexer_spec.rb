@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Docyard::DevSearchIndexer do
+RSpec.describe Docyard::Search::DevIndexer do
   include_context "with docs directory"
 
   let(:config) do
@@ -142,7 +142,6 @@ RSpec.describe Docyard::DevSearchIndexer do
       end
 
       it "generates index successfully with exclusions configured", :aggregate_failures do
-        # Track what args were passed to pagefind
         captured_args = nil
         allow(Open3).to receive(:capture3) do |*args|
           captured_args = args if args.first == "npx" && args[1] == "pagefind" && args[2] != "--version"
@@ -175,7 +174,6 @@ RSpec.describe Docyard::DevSearchIndexer do
 
       it "cleans up the temp directory", :aggregate_failures do
         expect { indexer.generate }.to output.to_stderr
-        # temp_dir is set but directory is removed
         expect(indexer.temp_dir).to be_nil.or(satisfy { |dir| dir && !Dir.exist?(dir) })
       end
     end

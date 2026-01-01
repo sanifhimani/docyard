@@ -3,10 +3,11 @@
 require "open3"
 
 module Docyard
-  module Build
-    class SearchIndexer
+  module Search
+    class BuildIndexer
+      include PagefindSupport
+
       PAGEFIND_COMMAND = "npx"
-      PAGEFIND_ARGS = ["pagefind"].freeze
 
       attr_reader :config, :output_dir, :verbose
 
@@ -31,17 +32,6 @@ module Docyard
 
       private
 
-      def search_enabled?
-        config.search.enabled != false
-      end
-
-      def pagefind_available?
-        _stdout, _stderr, status = Open3.capture3("npx", "pagefind", "--version")
-        status.success?
-      rescue Errno::ENOENT
-        false
-      end
-
       def warn_pagefind_missing
         log_warning "[!] Search index skipped: Pagefind not found"
         log_warning "    Install with: npm install -g pagefind"
@@ -49,10 +39,10 @@ module Docyard
       end
 
       def run_pagefind
-        args = build_pagefind_args
-        log "Running: npx pagefind #{args.join(' ')}" if verbose
+        args = build_pagefind_args(output_dir)
+        log "Running: npx #{args.join(' ')}" if verbose
 
-        stdout, stderr, status = Open3.capture3(PAGEFIND_COMMAND, *PAGEFIND_ARGS, *args)
+        stdout, stderr, status = Open3.capture3(PAGEFIND_COMMAND, *args)
 
         if status.success?
           page_count = extract_page_count(stdout)
@@ -62,17 +52,6 @@ module Docyard
           log_warning "[!] Search indexing failed: #{stderr}"
           0
         end
-      end
-
-      def build_pagefind_args
-        args = ["--site", output_dir]
-
-        exclusions = config.search.exclude || []
-        exclusions.each do |pattern|
-          args += ["--exclude-selectors", pattern]
-        end
-
-        args
       end
 
       def extract_page_count(output)
