@@ -34,7 +34,7 @@ module Docyard
     desc "preview", "Preview the built site locally"
     method_option :port, type: :numeric, default: 4000, aliases: "-p", desc: "Port to run preview server on"
     def preview
-      require_relative "preview_server"
+      require_relative "server/preview_server"
       Docyard::PreviewServer.new(port: options[:port]).start
     end
 
@@ -44,7 +44,7 @@ module Docyard
     method_option :search, type: :boolean, default: false, aliases: "-s",
                            desc: "Enable search indexing (slower startup)"
     def serve
-      require_relative "server"
+      require_relative "server/dev_server"
       server = Docyard::Server.new(
         port: options[:port],
         host: options[:host],
