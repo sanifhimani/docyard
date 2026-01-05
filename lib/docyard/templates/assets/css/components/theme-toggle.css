@@ -1,69 +1,73 @@
-/* Theme Toggle */
+/* Theme Toggle Button - shadcn/ui ghost button style */
+
 .theme-toggle {
-  padding: 0;
-  margin-left: var(--space-4);
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: relative;
-}
-
-.theme-toggle-track {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  position: relative;
-  width: 3.25rem;
-  height: 1.75rem;
-  padding: 0 0.375rem;
-  border-radius: 0.875rem;
-  background-color: var(--color-border);
-  border: 1px solid var(--color-border);
-  transition: background-color 0.25s ease;
-}
-
-.theme-toggle:hover .theme-toggle-track {
-  background-color: var(--color-border-secondary);
-}
-
-.theme-toggle-icon {
-  position: relative;
-  z-index: 1;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  margin-left: var(--spacing-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-4xl);
+  cursor: pointer;
+  color: var(--muted-foreground);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  outline: none;
   flex-shrink: 0;
 }
 
-.theme-toggle-sun-icon {
-  color: var(--color-warning);
+.theme-toggle:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
 }
 
-.theme-toggle-moon-icon {
-  color: var(--color-text-tertiary);
+.dark .theme-toggle:hover {
+  background-color: oklch(from var(--muted) l c h / 50%);
 }
 
-.dark .theme-toggle-moon-icon {
-  color: var(--color-primary);
+.theme-toggle:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
-.theme-toggle-thumb {
-  position: absolute;
-  top: 0.125rem;
-  left: 0.125rem;
-  width: 1.375rem;
-  height: 1.375rem;
-  background-color: var(--color-bg);
-  border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  transition: transform 0.25s ease;
+/* Icon containers */
+.theme-toggle-sun,
+.theme-toggle-moon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.dark .theme-toggle-thumb {
-  transform: translateX(1.5rem);
+.theme-toggle-sun .docyard-icon,
+.theme-toggle-moon .docyard-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Light mode: show moon, hide sun */
+.theme-toggle-sun {
+  display: none;
+}
+
+.theme-toggle-moon {
+  display: flex;
+}
+
+/* Dark mode: show sun, hide moon */
+.dark .theme-toggle-sun {
+  display: flex;
+}
+
+.dark .theme-toggle-moon {
+  display: none;
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle-track,
-  .theme-toggle-thumb {
+  .theme-toggle {
     transition: none;
   }
 }

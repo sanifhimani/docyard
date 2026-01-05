@@ -1,3 +1,5 @@
+/* Heading Anchors - shadcn/ui style */
+
 .content h2[id],
 .content h3[id],
 .content h4[id],
@@ -14,7 +16,7 @@
   .content h4[id],
   .content h5[id],
   .content h6[id] {
-    scroll-margin-top: calc(var(--header-height) + 3rem + var(--space-4));
+    scroll-margin-top: calc(var(--header-height) + 3rem + var(--spacing-4));
   }
 }
 
@@ -22,8 +24,8 @@
   float: left;
   margin-left: -0.75em;
   padding-right: 0.25em;
-  font-weight: var(--font-weight-normal);
-  color: var(--color-primary);
+  font-weight: var(--font-normal);
+  color: var(--primary);
   text-decoration: none !important;
   opacity: 0;
   transition: opacity var(--transition-fast);
@@ -42,10 +44,10 @@
   text-decoration: none !important;
 }
 
-.heading-anchor:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
+.heading-anchor:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
+  border-radius: var(--radius-sm);
 }
 
 .content h2[id]:hover .heading-anchor,
@@ -59,7 +61,7 @@
 @media (max-width: 1024px) {
   .heading-anchor {
     position: static;
-    margin-left: var(--space-2);
+    margin-left: var(--spacing-2);
     float: none;
     opacity: 0.6;
   }

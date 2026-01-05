@@ -1,37 +1,38 @@
-/* Previous/Next Navigation Footer */
+/* Previous/Next Navigation Footer - shadcn/ui style */
 
 .doc-footer {
-  margin-top: 48px;
-  padding-top: 24px;
-  border-top: 1px solid var(--color-border);
+  margin-top: var(--spacing-12);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid var(--border);
 }
 
 .pager {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: var(--spacing-2);
 }
 
+/* Pager link - matches shadcn outline button/card style */
 .pager-link {
   display: block;
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  padding: var(--spacing-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
   text-decoration: none !important;
-  transition: border-color 0.25s ease, background-color 0.25s ease;
+  transition: all var(--transition-fast);
   outline: none;
   background-color: transparent;
 }
 
 .pager-link:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-background-soft);
+  border-color: var(--primary);
+  background-color: var(--muted);
 }
 
 .pager-link:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 8px;
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
 .pager-link.prev {
@@ -44,18 +45,18 @@
 
 .pager-label {
   display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  margin-bottom: 0px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+  margin-bottom: 0;
   text-decoration: none !important;
 }
 
 .pager-title {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

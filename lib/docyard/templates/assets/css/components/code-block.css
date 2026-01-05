@@ -1,8 +1,8 @@
-/* Code Block Component */
+/* Code Block Component - shadcn/ui style */
 
 .docyard-code-block {
   position: relative;
-  margin: var(--space-6) 0;
+  margin: var(--spacing-6) 0;
 }
 
 .docyard-code-block .highlight {
@@ -11,10 +11,10 @@
 
 /* Titled Code Block Layout */
 .docyard-code-block--titled {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  background-color: var(--color-code-bg);
+  background-color: var(--code-background);
 }
 
 .docyard-code-block--titled .docyard-code-block__body {
@@ -38,20 +38,20 @@
 
 .docyard-code-block--titled .highlight pre code {
   display: block;
-  padding: var(--space-4);
+  padding: var(--spacing-4);
 }
 
 /* Code Block Header */
 .docyard-code-block__header {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
 }
 
 .docyard-code-block__icon {
@@ -94,9 +94,9 @@
 
 /* Line Numbers Layout */
 .docyard-code-block--line-numbers {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--code-background);
   overflow: hidden;
 }
 
@@ -113,20 +113,20 @@
 
 .docyard-code-block__lines {
   flex-shrink: 0;
-  padding: var(--space-4) 0;
-  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-4) 0;
+  border-right: 1px solid var(--border);
   text-align: right;
   user-select: none;
-  color: var(--color-text-tertiary);
+  color: var(--muted-foreground);
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  background-color: var(--color-code-bg);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  background-color: var(--code-background);
 }
 
 .docyard-code-block__lines span {
   display: block;
-  padding: 0 var(--space-3);
+  padding: 0 var(--spacing-3);
   min-width: 2.5rem;
 }
 
@@ -142,90 +142,90 @@
 }
 
 .docyard-code-line--highlighted {
-  background-color: rgba(var(--color-primary-rgb), 0.1);
-  border-left: 3px solid var(--color-primary);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: oklch(from var(--primary) l c h / 10%);
+  border-left: 3px solid var(--primary);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 /* Highlighted line number */
 .docyard-code-block__line--highlighted {
-  background-color: rgba(var(--color-primary-rgb), 0.15);
-  color: var(--color-primary);
+  background-color: oklch(from var(--primary) l c h / 15%);
+  color: var(--primary);
   font-weight: 500;
 }
 
 /* Diff line styles */
 .docyard-code-line--diff-add {
-  background-color: var(--color-diff-add-bg);
-  border-left: 3px solid var(--color-diff-add-border);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--diff-add-background);
+  border-left: 3px solid var(--diff-add-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 .docyard-code-line--diff-remove {
-  background-color: var(--color-diff-remove-bg);
-  border-left: 3px solid var(--color-diff-remove-border);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--diff-remove-background);
+  border-left: 3px solid var(--diff-remove-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 /* Error/Warning line styles */
 .docyard-code-line--error {
-  background-color: var(--color-code-error-bg, rgba(239, 68, 68, 0.15));
-  border-left: 3px solid var(--color-code-error-border, #ef4444);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--code-error-background);
+  border-left: 3px solid var(--code-error-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 .docyard-code-line--warning {
-  background-color: var(--color-code-warning-bg, rgba(245, 158, 11, 0.15));
-  border-left: 3px solid var(--color-code-warning-border, #f59e0b);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--code-warning-background);
+  border-left: 3px solid var(--code-warning-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 /* Diff gutter indicators */
 .docyard-code-block__line--diff-add {
-  background-color: var(--color-diff-add-gutter-bg);
-  color: var(--color-diff-add-indicator);
+  background-color: var(--diff-add-gutter);
+  color: var(--diff-add-indicator);
   font-weight: 500;
 }
 
 .docyard-code-block__line--diff-remove {
-  background-color: var(--color-diff-remove-gutter-bg);
-  color: var(--color-diff-remove-indicator);
+  background-color: var(--diff-remove-gutter);
+  color: var(--diff-remove-indicator);
   font-weight: 500;
 }
 
 /* Error/Warning line number indicators */
 .docyard-code-block__line--error {
-  background-color: var(--color-code-error-gutter-bg, rgba(239, 68, 68, 0.2));
-  color: var(--color-code-error-indicator, #991b1b);
+  background-color: var(--code-error-gutter);
+  color: var(--code-error-indicator);
   font-weight: 500;
 }
 
 .docyard-code-block__line--warning {
-  background-color: var(--color-code-warning-gutter-bg, rgba(245, 158, 11, 0.2));
-  color: var(--color-code-warning-indicator, #78350f);
+  background-color: var(--code-warning-gutter);
+  color: var(--code-warning-indicator);
   font-weight: 500;
 }
 
 /* Diff-only gutter */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--code-background);
   overflow: hidden;
 }
 
@@ -242,36 +242,36 @@
 
 .docyard-code-block__diff-gutter {
   flex-shrink: 0;
-  padding: var(--space-4) 0;
-  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-4) 0;
+  border-right: 1px solid var(--border);
   text-align: center;
   user-select: none;
-  color: var(--color-text-tertiary);
+  color: var(--muted-foreground);
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  background-color: var(--color-code-bg);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  background-color: var(--code-background);
 }
 
 .docyard-code-block__diff-gutter span {
   display: block;
-  padding: 0 var(--space-2);
+  padding: 0 var(--spacing-2);
   min-width: 1.5rem;
 }
 
 .docyard-code-block__diff-indicator--add {
-  background-color: var(--color-diff-add-gutter-bg);
-  color: var(--color-diff-add-indicator);
+  background-color: var(--diff-add-gutter);
+  color: var(--diff-add-indicator);
   font-weight: 600;
 }
 
 .docyard-code-block__diff-indicator--remove {
-  background-color: var(--color-diff-remove-gutter-bg);
-  color: var(--color-diff-remove-indicator);
+  background-color: var(--diff-remove-gutter);
+  color: var(--diff-remove-indicator);
   font-weight: 600;
 }
 
-/* With line numbers - reset margins, they extend via negative margin */
+/* With line numbers - reset margins */
 .docyard-code-block--line-numbers .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -282,11 +282,11 @@
 .docyard-code-block--line-numbers .docyard-code-line--diff-remove,
 .docyard-code-block--line-numbers .docyard-code-line--error,
 .docyard-code-block--line-numbers .docyard-code-line--warning {
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
 }
 
-/* With diff gutter - reset margins, they extend via negative margin */
+/* With diff gutter - reset margins */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -294,16 +294,16 @@
 
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line--diff-add,
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line--diff-remove {
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
 }
 
 /* Error/Warning blocks without line numbers */
 .docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff),
 .docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--code-background);
   overflow: hidden;
 }
 
@@ -335,39 +335,10 @@
   filter: none;
 }
 
-/* Dark mode line numbers */
-.dark .docyard-code-block--line-numbers {
-  background-color: #161b22;
-}
-
-.dark .docyard-code-block__lines {
-  background-color: #161b22;
-  border-right-color: var(--color-border);
-}
-
-/* Dark mode diff */
-.dark .docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  background-color: #161b22;
-}
-
-.dark .docyard-code-block__diff-gutter {
-  background-color: #161b22;
-  border-right-color: var(--color-border);
-}
-
-/* Dark mode titled block */
-.dark .docyard-code-block--titled {
-  background-color: #161b22;
-}
-
-.dark .docyard-code-block__header {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
 /* Titled block with line numbers */
 .docyard-code-block--titled.docyard-code-block--line-numbers {
   display: block;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
 }
 
 .docyard-code-block--titled.docyard-code-block--line-numbers .docyard-code-block__body {
@@ -382,7 +353,7 @@
 /* Titled block with diff */
 .docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
   display: block;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
 }
 
 .docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
@@ -401,20 +372,20 @@
   }
 
   .docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) .docyard-code-block {
-    margin: var(--space-4) 0;
+    margin: var(--spacing-4) 0;
   }
 }
 
 /* Inside tabs - fallback for browsers without :has() */
 @supports not selector(:has(*)) {
   .docyard-tabs__panel .docyard-code-block {
-    margin: var(--space-4) 0;
+    margin: var(--spacing-4) 0;
   }
 }
 
 /* Inside callouts */
 .docyard-callout__body .docyard-code-block {
-  margin: var(--space-4) 0;
+  margin: var(--spacing-4) 0;
 }
 
 .docyard-callout__body .docyard-code-block:first-child {
@@ -425,28 +396,30 @@
   margin-bottom: 0;
 }
 
+/* Copy Button - matches shadcn ghost button */
 .docyard-code-block__copy {
   position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  display: flex;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-bg);
-  color: var(--color-text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-4xl);
+  background-color: var(--background);
+  color: var(--muted-foreground);
   cursor: pointer;
-  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .docyard-code-block__copy:hover {
-  background-color: var(--color-bg-secondary);
-  border-color: var(--color-text-tertiary);
-  color: var(--color-text);
+  background-color: var(--muted);
+  border-color: var(--border);
+  color: var(--foreground);
 }
 
 .docyard-code-block__copy:active {
@@ -454,14 +427,15 @@
 }
 
 .docyard-code-block__copy:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
 /* Icon sizing */
 .docyard-code-block__copy svg {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
@@ -469,15 +443,15 @@
 .docyard-code-block__copy.is-success {
   opacity: 1;
   visibility: visible;
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--primary);
+  border-color: var(--primary);
   color: white;
   animation: success-pulse 0.4s ease;
 }
 
 .docyard-code-block__copy.is-success:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
+  background-color: oklch(from var(--primary) calc(l - 0.05) c h);
+  border-color: oklch(from var(--primary) calc(l - 0.05) c h);
   color: white;
 }
 
@@ -490,11 +464,9 @@
   0% {
     transform: scale(1);
   }
-
   50% {
     transform: scale(1.1);
   }
-
   100% {
     transform: scale(1);
   }
@@ -505,11 +477,9 @@
     transform: scale(0) rotate(-45deg);
     opacity: 0;
   }
-
   50% {
     transform: scale(1.2) rotate(10deg);
   }
-
   100% {
     transform: scale(1) rotate(0deg);
     opacity: 1;
@@ -520,22 +490,22 @@
 .docyard-code-block__copy.is-error {
   opacity: 1;
   visibility: visible;
-  background-color: #ef4444;
-  border-color: #ef4444;
+  background-color: var(--destructive);
+  border-color: var(--destructive);
   color: white;
 }
 
 .docyard-code-block__copy.is-error:hover {
-  background-color: #dc2626;
-  border-color: #dc2626;
+  background-color: oklch(from var(--destructive) calc(l - 0.05) c h);
+  border-color: oklch(from var(--destructive) calc(l - 0.05) c h);
   color: white;
 }
 
 /* Mobile responsive - header */
 @media (max-width: 640px) {
   .docyard-code-block__header {
-    padding: var(--space-2) var(--space-3);
-    gap: var(--space-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    gap: var(--spacing-2);
   }
 
   .docyard-code-block__icon .docyard-icon {
@@ -544,41 +514,14 @@
   }
 
   .docyard-code-block__header .docyard-code-block__copy {
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   .docyard-code-block__header .docyard-code-block__copy svg {
-    width: 14px;
-    height: 14px;
+    width: 0.875rem;
+    height: 0.875rem;
   }
-}
-
-/* Dark mode adjustments */
-.dark .docyard-code-block__copy {
-  background-color: var(--color-bg-secondary);
-  border-color: var(--color-border);
-}
-
-.dark .docyard-code-block__copy:hover {
-  background-color: var(--color-bg-tertiary);
-  border-color: var(--color-text-tertiary);
-}
-
-/* Dark mode success state */
-.dark .docyard-code-block__copy.is-success {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.dark .docyard-code-block__copy.is-success:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-}
-
-.dark .docyard-code-block__copy.is-error {
-  background-color: #ef4444;
-  border-color: #ef4444;
 }
 
 /* Reduced motion */
