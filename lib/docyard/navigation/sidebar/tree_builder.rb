@@ -52,14 +52,29 @@ module Docyard
         file_path = File.join(relative_base, "#{item[:name]}#{Constants::MARKDOWN_EXTENSION}")
         full_file_path = File.join(docs_path, file_path)
         url_path = Utils::PathResolver.to_url(file_path.delete_suffix(Constants::MARKDOWN_EXTENSION))
+        metadata = extract_file_metadata(full_file_path)
 
         {
-          title: title_extractor.extract(full_file_path),
+          title: metadata[:title] || title_extractor.extract(full_file_path),
           path: url_path,
+          icon: metadata[:icon],
           active: current_path == url_path,
           type: :file,
           children: []
         }
+      end
+
+      def extract_file_metadata(file_path)
+        return { title: nil, icon: nil } unless File.file?(file_path)
+
+        content = File.read(file_path)
+        markdown = Markdown.new(content)
+        {
+          title: markdown.sidebar_text || markdown.title,
+          icon: markdown.sidebar_icon
+        }
+      rescue StandardError
+        { title: nil, icon: nil }
       end
     end
   end
