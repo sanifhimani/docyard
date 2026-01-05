@@ -2,7 +2,7 @@
   <% if has_title %>
   <div class="docyard-code-block__header">
     <% if @icon %>
-    <span class="docyard-code-block__icon"><% if @icon_source == "file-extension" %><%= Docyard::Icons.render_file_extension(@icon) %><% elsif @icon_source == "phosphor" %><%= Docyard::Icons.render(@icon) %><% end %></span>
+    <span class="docyard-code-block__icon"><% if @icon_source == "file-extension" %><%= icon_file_extension(@icon) %><% elsif @icon_source == "phosphor" %><%= icon(@icon) %><% end %></span>
     <% end %>
     <span class="docyard-code-block__title" title="<%= @title %>"><%= @title %></span>
     <button class="docyard-code-block__copy" aria-label="Copy code to clipboard" data-code="<%= @code_text %>">

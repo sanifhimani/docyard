@@ -13,9 +13,9 @@
           <% if tab[:icon] %>
             <span class="docyard-tabs__icon">
               <% if tab[:icon_source] == "file-extension" %>
-                <%= Docyard::Icons.render_file_extension(tab[:icon]) %>
+                <%= icon_file_extension(tab[:icon]) %>
               <% elsif tab[:icon_source] == "phosphor" %>
-                <%= Docyard::Icons.render(tab[:icon]) %>
+                <%= icon(tab[:icon]) %>
               <% end %>
             </span>
           <% end %>
