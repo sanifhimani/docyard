@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require "erb"
+require_relative "../../rendering/icon_helpers"
 
 module Docyard
   module Sidebar
     class Renderer
       include Utils::UrlHelpers
+      include IconHelpers
 
       PARTIALS_PATH = File.join(__dir__, "../../templates/partials")
 
@@ -33,10 +35,6 @@ module Docyard
 
         erb_binding = binding
         ERB.new(template).result(erb_binding)
-      end
-
-      def icon(name, weight = "regular")
-        Icons.render(name.to_s.tr("_", "-"), weight) || ""
       end
 
       def render_tree_with_sections(items)
