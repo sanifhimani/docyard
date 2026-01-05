@@ -20,9 +20,7 @@ module Docyard
         return "" if tree.empty?
 
         nav_content = render_tree_with_sections(tree)
-        footer_html = render_partial(:sidebar_footer)
-
-        render_partial(:sidebar, nav_content: nav_content, footer_html: footer_html)
+        render_partial(:sidebar, nav_content: nav_content)
       end
 
       private
@@ -70,7 +68,7 @@ module Docyard
         return if item[:title]&.downcase == site_title.downcase
 
         if item[:type] == :directory && !item[:children].empty?
-          section_name = item[:title].upcase
+          section_name = item[:title]
           sections[section_name] = item[:children]
         else
           root_items << item
