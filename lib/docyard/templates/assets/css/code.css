@@ -1,31 +1,31 @@
-/* Code Block Styles */
+/* Code Block Styles - shadcn/ui style */
 
 /* Code blocks */
 .content pre {
-  margin: var(--space-6) 0;
+  margin: var(--spacing-6) 0;
   border-radius: var(--radius-lg);
   overflow-x: auto;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
 }
 
 .content pre code {
   display: block;
-  padding: var(--space-4);
+  padding: var(--spacing-4);
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  background-color: var(--color-code-bg);
-  color: var(--color-code-text);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  background-color: var(--code-background);
+  color: var(--code-foreground);
   overflow-x: auto;
 }
 
 /* Syntax highlighting - GitHub style */
 .highlight {
-  margin: var(--space-6) 0;
-  background-color: var(--color-code-bg);
+  margin: var(--spacing-6) 0;
+  background-color: var(--code-background);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
 }
 
@@ -204,17 +204,17 @@
 }
 
 .content pre::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: var(--secondary);
   border-radius: var(--radius-md);
 }
 
 .content pre::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: var(--border);
   border-radius: var(--radius-md);
 }
 
 .content pre::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
+  background: var(--muted-foreground);
 }
 
 /* Dark Mode Syntax Highlighting - GitHub Dark */
