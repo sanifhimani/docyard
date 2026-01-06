@@ -6,10 +6,49 @@
   top: var(--header-height);
   right: max(0px, calc((100vw - var(--layout-max-width)) / 2));
   height: calc(100vh - var(--header-height));
-  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+}
+
+/* TOC scroll container */
+.docyard-toc__scroll {
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: var(--background);
+  padding: var(--spacing-3) var(--spacing-4);
+}
+
+/* Scroll fade indicators */
+.docyard-toc::before,
+.docyard-toc::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.docyard-toc::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--background) 0%, transparent 100%);
+}
+
+.docyard-toc::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--background) 0%, transparent 100%);
+}
+
+.docyard-toc.can-scroll-top::before {
+  opacity: 1;
+}
+
+.docyard-toc.can-scroll-bottom::after {
+  opacity: 1;
 }
 
 /* TOC Header */
@@ -21,11 +60,9 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: var(--muted-foreground);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   margin-bottom: 0;
 }
 
@@ -92,9 +129,8 @@
 
 .docyard-toc__list .docyard-toc__list {
   margin-top: var(--spacing-1);
-  margin-left: var(--spacing-4);
-  border-left: 1px solid var(--border);
-  padding-left: var(--spacing-3);
+  margin-left: var(--spacing-3);
+  padding-left: 0;
 }
 
 /* TOC Items */
@@ -141,30 +177,25 @@
   font-weight: var(--font-normal);
 }
 
-.docyard-toc__item--level-3 > .docyard-toc__link {
-  font-size: var(--text-xs);
-}
-
 .docyard-toc__item--level-4 > .docyard-toc__link {
-  font-size: var(--text-xs);
   color: var(--muted-foreground);
 }
 
 /* TOC Scrollbar */
-.docyard-toc::-webkit-scrollbar {
+.docyard-toc__scroll::-webkit-scrollbar {
   width: 6px;
 }
 
-.docyard-toc::-webkit-scrollbar-track {
+.docyard-toc__scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.docyard-toc::-webkit-scrollbar-thumb {
+.docyard-toc__scroll::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
 }
 
-.docyard-toc::-webkit-scrollbar-thumb:hover {
+.docyard-toc__scroll::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
 
