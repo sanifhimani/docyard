@@ -2,38 +2,37 @@
 
 .docyard-code-block {
   position: relative;
-  margin: var(--spacing-6) 0;
+  margin: var(--spacing-4) 0;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  background-color: oklch(from var(--input) l c h / 20%);
+  border: 1px solid var(--input);
 }
 
+/* Make all internal elements transparent - background comes from wrapper */
 .docyard-code-block .highlight {
   margin: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.docyard-code-block .highlight pre {
+  margin: 0;
+  background-color: transparent;
+}
+
+.docyard-code-block .highlight pre code {
+  background-color: transparent;
 }
 
 /* Titled Code Block Layout */
-.docyard-code-block--titled {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  background-color: var(--code-background);
-}
-
 .docyard-code-block--titled .docyard-code-block__body {
   display: block;
 }
 
 .docyard-code-block--titled .docyard-code-block__content {
   display: block;
-}
-
-.docyard-code-block--titled .highlight {
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.docyard-code-block--titled .highlight pre {
-  margin: 0;
 }
 
 .docyard-code-block--titled .highlight pre code {
@@ -46,10 +45,10 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  background: var(--muted);
-  border-bottom: 1px solid var(--border);
-  font-size: var(--text-sm);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: oklch(from var(--input) l c h / 20%);
+  border-bottom: 1px solid oklch(from var(--input) l c h / 30%);
+  font-size: var(--text-xs);
   font-weight: var(--font-medium);
   color: var(--muted-foreground);
 }
@@ -93,20 +92,11 @@
 }
 
 /* Line Numbers Layout */
-.docyard-code-block--line-numbers {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  background-color: var(--code-background);
-  overflow: hidden;
-}
-
 .docyard-code-block--line-numbers .docyard-code-block__body {
   display: flex;
 }
 
 .docyard-code-block--line-numbers .highlight {
-  border: none;
-  border-radius: 0;
   flex: 1;
   min-width: 0;
 }
@@ -114,14 +104,12 @@
 .docyard-code-block__lines {
   flex-shrink: 0;
   padding: var(--spacing-4) 0;
-  border-right: 1px solid var(--border);
   text-align: right;
   user-select: none;
-  color: var(--muted-foreground);
+  color: oklch(from var(--muted-foreground) l c h / 60%);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  background-color: var(--code-background);
 }
 
 .docyard-code-block__lines span {
@@ -222,20 +210,11 @@
 }
 
 /* Diff-only gutter */
-.docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  background-color: var(--code-background);
-  overflow: hidden;
-}
-
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
   display: flex;
 }
 
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .highlight {
-  border: none;
-  border-radius: 0;
   flex: 1;
   min-width: 0;
 }
@@ -243,14 +222,12 @@
 .docyard-code-block__diff-gutter {
   flex-shrink: 0;
   padding: var(--spacing-4) 0;
-  border-right: 1px solid var(--border);
   text-align: center;
   user-select: none;
-  color: var(--muted-foreground);
+  color: oklch(from var(--muted-foreground) l c h / 60%);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  background-color: var(--code-background);
 }
 
 .docyard-code-block__diff-gutter span {
@@ -298,24 +275,7 @@
   margin-right: calc(-1 * var(--spacing-4));
 }
 
-/* Error/Warning blocks without line numbers */
-.docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff),
-.docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  background-color: var(--code-background);
-  overflow: hidden;
-}
-
-.docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) .highlight,
-.docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) .highlight {
-  border: none;
-  border-radius: 0;
-}
-
-.docyard-code-block__content .highlight {
-  background-color: transparent;
-}
+/* Error/Warning blocks - styles inherited from base .docyard-code-block */
 
 /* Focus Effect */
 .docyard-code-block--has-focus .docyard-code-line {
@@ -336,11 +296,6 @@
 }
 
 /* Titled block with line numbers */
-.docyard-code-block--titled.docyard-code-block--line-numbers {
-  display: block;
-  border: 1px solid var(--border);
-}
-
 .docyard-code-block--titled.docyard-code-block--line-numbers .docyard-code-block__body {
   display: flex;
 }
@@ -351,11 +306,6 @@
 }
 
 /* Titled block with diff */
-.docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  display: block;
-  border: 1px solid var(--border);
-}
-
 .docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
   display: flex;
 }
@@ -386,6 +336,7 @@
 /* Inside callouts */
 .docyard-callout__body .docyard-code-block {
   margin: var(--spacing-4) 0;
+  background-color: var(--background);
 }
 
 .docyard-callout__body .docyard-code-block:first-child {
@@ -396,7 +347,7 @@
   margin-bottom: 0;
 }
 
-/* Copy Button - matches shadcn ghost button */
+/* Copy Button - tactile, physical feel */
 .docyard-code-block__copy {
   position: absolute;
   top: var(--spacing-3);
@@ -404,85 +355,118 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-4xl);
-  background-color: var(--background);
+  gap: var(--spacing-1-5);
+  height: 1.75rem;
+  padding: 0 var(--spacing-2-5);
+  border: none;
+  border-radius: 9999px;
+  background-color: oklch(from var(--input) l c h / 30%);
   color: var(--muted-foreground);
   cursor: pointer;
-  transition: all var(--transition-fast);
   flex-shrink: 0;
+  /* Spring-based transition for physical feel */
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+  /* Subtle elevation */
+  box-shadow:
+    0 1px 2px oklch(from var(--foreground) l c h / 5%),
+    0 0 0 1px oklch(from var(--foreground) l c h / 5%);
 }
 
 .docyard-code-block__copy:hover {
-  background-color: var(--muted);
-  border-color: var(--border);
+  background-color: oklch(from var(--foreground) l c h / 10%);
   color: var(--foreground);
+  /* Lift up slightly */
+  box-shadow:
+    0 2px 4px oklch(from var(--foreground) l c h / 8%),
+    0 0 0 1px oklch(from var(--foreground) l c h / 8%);
 }
 
+/* The press - this is where the magic happens */
 .docyard-code-block__copy:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
+  transition:
+    transform 0.1s cubic-bezier(0.4, 0, 1, 1),
+    background-color 0.1s ease,
+    box-shadow 0.1s ease;
+  /* Pressed into surface - shadow almost gone */
+  box-shadow:
+    0 0 1px oklch(from var(--foreground) l c h / 5%),
+    0 0 0 1px oklch(from var(--foreground) l c h / 3%);
 }
 
 .docyard-code-block__copy:focus-visible {
   outline: none;
-  border-color: var(--ring);
-  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
+  box-shadow:
+    0 1px 2px oklch(from var(--foreground) l c h / 5%),
+    0 0 0 2px var(--background),
+    0 0 0 4px var(--ring);
 }
 
-/* Icon sizing */
-.docyard-code-block__copy svg {
-  width: 1rem;
-  height: 1rem;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+/* Copy button icon */
+.docyard-code-block__copy-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.docyard-code-block__copy-icon svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* Copy button text */
+.docyard-code-block__copy-text {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  font-family: var(--font-sans);
+  line-height: 1;
 }
 
 /* Success state */
 .docyard-code-block__copy.is-success {
-  opacity: 1;
-  visibility: visible;
   background-color: var(--primary);
-  border-color: var(--primary);
   color: white;
-  animation: success-pulse 0.4s ease;
+  box-shadow:
+    0 1px 2px oklch(from var(--primary) l c h / 20%),
+    0 0 0 1px oklch(from var(--primary) l c h / 30%);
 }
 
 .docyard-code-block__copy.is-success:hover {
-  background-color: oklch(from var(--primary) calc(l - 0.05) c h);
-  border-color: oklch(from var(--primary) calc(l - 0.05) c h);
+  background-color: oklch(from var(--primary) calc(l - 0.03) c h);
   color: white;
+  box-shadow:
+    0 2px 4px oklch(from var(--primary) l c h / 25%),
+    0 0 0 1px oklch(from var(--primary) l c h / 35%);
 }
 
-.docyard-code-block__copy.is-success svg {
-  animation: check-pop 0.3s ease;
-}
-
-/* Success animation */
-@keyframes success-pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+/* Checkmark animation - satisfying pop */
+.docyard-code-block__copy.is-success .docyard-code-block__copy-icon svg {
+  animation: check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @keyframes check-pop {
   0% {
-    transform: scale(0) rotate(-45deg);
     opacity: 0;
+    transform: scale(0);
   }
-  50% {
-    transform: scale(1.2) rotate(10deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
+
+  40% {
     opacity: 1;
+    transform: scale(1.2);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -514,20 +498,26 @@
   }
 
   .docyard-code-block__header .docyard-code-block__copy {
-    width: 1.75rem;
-    height: 1.75rem;
+    height: 1.5rem;
+    padding: 0 var(--spacing-2);
+    gap: var(--spacing-1);
   }
 
-  .docyard-code-block__header .docyard-code-block__copy svg {
-    width: 0.875rem;
-    height: 0.875rem;
+  .docyard-code-block__copy-icon svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .docyard-code-block__copy-text {
+    font-size: 0.625rem;
   }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   .docyard-code-block__copy,
-  .docyard-code-block__copy svg {
+  .docyard-code-block__copy-icon svg {
     transition: none;
     animation: none;
   }

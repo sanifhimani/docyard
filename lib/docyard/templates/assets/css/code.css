@@ -3,10 +3,8 @@
 /* Code blocks */
 .content pre {
   margin: var(--spacing-6) 0;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-2xl);
   overflow-x: auto;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
 }
 
 .content pre code {
@@ -15,7 +13,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  background-color: var(--code-background);
+  background-color: oklch(from var(--input) l c h / 30%);
   color: var(--code-foreground);
   overflow-x: auto;
 }
@@ -23,10 +21,9 @@
 /* Syntax highlighting - GitHub style */
 .highlight {
   margin: var(--spacing-6) 0;
-  background-color: var(--code-background);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  background-color: oklch(from var(--input) l c h / 30%);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--input);
 }
 
 .highlight pre {
@@ -44,7 +41,7 @@
 
 .highlight {
   color: #24292f;
-  background-color: #f6f8fa;
+  background-color: oklch(from var(--input) l c h / 30%);
 }
 
 .highlight .w {
@@ -220,7 +217,7 @@
 /* Dark Mode Syntax Highlighting - GitHub Dark */
 .dark .highlight {
   color: #e6edf3;
-  background-color: #161b22;
+  background-color: oklch(from var(--input) l c h / 30%);
 }
 
 .dark .highlight .w {
