@@ -12,8 +12,9 @@ module Docyard
       ".jpg" => "image/jpeg",
       ".jpeg" => "image/jpeg",
       ".svg" => "image/svg+xml",
-      ".woff" => "font/woff2",
+      ".woff" => "font/woff",
       ".woff2" => "font/woff2",
+      ".ttf" => "font/ttf",
       ".ico" => "image/x-icon"
     }.freeze
 

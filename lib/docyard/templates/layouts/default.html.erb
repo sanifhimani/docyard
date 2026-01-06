@@ -7,6 +7,9 @@
   <title><%= @page_title %> | <%= @site_title %></title>
   <link rel="icon" href="<%= asset_path(@favicon) %>" type="image/svg+xml">
 
+  <!-- Preload Inter font to prevent FOUT -->
+  <link rel="preload" href="/assets/fonts/Inter-Variable.ttf" as="font" type="font/ttf" crossorigin>
+
   <!-- Prevent flash of wrong theme -->
   <script>
     (function() {
