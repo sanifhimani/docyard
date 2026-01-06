@@ -16,6 +16,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: var(--spacing-3) var(--spacing-4);
 }
 
@@ -75,13 +76,13 @@
   display: none;
 }
 
-/* Tablet & Mobile TOC Toggle - matches shadcn ghost button */
+/* Tablet & Mobile TOC Toggle - matches menu button style */
 @media (max-width: 1280px) {
   .secondary-header-toc-toggle {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-2);
     background: transparent;
     border: none;
     color: var(--foreground);
@@ -89,19 +90,23 @@
     font-weight: var(--font-medium);
     font-family: var(--font-sans);
     cursor: pointer;
-    transition: color var(--transition-fast);
+    transition: background-color 0.2s ease;
     outline: none;
-    border-radius: var(--radius-4xl);
+    border-radius: var(--radius-md);
+    margin-right: calc(-1 * var(--spacing-2));
   }
 
   .secondary-header-toc-toggle:hover {
     background-color: var(--muted);
-    color: var(--foreground);
+  }
+
+  .secondary-header-toc-toggle:active {
+    background-color: var(--muted);
   }
 
   .secondary-header-toc-toggle:focus-visible {
     outline: none;
-    border-radius: var(--radius-4xl);
+    border-radius: var(--radius-lg);
     box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
   }
 
