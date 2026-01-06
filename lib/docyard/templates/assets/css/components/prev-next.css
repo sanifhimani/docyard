@@ -1,84 +1,126 @@
-/* Previous/Next Navigation Footer - shadcn/ui style */
+/* Previous/Next Navigation - Minimal with sliding arrows */
 
 .doc-footer {
   margin-top: var(--spacing-12);
-  padding-top: var(--spacing-6);
-  border-top: 1px solid var(--border);
+  padding-top: var(--spacing-8);
+  border-top: 1px solid oklch(from var(--border) l c h / 50%);
 }
 
 .pager {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-2);
+  display: flex;
+  gap: var(--spacing-4);
 }
 
-/* Pager link - matches shadcn outline button/card style */
+/* Pager link - minimal style */
 .pager-link {
-  display: block;
-  padding: var(--spacing-4);
-  border: 1px solid var(--border);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: var(--spacing-4) var(--spacing-5);
   border-radius: var(--radius-xl);
-  text-decoration: none !important;
-  transition: all var(--transition-fast);
-  outline: none;
-  background-color: transparent;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.3s ease;
 }
 
 .pager-link:hover {
-  border-color: var(--primary);
-  background-color: var(--muted);
+  background: var(--muted);
+}
+
+.pager-link:active {
+  background: oklch(from var(--muted) calc(l - 0.02) c h);
 }
 
 .pager-link:focus-visible {
   outline: none;
-  border-color: var(--ring);
-  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 }
 
+/* Previous - left aligned */
 .pager-link.prev {
-  text-align: left;
+  align-items: flex-start;
 }
 
+/* Next - right aligned */
 .pager-link.next {
+  align-items: flex-end;
   text-align: right;
 }
 
+/* Label with arrow */
 .pager-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
   color: var(--muted-foreground);
-  margin-bottom: 0;
-  text-decoration: none !important;
 }
 
+.pager-link.next .pager-label {
+  justify-content: flex-end;
+}
+
+/* Arrow icon */
+.pager-label .docyard-icon {
+  display: inline-flex;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pager-label .docyard-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Previous arrow - slides from left */
+.pager-link.prev .pager-label .docyard-icon {
+  transform: translateX(6px);
+}
+
+/* Next arrow - slides from right */
+.pager-link.next .pager-label .docyard-icon {
+  transform: translateX(-6px);
+}
+
+/* Show arrows on hover */
+.pager-link:hover .pager-label .docyard-icon {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Title */
 .pager-title {
-  display: block;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: var(--foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-decoration: none !important;
 }
 
 /* Mobile responsive */
 @media (max-width: 640px) {
-  .doc-footer {
-    margin-top: 48px;
-  }
-
   .pager {
-    grid-template-columns: 1fr;
-  }
-
-  .pager-link.next {
-    margin-left: 0;
+    flex-direction: column;
+    gap: var(--spacing-2);
   }
 
   .pager-link {
-    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+
+  /* Show arrows always on mobile */
+  .pager-label .docyard-icon {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+
+  .pager-link:hover .pager-label .docyard-icon {
+    opacity: 1;
   }
 
   .pager-title {
@@ -87,9 +129,10 @@
   }
 }
 
-/* Reduced motion accessibility */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .pager-link {
+  .pager-link,
+  .pager-label .docyard-icon {
     transition: none;
   }
 }
