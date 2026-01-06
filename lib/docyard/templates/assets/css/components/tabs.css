@@ -27,6 +27,7 @@
   gap: var(--spacing-1);
   position: relative;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   margin: 0;

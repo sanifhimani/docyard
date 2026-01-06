@@ -99,6 +99,7 @@
   display: block;
   padding: var(--spacing-4);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   background-color: transparent;
 }
 

@@ -5,6 +5,7 @@
   margin: var(--spacing-6) 0;
   border-radius: var(--radius-2xl);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .content pre code {
@@ -16,6 +17,7 @@
   background-color: oklch(from var(--input) l c h / 30%);
   color: var(--code-foreground);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 /* Syntax highlighting - GitHub style */
