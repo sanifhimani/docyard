@@ -1,13 +1,9 @@
-/* Page Layout - shadcn/ui style */
-
-/* Page wrapper for max-width constraint */
 .page-wrapper {
   max-width: var(--layout-max-width);
   margin: 0 auto;
   position: relative;
 }
 
-/* Header */
 .header {
   position: fixed;
   top: 0;
@@ -83,12 +79,10 @@
   box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
-/* Secondary Header (Tablet & Mobile Navigation Bar) */
 .secondary-header {
   display: none;
 }
 
-/* Tablet: Show secondary header with TOC toggle only */
 @media (max-width: 1280px) and (min-width: 1025px) {
   .secondary-header {
     display: flex;
@@ -121,7 +115,6 @@
   }
 }
 
-/* Mobile: Show menu button + TOC toggle */
 @media (max-width: 1024px) {
   .secondary-header {
     display: flex;
@@ -182,7 +175,6 @@
   }
 }
 
-/* Main layout container */
 .layout {
   display: flex;
   min-height: calc(100vh - var(--header-height));
@@ -193,7 +185,6 @@
   position: relative;
 }
 
-/* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
   height: calc(100vh - var(--header-height));
@@ -206,7 +197,6 @@
   flex-direction: column;
 }
 
-/* Sidebar scroll container with fade indicators */
 .sidebar-scroll {
   flex: 1;
   overflow-y: auto;
@@ -220,7 +210,6 @@
   padding: var(--spacing-2) 0;
 }
 
-/* Scroll fade indicators */
 .sidebar::before,
 .sidebar::after {
   content: '';
@@ -252,25 +241,11 @@
   opacity: 1;
 }
 
-/* Sidebar scrollbar styling */
-.sidebar-scroll::-webkit-scrollbar {
-  width: 6px;
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
-.sidebar-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar-scroll::-webkit-scrollbar-thumb {
-  background: var(--sidebar-border);
-  border-radius: 3px;
-}
-
-.sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
-}
-
-/* Main content area */
 .layout-main {
   flex: 1;
   margin-left: var(--sidebar-width);
@@ -280,14 +255,12 @@
   min-width: 0;
 }
 
-/* Tablet Layout (1024px - 1280px) */
 @media (max-width: 1280px) and (min-width: 1025px) {
   .layout-main {
     margin-right: 0;
   }
 }
 
-/* Content wrapper */
 main.content {
   flex: 1;
   max-width: var(--content-max-width);
@@ -298,7 +271,6 @@ main.content {
   box-sizing: border-box;
 }
 
-/* Mobile Layout */
 @media (max-width: 1024px) {
   .header-content {
     padding: var(--spacing-4) var(--spacing-6);
@@ -345,7 +317,6 @@ main.content {
   }
 }
 
-/* Mobile menu overlay */
 @media (max-width: 1024px) {
   .mobile-overlay {
     position: fixed;
@@ -367,7 +338,6 @@ main.content {
   }
 }
 
-/* Skip to main content link (accessibility) */
 .skip-link {
   position: fixed;
   left: 50%;
@@ -390,7 +360,6 @@ main.content {
   outline: none;
 }
 
-/* Container utilities */
 .container {
   max-width: var(--layout-max-width);
   margin: 0 auto;
