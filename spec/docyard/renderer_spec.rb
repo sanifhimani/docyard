@@ -83,7 +83,7 @@ RSpec.describe Docyard::Renderer do
       html = renderer.render_partial("_theme_toggle")
 
       expect(html).to include("theme-toggle")
-      expect(html).to include("theme-toggle-track")
+      expect(html).to include("theme-toggle-sun")
     end
 
     it "renders a partial with locals", :aggregate_failures do

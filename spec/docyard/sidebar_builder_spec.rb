@@ -71,7 +71,7 @@ RSpec.describe Docyard::SidebarBuilder do
         html = sidebar.to_html
 
         expect(html).to include("<nav>")
-        expect(html).to include('<a href="/getting-started">')
+        expect(html).to include('href="/getting-started"')
         expect(html).to include(">Getting Started</span>")
       end
     end

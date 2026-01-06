@@ -103,7 +103,7 @@ RSpec.describe Docyard::RackApplication do
 
         expect(status).to eq(200)
         expect(headers["Content-Type"]).to eq("text/css; charset=utf-8")
-        expect(body.first).to include("--color-")
+        expect(body.first).to include(".page-wrapper")
       end
 
       it "returns 404 for non-existent assets" do
