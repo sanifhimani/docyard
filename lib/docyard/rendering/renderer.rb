@@ -2,10 +2,12 @@
 
 require "erb"
 require_relative "../config/constants"
+require_relative "icon_helpers"
 
 module Docyard
   class Renderer
     include Utils::UrlHelpers
+    include IconHelpers
 
     LAYOUTS_PATH = File.join(__dir__, "../templates", "layouts")
     ERRORS_PATH = File.join(__dir__, "../templates", "errors")

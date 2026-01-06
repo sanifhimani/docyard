@@ -1,6 +1,3 @@
-/* Docyard Default Theme */
-
-/* Import order matters - each layer builds on the previous */
 @import url('reset.css');
 @import url('variables.css');
 @import url('typography.css');

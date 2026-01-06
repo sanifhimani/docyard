@@ -5,7 +5,10 @@
 
     <% if @prev %>
     <a href="<%= link_path(@prev[:path]) %>" class="pager-link prev" title="<%= @prev[:title] %>">
-      <span class="pager-label"><%= @prev_text %></span>
+      <span class="pager-label">
+        <%= icon("arrow-left") %>
+        <%= @prev_text %>
+      </span>
       <span class="pager-title"><%= @prev[:title] %></span>
     </a>
     <% else %>
@@ -14,7 +17,10 @@
 
     <% if @next %>
     <a href="<%= link_path(@next[:path]) %>" class="pager-link next" title="<%= @next[:title] %>">
-      <span class="pager-label"><%= @next_text %></span>
+      <span class="pager-label">
+        <%= @next_text %>
+        <%= icon("arrow-right") %>
+      </span>
       <span class="pager-title"><%= @next[:title] %></span>
     </a>
     <% end %>

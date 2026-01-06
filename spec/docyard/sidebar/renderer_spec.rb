@@ -60,7 +60,7 @@ RSpec.describe Docyard::Sidebar::Renderer do
       it "renders nested lists with button group", :aggregate_failures do
         html = renderer.render(tree)
 
-        expect(html).to include('<div class="nav-section-title">GUIDE</div>')
+        expect(html).to include('<h5 class="nav-section-title">Guide</h5>')
         expect(html).to include('<a href="/guide/setup"')
         expect(html).to include(">Setup</span>")
       end

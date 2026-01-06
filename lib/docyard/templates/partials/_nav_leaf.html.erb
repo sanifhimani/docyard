@@ -1,4 +1,4 @@
-<a href="<%= link_path(@path) %>"<%= ' class="active"' if @active %><%= " target=\"#{@target}\" rel=\"noopener noreferrer\"" if @target && @target != "_self" %>>
+<a href="<%= link_path(@path) %>"<%= ' class="active"' if @active %> title="<%= @title %>"<%= " target=\"#{@target}\" rel=\"noopener noreferrer\"" if @target && @target != "_self" %>>
   <% if @icon %>
     <span class="nav-item-icon"><%= icon(@icon) %></span>
   <% end %>

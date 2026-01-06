@@ -1,20 +1,29 @@
-/* Code Block Component */
-
 .docyard-code-block {
   position: relative;
-  margin: var(--space-6) 0;
-}
-
-.docyard-code-block .highlight {
-  margin: 0;
-}
-
-/* Titled Code Block Layout */
-.docyard-code-block--titled {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  margin: var(--spacing-4) 0;
+  border-radius: var(--radius-2xl);
   overflow: hidden;
-  background-color: var(--color-code-bg);
+  background-color: var(--code-block-bg);
+  border: 1px solid var(--code-block-border);
+}
+
+.docyard-code-block .highlight,
+.dark .docyard-code-block .highlight {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.docyard-code-block .highlight pre,
+.dark .docyard-code-block .highlight pre {
+  margin: 0;
+  background-color: transparent;
+}
+
+.docyard-code-block .highlight pre code,
+.dark .docyard-code-block .highlight pre code {
+  background-color: transparent;
 }
 
 .docyard-code-block--titled .docyard-code-block__body {
@@ -25,33 +34,21 @@
   display: block;
 }
 
-.docyard-code-block--titled .highlight {
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.docyard-code-block--titled .highlight pre {
-  margin: 0;
-}
-
 .docyard-code-block--titled .highlight pre code {
   display: block;
-  padding: var(--space-4);
+  padding: var(--spacing-4);
 }
 
-/* Code Block Header */
 .docyard-code-block__header {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--code-block-header-bg);
+  border-bottom: 1px solid var(--code-block-header-border);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
 }
 
 .docyard-code-block__icon {
@@ -79,7 +76,6 @@
   white-space: nowrap;
 }
 
-/* Copy button in header */
 .docyard-code-block__header .docyard-code-block__copy {
   position: relative;
   top: auto;
@@ -87,17 +83,8 @@
   flex-shrink: 0;
 }
 
-/* Body wrapper for titled blocks */
 .docyard-code-block__body {
   position: relative;
-}
-
-/* Line Numbers Layout */
-.docyard-code-block--line-numbers {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-code-bg);
-  overflow: hidden;
 }
 
 .docyard-code-block--line-numbers .docyard-code-block__body {
@@ -105,28 +92,25 @@
 }
 
 .docyard-code-block--line-numbers .highlight {
-  border: none;
-  border-radius: 0;
   flex: 1;
   min-width: 0;
 }
 
 .docyard-code-block__lines {
   flex-shrink: 0;
-  padding: var(--space-4) 0;
-  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-4) 0;
   text-align: right;
   user-select: none;
-  color: var(--color-text-tertiary);
+  background-color: var(--code-block-gutter-bg);
+  color: oklch(from var(--muted-foreground) l c h / 60%);
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  background-color: var(--color-code-bg);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
 }
 
 .docyard-code-block__lines span {
   display: block;
-  padding: 0 var(--space-3);
+  padding: 0 var(--spacing-3);
   min-width: 2.5rem;
 }
 
@@ -134,99 +118,86 @@
   flex: 1;
   min-width: 0;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
-/* Line Highlighting */
 .docyard-code-line {
   display: block;
 }
 
 .docyard-code-line--highlighted {
-  background-color: rgba(var(--color-primary-rgb), 0.1);
-  border-left: 3px solid var(--color-primary);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: oklch(from var(--primary) l c h / 10%);
+  border-left: 3px solid var(--primary);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
-/* Highlighted line number */
 .docyard-code-block__line--highlighted {
-  background-color: rgba(var(--color-primary-rgb), 0.15);
-  color: var(--color-primary);
+  background-color: oklch(from var(--primary) l c h / 15%);
+  color: var(--primary);
   font-weight: 500;
 }
 
-/* Diff line styles */
 .docyard-code-line--diff-add {
-  background-color: var(--color-diff-add-bg);
-  border-left: 3px solid var(--color-diff-add-border);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--diff-add-background);
+  border-left: 3px solid var(--diff-add-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 .docyard-code-line--diff-remove {
-  background-color: var(--color-diff-remove-bg);
-  border-left: 3px solid var(--color-diff-remove-border);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--diff-remove-background);
+  border-left: 3px solid var(--diff-remove-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
-/* Error/Warning line styles */
 .docyard-code-line--error {
-  background-color: var(--color-code-error-bg, rgba(239, 68, 68, 0.15));
-  border-left: 3px solid var(--color-code-error-border, #ef4444);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--code-error-background);
+  border-left: 3px solid var(--code-error-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
 .docyard-code-line--warning {
-  background-color: var(--color-code-warning-bg, rgba(245, 158, 11, 0.15));
-  border-left: 3px solid var(--color-code-warning-border, #f59e0b);
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
-  padding-left: calc(var(--space-4) - 3px);
-  padding-right: var(--space-4);
+  background-color: var(--code-warning-background);
+  border-left: 3px solid var(--code-warning-border);
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
+  padding-left: calc(var(--spacing-4) - 3px);
+  padding-right: var(--spacing-4);
 }
 
-/* Diff gutter indicators */
 .docyard-code-block__line--diff-add {
-  background-color: var(--color-diff-add-gutter-bg);
-  color: var(--color-diff-add-indicator);
+  background-color: var(--diff-add-gutter);
+  color: var(--diff-add-indicator);
   font-weight: 500;
 }
 
 .docyard-code-block__line--diff-remove {
-  background-color: var(--color-diff-remove-gutter-bg);
-  color: var(--color-diff-remove-indicator);
+  background-color: var(--diff-remove-gutter);
+  color: var(--diff-remove-indicator);
   font-weight: 500;
 }
 
-/* Error/Warning line number indicators */
 .docyard-code-block__line--error {
-  background-color: var(--color-code-error-gutter-bg, rgba(239, 68, 68, 0.2));
-  color: var(--color-code-error-indicator, #991b1b);
+  background-color: var(--code-error-gutter);
+  color: var(--code-error-indicator);
   font-weight: 500;
 }
 
 .docyard-code-block__line--warning {
-  background-color: var(--color-code-warning-gutter-bg, rgba(245, 158, 11, 0.2));
-  color: var(--color-code-warning-indicator, #78350f);
+  background-color: var(--code-warning-gutter);
+  color: var(--code-warning-indicator);
   font-weight: 500;
-}
-
-/* Diff-only gutter */
-.docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-code-bg);
-  overflow: hidden;
 }
 
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
@@ -234,44 +205,40 @@
 }
 
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .highlight {
-  border: none;
-  border-radius: 0;
   flex: 1;
   min-width: 0;
 }
 
 .docyard-code-block__diff-gutter {
   flex-shrink: 0;
-  padding: var(--space-4) 0;
-  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-4) 0;
   text-align: center;
   user-select: none;
-  color: var(--color-text-tertiary);
+  background-color: var(--code-block-gutter-bg);
+  color: oklch(from var(--muted-foreground) l c h / 60%);
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  background-color: var(--color-code-bg);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
 }
 
 .docyard-code-block__diff-gutter span {
   display: block;
-  padding: 0 var(--space-2);
+  padding: 0 var(--spacing-2);
   min-width: 1.5rem;
 }
 
 .docyard-code-block__diff-indicator--add {
-  background-color: var(--color-diff-add-gutter-bg);
-  color: var(--color-diff-add-indicator);
+  background-color: var(--diff-add-gutter);
+  color: var(--diff-add-indicator);
   font-weight: 600;
 }
 
 .docyard-code-block__diff-indicator--remove {
-  background-color: var(--color-diff-remove-gutter-bg);
-  color: var(--color-diff-remove-indicator);
+  background-color: var(--diff-remove-gutter);
+  color: var(--diff-remove-indicator);
   font-weight: 600;
 }
 
-/* With line numbers - reset margins, they extend via negative margin */
 .docyard-code-block--line-numbers .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -282,11 +249,10 @@
 .docyard-code-block--line-numbers .docyard-code-line--diff-remove,
 .docyard-code-block--line-numbers .docyard-code-line--error,
 .docyard-code-block--line-numbers .docyard-code-line--warning {
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
 }
 
-/* With diff gutter - reset margins, they extend via negative margin */
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line {
   margin-left: 0;
   margin-right: 0;
@@ -294,30 +260,10 @@
 
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line--diff-add,
 .docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-line--diff-remove {
-  margin-left: calc(-1 * var(--space-4));
-  margin-right: calc(-1 * var(--space-4));
+  margin-left: calc(-1 * var(--spacing-4));
+  margin-right: calc(-1 * var(--spacing-4));
 }
 
-/* Error/Warning blocks without line numbers */
-.docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff),
-.docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-code-bg);
-  overflow: hidden;
-}
-
-.docyard-code-block--has-error:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) .highlight,
-.docyard-code-block--has-warning:not(.docyard-code-block--line-numbers):not(.docyard-code-block--diff) .highlight {
-  border: none;
-  border-radius: 0;
-}
-
-.docyard-code-block__content .highlight {
-  background-color: transparent;
-}
-
-/* Focus Effect */
 .docyard-code-block--has-focus .docyard-code-line {
   opacity: 0.4;
   filter: blur(0.5px);
@@ -329,45 +275,9 @@
   filter: none;
 }
 
-/* On hover, reveal all lines */
 .docyard-code-block--has-focus:hover .docyard-code-line {
   opacity: 1;
   filter: none;
-}
-
-/* Dark mode line numbers */
-.dark .docyard-code-block--line-numbers {
-  background-color: #161b22;
-}
-
-.dark .docyard-code-block__lines {
-  background-color: #161b22;
-  border-right-color: var(--color-border);
-}
-
-/* Dark mode diff */
-.dark .docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  background-color: #161b22;
-}
-
-.dark .docyard-code-block__diff-gutter {
-  background-color: #161b22;
-  border-right-color: var(--color-border);
-}
-
-/* Dark mode titled block */
-.dark .docyard-code-block--titled {
-  background-color: #161b22;
-}
-
-.dark .docyard-code-block__header {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* Titled block with line numbers */
-.docyard-code-block--titled.docyard-code-block--line-numbers {
-  display: block;
-  border: 1px solid var(--color-border);
 }
 
 .docyard-code-block--titled.docyard-code-block--line-numbers .docyard-code-block__body {
@@ -379,12 +289,6 @@
   min-width: 0;
 }
 
-/* Titled block with diff */
-.docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) {
-  display: block;
-  border: 1px solid var(--color-border);
-}
-
 .docyard-code-block--titled.docyard-code-block--diff:not(.docyard-code-block--line-numbers) .docyard-code-block__body {
   display: flex;
 }
@@ -394,27 +298,25 @@
   min-width: 0;
 }
 
-/* Inside tabs - with :has() support */
 @supports selector(:has(*)) {
   .docyard-tabs__panel:has(> [class*="language-"]:only-child) .docyard-code-block {
     margin: 0;
   }
 
   .docyard-tabs__panel:not(:has(> [class*="language-"]:only-child)) .docyard-code-block {
-    margin: var(--space-4) 0;
+    margin: var(--spacing-4) 0;
   }
 }
 
-/* Inside tabs - fallback for browsers without :has() */
 @supports not selector(:has(*)) {
   .docyard-tabs__panel .docyard-code-block {
-    margin: var(--space-4) 0;
+    margin: var(--spacing-4) 0;
   }
 }
 
-/* Inside callouts */
 .docyard-callout__body .docyard-code-block {
-  margin: var(--space-4) 0;
+  margin: var(--spacing-4) 0;
+  background-color: var(--background);
 }
 
 .docyard-callout__body .docyard-code-block:first-child {
@@ -427,115 +329,133 @@
 
 .docyard-code-block__copy {
   position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  display: flex;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-bg);
-  color: var(--color-text-secondary);
+  gap: var(--spacing-1-5);
+  height: 1.75rem;
+  padding: 0 var(--spacing-2-5);
+  border: none;
+  border-radius: 9999px;
+  background-color: var(--code-block-copy-bg);
+  color: var(--muted-foreground);
   cursor: pointer;
-  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+  flex-shrink: 0;
+  
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+  
+  box-shadow: var(--code-block-copy-shadow);
 }
 
 .docyard-code-block__copy:hover {
-  background-color: var(--color-bg-secondary);
-  border-color: var(--color-text-tertiary);
-  color: var(--color-text);
+  background-color: var(--code-block-copy-bg-hover);
+  color: var(--foreground);
+  
+  box-shadow: var(--code-block-copy-shadow-hover);
 }
 
 .docyard-code-block__copy:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
+  transition:
+    transform 0.1s cubic-bezier(0.4, 0, 1, 1),
+    background-color 0.1s ease,
+    box-shadow 0.1s ease;
+  
+  box-shadow: var(--code-block-copy-shadow-active);
 }
 
 .docyard-code-block__copy:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow:
+    0 1px 2px oklch(from var(--foreground) l c h / 5%),
+    0 0 0 2px var(--background),
+    0 0 0 4px var(--ring);
 }
 
-/* Icon sizing */
-.docyard-code-block__copy svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+.docyard-code-block__copy-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-/* Success state */
+.docyard-code-block__copy-icon svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.docyard-code-block__copy-text {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  font-family: var(--font-sans);
+  line-height: 1;
+}
+
 .docyard-code-block__copy.is-success {
-  opacity: 1;
-  visibility: visible;
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--primary);
   color: white;
-  animation: success-pulse 0.4s ease;
+  box-shadow:
+    0 1px 2px oklch(from var(--primary) l c h / 20%),
+    0 0 0 1px oklch(from var(--primary) l c h / 30%);
 }
 
 .docyard-code-block__copy.is-success:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
+  background-color: oklch(from var(--primary) calc(l - 0.03) c h);
   color: white;
+  box-shadow:
+    0 2px 4px oklch(from var(--primary) l c h / 25%),
+    0 0 0 1px oklch(from var(--primary) l c h / 35%);
 }
 
-.docyard-code-block__copy.is-success svg {
-  animation: check-pop 0.3s ease;
-}
-
-/* Success animation */
-@keyframes success-pulse {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.1);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+.docyard-code-block__copy.is-success .docyard-code-block__copy-icon svg {
+  animation: check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @keyframes check-pop {
   0% {
-    transform: scale(0) rotate(-45deg);
     opacity: 0;
+    transform: scale(0);
   }
 
-  50% {
-    transform: scale(1.2) rotate(10deg);
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  70% {
+    transform: scale(0.9);
   }
 
   100% {
-    transform: scale(1) rotate(0deg);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-/* Error state */
 .docyard-code-block__copy.is-error {
   opacity: 1;
   visibility: visible;
-  background-color: #ef4444;
-  border-color: #ef4444;
+  background-color: var(--destructive);
+  border-color: var(--destructive);
   color: white;
 }
 
 .docyard-code-block__copy.is-error:hover {
-  background-color: #dc2626;
-  border-color: #dc2626;
+  background-color: oklch(from var(--destructive) calc(l - 0.05) c h);
+  border-color: oklch(from var(--destructive) calc(l - 0.05) c h);
   color: white;
 }
 
-/* Mobile responsive - header */
 @media (max-width: 640px) {
   .docyard-code-block__header {
-    padding: var(--space-2) var(--space-3);
-    gap: var(--space-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    gap: var(--spacing-2);
   }
 
   .docyard-code-block__icon .docyard-icon {
@@ -544,47 +464,25 @@
   }
 
   .docyard-code-block__header .docyard-code-block__copy {
-    width: 28px;
-    height: 28px;
+    height: 1.5rem;
+    padding: 0 var(--spacing-2);
+    gap: var(--spacing-1);
   }
 
-  .docyard-code-block__header .docyard-code-block__copy svg {
-    width: 14px;
-    height: 14px;
+  .docyard-code-block__copy-icon svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .docyard-code-block__copy-text {
+    font-size: 0.625rem;
   }
 }
 
-/* Dark mode adjustments */
-.dark .docyard-code-block__copy {
-  background-color: var(--color-bg-secondary);
-  border-color: var(--color-border);
-}
-
-.dark .docyard-code-block__copy:hover {
-  background-color: var(--color-bg-tertiary);
-  border-color: var(--color-text-tertiary);
-}
-
-/* Dark mode success state */
-.dark .docyard-code-block__copy.is-success {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.dark .docyard-code-block__copy.is-success:hover {
-  background-color: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-}
-
-.dark .docyard-code-block__copy.is-error {
-  background-color: #ef4444;
-  border-color: #ef4444;
-}
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   .docyard-code-block__copy,
-  .docyard-code-block__copy svg {
+  .docyard-code-block__copy-icon svg {
     transition: none;
     animation: none;
   }

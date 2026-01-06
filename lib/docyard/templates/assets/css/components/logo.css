@@ -1,4 +1,3 @@
-/* Site Logo */
 .site-logo-container {
   display: flex;
   align-items: center;
@@ -29,7 +28,6 @@
 .dark .site-logo-dark {
   display: block;
 }
-
 
 @media (max-width: 1024px) {
   .site-logo {

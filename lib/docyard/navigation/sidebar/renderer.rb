@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require "erb"
+require_relative "../../rendering/icon_helpers"
 
 module Docyard
   module Sidebar
     class Renderer
       include Utils::UrlHelpers
+      include IconHelpers
 
       PARTIALS_PATH = File.join(__dir__, "../../templates/partials")
 
@@ -20,9 +22,7 @@ module Docyard
         return "" if tree.empty?
 
         nav_content = render_tree_with_sections(tree)
-        footer_html = render_partial(:sidebar_footer)
-
-        render_partial(:sidebar, nav_content: nav_content, footer_html: footer_html)
+        render_partial(:sidebar, nav_content: nav_content)
       end
 
       private
@@ -35,10 +35,6 @@ module Docyard
 
         erb_binding = binding
         ERB.new(template).result(erb_binding)
-      end
-
-      def icon(name, weight = "regular")
-        Icons.render(name.to_s.tr("_", "-"), weight) || ""
       end
 
       def render_tree_with_sections(items)
@@ -70,7 +66,7 @@ module Docyard
         return if item[:title]&.downcase == site_title.downcase
 
         if item[:type] == :directory && !item[:children].empty?
-          section_name = item[:title].upcase
+          section_name = item[:title]
           sections[section_name] = item[:children]
         else
           root_items << item

@@ -1,18 +1,22 @@
-/* Callouts/Admonitions */
 .docyard-callout {
   display: flex;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  margin: var(--space-6) 0;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  margin: var(--spacing-6) 0;
+  border-radius: var(--radius-2xl);
+  text-align: left;
+  font-size: var(--text-sm);
+  position: relative;
+  width: 100%;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
   border: 1px solid;
-  border-radius: var(--radius-lg);
-  transition: border-color var(--transition-base), background-color var(--transition-base);
 }
 
 .docyard-callout__icon {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 1.25rem;
+  height: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,17 +35,21 @@
 .docyard-callout__content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
 }
 
 .docyard-callout__title {
-  font-weight: var(--font-weight-semibold);
-  margin: 0 0 var(--space-2) 0;
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-tight);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
 }
 
 .docyard-callout__body {
-  line-height: var(--line-height-relaxed);
+  line-height: var(--leading-relaxed);
+  color: var(--muted-foreground);
+  font-size: var(--text-sm);
 }
 
 .docyard-callout__body>*:first-child {
@@ -52,9 +60,23 @@
   margin-bottom: 0;
 }
 
-/* Code blocks inside callouts */
+.content .docyard-callout__body ul,
+.content .docyard-callout__body ol {
+  padding-left: 0;
+  margin: var(--spacing-2) 0;
+}
+
+.docyard-callout__body a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.docyard-callout__body a:hover {
+  color: var(--foreground);
+}
+
 .docyard-callout__body .highlight {
-  margin: var(--space-4) 0;
+  margin: var(--spacing-4) 0;
   border-radius: var(--radius-md);
 }
 
@@ -69,99 +91,77 @@
 
 .docyard-callout__body pre code {
   display: block;
-  padding: var(--space-4);
+  padding: var(--spacing-4);
   overflow-x: auto;
-  background-color: var(--color-bg-secondary) !important;
+  overscroll-behavior-x: contain;
+  background-color: transparent;
 }
 
 .docyard-callout__body :not(pre)>code {
-  background-color: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: oklch(from var(--input) l c h / 30%);
   padding: 0.125rem 0.375rem;
   border-radius: var(--radius-sm);
 }
 
-.dark .docyard-callout__body :not(pre)>code {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Callout type: note (blue) */
 .docyard-callout--note {
   border-color: var(--callout-note-border);
-  background-color: var(--callout-note-bg);
+  background-color: var(--callout-note-background);
 }
 
-.docyard-callout--note .docyard-callout__icon {
-  color: var(--callout-note);
+.docyard-callout--note .docyard-callout__icon,
+.docyard-callout--note .docyard-callout__title,
+.docyard-callout--note .docyard-callout__body {
+  color: var(--callout-note-foreground);
 }
 
-.docyard-callout--note .docyard-callout__title {
-  color: var(--callout-note-text);
-}
-
-/* Callout type: tip (green) */
 .docyard-callout--tip {
   border-color: var(--callout-tip-border);
-  background-color: var(--callout-tip-bg);
+  background-color: var(--callout-tip-background);
 }
 
-.docyard-callout--tip .docyard-callout__icon {
-  color: var(--callout-tip);
+.docyard-callout--tip .docyard-callout__icon,
+.docyard-callout--tip .docyard-callout__title,
+.docyard-callout--tip .docyard-callout__body {
+  color: var(--callout-tip-foreground);
 }
 
-.docyard-callout--tip .docyard-callout__title {
-  color: var(--callout-tip-text);
-}
-
-/* Callout type: important (purple) */
 .docyard-callout--important {
   border-color: var(--callout-important-border);
-  background-color: var(--callout-important-bg);
+  background-color: var(--callout-important-background);
 }
 
-.docyard-callout--important .docyard-callout__icon {
-  color: var(--callout-important);
+.docyard-callout--important .docyard-callout__icon,
+.docyard-callout--important .docyard-callout__title,
+.docyard-callout--important .docyard-callout__body {
+  color: var(--callout-important-foreground);
 }
 
-.docyard-callout--important .docyard-callout__title {
-  color: var(--callout-important-text);
-}
-
-/* Callout type: warning (orange/yellow) */
 .docyard-callout--warning {
   border-color: var(--callout-warning-border);
-  background-color: var(--callout-warning-bg);
+  background-color: var(--callout-warning-background);
 }
 
-.docyard-callout--warning .docyard-callout__icon {
-  color: var(--callout-warning);
+.docyard-callout--warning .docyard-callout__icon,
+.docyard-callout--warning .docyard-callout__title,
+.docyard-callout--warning .docyard-callout__body {
+  color: var(--callout-warning-foreground);
 }
 
-.docyard-callout--warning .docyard-callout__title {
-  color: var(--callout-warning-text);
-}
-
-/* Callout type: danger (red) */
 .docyard-callout--danger {
   border-color: var(--callout-danger-border);
-  background-color: var(--callout-danger-bg);
+  background-color: var(--callout-danger-background);
 }
 
-.docyard-callout--danger .docyard-callout__icon {
-  color: var(--callout-danger);
+.docyard-callout--danger .docyard-callout__icon,
+.docyard-callout--danger .docyard-callout__title,
+.docyard-callout--danger .docyard-callout__body {
+  color: var(--callout-danger-foreground);
 }
 
-.docyard-callout--danger .docyard-callout__title {
-  color: var(--callout-danger-text);
-}
-
-/* Nested callouts */
 .docyard-callout .docyard-callout {
-  margin: var(--space-4) 0;
+  margin: var(--spacing-4) 0;
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .docyard-callout {
     transition: none;

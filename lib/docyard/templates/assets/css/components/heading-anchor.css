@@ -5,30 +5,35 @@
 .content h6[id] {
   position: relative;
   scroll-margin-top: 100px;
+  display: flex;
+  align-items: center;
 }
 
-/* Tablet: Account for both primary + secondary header */
 @media (max-width: 1280px) and (min-width: 1025px) {
+
   .content h2[id],
   .content h3[id],
   .content h4[id],
   .content h5[id],
   .content h6[id] {
-    scroll-margin-top: calc(var(--header-height) + 3rem + var(--space-4));
+    scroll-margin-top: calc(var(--header-height) + 3rem + var(--spacing-4));
   }
 }
 
 .heading-anchor {
-  float: left;
-  margin-left: -0.75em;
-  padding-right: 0.25em;
-  font-weight: var(--font-weight-normal);
-  color: var(--color-primary);
+  order: -1;
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  margin-left: -1.625rem;
+  font-weight: var(--font-normal);
+  color: var(--primary);
   text-decoration: none !important;
   opacity: 0;
   transition: opacity var(--transition-fast);
   cursor: pointer;
   user-select: none;
+  display: flex;
+  align-items: center;
 }
 
 .heading-anchor:hover,
@@ -42,10 +47,10 @@
   text-decoration: none !important;
 }
 
-.heading-anchor:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
+.heading-anchor:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
+  border-radius: var(--radius-sm);
 }
 
 .content h2[id]:hover .heading-anchor,
@@ -58,9 +63,10 @@
 
 @media (max-width: 1024px) {
   .heading-anchor {
-    position: static;
-    margin-left: var(--space-2);
-    float: none;
+    order: 1;
+    margin-left: var(--spacing-3);
+    font-size: 1.3rem;
+    margin-right: 0;
     opacity: 0.6;
   }
 

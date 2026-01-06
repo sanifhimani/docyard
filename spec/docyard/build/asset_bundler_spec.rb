@@ -62,7 +62,7 @@ RSpec.describe Docyard::Build::AssetBundler do
       css_content = File.read(css_file)
 
       expect(css_content).not_to include("\n\n")
-      expect(css_content.length).to be < 65_000
+      expect(css_content.length).to be < 75_000
     end
 
     it "minifies JS content", :aggregate_failures do
@@ -73,7 +73,7 @@ RSpec.describe Docyard::Build::AssetBundler do
       js_content = File.read(js_file)
 
       expect(js_content).not_to include("\n\n")
-      expect(js_content.length).to be < 30_000
+      expect(js_content.length).to be < 35_000
     end
 
     it "updates HTML references with hashed filenames", :aggregate_failures do

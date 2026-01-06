@@ -91,6 +91,7 @@ module Docyard
         input: "GFM",
         hard_wrap: false,
         syntax_highlighter: "rouge",
+        syntax_highlighter_opts: { guess_lang: true },
         parse_block_html: true
       ).to_html
 

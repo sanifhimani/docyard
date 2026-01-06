@@ -57,20 +57,20 @@ RSpec.describe Docyard::AssetHandler do
         expect(status).to eq(200)
         expect(headers["Content-Type"]).to eq("text/css; charset=utf-8")
 
-        expect(content).to include("Callouts/Admonitions")
-        expect(content).to include("Icon System")
-        expect(content).to include("Navigation Components")
-        expect(content).to include("Theme Toggle")
+        expect(content).to include(".docyard-callout")
+        expect(content).to include(".docyard-icon")
+        expect(content).to include(".sidebar nav")
+        expect(content).to include(".theme-toggle")
       end
 
       it "concatenates files in alphabetical order", :aggregate_failures do
         _status, _headers, body = handler.serve("/assets/css/components.css")
         content = body.first
 
-        callout_pos = content.index("Callouts/Admonitions")
-        icon_pos = content.index("Icon System")
-        navigation_pos = content.index("Navigation Components")
-        theme_pos = content.index("Theme Toggle")
+        callout_pos = content.index(".docyard-callout")
+        icon_pos = content.index(".docyard-icon")
+        navigation_pos = content.index(".sidebar nav")
+        theme_pos = content.index(".theme-toggle")
 
         expect(callout_pos).to be < icon_pos
         expect(icon_pos).to be < navigation_pos
@@ -81,7 +81,7 @@ RSpec.describe Docyard::AssetHandler do
         _status, _headers, body = handler.serve("/assets/css/components.css")
         content = body.first
 
-        expect(content).to match(%r{\}\n\n/\*})
+        expect(content).to match(/\}\n\n\./)
       end
     end
 

@@ -1,14 +1,13 @@
 <% unless @toc.empty? %>
   <aside class="docyard-toc" aria-label="Table of contents">
-    <div class="docyard-toc__header">
-      <h2 class="docyard-toc__title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true">
-          <path d="M88,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H96A8,8,0,0,1,88,64Zm128,56H96a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H96a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM56,56H40a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Zm0,64H40a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Zm0,64H40a8,8,0,0,0,0,16H56a8,8,0,0,0,0-16Z"/>
-        </svg>
-        On this page
-      </h2>
-    </div>
-    <nav id="toc-content" class="docyard-toc__nav">
+    <div class="docyard-toc__scroll">
+      <div class="docyard-toc__header">
+        <h2 class="docyard-toc__title">
+          <%= icon(:table) %>
+          On this page
+        </h2>
+      </div>
+      <nav id="toc-content" class="docyard-toc__nav">
       <ul class="docyard-toc__list">
         <% @toc.each do |heading| %>
           <li class="docyard-toc__item docyard-toc__item--level-<%= heading[:level] %>">
@@ -40,6 +39,7 @@
           </li>
         <% end %>
       </ul>
-    </nav>
+      </nav>
+    </div>
   </aside>
 <% end %>
