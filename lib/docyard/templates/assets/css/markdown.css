@@ -108,7 +108,7 @@
 .content hr {
   margin: var(--spacing-8) 0;
   border: none;
-  border-top: 1px solid oklch(from var(--border) l c h / 50%);
+  border-top: 1px solid var(--hr-color);
 }
 
 /* Tables - matches shadcn table */
@@ -118,7 +118,7 @@
   margin: var(--spacing-6) 0;
   overflow-x: auto;
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--border);
+  border: 1px solid var(--table-border);
 }
 
 .content table {
@@ -130,7 +130,7 @@
 }
 
 .content thead {
-  background-color: oklch(from var(--muted) l c h / 90%);
+  background-color: var(--table-header-bg);
 }
 
 .content th {
@@ -146,7 +146,7 @@
 .content td {
   padding: var(--spacing-3) var(--spacing-4);
   vertical-align: middle;
-  border-top: 1px solid oklch(from var(--border) l c h / 50%);
+  border-top: 1px solid var(--table-row-border);
 }
 
 .content tbody tr {
