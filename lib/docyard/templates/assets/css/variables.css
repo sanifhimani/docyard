@@ -109,6 +109,32 @@
   --callout-danger-background: rgba(254, 242, 242, 0.5);
   --callout-danger-border: rgba(239, 68, 68, 0.2);
 
+  /* Component: Code Block */
+  --code-block-bg: oklab(0 0 0 / 0.03);
+  --code-block-border: oklab(0 0 0 / 0.06);
+  --code-block-header-bg: oklab(0 0 0 / 0.02);
+  --code-block-header-border: oklab(0 0 0 / 0.04);
+  --code-block-gutter-bg: transparent;
+  --code-block-copy-bg: oklab(0 0 0 / 0.03);
+  --code-block-copy-bg-hover: oklab(0 0 0 / 0.06);
+  --code-block-copy-shadow: 0 1px 2px oklab(0 0 0 / 0.04), 0 0 0 1px oklab(0 0 0 / 0.04);
+  --code-block-copy-shadow-hover: 0 2px 4px oklab(0 0 0 / 0.06), 0 0 0 1px oklab(0 0 0 / 0.06);
+  --code-block-copy-shadow-active: 0 0 1px oklab(0 0 0 / 0.03), 0 0 0 1px oklab(0 0 0 / 0.02);
+
+  /* Component: Search */
+  --search-trigger-bg: oklab(0 0 0 / 0.045);
+  --search-trigger-bg-hover: oklab(0 0 0 / 0.08);
+  --search-trigger-border: oklab(0 0 0 / 0.08);
+  --search-trigger-border-hover: oklab(0 0 0 / 0.12);
+
+  /* Component: Table */
+  --table-border: oklab(0 0 0 / 0.08);
+  --table-row-border: oklab(0 0 0 / 0.06);
+  --table-header-bg: oklab(0 0 0 / 0.03);
+
+  /* Component: Horizontal Rule */
+  --hr-color: oklab(0 0 0 / 0.1);
+
   /* Typography */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -198,30 +224,30 @@
 
 /* Dark Theme */
 .dark {
-  --background: oklch(0.141 0.005 285.823);
+  --background: oklch(0.07 0 0);
   --foreground: oklch(0.985 0 0);
 
-  --card: oklch(0.21 0.006 285.885);
+  --card: oklch(0.22 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
 
-  --popover: oklch(0.21 0.006 285.885);
+  --popover: oklch(0.22 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
 
   --primary: oklch(0.71 0.13 215);
   --primary-foreground: oklch(0.30 0.05 230);
 
-  --secondary: oklch(0.274 0.006 286.033);
+  --secondary: oklch(0.26 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
 
-  --muted: oklch(0.274 0.006 286.033);
+  --muted: oklch(0.26 0.006 286.033);
   --muted-foreground: oklch(0.705 0.015 286.067);
 
-  --accent: oklch(0.274 0.006 286.033);
+  --accent: oklch(0.26 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
 
   --destructive: oklch(0.704 0.191 22.216);
 
-  --border: oklch(1 0 0 / 10%);
+  --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.552 0.016 285.938);
 
@@ -229,14 +255,14 @@
   --sidebar: var(--background);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.80 0.13 212);
-  --sidebar-primary-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-primary-foreground: oklch(0.22 0.006 285.885);
+  --sidebar-accent: oklch(0.26 0.006 286.033);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(1 0 0 / 12%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
 
   /* Code colors */
-  --code-background: oklch(0.21 0.006 285.885);
+  --code-background: oklch(0.22 0.006 285.885);
   --code-foreground: oklch(0.985 0 0);
 
   /* Semantic colors */
@@ -288,6 +314,32 @@
   --callout-danger-foreground: #fca5a5;
   --callout-danger-background: rgba(239, 68, 68, 0.1);
   --callout-danger-border: rgba(239, 68, 68, 0.3);
+
+  /* Component: Code Block */
+  --code-block-bg: oklab(1 0 0 / 0.045);
+  --code-block-border: oklab(1 0 0 / 0.06);
+  --code-block-header-bg: oklab(1 0 0 / 0.025);
+  --code-block-header-border: oklab(1 0 0 / 0.04);
+  --code-block-gutter-bg: transparent;
+  --code-block-copy-bg: oklab(1 0 0 / 0.05);
+  --code-block-copy-bg-hover: oklab(1 0 0 / 0.08);
+  --code-block-copy-shadow: 0 0 0 1px oklab(1 0 0 / 0.06);
+  --code-block-copy-shadow-hover: 0 0 0 1px oklab(1 0 0 / 0.1);
+  --code-block-copy-shadow-active: 0 0 0 1px oklab(1 0 0 / 0.04);
+
+  /* Component: Search */
+  --search-trigger-bg: oklab(1 0 0 / 0.045);
+  --search-trigger-bg-hover: oklab(1 0 0 / 0.08);
+  --search-trigger-border: oklab(1 0 0 / 0.08);
+  --search-trigger-border-hover: oklab(1 0 0 / 0.12);
+
+  /* Component: Table */
+  --table-border: oklab(1 0 0 / 0.12);
+  --table-row-border: oklab(1 0 0 / 0.1);
+  --table-header-bg: oklab(1 0 0 / 0.04);
+
+  /* Component: Horizontal Rule */
+  --hr-color: oklab(1 0 0 / 0.1);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
