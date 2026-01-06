@@ -31,7 +31,7 @@
   max-width: var(--layout-max-width);
   margin: 0 auto;
   padding: var(--spacing-5) var(--spacing-6);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid oklch(from var(--border) l c h / 50%);
 }
 
 .header-logo {
@@ -201,34 +201,72 @@
   top: var(--header-height);
   left: max(0px, calc((100vw - var(--layout-max-width)) / 2));
   background-color: var(--sidebar);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overflow-anchor: none;
   z-index: var(--z-sidebar);
   display: flex;
   flex-direction: column;
 }
 
-.sidebar > nav {
+/* Sidebar scroll container with fade indicators */
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-anchor: none;
+  position: relative;
+}
+
+.sidebar-scroll > nav {
   padding: var(--spacing-2) 0;
   overscroll-behavior: contain;
 }
 
+/* Scroll fade indicators */
+.sidebar::before,
+.sidebar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--sidebar) 0%, transparent 100%);
+}
+
+.sidebar::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--sidebar) 0%, transparent 100%);
+}
+
+.sidebar.can-scroll-top::before {
+  opacity: 1;
+}
+
+.sidebar.can-scroll-bottom::after {
+  opacity: 1;
+}
+
 /* Sidebar scrollbar styling */
-.sidebar::-webkit-scrollbar {
+.sidebar-scroll::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar::-webkit-scrollbar-track {
+.sidebar-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
+.sidebar-scroll::-webkit-scrollbar-thumb {
   background: var(--sidebar-border);
   border-radius: 3px;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
 
@@ -330,18 +368,25 @@ main.content {
 
 /* Skip to main content link (accessibility) */
 .skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  position: fixed;
+  left: 50%;
+  top: var(--spacing-3);
+  background: var(--foreground);
+  color: var(--background);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   padding: var(--spacing-2) var(--spacing-4);
   text-decoration: none;
-  z-index: 100;
+  z-index: 9999;
+  border-radius: var(--radius-4xl);
+  box-shadow: var(--shadow-xl);
+  transform: translate(-50%, -200%);
+  transition: transform var(--transition-base);
 }
 
 .skip-link:focus {
-  top: 0;
+  transform: translate(-50%, 0);
+  outline: none;
 }
 
 /* Container utilities */
