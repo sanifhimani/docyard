@@ -13,7 +13,7 @@
   color: var(--muted-foreground);
   font-size: var(--text-sm);
   transition: all var(--transition-fast);
-  min-width: 280px;
+  min-width: 400px;
   height: 2.25rem;
 }
 
