@@ -212,12 +212,12 @@
   overflow-y: auto;
   overflow-x: hidden;
   overflow-anchor: none;
+  overscroll-behavior: contain;
   position: relative;
 }
 
 .sidebar-scroll > nav {
   padding: var(--spacing-2) 0;
-  overscroll-behavior: contain;
 }
 
 /* Scroll fade indicators */
