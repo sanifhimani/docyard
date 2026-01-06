@@ -31,7 +31,7 @@
   max-width: var(--layout-max-width);
   margin: 0 auto;
   padding: var(--spacing-5) var(--spacing-6);
-  border-bottom: 1px solid oklch(from var(--border) l c h / 50%);
+  border-bottom: 1px solid var(--hr-color);
 }
 
 .header-logo {
