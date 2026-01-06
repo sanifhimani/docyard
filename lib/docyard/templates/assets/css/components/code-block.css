@@ -5,24 +5,27 @@
   margin: var(--spacing-4) 0;
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  background-color: oklch(from var(--input) l c h / 20%);
-  border: 1px solid var(--input);
+  background-color: var(--code-block-bg);
+  border: 1px solid var(--code-block-border);
 }
 
 /* Make all internal elements transparent - background comes from wrapper */
-.docyard-code-block .highlight {
+.docyard-code-block .highlight,
+.dark .docyard-code-block .highlight {
   margin: 0;
   border: none;
   border-radius: 0;
   background-color: transparent;
 }
 
-.docyard-code-block .highlight pre {
+.docyard-code-block .highlight pre,
+.dark .docyard-code-block .highlight pre {
   margin: 0;
   background-color: transparent;
 }
 
-.docyard-code-block .highlight pre code {
+.docyard-code-block .highlight pre code,
+.dark .docyard-code-block .highlight pre code {
   background-color: transparent;
 }
 
@@ -46,8 +49,8 @@
   align-items: center;
   gap: var(--spacing-2);
   padding: var(--spacing-2) var(--spacing-4);
-  background: oklch(from var(--input) l c h / 20%);
-  border-bottom: 1px solid oklch(from var(--input) l c h / 30%);
+  background: var(--code-block-header-bg);
+  border-bottom: 1px solid var(--code-block-header-border);
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
   color: var(--muted-foreground);
@@ -106,6 +109,7 @@
   padding: var(--spacing-4) 0;
   text-align: right;
   user-select: none;
+  background-color: var(--code-block-gutter-bg);
   color: oklch(from var(--muted-foreground) l c h / 60%);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
@@ -224,6 +228,7 @@
   padding: var(--spacing-4) 0;
   text-align: center;
   user-select: none;
+  background-color: var(--code-block-gutter-bg);
   color: oklch(from var(--muted-foreground) l c h / 60%);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
@@ -360,7 +365,7 @@
   padding: 0 var(--spacing-2-5);
   border: none;
   border-radius: 9999px;
-  background-color: oklch(from var(--input) l c h / 30%);
+  background-color: var(--code-block-copy-bg);
   color: var(--muted-foreground);
   cursor: pointer;
   flex-shrink: 0;
@@ -371,18 +376,14 @@
     color 0.2s ease,
     box-shadow 0.2s ease;
   /* Subtle elevation */
-  box-shadow:
-    0 1px 2px oklch(from var(--foreground) l c h / 5%),
-    0 0 0 1px oklch(from var(--foreground) l c h / 5%);
+  box-shadow: var(--code-block-copy-shadow);
 }
 
 .docyard-code-block__copy:hover {
-  background-color: oklch(from var(--foreground) l c h / 10%);
+  background-color: var(--code-block-copy-bg-hover);
   color: var(--foreground);
   /* Lift up slightly */
-  box-shadow:
-    0 2px 4px oklch(from var(--foreground) l c h / 8%),
-    0 0 0 1px oklch(from var(--foreground) l c h / 8%);
+  box-shadow: var(--code-block-copy-shadow-hover);
 }
 
 /* The press - this is where the magic happens */
@@ -393,9 +394,7 @@
     background-color 0.1s ease,
     box-shadow 0.1s ease;
   /* Pressed into surface - shadow almost gone */
-  box-shadow:
-    0 0 1px oklch(from var(--foreground) l c h / 5%),
-    0 0 0 1px oklch(from var(--foreground) l c h / 3%);
+  box-shadow: var(--code-block-copy-shadow-active);
 }
 
 .docyard-code-block__copy:focus-visible {
