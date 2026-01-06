@@ -353,7 +353,8 @@ main.content {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: oklch(0 0 0 / 80%);
+    background-color: var(--overlay-bg);
+    backdrop-filter: blur(var(--overlay-blur));
     z-index: var(--z-overlay);
     opacity: 0;
     pointer-events: none;

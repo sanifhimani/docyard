@@ -127,6 +127,10 @@
   --search-trigger-border: oklab(0 0 0 / 0.08);
   --search-trigger-border-hover: oklab(0 0 0 / 0.12);
 
+  /* Component: Overlay/Backdrop */
+  --overlay-bg: oklch(0 0 0 / 20%);
+  --overlay-blur: 5px;
+
   /* Component: Table */
   --table-border: oklab(0 0 0 / 0.08);
   --table-row-border: oklab(0 0 0 / 0.06);
@@ -332,6 +336,9 @@
   --search-trigger-bg-hover: oklab(1 0 0 / 0.08);
   --search-trigger-border: oklab(1 0 0 / 0.08);
   --search-trigger-border-hover: oklab(1 0 0 / 0.12);
+
+  /* Component: Overlay/Backdrop */
+  --overlay-bg: oklch(0 0 0 / 50%);
 
   /* Component: Table */
   --table-border: oklab(1 0 0 / 0.12);
