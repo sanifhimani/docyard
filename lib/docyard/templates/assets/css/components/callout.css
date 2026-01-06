@@ -1,34 +1,27 @@
-/* Callouts/Admonitions - shadcn/ui alert style */
+/* Callouts/Admonitions - Clean accent style */
 
 .docyard-callout {
-  display: grid;
-  gap: var(--spacing-0-5);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
   padding: var(--spacing-3) var(--spacing-4);
   margin: var(--spacing-6) 0;
-  border: 1px solid;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-2xl);
   text-align: left;
   font-size: var(--text-sm);
   position: relative;
   width: 100%;
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
-}
-
-/* Grid layout with icon support */
-.docyard-callout:has(.docyard-callout__icon) {
-  grid-template-columns: auto 1fr;
-  gap: var(--spacing-2-5);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  border: 1px solid;
 }
 
 .docyard-callout__icon {
   flex-shrink: 0;
-  width: 1rem;
-  height: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  grid-row: span 2;
-  translate: 0 0.125rem;
 }
 
 .docyard-callout__icon .docyard-icon {
@@ -44,33 +37,38 @@
 .docyard-callout__content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
 }
 
-/* Title - matches AlertTitle */
+/* Title */
 .docyard-callout__title {
-  font-weight: var(--font-medium);
-  margin: 0 0 var(--spacing-0-5) 0;
+  font-weight: var(--font-semibold);
   font-size: var(--text-sm);
   line-height: var(--leading-tight);
 }
 
-.docyard-callout:has(.docyard-callout__icon) .docyard-callout__title {
-  grid-column-start: 2;
-}
-
-/* Description - matches AlertDescription */
+/* Description */
 .docyard-callout__body {
   line-height: var(--leading-relaxed);
   color: var(--muted-foreground);
   font-size: var(--text-sm);
 }
 
-.docyard-callout__body > *:first-child {
+.docyard-callout__body>*:first-child {
   margin-top: 0;
 }
 
-.docyard-callout__body > *:last-child {
+.docyard-callout__body>*:last-child {
   margin-bottom: 0;
+}
+
+/* Reduce list indentation inside callouts */
+.content .docyard-callout__body ul,
+.content .docyard-callout__body ol {
+  padding-left: 0;
+  margin: var(--spacing-2) 0;
 }
 
 .docyard-callout__body a {
@@ -101,12 +99,11 @@
   display: block;
   padding: var(--spacing-4);
   overflow-x: auto;
-  background-color: var(--secondary) !important;
+  background-color: transparent;
 }
 
-.docyard-callout__body :not(pre) > code {
-  background-color: var(--muted);
-  border: 1px solid var(--border);
+.docyard-callout__body :not(pre)>code {
+  background-color: oklch(from var(--input) l c h / 30%);
   padding: 0.125rem 0.375rem;
   border-radius: var(--radius-sm);
 }
@@ -117,11 +114,9 @@
   background-color: var(--callout-note-background);
 }
 
-.docyard-callout--note .docyard-callout__icon {
-  color: var(--callout-note);
-}
-
-.docyard-callout--note .docyard-callout__title {
+.docyard-callout--note .docyard-callout__icon,
+.docyard-callout--note .docyard-callout__title,
+.docyard-callout--note .docyard-callout__body {
   color: var(--callout-note-foreground);
 }
 
@@ -131,11 +126,9 @@
   background-color: var(--callout-tip-background);
 }
 
-.docyard-callout--tip .docyard-callout__icon {
-  color: var(--callout-tip);
-}
-
-.docyard-callout--tip .docyard-callout__title {
+.docyard-callout--tip .docyard-callout__icon,
+.docyard-callout--tip .docyard-callout__title,
+.docyard-callout--tip .docyard-callout__body {
   color: var(--callout-tip-foreground);
 }
 
@@ -145,11 +138,9 @@
   background-color: var(--callout-important-background);
 }
 
-.docyard-callout--important .docyard-callout__icon {
-  color: var(--callout-important);
-}
-
-.docyard-callout--important .docyard-callout__title {
+.docyard-callout--important .docyard-callout__icon,
+.docyard-callout--important .docyard-callout__title,
+.docyard-callout--important .docyard-callout__body {
   color: var(--callout-important-foreground);
 }
 
@@ -159,11 +150,9 @@
   background-color: var(--callout-warning-background);
 }
 
-.docyard-callout--warning .docyard-callout__icon {
-  color: var(--callout-warning);
-}
-
-.docyard-callout--warning .docyard-callout__title {
+.docyard-callout--warning .docyard-callout__icon,
+.docyard-callout--warning .docyard-callout__title,
+.docyard-callout--warning .docyard-callout__body {
   color: var(--callout-warning-foreground);
 }
 
@@ -173,11 +162,9 @@
   background-color: var(--callout-danger-background);
 }
 
-.docyard-callout--danger .docyard-callout__icon {
-  color: var(--callout-danger);
-}
-
-.docyard-callout--danger .docyard-callout__title {
+.docyard-callout--danger .docyard-callout__icon,
+.docyard-callout--danger .docyard-callout__title,
+.docyard-callout--danger .docyard-callout__body {
   color: var(--callout-danger-foreground);
 }
 
