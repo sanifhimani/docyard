@@ -6,8 +6,8 @@
   align-items: center;
   gap: var(--spacing-2);
   padding: var(--spacing-2) var(--spacing-3);
-  background-color: oklch(from var(--input) l c h / 30%);
-  border: 1px solid var(--input);
+  background-color: var(--search-trigger-bg);
+  border: 1px solid var(--search-trigger-border);
   border-radius: var(--radius-4xl);
   cursor: pointer;
   color: var(--muted-foreground);
@@ -18,7 +18,8 @@
 }
 
 .search-trigger:hover {
-  background-color: oklch(from var(--input) l c h / 50%);
+  background-color: var(--search-trigger-bg-hover);
+  border-color: var(--search-trigger-border-hover);
   color: var(--foreground);
 }
 
