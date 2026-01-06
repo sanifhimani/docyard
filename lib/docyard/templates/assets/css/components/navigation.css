@@ -86,16 +86,16 @@
   box-shadow: 0 0 0 2px var(--sidebar-ring);
 }
 
-/* Active state - primary color background with contrasting text */
+/* Active state - subtle primary background with primary text */
 .sidebar nav a.active {
-  background-color: var(--sidebar-primary);
-  color: var(--sidebar-primary-foreground);
-  font-weight: var(--font-medium);
+  background-color: oklch(from var(--sidebar-primary) l c h / 10%);
+  color: var(--sidebar-primary);
+  text-shadow: -0.2px 0 0 currentColor, 0.2px 0 0 currentColor;
 }
 
 .sidebar nav a.active:hover {
-  background-color: var(--sidebar-primary);
-  color: var(--sidebar-primary-foreground);
+  background-color: oklch(from var(--sidebar-primary) l c h / 10%);
+  color: var(--sidebar-primary);
 }
 
 /* Nested navigation - matches SidebarMenuSub */
@@ -141,9 +141,9 @@
 }
 
 .sidebar nav ul ul a.active {
-  background-color: var(--sidebar-primary);
-  color: var(--sidebar-primary-foreground);
-  font-weight: var(--font-medium);
+  background-color: oklch(from var(--sidebar-primary) l c h / 10%);
+  color: var(--sidebar-primary);
+  text-shadow: -0.2px 0 0 currentColor, 0.2px 0 0 currentColor;
 }
 
 /* Collapsible/Accordion items - matches nav group toggle */
