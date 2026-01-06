@@ -65,6 +65,13 @@
   display: none;
 }
 
+/* Tablet & Mobile - tighter spacing next to search */
+@media (max-width: 1024px) {
+  .theme-toggle {
+    margin-left: var(--spacing-1);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle {
