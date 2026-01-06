@@ -1,6 +1,3 @@
-/* Code Block Styles - shadcn/ui style */
-
-/* Code blocks */
 .content pre {
   margin: var(--spacing-6) 0;
   border-radius: var(--radius-2xl);
@@ -20,7 +17,6 @@
   overscroll-behavior-x: contain;
 }
 
-/* Syntax highlighting - GitHub style */
 .highlight {
   margin: var(--spacing-6) 0;
   background-color: oklch(from var(--input) l c h / 30%);
@@ -51,7 +47,6 @@
   background-color: transparent;
 }
 
-/* Keywords */
 .highlight .k,
 .highlight .kd,
 .highlight .kn,
@@ -71,7 +66,6 @@
   background-color: #ffebe9;
 }
 
-/* Built-in names */
 .highlight .nb,
 .highlight .nc,
 .highlight .no,
@@ -79,7 +73,6 @@
   color: #953800;
 }
 
-/* Strings and regex */
 .highlight .sr,
 .highlight .na,
 .highlight .nt {
@@ -96,7 +89,6 @@
   font-style: italic;
 }
 
-/* Constants and literals */
 .highlight .kc,
 .highlight .l,
 .highlight .ld,
@@ -116,7 +108,6 @@
   color: #0550ae;
 }
 
-/* Variables */
 .highlight .nv,
 .highlight .vc,
 .highlight .vg,
@@ -125,20 +116,17 @@
   color: #0550ae;
 }
 
-/* Operators */
 .highlight .o,
 .highlight .ow {
   color: #0550ae;
 }
 
-/* Headers and subheaders in diffs */
 .highlight .gh,
 .highlight .gu {
   color: #0550ae;
   font-weight: bold;
 }
 
-/* Strings */
 .highlight .s,
 .highlight .sa,
 .highlight .sc,
@@ -153,20 +141,17 @@
   color: #0a3069;
 }
 
-/* Decorators and functions */
 .highlight .nd,
 .highlight .nf,
 .highlight .fm {
   color: #8250df;
 }
 
-/* Errors */
 .highlight .err {
   color: #f6f8fa;
   background-color: #82071e;
 }
 
-/* Comments */
 .highlight .c,
 .highlight .ch,
 .highlight .cd,
@@ -180,13 +165,11 @@
   color: #6e7781;
 }
 
-/* Name indicators */
 .highlight .ni,
 .highlight .si {
   color: #24292f;
 }
 
-/* Generic emphasis */
 .highlight .ge {
   color: #24292f;
   font-style: italic;
@@ -197,7 +180,6 @@
   font-weight: bold;
 }
 
-/* Code block scrollbar */
 .content pre::-webkit-scrollbar {
   height: 0.5rem;
 }
@@ -216,7 +198,6 @@
   background: var(--muted-foreground);
 }
 
-/* Dark Mode Syntax Highlighting - GitHub Dark */
 .dark .highlight {
   color: #e6edf3;
   background-color: oklch(from var(--input) l c h / 30%);
@@ -227,7 +208,6 @@
   background-color: transparent;
 }
 
-/* Keywords */
 .dark .highlight .k,
 .dark .highlight .kd,
 .dark .highlight .kn,
@@ -247,7 +227,6 @@
   background-color: #490202;
 }
 
-/* Built-in names */
 .dark .highlight .nb,
 .dark .highlight .nc,
 .dark .highlight .no,
@@ -255,7 +234,6 @@
   color: #ffa657;
 }
 
-/* Strings and regex */
 .dark .highlight .sr,
 .dark .highlight .na,
 .dark .highlight .nt {
@@ -267,7 +245,6 @@
   background-color: #0f3b17;
 }
 
-/* Constants and literals */
 .dark .highlight .kc,
 .dark .highlight .l,
 .dark .highlight .ld,
@@ -287,7 +264,6 @@
   color: #79c0ff;
 }
 
-/* Variables */
 .dark .highlight .nv,
 .dark .highlight .vc,
 .dark .highlight .vg,
@@ -296,20 +272,17 @@
   color: #79c0ff;
 }
 
-/* Operators */
 .dark .highlight .o,
 .dark .highlight .ow {
   color: #79c0ff;
 }
 
-/* Headers and subheaders in diffs */
 .dark .highlight .gh,
 .dark .highlight .gu {
   color: #79c0ff;
   font-weight: bold;
 }
 
-/* Strings */
 .dark .highlight .s,
 .dark .highlight .sa,
 .dark .highlight .sc,
@@ -324,20 +297,17 @@
   color: #a5d6ff;
 }
 
-/* Decorators and functions */
 .dark .highlight .nd,
 .dark .highlight .nf,
 .dark .highlight .fm {
   color: #d2a8ff;
 }
 
-/* Errors */
 .dark .highlight .err {
   color: #161b22;
   background-color: #ffa198;
 }
 
-/* Comments */
 .dark .highlight .c,
 .dark .highlight .ch,
 .dark .highlight .cd,
@@ -351,13 +321,11 @@
   color: #8b949e;
 }
 
-/* Name indicators */
 .dark .highlight .ni,
 .dark .highlight .si {
   color: #e6edf3;
 }
 
-/* Generic emphasis */
 .dark .highlight .ge {
   color: #e6edf3;
   font-style: italic;

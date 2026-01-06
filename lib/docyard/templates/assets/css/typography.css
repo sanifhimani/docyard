@@ -1,5 +1,3 @@
-/* Base Typography - shadcn/ui style */
-
 body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
@@ -11,7 +9,6 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-weight: var(--font-semibold);
   line-height: var(--leading-tight);
@@ -63,12 +60,10 @@ h6 {
   margin-bottom: var(--spacing-2);
 }
 
-/* Paragraphs */
 p {
   margin-bottom: var(--spacing-5);
 }
 
-/* Links */
 a {
   color: var(--primary);
   text-decoration: none;
@@ -85,19 +80,16 @@ a:focus-visible {
   box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
-/* Code */
 code {
   font-family: var(--font-mono);
   font-size: 0.9em;
 }
 
-/* Small text */
 small {
   font-size: var(--text-sm);
   color: var(--muted-foreground);
 }
 
-/* Strong and emphasis */
 strong, b {
   font-weight: var(--font-semibold);
 }

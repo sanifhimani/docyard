@@ -1,5 +1,3 @@
-/* Heading Anchors - shadcn/ui style */
-
 .content h2[id],
 .content h3[id],
 .content h4[id],
@@ -11,7 +9,6 @@
   align-items: center;
 }
 
-/* Tablet: Account for both primary + secondary header */
 @media (max-width: 1280px) and (min-width: 1025px) {
 
   .content h2[id],

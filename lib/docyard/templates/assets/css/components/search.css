@@ -1,6 +1,3 @@
-/* Search Components - shadcn/ui style */
-
-/* Search Trigger Button - matches shadcn outline button */
 .search-trigger {
   display: flex;
   align-items: center;
@@ -47,7 +44,6 @@
   font-size: var(--text-sm);
 }
 
-/* Keyboard shortcut - matches shadcn kbd */
 .search-trigger-shortcut {
   display: flex;
   align-items: center;
@@ -73,7 +69,6 @@
   opacity: 0.8;
 }
 
-/* Hide command icon on non-Mac */
 .search-trigger-shortcut[data-os="windows"] .search-trigger-shortcut-icon {
   display: none;
 }
@@ -82,14 +77,12 @@
   content: "Ctrl ";
 }
 
-/* Header Actions Container */
 .header-actions {
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
 }
 
-/* Search Modal - matches shadcn dialog/command */
 .search-modal {
   position: fixed;
   inset: 0;
@@ -148,7 +141,6 @@
   opacity: 1;
 }
 
-/* Search Modal Header */
 .search-modal-header {
   display: flex;
   align-items: center;
@@ -167,7 +159,6 @@
   color: var(--muted-foreground);
 }
 
-/* Search input - matches shadcn input (without border) */
 .search-modal-input {
   flex: 1;
   border: none;
@@ -208,7 +199,6 @@
   padding: var(--spacing-1) var(--spacing-1-5);
 }
 
-/* Search Modal Body */
 .search-modal-body {
   flex: 1;
   max-height: 400px;
@@ -282,7 +272,6 @@
   }
 }
 
-/* Search Results */
 .search-modal-results {
   list-style: none;
   padding: 0;
@@ -293,7 +282,6 @@
   display: none;
 }
 
-/* Result Group */
 .search-result-group {
   list-style: none;
 }
@@ -302,7 +290,6 @@
   margin-top: var(--spacing-1);
 }
 
-/* Base result link - matches command item */
 .search-result {
   display: flex;
   align-items: flex-start;
@@ -371,7 +358,6 @@
   padding: 0 1px;
 }
 
-/* Title highlight */
 .search-title-highlight {
   background-color: oklch(from var(--primary) l c h / 15%);
   color: inherit;
@@ -380,12 +366,10 @@
   padding: 0 1px;
 }
 
-/* Page-level results */
 .search-result-page {
   font-weight: var(--font-medium);
 }
 
-/* Sections list */
 .search-result-sections {
   list-style: none;
   padding: 0;
@@ -397,7 +381,6 @@
   position: relative;
 }
 
-/* Section result */
 .search-result-section {
   padding-left: var(--spacing-5);
 }
@@ -412,7 +395,6 @@
   color: var(--primary);
 }
 
-/* Tree connector line */
 .search-result-tree-line {
   position: absolute;
   left: var(--spacing-3);
@@ -428,7 +410,6 @@
   bottom: 50%;
 }
 
-/* Continuous line for middle items */
 .search-result-section-item:not(:last-child)::before {
   content: '';
   position: absolute;
@@ -439,7 +420,6 @@
   background-color: var(--border);
 }
 
-/* Load More Link */
 .search-load-more {
   list-style: none;
   padding: var(--spacing-3);
@@ -466,7 +446,6 @@
   border-radius: var(--radius-sm);
 }
 
-/* Search Modal Footer */
 .search-modal-footer {
   display: flex;
   align-items: center;
@@ -484,7 +463,6 @@
   gap: var(--spacing-1);
 }
 
-/* Kbd - matches shadcn kbd */
 .search-modal-hint kbd {
   display: inline-flex;
   align-items: center;
@@ -499,10 +477,9 @@
   border-radius: var(--radius-sm);
 }
 
-/* Tablet & Mobile - Search becomes icon button next to theme toggle */
 @media (max-width: 1024px) {
 
-  /* Match theme toggle ghost button style */
+  
   .search-trigger {
     min-width: auto;
     width: 2.25rem;
@@ -555,7 +532,6 @@
   }
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .search-modal-spinner {
     animation: none;

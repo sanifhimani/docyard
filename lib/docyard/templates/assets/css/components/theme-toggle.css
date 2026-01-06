@@ -1,5 +1,3 @@
-/* Theme Toggle Button - shadcn/ui ghost button style */
-
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -33,7 +31,6 @@
   box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
-/* Icon containers */
 .theme-toggle-sun,
 .theme-toggle-moon {
   display: flex;
@@ -47,7 +44,6 @@
   height: 1.125rem;
 }
 
-/* Light mode: show moon, hide sun */
 .theme-toggle-sun {
   display: none;
 }
@@ -56,7 +52,6 @@
   display: flex;
 }
 
-/* Dark mode: show sun, hide moon */
 .dark .theme-toggle-sun {
   display: flex;
 }
@@ -65,14 +60,12 @@
   display: none;
 }
 
-/* Tablet & Mobile - tighter spacing next to search */
 @media (max-width: 1024px) {
   .theme-toggle {
     margin-left: var(--spacing-1);
   }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle {
     transition: none;

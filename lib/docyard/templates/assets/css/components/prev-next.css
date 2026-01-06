@@ -1,5 +1,3 @@
-/* Previous/Next Navigation - Minimal with sliding arrows */
-
 .doc-footer {
   margin-top: var(--spacing-12);
   padding-top: var(--spacing-8);
@@ -11,7 +9,6 @@
   gap: var(--spacing-4);
 }
 
-/* Pager link - minimal style */
 .pager-link {
   flex: 1;
   display: flex;
@@ -37,18 +34,15 @@
   box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 }
 
-/* Previous - left aligned */
 .pager-link.prev {
   align-items: flex-start;
 }
 
-/* Next - right aligned */
 .pager-link.next {
   align-items: flex-end;
   text-align: right;
 }
 
-/* Label with arrow */
 .pager-label {
   display: flex;
   align-items: center;
@@ -62,7 +56,6 @@
   justify-content: flex-end;
 }
 
-/* Arrow icon */
 .pager-label .docyard-icon {
   display: inline-flex;
   opacity: 0;
@@ -76,23 +69,19 @@
   height: 1rem;
 }
 
-/* Previous arrow - slides from left */
 .pager-link.prev .pager-label .docyard-icon {
   transform: translateX(6px);
 }
 
-/* Next arrow - slides from right */
 .pager-link.next .pager-label .docyard-icon {
   transform: translateX(-6px);
 }
 
-/* Show arrows on hover */
 .pager-link:hover .pager-label .docyard-icon {
   opacity: 1;
   transform: translateX(0);
 }
 
-/* Title */
 .pager-title {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -102,7 +91,6 @@
   white-space: nowrap;
 }
 
-/* Mobile responsive */
 @media (max-width: 640px) {
   .pager {
     flex-direction: column;
@@ -113,7 +101,7 @@
     padding: var(--spacing-3) var(--spacing-4);
   }
 
-  /* Show arrows always on mobile */
+  
   .pager-label .docyard-icon {
     opacity: 0.6;
     transform: translateX(0);
@@ -129,7 +117,6 @@
   }
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .pager-link,
   .pager-label .docyard-icon {
@@ -137,14 +124,12 @@
   }
 }
 
-/* Print: hide navigation */
 @media print {
   .doc-footer {
     display: none;
   }
 }
 
-/* Visually hidden utility (for screen readers) */
 .visually-hidden {
   position: absolute;
   width: 1px;

@@ -1,5 +1,3 @@
-/* Table of Contents - Desktop & Mobile - shadcn/ui style */
-
 .docyard-toc {
   width: var(--toc-width);
   position: fixed;
@@ -11,7 +9,6 @@
   flex-direction: column;
 }
 
-/* TOC scroll container */
 .docyard-toc__scroll {
   flex: 1;
   overflow-y: auto;
@@ -20,7 +17,6 @@
   padding: var(--spacing-3) var(--spacing-4);
 }
 
-/* Scroll fade indicators */
 .docyard-toc::before,
 .docyard-toc::after {
   content: '';
@@ -52,7 +48,6 @@
   opacity: 1;
 }
 
-/* TOC Header */
 .docyard-toc__header {
   margin-bottom: var(--spacing-4);
 }
@@ -71,12 +66,10 @@
   flex-shrink: 0;
 }
 
-/* Secondary Header TOC Toggle (tablet & mobile) */
 .secondary-header-toc-toggle {
   display: none;
 }
 
-/* Tablet & Mobile TOC Toggle - matches menu button style */
 @media (max-width: 1280px) {
   .secondary-header-toc-toggle {
     display: flex;
@@ -120,13 +113,11 @@
   }
 }
 
-/* TOC Navigation */
 .docyard-toc__nav {
   display: block;
   position: relative;
 }
 
-/* TOC List */
 .docyard-toc__list {
   list-style: none;
   padding: 0;
@@ -135,7 +126,6 @@
   border-left: 1px solid var(--border);
 }
 
-/* Active indicator - animates along the left border */
 .docyard-toc__indicator {
   position: absolute;
   left: -1px;
@@ -148,7 +138,6 @@
   z-index: 1;
 }
 
-/* Nested lists - no border, just indentation */
 .docyard-toc__list .docyard-toc__list {
   margin-top: var(--spacing-1);
   margin-left: var(--spacing-3);
@@ -156,12 +145,10 @@
   border-left: none;
 }
 
-/* TOC Items */
 .docyard-toc__item {
   margin-bottom: 0;
 }
 
-/* TOC Links */
 .docyard-toc__link {
   display: block;
   padding: 0.25rem 0;
@@ -190,13 +177,11 @@
   text-decoration: none;
 }
 
-/* Active link */
 .docyard-toc__link.is-active {
   color: var(--primary);
   font-weight: var(--font-medium);
 }
 
-/* Level-specific styling */
 .docyard-toc__item--level-2 > .docyard-toc__link {
   font-weight: var(--font-normal);
 }
@@ -205,25 +190,11 @@
   color: var(--muted-foreground);
 }
 
-/* TOC Scrollbar */
-.docyard-toc__scroll::-webkit-scrollbar {
-  width: 6px;
+.docyard-toc__scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
-.docyard-toc__scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.docyard-toc__scroll::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-.docyard-toc__scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
-}
-
-/* Tablet & Mobile Layout - TOC in secondary header */
 @media (max-width: 1280px) {
   .docyard-toc {
     display: block;
@@ -267,7 +238,6 @@
   }
 }
 
-/* Tablet-specific: floating dropdown on right */
 @media (max-width: 1280px) and (min-width: 1025px) {
   .docyard-toc__nav {
     top: calc(var(--header-height) + 3rem + var(--spacing-2));
@@ -277,7 +247,6 @@
   }
 }
 
-/* Mobile Layout (< 1024px) */
 @media (max-width: 1024px) {
   .docyard-toc__nav {
     top: calc(var(--header-height) + 3rem - 2px);
@@ -297,7 +266,6 @@
   }
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .docyard-toc__link,
   .docyard-toc__indicator {

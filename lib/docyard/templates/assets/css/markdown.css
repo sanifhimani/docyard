@@ -1,11 +1,7 @@
-/* Markdown/Prose Styles - shadcn/ui style */
-
-/* Content area for markdown-rendered content */
 .content {
   color: oklch(from var(--foreground) l c h / 85%);
 }
 
-/* Keep headings at full contrast */
 .content h1,
 .content h2,
 .content h3,
@@ -15,7 +11,6 @@
   color: var(--foreground);
 }
 
-/* Inline code */
 .content code:not(.highlight code) {
   padding: 0.125rem 0.5rem;
   background-color: oklch(from var(--muted) l c h / 80%);
@@ -26,7 +21,6 @@
   font-variant-ligatures: none;
 }
 
-/* Lists */
 .content ul,
 .content ol {
   margin: var(--spacing-5) 0;
@@ -59,7 +53,6 @@
   margin: var(--spacing-2) 0;
 }
 
-/* Task lists (GitHub Flavored Markdown) */
 .content ul.task-list {
   list-style: none;
   padding-left: 0;
@@ -92,7 +85,6 @@
   background-repeat: no-repeat;
 }
 
-/* Blockquotes */
 .content blockquote {
   margin: var(--spacing-6) 0;
   padding-left: var(--spacing-6);
@@ -104,14 +96,12 @@
   margin: var(--spacing-2) 0;
 }
 
-/* Horizontal rule */
 .content hr {
   margin: var(--spacing-8) 0;
   border: none;
   border-top: 1px solid var(--hr-color);
 }
 
-/* Tables - matches shadcn table */
 .content .table-wrapper {
   position: relative;
   width: 100%;
@@ -158,7 +148,6 @@
   background-color: oklch(from var(--muted) l c h / 30%);
 }
 
-/* Images */
 .content img {
   max-width: 100%;
   height: auto;
@@ -167,7 +156,6 @@
   border: 1px solid var(--border);
 }
 
-/* Links in content */
 .content a:not(.heading-anchor):not(.pager-link) {
   color: var(--foreground);
   font-weight: var(--font-semibold);
@@ -180,7 +168,6 @@
   border-bottom: 2px solid var(--primary);
 }
 
-/* Heading anchors */
 .content h2[id],
 .content h3[id],
 .content h4[id],
@@ -189,7 +176,6 @@
   scroll-margin-top: var(--spacing-8);
 }
 
-/* Improve spacing between prose elements */
 .content h2+h3,
 .content h3+h4,
 .content h4+h5 {
@@ -204,7 +190,6 @@
   margin-bottom: 0;
 }
 
-/* Definition lists */
 .content dl {
   margin: var(--spacing-4) 0;
 }
@@ -219,7 +204,6 @@
   margin-top: var(--spacing-2);
 }
 
-/* Keyboard - matches shadcn kbd */
 .content kbd {
   display: inline-flex;
   align-items: center;
@@ -234,7 +218,6 @@
   border-radius: var(--radius-md);
 }
 
-/* Mark/Highlight */
 .content mark {
   background-color: var(--warning-background);
   color: var(--foreground);
@@ -242,7 +225,6 @@
   border-radius: var(--radius-sm);
 }
 
-/* Abbreviations */
 .content abbr {
   text-decoration: underline dotted;
   cursor: help;

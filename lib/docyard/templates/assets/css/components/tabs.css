@@ -1,15 +1,11 @@
-/* Tabs Component - Seamless underline style */
-
 .docyard-tabs {
   margin: var(--spacing-6) 0;
 }
 
-/* Tab List Wrapper - contains the line */
 .docyard-tabs__list-wrapper {
   position: relative;
 }
 
-/* The separator line */
 .docyard-tabs__list-wrapper::after {
   content: '';
   position: absolute;
@@ -20,7 +16,6 @@
   background: var(--border);
 }
 
-/* Tab List Container */
 .docyard-tabs__list {
   display: flex;
   align-items: center;
@@ -38,7 +33,6 @@
   display: none;
 }
 
-/* Individual Tab Button */
 .docyard-tabs__tab {
   display: inline-flex;
   align-items: center;
@@ -69,13 +63,11 @@
   color: var(--foreground);
 }
 
-/* Focus state */
 .docyard-tabs__tab:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
-/* Tab Icon Container */
 .docyard-tabs__icon {
   display: inline-flex;
   align-items: center;
@@ -93,7 +85,6 @@
   height: 100%;
 }
 
-/* Active Indicator - thick segment on the line */
 .docyard-tabs__indicator {
   position: absolute;
   bottom: 0;
@@ -103,14 +94,13 @@
   border-radius: 1px;
   pointer-events: none;
   z-index: 1;
-  /* Emil-style spring animation */
+  
   transition:
     transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
     width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   will-change: transform, width;
 }
 
-/* Scroll Indicators */
 .docyard-tabs__scroll-indicator {
   position: absolute;
   top: 0;
@@ -136,7 +126,6 @@
   opacity: 1;
 }
 
-/* Tab Panel */
 .docyard-tabs__panel {
   padding: var(--spacing-6) 0;
   display: none;
@@ -160,7 +149,6 @@
   }
 }
 
-/* Directional content animations */
 .docyard-tabs__panel[data-direction="left"][aria-hidden="false"] {
   animation: tabContentSlideFromLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -191,7 +179,6 @@
   }
 }
 
-/* Panel content spacing */
 .docyard-tabs__panel > *:first-child {
   margin-top: 0;
 }
@@ -208,7 +195,6 @@
   margin-bottom: 0;
 }
 
-/* Code blocks inside tabs */
 .docyard-tabs__panel .docyard-code-block {
   margin: var(--spacing-4) 0;
 }
@@ -221,7 +207,6 @@
   margin-bottom: 0;
 }
 
-/* Inline code inside tabs */
 .docyard-tabs__panel :not(pre) > code {
   background-color: oklch(from var(--input) l c h / 30%);
   padding: 0.125rem 0.375rem;
@@ -229,7 +214,6 @@
   font-size: 0.9em;
 }
 
-/* Mobile responsive */
 @media (max-width: 640px) {
   .docyard-tabs {
     margin: var(--spacing-4) 0;
@@ -256,7 +240,6 @@
   }
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .docyard-tabs__tab,
   .docyard-tabs__indicator,
@@ -266,7 +249,6 @@
   }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .docyard-tabs__list-wrapper::after {
     height: 2px;

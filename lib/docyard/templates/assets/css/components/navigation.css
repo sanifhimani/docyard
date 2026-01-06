@@ -1,13 +1,9 @@
-/* Navigation Components - shadcn/ui sidebar */
-
-/* Sidebar navigation */
 .sidebar nav {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* Section/Group - matches SidebarGroup */
 .nav-section {
   padding: var(--spacing-2);
   display: flex;
@@ -18,7 +14,6 @@
   overflow: hidden;
 }
 
-/* Section headers - matches SidebarGroupLabel */
 .nav-section-title {
   display: flex;
   align-items: center;
@@ -36,7 +31,6 @@
   user-select: none;
 }
 
-/* Menu list - matches SidebarMenu */
 .sidebar nav ul {
   list-style: none;
   padding: 0;
@@ -48,14 +42,12 @@
   gap: var(--spacing-1);
 }
 
-/* Menu item - matches SidebarMenuItem */
 .sidebar nav li {
   margin: 0;
   position: relative;
   min-width: 0;
 }
 
-/* Nav links - matches SidebarMenuButton */
 .sidebar nav a {
   display: flex;
   align-items: center;
@@ -86,7 +78,6 @@
   box-shadow: 0 0 0 2px var(--sidebar-ring);
 }
 
-/* Active state - subtle primary background with primary text */
 .sidebar nav a.active {
   background-color: oklch(from var(--sidebar-primary) l c h / 10%);
   color: var(--sidebar-primary);
@@ -98,7 +89,6 @@
   color: var(--sidebar-primary);
 }
 
-/* Nested navigation - matches SidebarMenuSub */
 .sidebar nav ul ul {
   margin-left: 0.875rem;
   margin-right: 0.875rem;
@@ -119,7 +109,6 @@
   min-width: 0;
 }
 
-/* Nested links - matches SidebarMenuSubButton */
 .sidebar nav ul ul a {
   display: flex;
   align-items: center;
@@ -146,7 +135,6 @@
   text-shadow: -0.2px 0 0 currentColor, 0.2px 0 0 currentColor;
 }
 
-/* Collapsible/Accordion items - matches nav group toggle */
 .nav-group-toggle {
   display: flex;
   align-items: center;
@@ -212,7 +200,6 @@
   max-height: 0;
 }
 
-/* Mobile menu toggle button - matches shadcn ghost button */
 .mobile-menu-toggle {
   display: none;
   background: transparent;
@@ -244,7 +231,6 @@
   }
 }
 
-/* Icon styling - matches shadcn [&_svg]:size-4 */
 .nav-item-icon {
   display: inline-flex;
   align-items: center;
@@ -277,7 +263,6 @@
   height: 0.75rem;
 }
 
-/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
 
   .sidebar nav a,
