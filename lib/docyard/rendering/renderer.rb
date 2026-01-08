@@ -12,16 +12,16 @@ module Docyard
     LAYOUTS_PATH = File.join(__dir__, "../templates", "layouts")
     ERRORS_PATH = File.join(__dir__, "../templates", "errors")
     PARTIALS_PATH = File.join(__dir__, "../templates", "partials")
+    DEFAULT_LAYOUT = "default"
 
-    attr_reader :layout_path, :base_url, :config
+    attr_reader :base_url, :config
 
-    def initialize(layout: "default", base_url: "/", config: nil)
-      @layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
+    def initialize(base_url: "/", config: nil)
       @base_url = normalize_base_url(base_url)
       @config = config
     end
 
-    def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {})
+    def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {}, template_options: {})
       markdown_content = File.read(file_path)
       markdown = Markdown.new(markdown_content, config: config)
 
@@ -36,11 +36,14 @@ module Docyard
           prev_next_html: prev_next_html,
           toc: toc
         },
-        branding: branding
+        branding: branding,
+        template_options: template_options
       )
     end
 
-    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, navigation: {}, branding: {})
+    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, navigation: {}, branding: {}, template_options: {})
+      layout = template_options[:template] || DEFAULT_LAYOUT
+      layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
       template = File.read(layout_path)
 
       sidebar_html = navigation[:sidebar_html] || ""
@@ -49,6 +52,7 @@ module Docyard
 
       assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
       assign_branding_variables(branding)
+      assign_template_variables(template_options)
 
       ERB.new(template).result(binding)
     end
@@ -98,6 +102,7 @@ module Docyard
       assign_site_branding(branding)
       assign_display_options(branding)
       assign_search_options(branding)
+      assign_credits_and_social(branding)
     end
 
     def assign_site_branding(branding)
@@ -116,6 +121,26 @@ module Docyard
     def assign_search_options(branding)
       @search_enabled = branding[:search_enabled].nil? || branding[:search_enabled]
       @search_placeholder = branding[:search_placeholder] || "Search documentation..."
+    end
+
+    def assign_credits_and_social(branding)
+      @credits = branding[:credits] != false
+      @social = branding[:social] || []
+    end
+
+    def assign_template_variables(template_options)
+      @hero = template_options[:hero]
+      @features = template_options[:features]
+      @features_header = template_options[:features_header]
+      @show_sidebar = template_options.fetch(:show_sidebar, true)
+      @show_toc = template_options.fetch(:show_toc, true)
+      assign_footer_from_landing(template_options[:footer])
+    end
+
+    def assign_footer_from_landing(footer)
+      return unless footer
+
+      @footer_links = footer[:links]
     end
 
     def strip_md_from_links(html)

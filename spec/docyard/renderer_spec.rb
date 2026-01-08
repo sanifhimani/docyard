@@ -42,7 +42,7 @@ RSpec.describe Docyard::Renderer do
       html = renderer.render(content: "<p>Content</p>")
 
       expect(html).to include("site-logo")
-      expect(html).to include('src="/assets/logo.svg"')
+      expect(html).to include('src="/_docyard/logo.svg"')
     end
 
     it "renders without logo when display_logo is false", :aggregate_failures do
