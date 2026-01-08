@@ -66,7 +66,8 @@ module Docyard
       def hidden_or_ignored?(entry, relative_path)
         entry.start_with?(".") ||
           entry.start_with?("_") ||
-          (entry == "index.md" && relative_path.empty?)
+          (entry == "index.md" && relative_path.empty?) ||
+          (entry == "public" && relative_path.empty?)
       end
 
       def sort_key(entry)

@@ -112,9 +112,12 @@ module Docyard
         render_partial(
           :nav_group,
           title: item[:title],
+          path: item[:path],
+          active: item[:active],
           children_html: children_html,
           icon: item[:icon],
-          collapsed: item[:collapsed]
+          collapsed: item[:collapsed],
+          has_index: item[:has_index]
         )
       end
     end
