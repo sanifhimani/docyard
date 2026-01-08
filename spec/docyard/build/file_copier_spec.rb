@@ -20,23 +20,23 @@ RSpec.describe Docyard::Build::FileCopier do
   end
 
   describe "#copy" do
-    context "with user assets" do
+    context "with user public files" do
       before do
         Dir.chdir(temp_dir) do
-          assets_dir = File.join(docs_dir, "assets")
-          FileUtils.mkdir_p(File.join(assets_dir, "images"))
-          File.write(File.join(assets_dir, "style.css"), "body { color: red; }")
-          File.write(File.join(assets_dir, "images", "logo.png"), "fake png data")
+          public_dir = File.join(docs_dir, "public")
+          FileUtils.mkdir_p(File.join(public_dir, "images"))
+          File.write(File.join(public_dir, "style.css"), "body { color: red; }")
+          File.write(File.join(public_dir, "images", "logo.png"), "fake png data")
         end
       end
 
-      it "copies user assets to output directory", :aggregate_failures do
+      it "copies user public files to output directory root", :aggregate_failures do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: false)
           copier.copy
 
-          expect(File.exist?(File.join(output_dir, "assets", "style.css"))).to be true
-          expect(File.exist?(File.join(output_dir, "assets", "images", "logo.png"))).to be true
+          expect(File.exist?(File.join(output_dir, "style.css"))).to be true
+          expect(File.exist?(File.join(output_dir, "images", "logo.png"))).to be true
         end
       end
 
@@ -45,7 +45,7 @@ RSpec.describe Docyard::Build::FileCopier do
           copier = described_class.new(config, verbose: false)
           copier.copy
 
-          expect(Dir.exist?(File.join(output_dir, "assets", "images"))).to be true
+          expect(Dir.exist?(File.join(output_dir, "images"))).to be true
         end
       end
 
@@ -59,8 +59,8 @@ RSpec.describe Docyard::Build::FileCopier do
       end
     end
 
-    context "with no user assets" do
-      it "returns 0 when no assets directory exists" do
+    context "with no user public files" do
+      it "returns 0 when no public directory exists" do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: false)
           count = copier.copy
@@ -71,14 +71,14 @@ RSpec.describe Docyard::Build::FileCopier do
     end
 
     context "with default branding assets" do
-      it "copies default logo and favicon", :aggregate_failures do
+      it "copies default logo and favicon to _docyard folder", :aggregate_failures do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: false)
           copier.copy
 
-          expect(File.exist?(File.join(output_dir, "assets", "logo.svg"))).to be true
-          expect(File.exist?(File.join(output_dir, "assets", "logo-dark.svg"))).to be true
-          expect(File.exist?(File.join(output_dir, "assets", "favicon.svg"))).to be true
+          expect(File.exist?(File.join(output_dir, "_docyard", "logo.svg"))).to be true
+          expect(File.exist?(File.join(output_dir, "_docyard", "logo-dark.svg"))).to be true
+          expect(File.exist?(File.join(output_dir, "_docyard", "favicon.svg"))).to be true
         end
       end
     end
@@ -96,7 +96,7 @@ RSpec.describe Docyard::Build::FileCopier do
           copier = described_class.new(config, verbose: false)
           copier.copy
 
-          expect(File.exist?(File.join(output_dir, "assets", "my-logo.png"))).to be true
+          expect(File.exist?(File.join(output_dir, "my-logo.png"))).to be true
         end
       end
     end
@@ -104,9 +104,9 @@ RSpec.describe Docyard::Build::FileCopier do
     context "with verbose mode" do
       before do
         Dir.chdir(temp_dir) do
-          assets_dir = File.join(docs_dir, "assets")
-          FileUtils.mkdir_p(assets_dir)
-          File.write(File.join(assets_dir, "test.css"), "test")
+          public_dir = File.join(docs_dir, "public")
+          FileUtils.mkdir_p(public_dir)
+          File.write(File.join(public_dir, "test.css"), "test")
         end
       end
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "tty-progressbar"
+require_relative "../rendering/template_resolver"
 
 module Docyard
   module Build
@@ -14,6 +15,8 @@ module Docyard
       end
 
       def generate
+        copy_custom_landing_page if custom_landing_page?
+
         markdown_files = collect_markdown_files
         puts "\n[✓] Found #{markdown_files.size} markdown files"
 
@@ -33,24 +36,48 @@ module Docyard
 
       private
 
+      def custom_landing_page?
+        File.file?("docs/index.html")
+      end
+
+      def copy_custom_landing_page
+        output_path = File.join(config.build.output_dir, "index.html")
+        FileUtils.mkdir_p(File.dirname(output_path))
+        FileUtils.cp("docs/index.html", output_path)
+        log "[✓] Copied custom landing page (index.html)"
+      end
+
       def collect_markdown_files
-        Dir.glob(File.join("docs", "**", "*.md"))
+        files = Dir.glob(File.join("docs", "**", "*.md"))
+        # Skip index.md if custom landing page exists
+        files.reject! { |f| f == "docs/index.md" } if custom_landing_page?
+        files
       end
 
       def generate_page(markdown_file_path)
         output_path = determine_output_path(markdown_file_path)
         current_path = determine_current_path(markdown_file_path)
 
-        sidebar_html = build_sidebar(current_path)
-        html_content = renderer.render_file(
+        html_content = render_markdown_file(markdown_file_path, current_path)
+        write_output(output_path, html_content)
+      end
+
+      def render_markdown_file(markdown_file_path, current_path)
+        markdown = Markdown.new(File.read(markdown_file_path))
+        template_resolver = TemplateResolver.new(markdown.frontmatter, config.data)
+        sidebar_html = template_resolver.show_sidebar? ? build_sidebar(current_path) : ""
+
+        renderer.render_file(
           markdown_file_path,
           sidebar_html: sidebar_html,
-          branding: branding_options
+          branding: branding_options,
+          template_options: template_resolver.to_options
         )
+      end
 
+      def write_output(output_path, html_content)
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, html_content)
-
         log "Generated: #{output_path}" if verbose
       end
 
