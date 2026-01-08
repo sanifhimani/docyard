@@ -1,64 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="<%= @site_description %>">
-  <title><%= @page_title %> | <%= @site_title %></title>
-  <link rel="icon" href="<%= asset_path(@favicon) %>" type="image/svg+xml">
-
-  <!-- Preload Inter font to prevent FOUT -->
-  <link rel="preload" href="/assets/fonts/Inter-Variable.ttf" as="font" type="font/ttf" crossorigin>
-
-  <!-- Prevent flash of wrong theme -->
-  <script>
-    (function() {
-      const theme = localStorage.getItem('theme') ||
-                   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-    })();
-  </script>
-
-  <link rel="stylesheet" href="/assets/css/main.css">
+  <%= render_partial('_head') %>
 </head>
 <body>
-  <!-- Skip to main content for accessibility -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Primary Header -->
-  <header class="header">
-    <div class="header-content">
-      <a href="<%= link_path('/') %>" class="header-logo">
-        <% if @display_logo %>
-        <div class="site-logo-container">
-          <% if @logo %>
-          <img src="<%= asset_path(@logo) %>" alt="<%= @site_title %>" class="site-logo site-logo-light">
-          <% end %>
-          <% if @logo_dark %>
-          <img src="<%= asset_path(@logo_dark) %>" alt="<%= @site_title %>" class="site-logo site-logo-dark">
-          <% else %>
-          <img src="<%= asset_path(@logo) %>" alt="<%= @site_title %>" class="site-logo site-logo-dark">
-          <% end %>
-        </div>
-        <% end %>
-        <% if @display_title %>
-        <span class="header-title"><%= @site_title %></span>
-        <% end %>
-      </a>
+  <%= render_partial('_header') %>
 
-      <% if @search_enabled %>
-      <div class="header-center">
-        <%= render_partial('_search_trigger') %>
-      </div>
-      <% end %>
-
-      <div class="header-actions">
-        <%= render_partial('_theme_toggle') %>
-      </div>
-    </div>
-  </header>
-
-  <!-- Secondary Header (Mobile Navigation) -->
   <div class="secondary-header">
     <button class="secondary-header-menu" aria-label="Toggle navigation menu" aria-expanded="false">
       <%= icon(:sidebar) %>
@@ -68,33 +17,22 @@
     <%= render_partial('_table_of_contents_toggle') %>
   </div>
 
-  <!-- Mobile overlay -->
   <div class="mobile-overlay" aria-hidden="true"></div>
 
   <div class="layout">
-    <!-- Sidebar navigation -->
     <%= @sidebar_html %>
 
-    <!-- Main content area -->
     <div class="layout-main">
       <main id="main-content" class="content" data-pagefind-body>
         <%= @content %>
 
-        <!-- Previous/Next Navigation -->
         <%= @prev_next_html %>
       </main>
     </div>
 
-    <!-- Table of contents -->
     <%= render_partial('_table_of_contents') %>
   </div>
 
-  <% if @search_enabled %>
-  <%= render_partial('_search_modal') %>
-  <% end %>
-
-  <script src="/assets/js/theme.js"></script>
-  <script src="/assets/js/components.js"></script>
-  <script src="/assets/js/reload.js"></script>
+  <%= render_partial('_scripts') %>
 </body>
 </html>

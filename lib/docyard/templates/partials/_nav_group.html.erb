@@ -1,13 +1,27 @@
 <% collapsed = @collapsed || false %>
-<button class="nav-group-toggle" aria-expanded="<%= collapsed ? 'false' : 'true' %>" type="button">
-  <span class="nav-group-title">
-    <% if @icon %>
-      <span class="nav-item-icon"><%= icon(@icon) %></span>
-    <% end %>
-    <span class="nav-item-text"><%= @title %></span>
-  </span>
-  <span class="nav-group-icon"><%= icon(:caret_right) %></span>
-</button>
-<div class="nav-group-children<%= ' collapsed' if collapsed %>">
-  <%= @children_html %>
+<div class="nav-group">
+  <% if @has_index && @path %>
+    <a href="<%= link_path(@path) %>" class="nav-group-header nav-group-header--link<%= ' active' if @active %>" data-nav-toggle aria-expanded="<%= collapsed ? 'false' : 'true' %>">
+      <span class="nav-group-title">
+        <% if @icon %>
+          <span class="nav-item-icon"><%= icon(@icon) %></span>
+        <% end %>
+        <span class="nav-item-text"><%= @title %></span>
+      </span>
+      <span class="nav-group-icon"><%= icon(:caret_right) %></span>
+    </a>
+  <% else %>
+    <button class="nav-group-header nav-group-header--button" type="button" data-nav-toggle aria-expanded="<%= collapsed ? 'false' : 'true' %>" aria-label="Toggle <%= @title %>">
+      <span class="nav-group-title">
+        <% if @icon %>
+          <span class="nav-item-icon"><%= icon(@icon) %></span>
+        <% end %>
+        <span class="nav-item-text"><%= @title %></span>
+      </span>
+      <span class="nav-group-icon"><%= icon(:caret_right) %></span>
+    </button>
+  <% end %>
+  <div class="nav-group-children<%= ' collapsed' if collapsed %>">
+    <%= @children_html %>
+  </div>
 </div>

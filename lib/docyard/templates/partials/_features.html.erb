@@ -1,0 +1,15 @@
+<section class="features">
+  <div class="features-grid">
+    <% @features.each do |feature| %>
+    <div class="feature-card">
+      <% if feature[:icon] %>
+      <span class="feature-icon"><%= icon(feature[:icon]) %></span>
+      <% end %>
+      <h3 class="feature-title"><%= feature[:title] %></h3>
+      <% if feature[:description] %>
+      <p class="feature-description"><%= feature[:description] %></p>
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+</section>

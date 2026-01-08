@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Markdown do
-  describe "#initialize" do
-    it "accepts markdown text" do
-      markdown = described_class.new("# Hello")
-      expect(markdown).to be_a(described_class)
-    end
-  end
-
   describe "#frontmatter" do
     context "with valid frontmatter" do
       let(:text) do

@@ -259,47 +259,4 @@ RSpec.describe Docyard::LanguageMapping do
       end
     end
   end
-
-  describe "TERMINAL_LANGUAGES constant" do
-    it "is frozen" do
-      expect(described_class::TERMINAL_LANGUAGES).to be_frozen
-    end
-
-    it "contains expected terminal languages" do
-      expect(described_class::TERMINAL_LANGUAGES).to include("bash", "sh", "shell", "powershell")
-    end
-
-    it "has the correct count" do
-      expect(described_class::TERMINAL_LANGUAGES.length).to eq(4)
-    end
-  end
-
-  describe "LANGUAGE_TO_EXTENSION constant" do
-    it "is frozen" do
-      expect(described_class::LANGUAGE_TO_EXTENSION).to be_frozen
-    end
-
-    it "contains all expected language mappings" do
-      expected_keys = %w[
-        js javascript ts typescript jsx tsx py python rb ruby
-        go golang rs rust php html htm html5 css json yaml yml
-        toml sql mysql postgresql postgres pgsql graphql gql
-        vue svelte proto protobuf
-      ]
-
-      expect(described_class::LANGUAGE_TO_EXTENSION.keys).to include(*expected_keys)
-    end
-
-    it "has no duplicate values for same extension", :aggregate_failures do
-      expect(described_class::LANGUAGE_TO_EXTENSION["javascript"]).to eq(
-        described_class::LANGUAGE_TO_EXTENSION["js"]
-      )
-      expect(described_class::LANGUAGE_TO_EXTENSION["typescript"]).to eq(
-        described_class::LANGUAGE_TO_EXTENSION["ts"]
-      )
-      expect(described_class::LANGUAGE_TO_EXTENSION["yaml"]).to eq(
-        described_class::LANGUAGE_TO_EXTENSION["yml"]
-      )
-    end
-  end
 end

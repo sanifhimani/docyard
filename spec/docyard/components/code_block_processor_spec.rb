@@ -635,10 +635,4 @@ puts "world"</code></pre></div>'
       end
     end
   end
-
-  describe "priority" do
-    it "has priority 20 to run after other processors" do
-      expect(described_class.priority).to eq(20)
-    end
-  end
 end

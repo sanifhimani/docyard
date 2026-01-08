@@ -97,7 +97,7 @@ RSpec.describe Docyard::RackApplication do
 
     context "with asset request" do
       it "serves CSS assets with correct content type", :aggregate_failures do
-        env = { "PATH_INFO" => "/assets/css/layout.css", "QUERY_STRING" => "" }
+        env = { "PATH_INFO" => "/_docyard/css/layout.css", "QUERY_STRING" => "" }
 
         status, headers, body = app.call(env)
 
@@ -107,7 +107,7 @@ RSpec.describe Docyard::RackApplication do
       end
 
       it "returns 404 for non-existent assets" do
-        env = { "PATH_INFO" => "/assets/nonexistent.css", "QUERY_STRING" => "" }
+        env = { "PATH_INFO" => "/_docyard/nonexistent.css", "QUERY_STRING" => "" }
 
         status, _headers, _body = app.call(env)
 
@@ -166,6 +166,50 @@ RSpec.describe Docyard::RackApplication do
         expect(status).to eq(500)
         expect(headers["Content-Type"]).to eq("text/html; charset=utf-8")
         expect(body.first).to include("500 - Internal Server Error")
+      end
+    end
+
+    context "with custom HTML landing page" do
+      it "serves index.html directly when it exists at root", :aggregate_failures do
+        Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "index.html"), "<html><body>Custom Landing</body></html>")
+
+          temp_app = described_class.new(docs_path: temp_dir, file_watcher: file_watcher)
+          env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+          status, headers, body = temp_app.call(env)
+
+          expect(status).to eq(200)
+          expect(headers["Content-Type"]).to eq("text/html; charset=utf-8")
+          expect(body.first).to eq("<html><body>Custom Landing</body></html>")
+        end
+      end
+
+      it "falls back to index.md when index.html does not exist", :aggregate_failures do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        status, headers, body = app.call(env)
+
+        expect(status).to eq(200)
+        expect(headers["Content-Type"]).to eq("text/html; charset=utf-8")
+        expect(body.first).to include("Welcome to Docyard")
+      end
+
+      it "does not serve HTML files for non-root paths", :aggregate_failures do
+        Dir.mktmpdir do |temp_dir|
+          FileUtils.mkdir_p(File.join(temp_dir, "guide"))
+          File.write(File.join(temp_dir, "guide", "index.html"), "<html>Guide HTML</html>")
+          File.write(File.join(temp_dir, "guide", "index.md"), "---\n---\n# Guide")
+
+          temp_app = described_class.new(docs_path: temp_dir, file_watcher: file_watcher)
+          env = { "PATH_INFO" => "/guide", "QUERY_STRING" => "" }
+
+          status, _headers, body = temp_app.call(env)
+
+          expect(status).to eq(200)
+          expect(body.first).to include("<h1")
+          expect(body.first).not_to include("Guide HTML")
+        end
       end
     end
   end

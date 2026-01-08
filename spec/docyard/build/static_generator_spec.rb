@@ -94,7 +94,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
           index_html = File.read(File.join(output_dir, "index.html"))
 
           expect(index_html).to include('href="/my-docs/')
-          expect(index_html).to include('src="/my-docs/assets/')
+          expect(index_html).to include('src="/my-docs/_docyard/')
         end
       end
     end
@@ -113,6 +113,45 @@ RSpec.describe Docyard::Build::StaticGenerator do
           generator = described_class.new(config, verbose: true)
 
           expect { generator.generate }.to output(/Generated:/).to_stdout
+        end
+      end
+    end
+
+    context "with custom HTML landing page" do
+      before do
+        File.write(File.join(docs_dir, "index.html"), "<html><body>Custom Landing</body></html>")
+        File.write(File.join(docs_dir, "index.md"), "# Home")
+        File.write(File.join(docs_dir, "guide.md"), "# Guide")
+      end
+
+      it "copies index.html directly to output", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          output_html = File.read(File.join(output_dir, "index.html"))
+          expect(output_html).to eq("<html><body>Custom Landing</body></html>")
+        end
+      end
+
+      it "skips index.md when index.html exists", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          count = generator.generate
+
+          expect(count).to eq(1)
+          expect(File.exist?(File.join(output_dir, "guide", "index.html"))).to be true
+        end
+      end
+
+      it "still processes other markdown files", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          guide_html = File.read(File.join(output_dir, "guide", "index.html"))
+          expect(guide_html).to include("<h1")
+          expect(guide_html).to include("Guide")
         end
       end
     end

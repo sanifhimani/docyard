@@ -2,8 +2,7 @@
 
 module Docyard
   class AssetHandler
-    ASSETS_PATH = File.join(__dir__, "../templates", "assets")
-    USER_ASSETS_PATH = "docs/assets"
+    TEMPLATES_ASSETS_PATH = File.join(__dir__, "../templates", "assets")
 
     CONTENT_TYPES = {
       ".css" => "text/css; charset=utf-8",
@@ -11,42 +10,47 @@ module Docyard
       ".png" => "image/png",
       ".jpg" => "image/jpeg",
       ".jpeg" => "image/jpeg",
+      ".gif" => "image/gif",
+      ".webp" => "image/webp",
       ".svg" => "image/svg+xml",
       ".woff" => "font/woff",
       ".woff2" => "font/woff2",
       ".ttf" => "font/ttf",
-      ".ico" => "image/x-icon"
+      ".ico" => "image/x-icon",
+      ".pdf" => "application/pdf",
+      ".mp4" => "video/mp4",
+      ".webm" => "video/webm"
     }.freeze
 
-    def serve(request_path)
-      asset_path = extract_asset_path(request_path)
+    def serve_docyard_assets(request_path)
+      asset_path = request_path.delete_prefix("/_docyard/")
 
       return forbidden_response if directory_traversal?(asset_path)
 
       return serve_components_css if asset_path == "css/components.css"
       return serve_components_js if asset_path == "js/components.js"
 
-      file_path = build_file_path(asset_path)
+      file_path = File.join(TEMPLATES_ASSETS_PATH, asset_path)
       return not_found_response unless File.file?(file_path)
+
+      serve_file(file_path)
+    end
+
+    def serve_public_file(request_path)
+      asset_path = request_path.delete_prefix("/")
+
+      return nil if directory_traversal?(asset_path)
+
+      file_path = File.join(Constants::PUBLIC_DIR, asset_path)
+      return nil unless File.file?(file_path)
 
       serve_file(file_path)
     end
 
     private
 
-    def extract_asset_path(request_path)
-      request_path.delete_prefix("/assets/")
-    end
-
     def directory_traversal?(path)
       path.include?("..")
-    end
-
-    def build_file_path(asset_path)
-      user_path = File.join(USER_ASSETS_PATH, asset_path)
-      return user_path if File.file?(user_path)
-
-      File.join(ASSETS_PATH, asset_path)
     end
 
     def serve_file(file_path)
@@ -62,7 +66,7 @@ module Docyard
     end
 
     def concatenate_component_css
-      components_dir = File.join(ASSETS_PATH, "css", "components")
+      components_dir = File.join(TEMPLATES_ASSETS_PATH, "css", "components")
       return "" unless Dir.exist?(components_dir)
 
       css_files = Dir.glob(File.join(components_dir, "*.css"))
@@ -75,7 +79,7 @@ module Docyard
     end
 
     def concatenate_component_js
-      components_dir = File.join(ASSETS_PATH, "js", "components")
+      components_dir = File.join(TEMPLATES_ASSETS_PATH, "js", "components")
       return "" unless Dir.exist?(components_dir)
 
       js_files = Dir.glob(File.join(components_dir, "*.js"))

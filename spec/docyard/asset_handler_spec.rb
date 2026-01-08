@@ -3,10 +3,10 @@
 RSpec.describe Docyard::AssetHandler do
   let(:handler) { described_class.new }
 
-  describe "#serve" do
+  describe "#serve_docyard_assets" do
     context "when serving valid CSS file" do
       it "returns 200 with correct content type", :aggregate_failures do
-        status, headers, body = handler.serve("/assets/css/main.css")
+        status, headers, body = handler.serve_docyard_assets("/_docyard/css/main.css")
 
         expect(status).to eq(200)
         expect(headers["Content-Type"]).to eq("text/css; charset=utf-8")
@@ -16,7 +16,7 @@ RSpec.describe Docyard::AssetHandler do
 
     context "when serving valid JavaScript file" do
       it "returns 200 with correct content type", :aggregate_failures do
-        status, headers, _body = handler.serve("/assets/js/theme.js")
+        status, headers, _body = handler.serve_docyard_assets("/_docyard/js/theme.js")
 
         expect(status).to eq(200)
         expect(headers["Content-Type"]).to eq("application/javascript; charset=utf-8")
@@ -25,7 +25,7 @@ RSpec.describe Docyard::AssetHandler do
 
     context "when file does not exist" do
       it "returns 404", :aggregate_failures do
-        status, _headers, body = handler.serve("/assets/nonexistent.css")
+        status, _headers, body = handler.serve_docyard_assets("/_docyard/nonexistent.css")
 
         expect(status).to eq(404)
         expect(body).to eq(["404 Not Found"])
@@ -34,7 +34,7 @@ RSpec.describe Docyard::AssetHandler do
 
     context "when path contains directory traversal" do
       it "returns 403 forbidden", :aggregate_failures do
-        status, _headers, body = handler.serve("/assets/../../../etc/passwd")
+        status, _headers, body = handler.serve_docyard_assets("/_docyard/../../../etc/passwd")
 
         expect(status).to eq(403)
         expect(body).to eq(["403 Forbidden"])
@@ -43,7 +43,7 @@ RSpec.describe Docyard::AssetHandler do
 
     context "when path contains .." do
       it "returns 403 forbidden" do
-        status, = handler.serve("/assets/css/../../secret.txt")
+        status, = handler.serve_docyard_assets("/_docyard/css/../../secret.txt")
 
         expect(status).to eq(403)
       end
@@ -51,7 +51,7 @@ RSpec.describe Docyard::AssetHandler do
 
     context "when serving components.css (concatenated)" do
       it "returns 200 with concatenated CSS from all component files", :aggregate_failures do
-        status, headers, body = handler.serve("/assets/css/components.css")
+        status, headers, body = handler.serve_docyard_assets("/_docyard/css/components.css")
         content = body.first
 
         expect(status).to eq(200)
@@ -64,7 +64,7 @@ RSpec.describe Docyard::AssetHandler do
       end
 
       it "concatenates files in alphabetical order", :aggregate_failures do
-        _status, _headers, body = handler.serve("/assets/css/components.css")
+        _status, _headers, body = handler.serve_docyard_assets("/_docyard/css/components.css")
         content = body.first
 
         callout_pos = content.index(".docyard-callout")
@@ -78,7 +78,7 @@ RSpec.describe Docyard::AssetHandler do
       end
 
       it "separates component files with blank lines" do
-        _status, _headers, body = handler.serve("/assets/css/components.css")
+        _status, _headers, body = handler.serve_docyard_assets("/_docyard/css/components.css")
         content = body.first
 
         expect(content).to match(/\}\n\n\./)
@@ -87,7 +87,7 @@ RSpec.describe Docyard::AssetHandler do
 
     context "when serving components.js (concatenated)" do
       it "returns 200 with concatenated JS from all component files", :aggregate_failures do
-        status, headers, body = handler.serve("/assets/js/components.js")
+        status, headers, body = handler.serve_docyard_assets("/_docyard/js/components.js")
         content = body.first
 
         expect(status).to eq(200)
@@ -99,7 +99,7 @@ RSpec.describe Docyard::AssetHandler do
       end
 
       it "concatenates files properly", :aggregate_failures do
-        _status, _headers, body = handler.serve("/assets/js/components.js")
+        _status, _headers, body = handler.serve_docyard_assets("/_docyard/js/components.js")
         content = body.first
 
         expect(content).to include("constructor(container)")
@@ -109,7 +109,7 @@ RSpec.describe Docyard::AssetHandler do
       end
 
       it "separates component files with blank lines", :aggregate_failures do
-        _status, _headers, body = handler.serve("/assets/js/components.js")
+        _status, _headers, body = handler.serve_docyard_assets("/_docyard/js/components.js")
         content = body.first
 
         expect(content).to be_a(String)
@@ -117,21 +117,23 @@ RSpec.describe Docyard::AssetHandler do
       end
 
       it "includes auto-initialization code", :aggregate_failures do
-        _status, _headers, body = handler.serve("/assets/js/components.js")
+        _status, _headers, body = handler.serve_docyard_assets("/_docyard/js/components.js")
         content = body.first
 
         expect(content).to include("DOMContentLoaded", "querySelectorAll", ".docyard-tabs")
       end
     end
+  end
 
-    context "when serving user assets from docs/assets" do
-      it "serves user asset when it exists in docs/assets", :aggregate_failures do
-        docs_assets_dir = File.join(Dir.pwd, "docs", "assets")
-        FileUtils.mkdir_p(docs_assets_dir)
-        user_logo = File.join(docs_assets_dir, "test-user-logo.svg")
+  describe "#serve_public_file" do
+    context "when serving user files from docs/public" do
+      it "serves user file when it exists in docs/public", :aggregate_failures do
+        public_dir = File.join(Dir.pwd, "docs", "public")
+        FileUtils.mkdir_p(public_dir)
+        user_logo = File.join(public_dir, "test-user-logo.svg")
         File.write(user_logo, "<svg>User Logo</svg>")
 
-        status, _headers, body = handler.serve("/assets/test-user-logo.svg")
+        status, _headers, body = handler.serve_public_file("/test-user-logo.svg")
 
         expect(status).to eq(200)
         expect(body.first).to eq("<svg>User Logo</svg>")
@@ -139,11 +141,16 @@ RSpec.describe Docyard::AssetHandler do
         FileUtils.rm_f(user_logo) if user_logo && File.exist?(user_logo)
       end
 
-      it "falls back to default assets when user asset not found", :aggregate_failures do
-        status, _headers, body = handler.serve("/assets/css/main.css")
+      it "returns nil when file not found" do
+        result = handler.serve_public_file("/nonexistent-file.svg")
 
-        expect(status).to eq(200)
-        expect(body.first).to include("@import")
+        expect(result).to be_nil
+      end
+
+      it "returns nil for directory traversal attempts" do
+        result = handler.serve_public_file("/../../../etc/passwd")
+
+        expect(result).to be_nil
       end
     end
   end

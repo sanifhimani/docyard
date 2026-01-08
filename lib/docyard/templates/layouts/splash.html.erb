@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%= render_partial('_head') %>
+</head>
+<body class="splash-page<%= ' has-sidebar' if @show_sidebar %>">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <%= render_partial('_header') %>
+
+  <% if @show_sidebar %>
+  <div class="secondary-header">
+    <button class="secondary-header-menu" aria-label="Toggle navigation menu" aria-expanded="false">
+      <%= icon(:sidebar) %>
+      <span>Menu</span>
+    </button>
+  </div>
+
+  <div class="mobile-overlay" aria-hidden="true"></div>
+
+  <div class="layout">
+    <%= @sidebar_html %>
+
+    <div class="layout-main">
+  <% end %>
+
+  <main id="main-content" class="splash-content">
+    <% if @hero %>
+    <%
+      hero_class = @hero[:image] ? 'hero hero--with-image' : 'hero hero--centered'
+      bg_style = @hero[:background] || 'grid'
+    %>
+    <section class="<%= hero_class %>">
+      <% if bg_style != 'none' %>
+      <div class="hero-bg hero-bg--<%= bg_style %>" aria-hidden="true">
+        <% if bg_style == 'glow' %>
+        <div class="hero-bg-orb hero-bg-orb--1"></div>
+        <div class="hero-bg-orb hero-bg-orb--2"></div>
+        <div class="hero-bg-orb hero-bg-orb--3"></div>
+        <% elsif bg_style == 'mesh' %>
+        <div class="hero-bg-mesh"></div>
+        <% end %>
+      </div>
+      <% end %>
+
+      <div class="hero-content">
+        <% if @hero[:badge] %>
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span class="hero-badge-text"><%= @hero[:badge] %></span>
+        </div>
+        <% end %>
+        <% if @hero[:title] %>
+        <%
+          title_class = @hero[:gradient] ? 'hero-title hero-title--gradient' : 'hero-title'
+        %>
+        <h1 class="<%= title_class %>"><%= @hero[:title] %></h1>
+        <% end %>
+        <% if @hero[:tagline] %>
+        <p class="hero-tagline"><%= @hero[:tagline] %></p>
+        <% end %>
+        <% if @hero[:actions]&.any? %>
+        <div class="hero-actions">
+          <% @hero[:actions].each do |action| %>
+          <%
+            is_external = action[:link]&.start_with?('http')
+            target_attr = action[:target] || (is_external ? '_blank' : nil)
+            rel_attr = action[:rel] || (is_external ? 'noopener noreferrer' : nil)
+            link_attrs = []
+            link_attrs << "target=\"#{target_attr}\"" if target_attr
+            link_attrs << "rel=\"#{rel_attr}\"" if rel_attr
+          %>
+          <a href="<%= link_path(action[:link]) %>" class="hero-action hero-action--<%= action[:variant] || 'primary' %>"<%= link_attrs.any? ? ' ' + link_attrs.join(' ') : '' %>>
+            <% if action[:icon] %>
+            <span class="hero-action-icon"><%= icon(action[:icon]) %></span>
+            <% end %>
+            <span><%= action[:text] %></span>
+            <% if action[:variant] != "secondary" %>
+            <svg class="hero-action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <% end %>
+          </a>
+          <% end %>
+        </div>
+        <% end %>
+      </div>
+      <% if @hero[:image] %>
+      <div class="hero-image">
+        <% if @hero[:image][:light] || @hero[:image][:dark] %>
+        <% if @hero[:image][:light] %>
+        <img src="<%= asset_path(@hero[:image][:light]) %>" alt="<%= @hero[:image][:alt] || '' %>" loading="eager" class="hero-image-light">
+        <% end %>
+        <% if @hero[:image][:dark] %>
+        <img src="<%= asset_path(@hero[:image][:dark]) %>" alt="<%= @hero[:image][:alt] || '' %>" loading="eager" class="hero-image-dark">
+        <% end %>
+        <% else %>
+        <img src="<%= asset_path(@hero[:image][:src]) %>" alt="<%= @hero[:image][:alt] || '' %>" loading="eager">
+        <% end %>
+      </div>
+      <% end %>
+
+    </section>
+    <% end %>
+
+    <% if @features&.any? %>
+    <section class="features-section">
+      <% if @features_header %>
+      <div class="features-header">
+        <% if @features_header[:label] %>
+        <p class="features-label"><%= @features_header[:label] %></p>
+        <% end %>
+        <% if @features_header[:title] %>
+        <h2 class="features-title"><%= @features_header[:title] %></h2>
+        <% end %>
+        <% if @features_header[:description] %>
+        <p class="features-description"><%= @features_header[:description] %></p>
+        <% end %>
+      </div>
+      <% end %>
+
+      <div class="features-magazine">
+        <% @features.each_with_index do |feature, index| %>
+        <%
+          icon_color = feature[:color] || 'primary'
+          size_class = feature[:size] ? "feature-card--#{feature[:size]}" : ''
+          has_link = feature[:link] && !feature[:link].to_s.strip.empty?
+          tag = has_link ? 'a' : 'div'
+
+          feature_link_attrs = []
+          if has_link
+            feature_link_attrs << "href=\"#{link_path(feature[:link])}\""
+            is_external = feature[:link]&.start_with?('http')
+            target_attr = feature[:target] || (is_external ? '_blank' : nil)
+            rel_attr = feature[:rel] || (is_external ? 'noopener noreferrer' : nil)
+            feature_link_attrs << "target=\"#{target_attr}\"" if target_attr
+            feature_link_attrs << "rel=\"#{rel_attr}\"" if rel_attr
+          end
+        %>
+        <<%= tag %> <%= feature_link_attrs.join(' ') %> class="feature-card <%= size_class %>" style="--card-color: var(--feature-<%= icon_color %>)">
+          <% if feature[:icon] %>
+          <span class="feature-icon feature-icon--<%= icon_color %>"><%= icon(feature[:icon]) %></span>
+          <% end %>
+          <h3 class="feature-title"><%= feature[:title] %></h3>
+          <% if feature[:description] %>
+          <p class="feature-description"><%= feature[:description] %></p>
+          <% end %>
+          <% if has_link %>
+          <div class="feature-arrow">
+            <span><%= feature[:link_text] || 'Learn more' %></span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <% end %>
+        </<%= tag %>>
+        <% end %>
+      </div>
+    </section>
+    <% end %>
+
+    <% if @content && !@content.strip.empty? %>
+    <section class="splash-markdown">
+      <%= @content %>
+    </section>
+    <% end %>
+  </main>
+
+  <% if @show_sidebar %>
+    </div>
+  </div>
+  <% end %>
+
+  <%= render_partial('_footer') %>
+
+  <%= render_partial('_scripts') %>
+</body>
+</html>

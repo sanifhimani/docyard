@@ -1,0 +1,17 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="<%= @site_description %>">
+<title><%= @page_title %> | <%= @site_title %></title>
+<link rel="icon" href="<%= asset_path(@favicon) %>" type="image/svg+xml">
+
+<link rel="preload" href="/_docyard/fonts/Inter-Variable.ttf" as="font" type="font/ttf" crossorigin>
+
+<script>
+  (function() {
+    const theme = localStorage.getItem('theme') ||
+                 (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  })();
+</script>
+
+<link rel="stylesheet" href="/_docyard/css/main.css">

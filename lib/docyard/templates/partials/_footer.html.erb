@@ -1,0 +1,42 @@
+<% has_footer_links = @footer_links&.any? %>
+<% has_social = @social&.any? %>
+<% show_footer = has_footer_links || has_social || @credits %>
+
+<% if show_footer %>
+<footer class="footer">
+  <%
+    # Determine layout class
+    footer_class = "footer-content"
+    if !@credits && !has_social && has_footer_links
+      footer_class += " footer-content--no-attribution"
+    elsif !has_footer_links && !has_social && @credits
+      footer_class += " footer-content--centered"
+    elsif !has_footer_links && has_social && !@credits
+      footer_class += " footer-content--centered"
+    end
+  %>
+  <div class="<%= footer_class %>">
+    <% if @credits %>
+    <a href="https://docyard.org" target="_blank" rel="noopener noreferrer" class="footer-attribution">Built with Docyard</a>
+    <% end %>
+
+    <% if has_footer_links %>
+    <nav class="footer-links">
+      <% @footer_links.each do |link| %>
+      <a href="<%= link[:link]&.start_with?('http') ? link[:link] : link_path(link[:link]) %>"<%= link[:link]&.start_with?('http') ? ' target="_blank" rel="noopener noreferrer"' : '' %>><%= link[:text] %></a>
+      <% end %>
+    </nav>
+    <% end %>
+
+    <% if has_social %>
+    <div class="footer-socials">
+      <% @social.each do |social| %>
+      <a href="<%= social[:url] %>" target="_blank" rel="noopener noreferrer" aria-label="<%= social[:platform].capitalize %>">
+        <%= icon(social[:icon]) %>
+      </a>
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+</footer>
+<% end %>

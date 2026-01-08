@@ -6,23 +6,20 @@ require_relative "../navigation/sidebar_builder"
 require_relative "../navigation/prev_next_builder"
 require_relative "../config/branding_resolver"
 require_relative "../config/constants"
+require_relative "../rendering/template_resolver"
+require_relative "../routing/fallback_resolver"
+require_relative "pagefind_handler"
 
 module Docyard
   class RackApplication
-    PAGEFIND_CONTENT_TYPES = {
-      ".js" => "application/javascript; charset=utf-8",
-      ".css" => "text/css; charset=utf-8",
-      ".json" => "application/json; charset=utf-8"
-    }.freeze
-
     def initialize(docs_path:, file_watcher:, config: nil, pagefind_path: nil)
       @docs_path = docs_path
       @file_watcher = file_watcher
       @config = config
-      @pagefind_path = pagefind_path
       @router = Router.new(docs_path: docs_path)
       @renderer = Renderer.new(base_url: config&.build&.base_url || "/", config: config)
       @asset_handler = AssetHandler.new
+      @pagefind_handler = PagefindHandler.new(pagefind_path: pagefind_path, config: config)
     end
 
     def call(env)
@@ -31,14 +28,17 @@ module Docyard
 
     private
 
-    attr_reader :docs_path, :file_watcher, :config, :pagefind_path, :router, :renderer, :asset_handler
+    attr_reader :docs_path, :file_watcher, :config, :router, :renderer, :asset_handler, :pagefind_handler
 
     def handle_request(env)
       path = env["PATH_INFO"]
 
       return handle_reload_check(env) if path == Constants::RELOAD_ENDPOINT
-      return asset_handler.serve(path) if path.start_with?(Constants::ASSETS_PREFIX)
-      return serve_pagefind(path) if path.start_with?(Constants::PAGEFIND_PREFIX)
+      return asset_handler.serve_docyard_assets(path) if path.start_with?(Constants::DOCYARD_ASSETS_PREFIX)
+      return pagefind_handler.serve(path) if path.start_with?(Constants::PAGEFIND_PREFIX)
+
+      public_response = asset_handler.serve_public_file(path)
+      return public_response if public_response
 
       handle_documentation_request(path)
     rescue StandardError => e
@@ -46,23 +46,68 @@ module Docyard
     end
 
     def handle_documentation_request(path)
+      if root_path?(path)
+        html_response = serve_custom_landing_page
+        return html_response if html_response
+      end
+
       result = router.resolve(path)
 
       if result.found?
         render_documentation_page(result.file_path, path)
       else
+        try_fallback_redirect(path)
+      end
+    end
+
+    def root_path?(path)
+      path == "/" || path.empty?
+    end
+
+    def serve_custom_landing_page
+      html_path = File.join(docs_path, "index.html")
+      return nil unless File.file?(html_path)
+
+      html = File.read(html_path)
+      [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
+    end
+
+    def try_fallback_redirect(path)
+      sidebar_builder = build_sidebar_instance(path)
+      fallback_resolver = Routing::FallbackResolver.new(
+        docs_path: docs_path,
+        sidebar_builder: sidebar_builder
+      )
+
+      fallback_path = fallback_resolver.resolve_fallback(path)
+      if fallback_path
+        redirect_to(fallback_path)
+      else
         render_not_found_page
       end
     end
 
+    def redirect_to(path)
+      [Constants::STATUS_REDIRECT, { "Location" => path }, []]
+    end
+
     def render_documentation_page(file_path, current_path)
+      markdown_content = File.read(file_path)
+      markdown = Markdown.new(markdown_content)
+      template_resolver = TemplateResolver.new(markdown.frontmatter, @config&.data)
+
       sidebar_builder = build_sidebar_instance(current_path)
+      template_options = template_resolver.to_options
+
+      sidebar_html = template_resolver.show_sidebar? ? sidebar_builder.to_html : ""
+      prev_next_html = template_resolver.show_sidebar? ? build_prev_next(sidebar_builder, current_path, markdown) : ""
 
       html = renderer.render_file(
         file_path,
-        sidebar_html: sidebar_builder.to_html,
-        prev_next_html: build_prev_next(sidebar_builder, current_path, file_path),
-        branding: branding_options
+        sidebar_html: sidebar_html,
+        prev_next_html: prev_next_html,
+        branding: branding_options,
+        template_options: template_options
       )
 
       [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
@@ -81,10 +126,7 @@ module Docyard
       )
     end
 
-    def build_prev_next(sidebar_builder, current_path, file_path)
-      markdown_content = File.read(file_path)
-      markdown = Markdown.new(markdown_content)
-
+    def build_prev_next(sidebar_builder, current_path, markdown)
       PrevNextBuilder.new(
         sidebar_tree: sidebar_builder.tree,
         current_path: current_path,
@@ -133,43 +175,6 @@ module Docyard
       Docyard.logger.debug error.backtrace.join("\n")
       [Constants::STATUS_INTERNAL_ERROR, { "Content-Type" => Constants::CONTENT_TYPE_HTML },
        [renderer.render_server_error(error)]]
-    end
-
-    def serve_pagefind(path)
-      relative_path = path.delete_prefix(Constants::PAGEFIND_PREFIX)
-      return pagefind_not_found if relative_path.include?("..")
-
-      file_path = resolve_pagefind_file(relative_path)
-      return pagefind_not_found unless file_path && File.file?(file_path)
-
-      content = File.binread(file_path)
-      content_type = pagefind_content_type(file_path)
-
-      headers = {
-        "Content-Type" => content_type,
-        "Cache-Control" => "no-cache, no-store, must-revalidate",
-        "Pragma" => "no-cache",
-        "Expires" => "0"
-      }
-
-      [Constants::STATUS_OK, headers, [content]]
-    end
-
-    def resolve_pagefind_file(relative_path)
-      return File.join(pagefind_path, relative_path) if pagefind_path && Dir.exist?(pagefind_path)
-
-      output_dir = config&.build&.output_dir || "dist"
-      File.join(output_dir, "pagefind", relative_path)
-    end
-
-    def pagefind_content_type(file_path)
-      extension = File.extname(file_path)
-      PAGEFIND_CONTENT_TYPES.fetch(extension, "application/octet-stream")
-    end
-
-    def pagefind_not_found
-      message = "Pagefind not found. Run 'docyard build' first."
-      [Constants::STATUS_NOT_FOUND, { "Content-Type" => "text/plain" }, [message]]
     end
   end
 end

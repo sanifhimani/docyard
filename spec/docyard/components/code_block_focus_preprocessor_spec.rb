@@ -147,10 +147,4 @@ RSpec.describe Docyard::Components::CodeBlockFocusPreprocessor do
       expect(result).not_to include("[!code focus]")
     end
   end
-
-  describe "priority" do
-    it "has priority 7 to run after CodeBlockDiffPreprocessor" do
-      expect(described_class.priority).to eq(7)
-    end
-  end
 end

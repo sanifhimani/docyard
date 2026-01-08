@@ -40,10 +40,10 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
       end
     end
 
-    context "with directory containing index" do
+    context "with section containing index (depth 1)" do
       before do
-        create_file("guide/index.md", "---\ntitle: Guide Overview\n---")
-        create_file("guide/setup.md", "---\ntitle: Setup\n---")
+        create_file("guide/index.md", "---\n---\n\nContent")
+        create_file("guide/setup.md", "---\ntitle: Setup\n---\n\nContent")
       end
 
       let(:file_items) do
@@ -58,23 +58,117 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         }]
       end
 
-      it "treats index as a regular file", :aggregate_failures do
+      it "keeps section header non-clickable", :aggregate_failures do
         result = builder.build(file_items)
 
         guide = result[0]
         expect(guide[:path]).to be_nil
+        expect(guide[:has_index]).to be false
         expect(guide[:type]).to eq(:directory)
-        expect(guide[:children].length).to eq(2)
       end
 
-      it "includes index in children", :aggregate_failures do
+      it "creates Introduction child as first item", :aggregate_failures do
         result = builder.build(file_items)
 
         guide = result[0]
-        index_child = guide[:children].find { |c| c[:path] == "/guide" }
+        intro = guide[:children].first
 
-        expect(index_child).not_to be_nil
-        expect(index_child[:title]).to eq("Home")
+        expect(intro[:title]).to eq("Introduction")
+        expect(intro[:path]).to eq("/guide")
+        expect(intro[:type]).to eq(:file)
+      end
+
+      it "filters duplicate index from children" do
+        result = builder.build(file_items)
+
+        guide = result[0]
+        index_children = guide[:children].select { |c| c[:path] == "/guide" }
+
+        expect(index_children.length).to eq(1)
+      end
+
+      it "places Introduction before other children", :aggregate_failures do
+        result = builder.build(file_items)
+
+        guide = result[0]
+        expect(guide[:children].length).to eq(2)
+        expect(guide[:children][0][:path]).to eq("/guide")
+        expect(guide[:children][1][:path]).to eq("/guide/setup")
+      end
+    end
+
+    context "with custom sidebar text for section index" do
+      before do
+        create_file("guide/index.md", "---\nsidebar:\n  text: Getting Started\n---\n\nContent")
+        create_file("guide/setup.md")
+      end
+
+      let(:file_items) do
+        [{
+          type: :directory,
+          name: "guide",
+          path: "guide",
+          children: [
+            { type: :file, name: "index", path: "guide/index.md" },
+            { type: :file, name: "setup", path: "guide/setup.md" }
+          ]
+        }]
+      end
+
+      it "uses custom sidebar text instead of Introduction" do
+        result = builder.build(file_items)
+
+        guide = result[0]
+        intro = guide[:children].first
+
+        expect(intro[:title]).to eq("Getting Started")
+      end
+    end
+
+    context "with nested group containing index (depth 2+)" do
+      before do
+        create_file("advanced/customization/index.md", "---\ntitle: Customization\n---\n\nContent")
+        create_file("advanced/customization/themes.md", "---\ntitle: Themes\n---\n\nContent")
+      end
+
+      let(:file_items) do
+        [{
+          type: :directory,
+          name: "advanced",
+          path: "advanced",
+          children: [
+            {
+              type: :directory,
+              name: "customization",
+              path: "advanced/customization",
+              children: [
+                { type: :file, name: "index", path: "advanced/customization/index.md" },
+                { type: :file, name: "themes", path: "advanced/customization/themes.md" }
+              ]
+            }
+          ]
+        }]
+      end
+
+      it "makes group header clickable", :aggregate_failures do
+        result = builder.build(file_items)
+
+        advanced = result[0]
+        customization = advanced[:children][0]
+
+        expect(customization[:path]).to eq("/advanced/customization")
+        expect(customization[:has_index]).to be true
+        expect(customization[:title]).to eq("Customization")
+      end
+
+      it "filters index from group children", :aggregate_failures do
+        result = builder.build(file_items)
+
+        advanced = result[0]
+        customization = advanced[:children][0]
+
+        expect(customization[:children].length).to eq(1)
+        expect(customization[:children][0][:path]).to eq("/advanced/customization/themes")
       end
     end
 
@@ -94,11 +188,12 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         }]
       end
 
-      it "makes directory non-clickable" do
+      it "makes directory non-clickable", :aggregate_failures do
         result = builder.build(file_items)
 
         reference = result[0]
         expect(reference[:path]).to be_nil
+        expect(reference[:has_index]).to be false
       end
     end
 
@@ -139,6 +234,43 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         result = builder.build(file_items)
 
         guide = result[1]
+        expect(guide[:collapsed]).to be false
+      end
+    end
+
+    context "when visiting section index URL" do
+      let(:current_path) { "/guide" }
+      let(:file_items) do
+        [{
+          type: :directory,
+          name: "guide",
+          path: "guide",
+          children: [
+            { type: :file, name: "index", path: "guide/index.md" },
+            { type: :file, name: "setup", path: "guide/setup.md" }
+          ]
+        }]
+      end
+
+      before do
+        create_file("guide/index.md", "---\n---\n\nContent")
+        create_file("guide/setup.md", "---\n---\n\nContent")
+      end
+
+      it "marks Introduction item as active", :aggregate_failures do
+        result = builder.build(file_items)
+
+        guide = result[0]
+        intro = guide[:children].first
+
+        expect(intro[:active]).to be true
+        expect(intro[:path]).to eq("/guide")
+      end
+
+      it "expands section when Introduction is active" do
+        result = builder.build(file_items)
+
+        guide = result[0]
         expect(guide[:collapsed]).to be false
       end
     end

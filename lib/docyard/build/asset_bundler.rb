@@ -104,15 +104,15 @@ module Docyard
       end
 
       def replace_asset_references(content, css_hash, js_hash, base_url)
-        content.gsub(%r{/assets/css/main\.css}, "#{base_url}assets/bundle.#{css_hash}.css")
-          .gsub(%r{/assets/js/theme\.js}, "#{base_url}assets/bundle.#{js_hash}.js")
-          .gsub(%r{/assets/js/components\.js}, "")
-          .gsub(%r{<script src="/assets/js/reload\.js"></script>}, "")
+        content.gsub(%r{/_docyard/css/main\.css}, "#{base_url}_docyard/bundle.#{css_hash}.css")
+          .gsub(%r{/_docyard/js/theme\.js}, "#{base_url}_docyard/bundle.#{js_hash}.js")
+          .gsub(%r{/_docyard/js/components\.js}, "")
+          .gsub(%r{<script src="/_docyard/js/reload\.js"></script>}, "")
       end
 
       def write_bundled_asset(content, hash, extension)
         filename = "bundle.#{hash}.#{extension}"
-        output_path = File.join(config.build.output_dir, "assets", filename)
+        output_path = File.join(config.build.output_dir, "_docyard", filename)
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, content)
       end

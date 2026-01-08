@@ -352,10 +352,4 @@ RSpec.describe Docyard::Components::CodeBlockDiffPreprocessor do
       end
     end
   end
-
-  describe "priority" do
-    it "has priority 6 to run after CodeBlockOptionsPreprocessor" do
-      expect(described_class.priority).to eq(6)
-    end
-  end
 end

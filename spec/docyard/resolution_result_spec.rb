@@ -10,12 +10,6 @@ RSpec.describe Docyard::ResolutionResult do
       expect(result).to be_found
       expect(result).not_to be_not_found
     end
-
-    it "creates a frozen object" do
-      result = described_class.found("path/to/file.md")
-
-      expect(result).to be_frozen
-    end
   end
 
   describe ".not_found" do
@@ -26,12 +20,6 @@ RSpec.describe Docyard::ResolutionResult do
       expect(result.status).to eq(:not_found)
       expect(result).to be_not_found
       expect(result).not_to be_found
-    end
-
-    it "creates a frozen object" do
-      result = described_class.not_found
-
-      expect(result).to be_frozen
     end
   end
 

@@ -135,26 +135,54 @@
   text-shadow: -0.2px 0 0 currentColor, 0.2px 0 0 currentColor;
 }
 
-.nav-group-toggle {
+.nav-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-group-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0;
   width: 100%;
   height: 2.25rem;
   padding: var(--spacing-2);
   font-size: var(--text-sm);
   color: var(--sidebar-foreground);
-  text-decoration: none;
   border-radius: var(--radius-lg);
-  transition: all var(--transition-fast);
   line-height: 1.5;
   font-weight: var(--font-normal);
-  background: none;
-  border: none;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
-  overflow: hidden;
   outline: none;
+  transition: all var(--transition-fast);
+}
+
+.nav-group-header--link {
+  background: transparent;
+}
+
+.nav-group-header--button {
+  background: transparent;
+  border: none;
+}
+
+.nav-group-header:hover {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  text-decoration: none;
+}
+
+.nav-group-header:focus-visible {
+  box-shadow: 0 0 0 2px var(--sidebar-ring);
+}
+
+.nav-group-header.active {
+  background-color: oklch(from var(--sidebar-primary) l c h / 10%);
+  color: var(--sidebar-primary);
+  text-shadow: -0.2px 0 0 currentColor, 0.2px 0 0 currentColor;
 }
 
 .nav-group-title {
@@ -163,16 +191,6 @@
   gap: var(--spacing-2);
   flex: 1;
   min-width: 0;
-}
-
-.nav-group-toggle:hover {
-  background-color: var(--sidebar-accent);
-  color: var(--sidebar-accent-foreground);
-}
-
-.nav-group-toggle:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--sidebar-ring);
 }
 
 .nav-group-icon {
@@ -184,11 +202,15 @@
 .nav-group-icon .docyard-icon {
   width: 1rem;
   height: 1rem;
-  transition: transform var(--transition-fast);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.nav-group-toggle[aria-expanded="true"] .nav-group-icon .docyard-icon {
+[data-nav-toggle][aria-expanded="true"] .nav-group-icon .docyard-icon {
   transform: rotate(90deg);
+}
+
+[data-nav-toggle][aria-expanded="false"] .nav-group-icon .docyard-icon {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .nav-group-children {
@@ -266,14 +288,14 @@
 @media (prefers-reduced-motion: reduce) {
 
   .sidebar nav a,
-  .nav-group-toggle,
+  .nav-group-header,
   .nav-group-icon .docyard-icon,
   .nav-group-children,
   .mobile-menu-toggle {
     transition: none;
   }
 
-  .nav-group-toggle[aria-expanded="true"] .nav-group-icon .docyard-icon {
+  [data-nav-toggle][aria-expanded="true"] .nav-group-icon .docyard-icon {
     transform: none;
   }
 }

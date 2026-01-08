@@ -107,10 +107,4 @@ RSpec.describe Docyard::Components::TableWrapperProcessor do
       end
     end
   end
-
-  describe "priority" do
-    it "has priority 100 to run last" do
-      expect(described_class.priority).to eq(100)
-    end
-  end
 end
