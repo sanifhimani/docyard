@@ -1,0 +1,27 @@
+<section class="hero">
+  <div class="hero-content">
+    <% if @title %>
+    <h1 class="hero-title"><%= @title %></h1>
+    <% end %>
+    <% if @tagline %>
+    <p class="hero-tagline"><%= @tagline %></p>
+    <% end %>
+    <% if @actions&.any? %>
+    <div class="hero-actions">
+      <% @actions.each do |action| %>
+      <a href="<%= link_path(action[:link]) %>" class="hero-action hero-action--<%= action[:variant] || 'primary' %>">
+        <%= action[:text] %>
+        <% if action[:variant] == "primary" || action[:variant].nil? %>
+        <%= icon(:arrow_right) %>
+        <% end %>
+      </a>
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+  <% if @image %>
+  <div class="hero-image">
+    <img src="<%= link_path(@image[:src]) %>" alt="<%= @image[:alt] || '' %>">
+  </div>
+  <% end %>
+</section>
