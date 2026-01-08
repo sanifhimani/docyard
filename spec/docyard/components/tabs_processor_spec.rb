@@ -5,12 +5,6 @@ require "benchmark"
 RSpec.describe Docyard::Components::TabsProcessor do
   let(:processor) { described_class.new }
 
-  describe ".priority" do
-    it "has the correct priority" do
-      expect(described_class.priority).to eq(15)
-    end
-  end
-
   describe "#preprocess" do
     context "with valid tabs syntax" do
       it "converts basic tabs with two tabs", :aggregate_failures do

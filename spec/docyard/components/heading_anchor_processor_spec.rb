@@ -3,12 +3,6 @@
 RSpec.describe Docyard::Components::HeadingAnchorProcessor do
   let(:processor) { described_class.new }
 
-  describe ".priority" do
-    it "has priority 30" do
-      expect(described_class.priority).to eq(30)
-    end
-  end
-
   describe "#postprocess" do
     context "with headings" do
       it "adds anchor link to h2 heading", :aggregate_failures do

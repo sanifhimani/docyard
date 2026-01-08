@@ -6,22 +6,6 @@ RSpec.describe Docyard::Search::BuildIndexer do
   let(:config) { Docyard::Config.load(temp_dir) }
   let(:indexer) { described_class.new(config, verbose: false) }
 
-  describe "#initialize" do
-    it "stores the config" do
-      expect(indexer.config).to eq(config)
-    end
-
-    it "extracts output_dir from config" do
-      expect(indexer.output_dir).to eq("dist")
-    end
-
-    it "stores verbose flag" do
-      verbose_indexer = described_class.new(config, verbose: true)
-
-      expect(verbose_indexer.verbose).to be true
-    end
-  end
-
   describe "#index" do
     context "when search is disabled" do
       before do

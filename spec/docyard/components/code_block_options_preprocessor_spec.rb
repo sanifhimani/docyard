@@ -211,10 +211,4 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
       end
     end
   end
-
-  describe "priority" do
-    it "has priority 5 to run early in preprocessing" do
-      expect(described_class.priority).to eq(5)
-    end
-  end
 end

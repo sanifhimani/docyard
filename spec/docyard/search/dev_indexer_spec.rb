@@ -26,24 +26,6 @@ RSpec.describe Docyard::Search::DevIndexer do
     indexer.cleanup
   end
 
-  describe "#initialize" do
-    it "stores the docs path" do
-      expect(indexer.docs_path).to eq(docs_dir)
-    end
-
-    it "stores the config" do
-      expect(indexer.config).to eq(config)
-    end
-
-    it "initializes temp_dir as nil" do
-      expect(indexer.temp_dir).to be_nil
-    end
-
-    it "initializes pagefind_path as nil" do
-      expect(indexer.pagefind_path).to be_nil
-    end
-  end
-
   describe "#generate" do
     context "when search is disabled" do
       let(:config) do

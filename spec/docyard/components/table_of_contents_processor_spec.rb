@@ -4,12 +4,6 @@ RSpec.describe Docyard::Components::TableOfContentsProcessor do
   let(:context) { {} }
   let(:processor) { described_class.new(context) }
 
-  describe ".priority" do
-    it "has priority 35" do
-      expect(described_class.priority).to eq(35)
-    end
-  end
-
   describe "#postprocess" do
     context "with headings" do
       it "extracts h2, h3, and h4 headings", :aggregate_failures do

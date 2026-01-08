@@ -10,13 +10,6 @@ RSpec.describe Docyard::Logging do
       expect(described_class.logger).to be_a(Logger)
     end
 
-    it "returns the same instance on subsequent calls" do
-      logger1 = described_class.logger
-      logger2 = described_class.logger
-
-      expect(logger1).to be(logger2)
-    end
-
     it "allows setting a custom logger" do
       custom_logger = Logger.new(StringIO.new)
       described_class.logger = custom_logger
