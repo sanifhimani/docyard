@@ -289,4 +289,30 @@ RSpec.describe Docyard::Markdown do
       end
     end
   end
+
+  describe "#sidebar_order" do
+    context "when sidebar.order is set" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          sidebar:
+            order: 5
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the order value" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_order).to eq(5)
+      end
+    end
+
+    context "when sidebar.order does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.sidebar_order).to be_nil
+      end
+    end
+  end
 end

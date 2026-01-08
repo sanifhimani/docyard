@@ -135,4 +135,69 @@ RSpec.describe Docyard::SidebarBuilder do
       expect(html).to include("Performance")
     end
   end
+
+  describe "with _sidebar.yml" do
+    before do
+      create_doc("introduction.md", "---\ntitle: Introduction\n---\n")
+      create_doc("getting-started.md", "---\ntitle: Getting Started\n---\n")
+      create_doc("advanced.md", "---\ntitle: Advanced Topics\n---\n")
+    end
+
+    context "when _sidebar.yml exists" do
+      before do
+        File.write(File.join(docs_dir, "_sidebar.yml"), <<~YAML)
+          - introduction
+          - getting-started
+          - advanced
+        YAML
+      end
+
+      it "uses _sidebar.yml ordering over filesystem order", :aggregate_failures do
+        tree = sidebar.tree
+
+        expect(tree.length).to eq(3)
+        expect(tree[0][:title]).to eq("Introduction")
+        expect(tree[1][:title]).to eq("Getting Started")
+        expect(tree[2][:title]).to eq("Advanced Topics")
+      end
+
+      it "renders items in _sidebar.yml order", :aggregate_failures do
+        html = sidebar.to_html
+
+        intro_pos = html.index("Introduction")
+        getting_started_pos = html.index("Getting Started")
+        advanced_pos = html.index("Advanced Topics")
+
+        expect(intro_pos).to be < getting_started_pos
+        expect(getting_started_pos).to be < advanced_pos
+      end
+    end
+
+    context "when docyard.yml sidebar takes precedence over _sidebar.yml" do
+      let(:config) do
+        create_config(<<~YAML)
+          sidebar:
+            items:
+              - advanced
+              - introduction
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
+
+      before do
+        File.write(File.join(docs_dir, "_sidebar.yml"), <<~YAML)
+          - introduction
+          - getting-started
+        YAML
+      end
+
+      it "uses docyard.yml config over _sidebar.yml", :aggregate_failures do
+        tree = sidebar.tree
+
+        expect(tree.length).to eq(2)
+        expect(tree[0][:title]).to eq("Advanced Topics")
+        expect(tree[1][:title]).to eq("Introduction")
+      end
+    end
+  end
 end
