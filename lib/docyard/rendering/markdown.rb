@@ -62,6 +62,10 @@ module Docyard
       frontmatter.dig("sidebar", "collapsed")
     end
 
+    def sidebar_order
+      frontmatter.dig("sidebar", "order")
+    end
+
     def toc
       @context[:toc] || []
     end
