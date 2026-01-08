@@ -24,12 +24,19 @@ module Docyard
         logo_dark: Constants::DEFAULT_LOGO_DARK_PATH,
         favicon: nil,
         display_logo: true,
-        display_title: true
+        display_title: true,
+        credits: true,
+        social: {}
       }
     end
 
     def config_branding_options
-      site_options.merge(logo_options).merge(search_options).merge(appearance_options)
+      site_options
+        .merge(logo_options)
+        .merge(search_options)
+        .merge(appearance_options)
+        .merge(credits_options)
+        .merge(social_options)
     end
 
     def site_options
@@ -61,6 +68,33 @@ module Docyard
         display_logo: appearance["logo"] != false,
         display_title: appearance["title"] != false
       }
+    end
+
+    def credits_options
+      {
+        credits: config.branding.credits != false
+      }
+    end
+
+    def social_options
+      social = config.branding.social || {}
+      {
+        social: normalize_social_links(social)
+      }
+    end
+
+    def normalize_social_links(social)
+      return [] unless social.is_a?(Hash) && social.any?
+
+      social.map do |platform, url|
+        next unless url.is_a?(String) && !url.strip.empty?
+
+        {
+          platform: platform.to_s,
+          url: url,
+          icon: platform.to_s
+        }
+      end.compact
     end
 
     def resolve_logo(logo, logo_dark)

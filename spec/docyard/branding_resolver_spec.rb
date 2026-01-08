@@ -20,6 +20,8 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:favicon]).to be_nil
         expect(result[:display_logo]).to be true
         expect(result[:display_title]).to be true
+        expect(result[:credits]).to be true
+        expect(result[:social]).to eq({})
       end
     end
 
@@ -214,6 +216,82 @@ RSpec.describe Docyard::BrandingResolver do
         result = resolver.resolve
 
         expect(result[:search_placeholder]).to eq("Find something...")
+      end
+    end
+
+    context "with default credits" do
+      it "returns credits true by default" do
+        result = resolver.resolve
+
+        expect(result[:credits]).to be true
+      end
+    end
+
+    context "when credits is disabled" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            credits: false
+        YAML
+      end
+
+      it "sets credits to false" do
+        result = resolver.resolve
+
+        expect(result[:credits]).to be false
+      end
+    end
+
+    context "with default social links" do
+      it "returns empty social array by default" do
+        result = resolver.resolve
+
+        expect(result[:social]).to eq([])
+      end
+    end
+
+    context "when social links are configured" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            social:
+              github: https://github.com/docyard/docyard
+              twitter: https://twitter.com/docyard
+        YAML
+      end
+
+      it "normalizes social links to array", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:social]).to be_an(Array)
+        expect(result[:social].length).to eq(2)
+      end
+
+      it "includes platform, url, and icon for each link", :aggregate_failures do
+        result = resolver.resolve
+        github = result[:social].find { |s| s[:platform] == "github" }
+
+        expect(github[:platform]).to eq("github")
+        expect(github[:url]).to eq("https://github.com/docyard/docyard")
+        expect(github[:icon]).to eq("github")
+      end
+    end
+
+    context "when social has empty values" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            social:
+              github: https://github.com/docyard/docyard
+              twitter: ""
+        YAML
+      end
+
+      it "filters out empty values", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:social].length).to eq(1)
+        expect(result[:social][0][:platform]).to eq("github")
       end
     end
   end
