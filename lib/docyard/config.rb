@@ -15,6 +15,8 @@ module Docyard
         "logo" => nil,
         "logo_dark" => nil,
         "favicon" => nil,
+        "credits" => true,
+        "social" => {},
         "appearance" => {
           "logo" => true,
           "title" => true
