@@ -37,7 +37,6 @@ module Docyard
       return asset_handler.serve_docyard_assets(path) if path.start_with?(Constants::DOCYARD_ASSETS_PREFIX)
       return pagefind_handler.serve(path) if path.start_with?(Constants::PAGEFIND_PREFIX)
 
-      # Try serving from public folder first
       public_response = asset_handler.serve_public_file(path)
       return public_response if public_response
 
@@ -47,7 +46,6 @@ module Docyard
     end
 
     def handle_documentation_request(path)
-      # Check for custom HTML landing page at root
       if root_path?(path)
         html_response = serve_custom_landing_page
         return html_response if html_response

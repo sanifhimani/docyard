@@ -22,7 +22,6 @@ module Docyard
       ".webm" => "video/webm"
     }.freeze
 
-    # Serve Docyard internal assets from /_docyard/ path
     def serve_docyard_assets(request_path)
       asset_path = request_path.delete_prefix("/_docyard/")
 
@@ -37,7 +36,6 @@ module Docyard
       serve_file(file_path)
     end
 
-    # Serve user public files from docs/public/ at root path
     def serve_public_file(request_path)
       asset_path = request_path.delete_prefix("/")
 

@@ -4,12 +4,10 @@
   <%= render_partial('_head') %>
 </head>
 <body>
-  <!-- Skip to main content for accessibility -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <%= render_partial('_header') %>
 
-  <!-- Secondary Header (Mobile Navigation) -->
   <div class="secondary-header">
     <button class="secondary-header-menu" aria-label="Toggle navigation menu" aria-expanded="false">
       <%= icon(:sidebar) %>
@@ -19,24 +17,19 @@
     <%= render_partial('_table_of_contents_toggle') %>
   </div>
 
-  <!-- Mobile overlay -->
   <div class="mobile-overlay" aria-hidden="true"></div>
 
   <div class="layout">
-    <!-- Sidebar navigation -->
     <%= @sidebar_html %>
 
-    <!-- Main content area -->
     <div class="layout-main">
       <main id="main-content" class="content" data-pagefind-body>
         <%= @content %>
 
-        <!-- Previous/Next Navigation -->
         <%= @prev_next_html %>
       </main>
     </div>
 
-    <!-- Table of contents -->
     <%= render_partial('_table_of_contents') %>
   </div>
 

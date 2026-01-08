@@ -25,7 +25,6 @@ module Docyard
 
       private
 
-      # Copy user's public files from docs/public/ to dist root
       def copy_public_files
         public_dir = Constants::PUBLIC_DIR
         return 0 unless Dir.exist?(public_dir)
@@ -59,7 +58,6 @@ module Docyard
         count
       end
 
-      # Copy default logos/favicon to dist/_docyard/
       def copy_default_branding_assets
         templates_assets = File.join(__dir__, "..", "templates", "assets")
         count = 0
@@ -87,7 +85,6 @@ module Docyard
         asset_path = config.branding.send(asset_key)
         return 0 if asset_path.nil? || asset_path.start_with?("http://", "https://")
 
-        # User branding can be in docs/public/ or referenced with _docyard prefix
         full_path = File.join("docs", asset_path)
         return 0 unless File.exist?(full_path)
 

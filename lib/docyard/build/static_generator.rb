@@ -49,7 +49,6 @@ module Docyard
 
       def collect_markdown_files
         files = Dir.glob(File.join("docs", "**", "*.md"))
-        # Skip index.md if custom landing page exists
         files.reject! { |f| f == "docs/index.md" } if custom_landing_page?
         files
       end
