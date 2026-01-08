@@ -223,17 +223,18 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
       it "marks current page as active", :aggregate_failures do
         result = builder.build(file_items)
 
-        guide = result[1]
+        guide = result.find { |item| item[:type] == :directory }
+        index_item = result.find { |item| item[:type] == :file }
         setup = guide[:children].find { |c| c[:path] == "/guide/setup" }
 
         expect(setup[:active]).to be true
-        expect(result[0][:active]).to be false
+        expect(index_item[:active]).to be false
       end
 
       it "expands parent directory when child is active" do
         result = builder.build(file_items)
 
-        guide = result[1]
+        guide = result.find { |item| item[:type] == :directory }
         expect(guide[:collapsed]).to be false
       end
     end
@@ -328,8 +329,76 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
       it "collapses directory when no child is active" do
         result = builder.build(file_items)
 
-        guide = result[1]
+        guide = result.find { |item| item[:type] == :directory }
         expect(guide[:collapsed]).to be true
+      end
+    end
+
+    context "with frontmatter order field" do
+      let(:current_path) { "/" }
+      let(:file_items) do
+        [
+          { type: :file, name: "installation", path: "installation.md" },
+          { type: :file, name: "getting-started", path: "getting-started.md" },
+          { type: :file, name: "advanced", path: "advanced.md" }
+        ]
+      end
+
+      before do
+        create_file("installation.md", "---\ntitle: Installation\nsidebar:\n  order: 2\n---\n")
+        create_file("getting-started.md", "---\ntitle: Getting Started\nsidebar:\n  order: 1\n---\n")
+        create_file("advanced.md", "---\ntitle: Advanced\n---\n")
+      end
+
+      it "sorts items by order field, then alphabetically" do
+        result = builder.build(file_items)
+
+        titles = result.map { |item| item[:title] }
+        expect(titles).to eq(["Getting Started", "Installation", "Advanced"])
+      end
+
+      it "includes order in the item hash", :aggregate_failures do
+        result = builder.build(file_items)
+
+        getting_started = result.find { |item| item[:title] == "Getting Started" }
+        advanced = result.find { |item| item[:title] == "Advanced" }
+
+        expect(getting_started[:order]).to eq(1)
+        expect(advanced[:order]).to be_nil
+      end
+    end
+
+    context "with order field on directories" do
+      let(:current_path) { "/" }
+      let(:file_items) do
+        [
+          {
+            type: :directory,
+            name: "api",
+            path: "api",
+            children: [{ type: :file, name: "overview", path: "api/overview.md" }]
+          },
+          {
+            type: :directory,
+            name: "guide",
+            path: "guide",
+            children: [{ type: :file, name: "intro", path: "guide/intro.md" }]
+          }
+        ]
+      end
+
+      before do
+        create_file("api/index.md", "---\nsidebar:\n  order: 2\n---\n")
+        create_file("api/overview.md", "---\ntitle: Overview\n---\n")
+        create_file("guide/index.md", "---\nsidebar:\n  order: 1\n---\n")
+        create_file("guide/intro.md", "---\ntitle: Intro\n---\n")
+      end
+
+      it "sorts directories by their index.md order field" do
+        result = builder.build(file_items)
+
+        titles = result.map { |item| item[:title] }
+        expect(titles).to eq(%w[Guide Api])
       end
     end
   end
