@@ -135,11 +135,184 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
-    context "when no logo is configured" do
+    context "when no logo is configured and none exists in docs/public" do
       it "sets has_custom_logo to false" do
-        result = resolver.resolve
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
 
-        expect(result[:has_custom_logo]).to be false
+          expect(result[:has_custom_logo]).to be false
+        end
+      end
+    end
+
+    context "when logo.svg exists in docs/public/" do
+      before do
+        create_file("docs/public/logo.svg", "<svg></svg>")
+      end
+
+      it "auto-detects the logo", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:logo]).to eq("logo.svg")
+          expect(result[:has_custom_logo]).to be true
+        end
+      end
+
+      it "auto-detects dark variant when present", :aggregate_failures do
+        create_file("docs/public/logo-dark.svg", "<svg>dark</svg>")
+
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:logo]).to eq("logo.svg")
+          expect(result[:logo_dark]).to eq("logo-dark.svg")
+        end
+      end
+    end
+
+    context "when logo.png exists in docs/public/ but not svg" do
+      before do
+        create_file("docs/public/logo.png", "png data")
+      end
+
+      it "auto-detects the png logo" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:logo]).to eq("logo.png")
+        end
+      end
+    end
+
+    context "when both logo.svg and logo.png exist in docs/public/" do
+      before do
+        create_file("docs/public/logo.svg", "<svg></svg>")
+        create_file("docs/public/logo.png", "png data")
+      end
+
+      it "prefers svg over png" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:logo]).to eq("logo.svg")
+        end
+      end
+    end
+
+    context "when no logo exists in docs/public/" do
+      it "falls back to Docyard default logo" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:logo]).to eq(Docyard::Constants::DEFAULT_LOGO_PATH)
+        end
+      end
+    end
+
+    context "when explicit logo config overrides auto-detection" do
+      before do
+        create_file("docs/public/logo.svg", "<svg></svg>")
+        create_file("docs/public/custom-logo.svg", "<svg>custom</svg>")
+        create_config(<<~YAML)
+          branding:
+            logo: "custom-logo.svg"
+        YAML
+      end
+
+      it "uses the configured logo" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:logo]).to eq("custom-logo.svg")
+        end
+      end
+    end
+
+    context "when favicon.ico exists in docs/public/" do
+      before do
+        create_file("docs/public/favicon.ico", "icon data")
+      end
+
+      it "auto-detects the favicon" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:favicon]).to eq("favicon.ico")
+        end
+      end
+    end
+
+    context "when favicon.svg exists in docs/public/ but not ico" do
+      before do
+        create_file("docs/public/favicon.svg", "<svg></svg>")
+      end
+
+      it "auto-detects the svg favicon" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:favicon]).to eq("favicon.svg")
+        end
+      end
+    end
+
+    context "when favicon.png exists in docs/public/ but not ico or svg" do
+      before do
+        create_file("docs/public/favicon.png", "png data")
+      end
+
+      it "auto-detects the png favicon" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:favicon]).to eq("favicon.png")
+        end
+      end
+    end
+
+    context "when multiple favicon formats exist in docs/public/" do
+      before do
+        create_file("docs/public/favicon.ico", "ico data")
+        create_file("docs/public/favicon.svg", "<svg></svg>")
+        create_file("docs/public/favicon.png", "png data")
+      end
+
+      it "prefers ico over svg and png" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:favicon]).to eq("favicon.ico")
+        end
+      end
+    end
+
+    context "when no favicon exists in docs/public/" do
+      it "returns nil" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:favicon]).to be_nil
+        end
+      end
+    end
+
+    context "when explicit favicon config overrides auto-detection" do
+      before do
+        create_file("docs/public/favicon.ico", "icon data")
+        create_file("docs/public/custom-favicon.ico", "custom icon")
+        create_config(<<~YAML)
+          branding:
+            favicon: "custom-favicon.ico"
+        YAML
+      end
+
+      it "uses the configured favicon" do
+        Dir.chdir(temp_dir) do
+          result = resolver.resolve
+
+          expect(result[:favicon]).to eq("custom-favicon.ico")
+        end
       end
     end
 
