@@ -40,19 +40,35 @@ module Docyard
       {
         site_title: config.title || Constants::DEFAULT_SITE_TITLE,
         site_description: config.description || "",
-        favicon: config.branding.favicon
+        favicon: config.branding.favicon || auto_detect_favicon
       }
     end
 
     def logo_options
       branding = config.branding
-      logo = branding.logo
+      logo = branding.logo || auto_detect_logo
       has_custom_logo = !logo.nil?
       {
         logo: logo || Constants::DEFAULT_LOGO_PATH,
         logo_dark: detect_dark_logo(logo) || Constants::DEFAULT_LOGO_DARK_PATH,
         has_custom_logo: has_custom_logo
       }
+    end
+
+    def auto_detect_logo
+      detect_public_file("logo", %w[svg png])
+    end
+
+    def auto_detect_favicon
+      detect_public_file("favicon", %w[ico svg png])
+    end
+
+    def detect_public_file(name, extensions)
+      extensions.each do |ext|
+        path = File.join(Constants::PUBLIC_DIR, "#{name}.#{ext}")
+        return "#{name}.#{ext}" if File.exist?(path)
+      end
+      nil
     end
 
     def detect_dark_logo(logo)
