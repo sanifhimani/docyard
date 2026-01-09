@@ -6,7 +6,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
   let(:output_dir) { File.join(temp_dir, "dist") }
   let(:config) do
     Docyard::Config.load(temp_dir).tap do |c|
-      c.data["build"]["output_dir"] = output_dir
+      c.data["build"]["output"] = output_dir
     end
   end
 
@@ -80,13 +80,13 @@ RSpec.describe Docyard::Build::StaticGenerator do
       end
     end
 
-    context "with base_url configuration" do
+    context "with base configuration" do
       before do
-        config.data["build"]["base_url"] = "/my-docs/"
+        config.data["build"]["base"] = "/my-docs/"
         File.write(File.join(docs_dir, "index.md"), "# Home")
       end
 
-      it "uses base_url in generated HTML", :aggregate_failures do
+      it "uses base in generated HTML", :aggregate_failures do
         Dir.chdir(temp_dir) do
           generator = described_class.new(config, verbose: false)
           generator.generate
@@ -94,7 +94,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
           index_html = File.read(File.join(output_dir, "index.html"))
 
           expect(index_html).to include('href="/my-docs/')
-          expect(index_html).to include('src="/my-docs/_docyard/')
+          expect(index_html).to include('href="/my-docs/_docyard/favicon.svg"')
         end
       end
     end
@@ -152,6 +152,30 @@ RSpec.describe Docyard::Build::StaticGenerator do
           guide_html = File.read(File.join(output_dir, "guide", "index.html"))
           expect(guide_html).to include("<h1")
           expect(guide_html).to include("Guide")
+        end
+      end
+    end
+
+    context "with search exclude patterns" do
+      before do
+        FileUtils.mkdir_p(File.join(docs_dir, "drafts"))
+        File.write(File.join(docs_dir, "index.md"), "# Home")
+        File.write(File.join(docs_dir, "guide.md"), "# Guide")
+        File.write(File.join(docs_dir, "drafts", "wip.md"), "# Work in Progress")
+        config.data["search"]["exclude"] = ["/drafts/*"]
+      end
+
+      it "marks excluded pages with data-pagefind-ignore", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          draft_html = File.read(File.join(output_dir, "drafts", "wip", "index.html"))
+          guide_html = File.read(File.join(output_dir, "guide", "index.html"))
+
+          expect(draft_html).to include("data-pagefind-ignore")
+          expect(draft_html).not_to include("data-pagefind-body")
+          expect(guide_html).to include("data-pagefind-body")
         end
       end
     end

@@ -18,15 +18,22 @@ RSpec.describe Docyard::Renderer do
       expect(html).to include("<title>Documentation | Documentation</title>")
     end
 
-    it "renders with logo when provided", :aggregate_failures do
-      html = renderer.render(content: "<p>Content</p>", branding: { logo: "logo.svg" })
+    it "renders with logo when custom logo is set", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { logo: "logo.svg", has_custom_logo: true })
 
       expect(html).to include('src="/logo.svg"')
       expect(html).to include("site-logo-light")
     end
 
     it "renders with dark mode logo when provided", :aggregate_failures do
-      html = renderer.render(content: "<p>Content</p>", branding: { logo_dark: "logo-dark.svg" })
+      html = renderer.render(
+        content: "<p>Content</p>",
+        branding: {
+          logo: "logo.svg",
+          logo_dark: "logo-dark.svg",
+          has_custom_logo: true
+        }
+      )
 
       expect(html).to include('src="/logo-dark.svg"')
       expect(html).to include("site-logo-dark")
@@ -38,32 +45,19 @@ RSpec.describe Docyard::Renderer do
       expect(html).to include('href="/favicon.ico"')
     end
 
-    it "renders with default logo when not provided", :aggregate_failures do
-      html = renderer.render(content: "<p>Content</p>")
+    it "renders title only when no custom logo is set", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { has_custom_logo: false })
 
-      expect(html).to include("site-logo")
-      expect(html).to include('src="/_docyard/logo.svg"')
-    end
-
-    it "renders without logo when display_logo is false", :aggregate_failures do
-      html = renderer.render(content: "<p>Content</p>", branding: { display_logo: false })
-
+      expect(html).to include("header-title")
       expect(html).not_to include("site-logo")
-      expect(html).to include("header-title")
     end
 
-    it "renders logo only when display_title is false", :aggregate_failures do
-      html = renderer.render(content: "<p>Content</p>", branding: { display_title: false })
+    it "renders logo only when custom logo is set", :aggregate_failures do
+      html = renderer.render(content: "<p>Content</p>", branding: { has_custom_logo: true, logo: "custom-logo.svg" })
 
       expect(html).to include("site-logo")
+      expect(html).to include('src="/custom-logo.svg"')
       expect(html).not_to include("header-title")
-    end
-
-    it "renders logo and title when both display flags are true", :aggregate_failures do
-      html = renderer.render(content: "<p>Content</p>", branding: { display_logo: true, display_title: true })
-
-      expect(html).to include("site-logo")
-      expect(html).to include("header-title")
     end
 
     it "renders with navigation components", :aggregate_failures do

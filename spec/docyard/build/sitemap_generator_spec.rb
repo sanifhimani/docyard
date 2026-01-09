@@ -5,7 +5,7 @@ RSpec.describe Docyard::Build::SitemapGenerator do
   let(:output_dir) { File.join(temp_dir, "dist") }
   let(:config) do
     Docyard::Config.load(temp_dir).tap do |c|
-      c.data["build"]["output_dir"] = output_dir
+      c.data["build"]["output"] = output_dir
     end
   end
 
@@ -65,12 +65,12 @@ RSpec.describe Docyard::Build::SitemapGenerator do
       expect { generator.generate }.to output(/Generated sitemap\.xml/).to_stdout
     end
 
-    context "with base_url configuration" do
+    context "with base configuration" do
       before do
-        config.data["build"]["base_url"] = "/my-docs/"
+        config.data["build"]["base"] = "/my-docs/"
       end
 
-      it "uses base_url in sitemap URLs", :aggregate_failures do
+      it "uses base in sitemap URLs", :aggregate_failures do
         generator = described_class.new(config)
         generator.generate
 
@@ -81,9 +81,9 @@ RSpec.describe Docyard::Build::SitemapGenerator do
       end
     end
 
-    context "with root base_url" do
+    context "with root base" do
       before do
-        config.data["build"]["base_url"] = "/"
+        config.data["build"]["base"] = "/"
       end
 
       it "uses absolute paths without subdirectory", :aggregate_failures do

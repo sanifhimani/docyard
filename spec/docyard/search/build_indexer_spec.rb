@@ -142,7 +142,7 @@ RSpec.describe Docyard::Search::BuildIndexer do
       before do
         create_config(<<~YAML)
           build:
-            output_dir: "_site"
+            output: "_site"
         YAML
 
         allow(Open3).to receive(:capture3)

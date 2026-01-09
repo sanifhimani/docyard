@@ -26,19 +26,11 @@ RSpec.describe Docyard::Initializer do
       expect(File.exist?(File.join(temp_dir, "docs", "index.md"))).to be true
     end
 
-    it "creates getting-started directory with installation.md" do
+    it "creates index.md with frontmatter and content", :aggregate_failures do
       initializer.run
-      expect(File.exist?(File.join(temp_dir, "docs", "getting-started", "installation.md"))).to be true
-    end
-
-    it "creates guides directory with markdown-features.md" do
-      initializer.run
-      expect(File.exist?(File.join(temp_dir, "docs", "guides", "markdown-features.md"))).to be true
-    end
-
-    it "creates guides directory with configuration.md" do
-      initializer.run
-      expect(File.exist?(File.join(temp_dir, "docs", "guides", "configuration.md"))).to be true
+      content = File.read(File.join(temp_dir, "docs", "index.md"))
+      expect(content).to include("title: Welcome")
+      expect(content).to include("# Welcome to Your Documentation")
     end
 
     it "returns true on success" do
@@ -52,7 +44,7 @@ RSpec.describe Docyard::Initializer do
       expect(File.exist?(config_path)).to be true
 
       config_content = File.read(config_path)
-      expect(config_content).to include("site:")
+      expect(config_content).to include("title:")
       expect(config_content).to include("build:")
       expect(config_content).to include("My Documentation")
     end

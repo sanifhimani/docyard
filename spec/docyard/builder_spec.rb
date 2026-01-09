@@ -12,8 +12,8 @@ RSpec.describe Docyard::Builder do
       site:
         title: "Test Docs"
       build:
-        output_dir: "dist"
-        base_url: "/"
+        output: "dist"
+        base: "/"
     YAML
   end
 
@@ -81,12 +81,12 @@ RSpec.describe Docyard::Builder do
         end
       end
 
-      it "uses base_url in sitemap reference" do
+      it "uses base in sitemap reference" do
         Dir.chdir(temp_dir) do
           create_config(<<~YAML)
             build:
-              output_dir: "dist"
-              base_url: "/my-docs/"
+              output: "dist"
+              base: "/my-docs/"
           YAML
 
           described_class.new(clean: true, verbose: false).build

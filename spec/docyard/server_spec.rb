@@ -32,12 +32,12 @@ RSpec.describe Docyard::Server do
     end
 
     it "loads configuration", :aggregate_failures do
-      create_config("site:\n  title: Test Documentation")
+      create_config("title: Test Documentation")
       Dir.chdir(temp_dir) do
         server = described_class.new(docs_path: temp_dir)
 
         expect(server.config).to be_a(Docyard::Config)
-        expect(server.config.site.title).to eq("Test Documentation")
+        expect(server.config.title).to eq("Test Documentation")
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Docyard::Server do
       Dir.chdir(temp_dir) do
         server = described_class.new(docs_path: temp_dir)
 
-        expect(server.config.site.title).to eq("Documentation")
+        expect(server.config.title).to eq("Documentation")
       end
     end
   end

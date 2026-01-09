@@ -5,7 +5,7 @@ RSpec.describe Docyard::Build::AssetBundler do
   let(:output_dir) { File.join(temp_dir, "dist") }
   let(:config) do
     Docyard::Config.load(temp_dir).tap do |c|
-      c.data["build"]["output_dir"] = output_dir
+      c.data["build"]["output"] = output_dir
     end
   end
 
@@ -104,12 +104,12 @@ RSpec.describe Docyard::Build::AssetBundler do
       expect(html_content).not_to include("/_docyard/js/components.js")
     end
 
-    context "with base_url configuration" do
+    context "with base configuration" do
       before do
-        config.data["build"]["base_url"] = "/my-docs/"
+        config.data["build"]["base"] = "/my-docs/"
       end
 
-      it "uses base_url in bundled asset paths", :aggregate_failures do
+      it "uses base in bundled asset paths", :aggregate_failures do
         bundler = described_class.new(config, verbose: false)
         bundler.bundle
 
@@ -120,9 +120,9 @@ RSpec.describe Docyard::Build::AssetBundler do
       end
     end
 
-    context "with root base_url" do
+    context "with root base" do
       before do
-        config.data["build"]["base_url"] = "/"
+        config.data["build"]["base"] = "/"
       end
 
       it "uses absolute paths without subdirectory", :aggregate_failures do
@@ -142,6 +142,19 @@ RSpec.describe Docyard::Build::AssetBundler do
 
         expect { bundler.bundle }.to output(/Bundling CSS/).to_stdout
       end
+    end
+
+    it "preserves whitespace around + in CSS calc expressions" do
+      bundler = described_class.new(config, verbose: false)
+      bundler.bundle
+
+      css_file = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.css")).first
+      css_content = File.read(css_file)
+
+      calc_matches = css_content.scan(/calc\([^)]+\)/)
+      calc_with_plus = calc_matches.select { |c| c.include?("+") }
+
+      expect(calc_with_plus).to all(match(/\s\+\s/))
     end
   end
 end

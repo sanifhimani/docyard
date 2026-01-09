@@ -18,10 +18,8 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:logo]).to eq(Docyard::Constants::DEFAULT_LOGO_PATH)
         expect(result[:logo_dark]).to eq(Docyard::Constants::DEFAULT_LOGO_DARK_PATH)
         expect(result[:favicon]).to be_nil
-        expect(result[:display_logo]).to be true
-        expect(result[:display_title]).to be true
         expect(result[:credits]).to be true
-        expect(result[:social]).to eq({})
+        expect(result[:social]).to eq([])
       end
     end
 
@@ -47,16 +45,15 @@ RSpec.describe Docyard::BrandingResolver do
       it "returns default search placeholder" do
         result = resolver.resolve
 
-        expect(result[:search_placeholder]).to eq("Search documentation...")
+        expect(result[:search_placeholder]).to eq("Search...")
       end
     end
 
     context "with custom site config" do
       before do
         create_config(<<~YAML)
-          site:
-            title: "My Custom Docs"
-            description: "Awesome documentation for my project"
+          title: "My Custom Docs"
+          description: "Awesome documentation for my project"
         YAML
       end
 
@@ -76,12 +73,10 @@ RSpec.describe Docyard::BrandingResolver do
     context "with custom branding config" do
       before do
         create_file("logo.svg", "<svg></svg>")
-        create_file("logo-dark.svg", "<svg></svg>")
         create_file("favicon.ico", "icon")
         create_config(<<~YAML)
           branding:
             logo: "#{File.join(temp_dir, 'logo.svg')}"
-            logo_dark: "#{File.join(temp_dir, 'logo-dark.svg')}"
             favicon: "#{File.join(temp_dir, 'favicon.ico')}"
         YAML
       end
@@ -92,12 +87,6 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:logo]).to eq(File.join(temp_dir, "logo.svg"))
       end
 
-      it "uses custom logo_dark" do
-        result = resolver.resolve
-
-        expect(result[:logo_dark]).to eq(File.join(temp_dir, "logo-dark.svg"))
-      end
-
       it "uses custom favicon" do
         result = resolver.resolve
 
@@ -105,7 +94,7 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
-    context "when only logo is set" do
+    context "when only logo is set without dark variant" do
       before do
         create_file("logo.svg", "<svg></svg>")
         create_config(<<~YAML)
@@ -120,72 +109,37 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:logo]).to eq(File.join(temp_dir, "logo.svg"))
         expect(result[:logo_dark]).to eq(File.join(temp_dir, "logo.svg"))
       end
+
+      it "sets has_custom_logo to true" do
+        result = resolver.resolve
+
+        expect(result[:has_custom_logo]).to be true
+      end
     end
 
-    context "when only logo_dark is set" do
+    context "when logo has a dark variant" do
       before do
-        create_file("logo-dark.svg", "<svg></svg>")
+        create_file("logo.svg", "<svg></svg>")
+        create_file("logo-dark.svg", "<svg>dark</svg>")
         create_config(<<~YAML)
           branding:
-            logo_dark: "#{File.join(temp_dir, 'logo-dark.svg')}"
+            logo: "#{File.join(temp_dir, 'logo.svg')}"
         YAML
       end
 
-      it "uses logo_dark for both modes", :aggregate_failures do
+      it "auto-detects the dark variant", :aggregate_failures do
         result = resolver.resolve
 
-        expect(result[:logo]).to eq(File.join(temp_dir, "logo-dark.svg"))
+        expect(result[:logo]).to eq(File.join(temp_dir, "logo.svg"))
         expect(result[:logo_dark]).to eq(File.join(temp_dir, "logo-dark.svg"))
       end
     end
 
-    context "when logo display is disabled" do
-      before do
-        create_config(<<~YAML)
-          branding:
-            appearance:
-              logo: false
-        YAML
-      end
-
-      it "sets display_logo to false" do
+    context "when no logo is configured" do
+      it "sets has_custom_logo to false" do
         result = resolver.resolve
 
-        expect(result[:display_logo]).to be false
-      end
-    end
-
-    context "when title display is disabled" do
-      before do
-        create_config(<<~YAML)
-          branding:
-            appearance:
-              title: false
-        YAML
-      end
-
-      it "sets display_title to false" do
-        result = resolver.resolve
-
-        expect(result[:display_title]).to be false
-      end
-    end
-
-    context "when both appearance options are enabled explicitly" do
-      before do
-        create_config(<<~YAML)
-          branding:
-            appearance:
-              logo: true
-              title: true
-        YAML
-      end
-
-      it "sets both to true", :aggregate_failures do
-        result = resolver.resolve
-
-        expect(result[:display_logo]).to be true
-        expect(result[:display_title]).to be true
+        expect(result[:has_custom_logo]).to be false
       end
     end
 
@@ -253,10 +207,9 @@ RSpec.describe Docyard::BrandingResolver do
     context "when social links are configured" do
       before do
         create_config(<<~YAML)
-          branding:
-            social:
-              github: https://github.com/docyard/docyard
-              twitter: https://twitter.com/docyard
+          socials:
+            github: https://github.com/docyard/docyard
+            twitter: https://twitter.com/docyard
         YAML
       end
 
@@ -280,10 +233,9 @@ RSpec.describe Docyard::BrandingResolver do
     context "when social has empty values" do
       before do
         create_config(<<~YAML)
-          branding:
-            social:
-              github: https://github.com/docyard/docyard
-              twitter: ""
+          socials:
+            github: https://github.com/docyard/docyard
+            twitter: ""
         YAML
       end
 
