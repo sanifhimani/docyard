@@ -1,42 +1,43 @@
 # Docyard Configuration
 # Documentation: https://github.com/yourusername/docyard
 
-# Site Information
-site:
-  title: "My Documentation"
-  description: "Documentation for my project"
+# Site Identity
+title: "My Documentation"
+description: "Documentation for my project"
 
-# Custom Branding (Optional)
-# Paths relative to docs/ directory, or use URLs for CDN-hosted assets
-branding:
-  # logo: "assets/logo.svg"              # Light mode logo
-  # logo_dark: "assets/logo-dark.svg"    # Dark mode logo (optional, falls back to 'logo')
-  # favicon: "assets/favicon.svg"        # Browser tab icon
-  # appearance:
-  #   logo: true                          # Show logo in header
-  #   title: true                         # Show site title in header
+# Branding (Optional)
+# If you set a logo, only the logo will be shown in the header.
+# If no logo is set, the title text will be shown instead.
+# branding:
+#   logo: "logo.svg"           # Your logo (auto-detects logo-dark.svg for dark mode)
+#   favicon: "favicon.ico"     # Browser tab icon
+#   credits: true              # Show "Built with Docyard" link
 
-# Sidebar Navigation (Optional)
-# Customize the order and organization of your documentation pages
-# Without this, sidebar is auto-generated from docs/ folder structure
-# sidebar:
-#   items:
-#     - installation                     # Simple page reference
-#
-#     - guides:                          # Nested group
-#         text: "User Guides"
-#         icon: "book-open"              # Icon from phosphoricons.com
-#         items:
-#           - markdown-features
-#           - configuration
-#
-#     - text: "GitHub"                   # External link
-#       link: "https://github.com/youruser/yourrepo"
-#       icon: "github-logo"
-#       target: "_blank"
+# Social Links (Optional)
+# These appear in the footer
+# socials:
+#   github: https://github.com/user/repo
+#   twitter: https://twitter.com/handle
+
+# Tab Navigation (Optional)
+# Use tabs to organize large documentation into sections
+# tabs:
+#   - text: Guide
+#     href: /guide
+#   - text: API Reference
+#     href: /api
+#   - text: Blog
+#     href: https://blog.example.com
+#     external: true
+
+# Search Configuration
+# search:
+#   enabled: true
+#   placeholder: "Search documentation..."
+#   exclude:
+#     - /drafts/*
 
 # Build Configuration
 build:
-  output_dir: "dist"      # Output directory for static files
-  base_url: "/"           # Base URL for deployment (e.g., "/docs/" for subdirectory)
-  clean: true             # Clean output directory before building
+  output: "dist"      # Output directory for static files
+  base: "/"           # Base URL for deployment (e.g., "/docs/" for subdirectory)
