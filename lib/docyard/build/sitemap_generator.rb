@@ -15,7 +15,7 @@ module Docyard
         urls = collect_urls
         sitemap_content = build_sitemap(urls)
 
-        output_path = File.join(config.build.output_dir, "sitemap.xml")
+        output_path = File.join(config.build.output, "sitemap.xml")
         File.write(output_path, sitemap_content)
 
         puts "[✓] Generated sitemap.xml (#{urls.size} URLs)"
@@ -24,10 +24,10 @@ module Docyard
       private
 
       def collect_urls
-        html_files = Dir.glob(File.join(config.build.output_dir, "**", "index.html"))
+        html_files = Dir.glob(File.join(config.build.output, "**", "index.html"))
 
         html_files.map do |file|
-          relative_path = file.delete_prefix(config.build.output_dir).delete_suffix("/index.html")
+          relative_path = file.delete_prefix(config.build.output).delete_suffix("/index.html")
           url_path = relative_path.empty? ? "/" : relative_path
           lastmod = File.mtime(file).utc.iso8601
 
@@ -36,15 +36,15 @@ module Docyard
       end
 
       def build_sitemap(urls)
-        base_url = config.build.base_url
-        base_url = base_url.chop if base_url.end_with?("/")
+        base = config.build.base
+        base = base.chop if base.end_with?("/")
 
         xml = ['<?xml version="1.0" encoding="UTF-8"?>']
         xml << '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
         urls.each do |url|
           xml << "  <url>"
-          xml << "    <loc>#{base_url}#{url[:loc]}</loc>"
+          xml << "    <loc>#{base}#{url[:loc]}</loc>"
           xml << "    <lastmod>#{url[:lastmod]}</lastmod>"
           xml << "  </url>"
         end

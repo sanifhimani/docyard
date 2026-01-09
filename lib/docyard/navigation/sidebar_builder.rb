@@ -28,9 +28,7 @@ module Docyard
     private
 
     def build_tree
-      if config_sidebar_items?
-        build_tree_from_config(config_sidebar_items)
-      elsif local_config_items?
+      if local_config_items?
         build_tree_from_config(local_config_items)
       else
         build_tree_from_filesystem
@@ -44,16 +42,6 @@ module Docyard
     def build_tree_from_filesystem
       file_items = scanner.scan
       tree_builder.build(file_items)
-    end
-
-    def config_sidebar_items?
-      config_sidebar_items&.any?
-    end
-
-    def config_sidebar_items
-      return [] unless config
-
-      config.sidebar&.items || []
     end
 
     def local_config_items?
@@ -95,11 +83,11 @@ module Docyard
     end
 
     def extract_base_url
-      config&.build&.base_url || "/"
+      config&.build&.base || "/"
     end
 
     def extract_site_title
-      config&.site&.title || "Documentation"
+      config&.title || "Documentation"
     end
   end
 end
