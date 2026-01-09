@@ -239,11 +239,22 @@
 }
 
 .search-empty-icon {
-  width: 3rem;
-  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--muted-foreground);
-  margin-bottom: var(--spacing-2);
-  opacity: 0.5;
+  margin-bottom: var(--spacing-4);
+  opacity: 0.4;
+}
+
+.search-empty-icon .docyard-icon {
+  width: 4rem;
+  height: 4rem;
+}
+
+.search-empty-icon .docyard-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .search-empty-title {
