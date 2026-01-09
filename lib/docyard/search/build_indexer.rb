@@ -13,7 +13,7 @@ module Docyard
 
       def initialize(config, verbose: false)
         @config = config
-        @output_dir = config.build.output_dir
+        @output_dir = config.build.output
         @verbose = verbose
       end
 

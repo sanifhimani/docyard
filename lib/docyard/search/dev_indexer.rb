@@ -25,10 +25,10 @@ module Docyard
 
         @temp_dir = Dir.mktmpdir("docyard-search-")
         generate_html_files
-        run_pagefind
+        page_count = run_pagefind
         @pagefind_path = File.join(temp_dir, "pagefind")
 
-        log_success
+        log_success(page_count)
         pagefind_path
       rescue StandardError => e
         warn "[!] Search index generation failed: #{e.message}"
@@ -52,6 +52,8 @@ module Docyard
 
       def generate_html_files
         markdown_files = Dir.glob(File.join(docs_path, "**", "*.md"))
+        markdown_files = filter_excluded_files(markdown_files)
+        markdown_files = filter_non_indexable_files(markdown_files)
         renderer = Renderer.new(base_url: "/", config: config)
 
         progress = TTY::ProgressBar.new(
@@ -63,6 +65,45 @@ module Docyard
         markdown_files.each do |file_path|
           generate_html_file(file_path, renderer)
           progress.advance
+        end
+      end
+
+      def filter_excluded_files(files)
+        exclude_patterns = config.search.exclude || []
+        return files if exclude_patterns.empty?
+
+        files.reject do |file_path|
+          url_path = file_to_url_path(file_path)
+          exclude_patterns.any? { |pattern| File.fnmatch(pattern, url_path, File::FNM_PATHNAME) }
+        end
+      end
+
+      def filter_non_indexable_files(files)
+        files.reject do |file_path|
+          content = File.read(file_path)
+          markdown = Markdown.new(content)
+          frontmatter = markdown.frontmatter
+
+          uses_splash_template?(frontmatter)
+        end
+      end
+
+      def uses_splash_template?(frontmatter)
+        return true if frontmatter["template"] == "splash"
+        return true if frontmatter.key?("landing")
+
+        frontmatter.key?("hero") || frontmatter.key?("features")
+      end
+
+      def file_to_url_path(file_path)
+        relative_path = file_path.delete_prefix("#{docs_path}/")
+        base_name = File.basename(relative_path, ".md")
+        dir_name = File.dirname(relative_path)
+
+        if base_name == "index"
+          dir_name == "." ? "/" : "/#{dir_name}"
+        else
+          dir_name == "." ? "/#{base_name}" : "/#{dir_name}/#{base_name}"
         end
       end
 
@@ -97,12 +138,16 @@ module Docyard
 
         raise "Pagefind failed: #{stderr}" unless status.success?
 
-        stdout
+        extract_page_count(stdout)
       end
 
-      def log_success
-        page_count = Dir.glob(File.join(temp_dir, "**", "*.html")).size
-        puts "=> Search index generated (#{page_count} pages)"
+      def extract_page_count(output)
+        match = output.match(/Indexed (\d+) page/i)
+        match ? match[1].to_i : 0
+      end
+
+      def log_success(page_count)
+        puts "=> Search index generated (#{page_count} pages indexed)"
         puts "=> Temp directory: #{temp_dir}" if ENV["DOCYARD_DEBUG"]
       end
     end
