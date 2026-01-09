@@ -38,7 +38,7 @@ RSpec.describe Docyard::RackApplication do
 
       it "uses config site title when provided" do
         Dir.mktmpdir do |temp_dir|
-          File.write(File.join(temp_dir, "docyard.yml"), "site:\n  title: 'Custom Docs'")
+          File.write(File.join(temp_dir, "docyard.yml"), "title: 'Custom Docs'")
           config = Docyard::Config.load(temp_dir)
 
           app_with_config = described_class.new(docs_path: docs_path, file_watcher: file_watcher, config: config)
@@ -65,17 +65,17 @@ RSpec.describe Docyard::RackApplication do
         end
       end
 
-      it "renders with dark mode logo when provided in config", :aggregate_failures do
+      it "renders with logo for dark mode when logo is provided", :aggregate_failures do
         Dir.mktmpdir do |temp_dir|
-          logo_dark_path = File.join(temp_dir, "logo-dark.svg")
-          File.write(logo_dark_path, "<svg></svg>")
-          File.write(File.join(temp_dir, "docyard.yml"), "branding:\n  logo_dark: '#{logo_dark_path}'")
+          logo_path = File.join(temp_dir, "logo.svg")
+          File.write(logo_path, "<svg></svg>")
+          File.write(File.join(temp_dir, "docyard.yml"), "branding:\n  logo: '#{logo_path}'")
           config = Docyard::Config.load(temp_dir)
           app_with_config = described_class.new(docs_path: docs_path, file_watcher: file_watcher, config: config)
 
           _status, _headers, body = app_with_config.call({ "PATH_INFO" => "/", "QUERY_STRING" => "" })
 
-          expect(body.first).to include("src=\"/#{logo_dark_path}\"")
+          expect(body.first).to include("src=\"/#{logo_path}\"")
           expect(body.first).to include("site-logo-dark")
         end
       end

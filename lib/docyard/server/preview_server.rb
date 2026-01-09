@@ -12,7 +12,7 @@ module Docyard
     def initialize(port: DEFAULT_PORT)
       @port = port
       @config = Config.load
-      @output_dir = File.expand_path(@config.build.output_dir)
+      @output_dir = File.expand_path(@config.build.output)
     end
 
     def start

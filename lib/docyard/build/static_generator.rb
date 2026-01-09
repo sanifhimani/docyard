@@ -11,7 +11,7 @@ module Docyard
       def initialize(config, verbose: false)
         @config = config
         @verbose = verbose
-        @renderer = Renderer.new(base_url: config.build.base_url, config: config)
+        @renderer = Renderer.new(base_url: config.build.base, config: config)
       end
 
       def generate
@@ -41,7 +41,7 @@ module Docyard
       end
 
       def copy_custom_landing_page
-        output_path = File.join(config.build.output_dir, "index.html")
+        output_path = File.join(config.build.output, "index.html")
         FileUtils.mkdir_p(File.dirname(output_path))
         FileUtils.cp("docs/index.html", output_path)
         log "[✓] Copied custom landing page (index.html)"
@@ -58,7 +58,23 @@ module Docyard
         current_path = determine_current_path(markdown_file_path)
 
         html_content = render_markdown_file(markdown_file_path, current_path)
+        html_content = apply_search_exclusion(html_content, current_path)
         write_output(output_path, html_content)
+      end
+
+      def apply_search_exclusion(html_content, current_path)
+        return html_content unless excluded_from_search?(current_path)
+
+        html_content.gsub("data-pagefind-body", "data-pagefind-ignore")
+      end
+
+      def excluded_from_search?(path)
+        exclude_patterns = config.search.exclude || []
+        exclude_patterns.any? do |pattern|
+          next false unless pattern.start_with?("/")
+
+          File.fnmatch(pattern, path, File::FNM_PATHNAME)
+        end
       end
 
       def render_markdown_file(markdown_file_path, current_path)
@@ -85,7 +101,7 @@ module Docyard
         base_name = File.basename(relative_path, ".md")
         dir_name = File.dirname(relative_path)
 
-        output_dir = config.build.output_dir
+        output_dir = config.build.output
 
         if base_name == "index"
           File.join(output_dir, dir_name, "index.html")

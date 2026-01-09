@@ -23,10 +23,8 @@ module Docyard
         logo: Constants::DEFAULT_LOGO_PATH,
         logo_dark: Constants::DEFAULT_LOGO_DARK_PATH,
         favicon: nil,
-        display_logo: true,
-        display_title: true,
         credits: true,
-        social: {}
+        social: []
       }
     end
 
@@ -34,39 +32,49 @@ module Docyard
       site_options
         .merge(logo_options)
         .merge(search_options)
-        .merge(appearance_options)
         .merge(credits_options)
         .merge(social_options)
     end
 
     def site_options
       {
-        site_title: config.site.title || Constants::DEFAULT_SITE_TITLE,
-        site_description: config.site.description || "",
+        site_title: config.title || Constants::DEFAULT_SITE_TITLE,
+        site_description: config.description || "",
         favicon: config.branding.favicon
       }
     end
 
     def logo_options
       branding = config.branding
+      logo = branding.logo
+      has_custom_logo = !logo.nil?
       {
-        logo: resolve_logo(branding.logo, branding.logo_dark),
-        logo_dark: resolve_logo_dark(branding.logo, branding.logo_dark)
+        logo: logo || Constants::DEFAULT_LOGO_PATH,
+        logo_dark: detect_dark_logo(logo) || Constants::DEFAULT_LOGO_DARK_PATH,
+        has_custom_logo: has_custom_logo
       }
+    end
+
+    def detect_dark_logo(logo)
+      return nil unless logo
+
+      ext = File.extname(logo)
+      base = File.basename(logo, ext)
+      dark_filename = "#{base}-dark#{ext}"
+
+      if File.absolute_path?(logo)
+        dark_path = File.join(File.dirname(logo), dark_filename)
+        File.exist?(dark_path) ? dark_path : logo
+      else
+        dark_path = File.join("docs/public", dark_filename)
+        File.exist?(dark_path) ? dark_filename : logo
+      end
     end
 
     def search_options
       {
         search_enabled: config.search.enabled != false,
-        search_placeholder: config.search.placeholder || "Search documentation..."
-      }
-    end
-
-    def appearance_options
-      appearance = config.branding.appearance || {}
-      {
-        display_logo: appearance["logo"] != false,
-        display_title: appearance["title"] != false
+        search_placeholder: config.search.placeholder || "Search..."
       }
     end
 
@@ -77,16 +85,17 @@ module Docyard
     end
 
     def social_options
-      social = config.branding.social || {}
+      socials = config.socials || {}
       {
-        social: normalize_social_links(social)
+        social: normalize_social_links(socials)
       }
     end
 
-    def normalize_social_links(social)
-      return [] unless social.is_a?(Hash) && social.any?
+    def normalize_social_links(socials)
+      return [] unless socials.is_a?(Hash) && socials.any?
 
-      social.map do |platform, url|
+      socials.map do |platform, url|
+        next if platform == "custom"
         next unless url.is_a?(String) && !url.strip.empty?
 
         {
@@ -95,14 +104,6 @@ module Docyard
           icon: platform.to_s
         }
       end.compact
-    end
-
-    def resolve_logo(logo, logo_dark)
-      logo || logo_dark || Constants::DEFAULT_LOGO_PATH
-    end
-
-    def resolve_logo_dark(logo, logo_dark)
-      logo_dark || logo || Constants::DEFAULT_LOGO_DARK_PATH
     end
   end
 end

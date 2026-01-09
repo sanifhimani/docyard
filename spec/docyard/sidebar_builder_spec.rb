@@ -79,8 +79,7 @@ RSpec.describe Docyard::SidebarBuilder do
     context "with custom site title in config" do
       let(:config) do
         create_config(<<~YAML)
-          site:
-            title: "My Documentation"
+          title: "My Documentation"
         YAML
         Docyard::Config.load(temp_dir)
       end
@@ -173,30 +172,19 @@ RSpec.describe Docyard::SidebarBuilder do
       end
     end
 
-    context "when docyard.yml sidebar takes precedence over _sidebar.yml" do
-      let(:config) do
-        create_config(<<~YAML)
-          sidebar:
-            items:
-              - advanced
-              - introduction
-        YAML
-        Docyard::Config.load(temp_dir)
-      end
-
+    context "when _sidebar.yml has invalid YAML" do
       before do
         File.write(File.join(docs_dir, "_sidebar.yml"), <<~YAML)
-          - introduction
-          - getting-started
+          invalid: yaml: syntax
         YAML
       end
 
-      it "uses docyard.yml config over _sidebar.yml", :aggregate_failures do
+      it "falls back to filesystem order", :aggregate_failures do
         tree = sidebar.tree
 
-        expect(tree.length).to eq(2)
-        expect(tree[0][:title]).to eq("Advanced Topics")
-        expect(tree[1][:title]).to eq("Introduction")
+        expect(tree.length).to eq(3)
+        # Filesystem order (alphabetical)
+        expect(tree.map { |i| i[:title] }).to include("Introduction", "Getting Started", "Advanced Topics")
       end
     end
   end

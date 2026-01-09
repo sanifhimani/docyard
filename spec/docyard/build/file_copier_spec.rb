@@ -6,7 +6,7 @@ RSpec.describe Docyard::Build::FileCopier do
   let(:output_dir) { File.join(temp_dir, "dist") }
   let(:config) do
     Docyard::Config.load(temp_dir).tap do |c|
-      c.data["build"]["output_dir"] = output_dir
+      c.data["build"]["output"] = output_dir
     end
   end
 

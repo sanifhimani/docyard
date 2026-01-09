@@ -35,7 +35,7 @@ module Docyard
     private
 
     def prepare_output_directory
-      output_dir = config.build.output_dir
+      output_dir = config.build.output
 
       if clean && Dir.exist?(output_dir)
         log "[✓] Cleaning #{output_dir}/ directory"
@@ -68,7 +68,7 @@ module Docyard
       sitemap_gen = Build::SitemapGenerator.new(config)
       sitemap_gen.generate
 
-      File.write(File.join(config.build.output_dir, "robots.txt"), robots_txt_content)
+      File.write(File.join(config.build.output, "robots.txt"), robots_txt_content)
       log "[+] Generated robots.txt"
     end
 
@@ -78,14 +78,14 @@ module Docyard
     end
 
     def robots_txt_content
-      base_url = config.build.base_url
-      base_url = "#{base_url}/" unless base_url.end_with?("/")
+      base = config.build.base
+      base = "#{base}/" unless base.end_with?("/")
 
       <<~ROBOTS
         User-agent: *
         Allow: /
 
-        Sitemap: #{base_url}sitemap.xml
+        Sitemap: #{base}sitemap.xml
       ROBOTS
     end
 
@@ -94,7 +94,7 @@ module Docyard
 
       puts "\n#{'=' * 50}"
       puts "Build complete in #{format('%.2f', elapsed)}s"
-      puts "Output: #{config.build.output_dir}/"
+      puts "Output: #{config.build.output}/"
 
       summary = "#{pages} pages, #{bundles} bundles, #{assets} static files"
       summary += ", #{indexed} pages indexed" if indexed.positive?

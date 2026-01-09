@@ -7,42 +7,22 @@ require_relative "config/constants"
 module Docyard
   class Config
     DEFAULT_CONFIG = {
-      "site" => {
-        "title" => Constants::DEFAULT_SITE_TITLE,
-        "description" => ""
-      },
+      "title" => Constants::DEFAULT_SITE_TITLE,
+      "description" => "",
       "branding" => {
         "logo" => nil,
-        "logo_dark" => nil,
         "favicon" => nil,
-        "credits" => true,
-        "social" => {},
-        "appearance" => {
-          "logo" => true,
-          "title" => true
-        }
+        "credits" => true
       },
+      "socials" => {},
+      "tabs" => [],
       "build" => {
-        "output_dir" => "dist",
-        "base_url" => "/",
-        "clean" => true
-      },
-      "sidebar" => {
-        "items" => []
-      },
-      "navigation" => {
-        "footer" => {
-          "enabled" => true,
-          "prev_text" => "Previous",
-          "next_text" => "Next"
-        }
-      },
-      "markdown" => {
-        "lineNumbers" => false
+        "output" => "dist",
+        "base" => "/"
       },
       "search" => {
         "enabled" => true,
-        "placeholder" => "Search documentation...",
+        "placeholder" => "Search...",
         "exclude" => []
       }
     }.freeze
@@ -64,28 +44,28 @@ module Docyard
       File.exist?(file_path)
     end
 
-    def site
-      @site ||= ConfigSection.new(data["site"])
+    def title
+      data["title"]
+    end
+
+    def description
+      data["description"]
     end
 
     def branding
       @branding ||= ConfigSection.new(data["branding"])
     end
 
+    def socials
+      data["socials"]
+    end
+
+    def tabs
+      data["tabs"]
+    end
+
     def build
       @build ||= ConfigSection.new(data["build"])
-    end
-
-    def sidebar
-      @sidebar ||= ConfigSection.new(data["sidebar"])
-    end
-
-    def navigation
-      @navigation ||= ConfigSection.new(data["navigation"])
-    end
-
-    def markdown
-      @markdown ||= ConfigSection.new(data["markdown"])
     end
 
     def search
@@ -124,7 +104,13 @@ module Docyard
     end
 
     def deep_dup(hash)
-      hash.transform_values { |value| value.is_a?(Hash) ? deep_dup(value) : value }
+      hash.transform_values do |value|
+        case value
+        when Hash then deep_dup(value)
+        when Array then value.map { |v| v.is_a?(Hash) ? deep_dup(v) : v }
+        else value
+        end
+      end
     end
 
     def build_yaml_error_message(error)
@@ -143,10 +129,6 @@ module Docyard
   class ConfigSection
     def initialize(data)
       @data = data || {}
-    end
-
-    def appearance
-      @data["appearance"]
     end
 
     def method_missing(method, *args)

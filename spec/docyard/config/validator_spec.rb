@@ -5,13 +5,13 @@ RSpec.describe Docyard::Config::Validator do
 
   let(:base_config) do
     {
-      "site" => { "title" => "Documentation", "description" => "" },
-      "branding" => {
-        "logo" => nil, "logo_dark" => nil, "favicon" => nil,
-        "appearance" => { "logo" => true, "title" => true }
-      },
-      "build" => { "output_dir" => "dist", "base_url" => "/", "clean" => true },
-      "markdown" => { "lineNumbers" => false }
+      "title" => "Documentation",
+      "description" => "",
+      "branding" => { "logo" => nil, "favicon" => nil, "credits" => true },
+      "socials" => {},
+      "tabs" => [],
+      "build" => { "output" => "dist", "base" => "/" },
+      "search" => { "enabled" => true, "placeholder" => "Search...", "exclude" => [] }
     }
   end
 
@@ -41,8 +41,9 @@ RSpec.describe Docyard::Config::Validator do
 
       it "does not raise for valid string values" do
         config = valid_config(
-          "site" => { "title" => "My Docs", "description" => "Documentation" },
-          "build" => { "output_dir" => "public", "base_url" => "/docs/" }
+          "title" => "My Docs",
+          "description" => "Documentation",
+          "build" => { "output" => "public", "base" => "/docs/" }
         )
         validator = described_class.new(config)
 
@@ -51,8 +52,8 @@ RSpec.describe Docyard::Config::Validator do
 
       it "does not raise for valid boolean values" do
         config = valid_config(
-          "build" => { "clean" => false },
-          "markdown" => { "lineNumbers" => true }
+          "branding" => { "credits" => false },
+          "search" => { "enabled" => false }
         )
         validator = described_class.new(config)
 
@@ -60,63 +61,55 @@ RSpec.describe Docyard::Config::Validator do
       end
     end
 
-    context "with invalid site section" do
+    context "with invalid top-level fields" do
       it "raises ConfigError for non-string title" do
-        config = valid_config("site" => { "title" => 123 })
+        config = valid_config("title" => 123)
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /site\.title.*must be a string/m)
+          .to raise_error(Docyard::ConfigError, /title.*must be a string/m)
       end
 
       it "raises ConfigError for non-string description" do
-        config = valid_config("site" => { "description" => ["array"] })
+        config = valid_config("description" => ["array"])
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /site\.description.*must be a string/m)
+          .to raise_error(Docyard::ConfigError, /description.*must be a string/m)
       end
     end
 
     context "with invalid build section" do
-      it "raises ConfigError for non-string output_dir" do
-        config = valid_config("build" => { "output_dir" => 123 })
+      it "raises ConfigError for non-string output" do
+        config = valid_config("build" => { "output" => 123 })
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.output_dir.*must be a string/m)
+          .to raise_error(Docyard::ConfigError, /build\.output.*must be a string/m)
       end
 
-      it "raises ConfigError for output_dir with forward slash" do
-        config = valid_config("build" => { "output_dir" => "dist/folder" })
+      it "raises ConfigError for output with forward slash" do
+        config = valid_config("build" => { "output" => "dist/folder" })
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.output_dir.*cannot contain slashes/m)
+          .to raise_error(Docyard::ConfigError, /build\.output.*cannot contain slashes/m)
       end
 
-      it "raises ConfigError for output_dir with backslash" do
-        config = valid_config("build" => { "output_dir" => 'dist\folder' })
+      it "raises ConfigError for output with backslash" do
+        config = valid_config("build" => { "output" => 'dist\folder' })
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.output_dir.*cannot contain slashes/m)
+          .to raise_error(Docyard::ConfigError, /build\.output.*cannot contain slashes/m)
       end
 
-      it "raises ConfigError for base_url not starting with slash" do
-        config = valid_config("build" => { "base_url" => "docs/" })
+      it "raises ConfigError for base not starting with slash" do
+        config = valid_config("build" => { "base" => "docs/" })
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.base_url.*must start with/m)
-      end
-
-      it "raises ConfigError for non-boolean clean" do
-        config = valid_config("build" => { "clean" => "yes" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.clean.*must be true or false/m)
+          .to raise_error(Docyard::ConfigError, /build\.base.*must start with/m)
       end
     end
 
@@ -151,64 +144,108 @@ RSpec.describe Docyard::Config::Validator do
         expect { validator.validate! }.not_to raise_error
       end
 
-      it "raises ConfigError for non-boolean appearance.logo" do
-        config = valid_config("branding" => { "appearance" => { "logo" => "yes" } })
+      it "raises ConfigError for non-boolean credits" do
+        config = valid_config("branding" => { "credits" => "yes" })
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /branding\.appearance\.logo.*must be true or false/m)
-      end
-
-      it "raises ConfigError for non-boolean appearance.title" do
-        config = valid_config("branding" => { "appearance" => { "title" => 1 } })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /branding\.appearance\.title.*must be true or false/m)
+          .to raise_error(Docyard::ConfigError, /branding\.credits.*must be true or false/m)
       end
     end
 
-    context "with invalid markdown section" do
-      it "raises ConfigError for non-boolean lineNumbers" do
-        config = valid_config("markdown" => { "lineNumbers" => "yes" })
+    context "with invalid socials section" do
+      it "raises ConfigError for non-hash socials" do
+        config = valid_config("socials" => "string")
         validator = described_class.new(config)
 
         expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /markdown\.lineNumbers.*must be true or false/m)
+          .to raise_error(Docyard::ConfigError, /socials.*must be a hash/m)
       end
 
-      it "does not validate lineNumbers when key is absent" do
-        config = valid_config
-        config["markdown"] = {}
+      it "raises ConfigError for non-string social URL" do
+        config = valid_config("socials" => { "github" => 123 })
         validator = described_class.new(config)
 
-        expect { validator.validate! }.not_to raise_error
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /socials\.github.*must be a URL/m)
+      end
+
+      it "raises ConfigError for non-array custom socials" do
+        config = valid_config("socials" => { "custom" => "string" })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /socials\.custom.*must be an array/m)
+      end
+    end
+
+    context "with invalid tabs section" do
+      it "raises ConfigError for non-array tabs" do
+        config = valid_config("tabs" => "string")
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /tabs.*must be an array/m)
+      end
+
+      it "raises ConfigError for non-string tab text" do
+        config = valid_config("tabs" => [{ "text" => 123, "href" => "/guide" }])
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /tabs\[0\]\.text.*must be a string/m)
+      end
+
+      it "raises ConfigError for non-boolean external" do
+        config = valid_config("tabs" => [{ "text" => "Blog", "href" => "http://blog.example.com",
+                                           "external" => "yes" }])
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /tabs\[0\]\.external.*must be true or false/m)
+      end
+    end
+
+    context "with invalid search section" do
+      it "raises ConfigError for non-boolean enabled" do
+        config = valid_config("search" => { "enabled" => "yes" })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /search\.enabled.*must be true or false/m)
+      end
+
+      it "raises ConfigError for non-array exclude" do
+        config = valid_config("search" => { "exclude" => "string" })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /search\.exclude.*must be an array/m)
       end
     end
 
     context "with multiple errors" do
       it "reports all validation errors", :aggregate_failures do
         config = valid_config(
-          "site" => { "title" => 123 },
-          "build" => { "clean" => "yes", "base_url" => "no-slash" }
+          "title" => 123,
+          "build" => { "base" => "no-slash" }
         )
         validator = described_class.new(config)
 
         expect { validator.validate! }
           .to raise_error(Docyard::ConfigError) do |error|
-            expect(error.message).to include("site.title")
-            expect(error.message).to include("build.clean")
-            expect(error.message).to include("build.base_url")
+            expect(error.message).to include("title")
+            expect(error.message).to include("build.base")
           end
       end
 
       it "formats error messages with field, error, got, and fix", :aggregate_failures do
-        config = valid_config("site" => { "title" => 123 })
+        config = valid_config("title" => 123)
         validator = described_class.new(config)
 
         expect { validator.validate! }
           .to raise_error(Docyard::ConfigError) do |error|
-            expect(error.message).to include("Field: site.title")
+            expect(error.message).to include("Field: title")
             expect(error.message).to include("Error: must be a string")
             expect(error.message).to include("Got: Integer")
             expect(error.message).to include("Fix:")

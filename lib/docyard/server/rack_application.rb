@@ -17,7 +17,7 @@ module Docyard
       @file_watcher = file_watcher
       @config = config
       @router = Router.new(docs_path: docs_path)
-      @renderer = Renderer.new(base_url: config&.build&.base_url || "/", config: config)
+      @renderer = Renderer.new(base_url: config&.build&.base || "/", config: config)
       @asset_handler = AssetHandler.new
       @pagefind_handler = PagefindHandler.new(pagefind_path: pagefind_path, config: config)
     end
@@ -136,9 +136,7 @@ module Docyard
     end
 
     def navigation_config
-      return {} unless config
-
-      config.navigation&.footer || {}
+      {}
     end
 
     def branding_options

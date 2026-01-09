@@ -35,12 +35,22 @@ module Docyard
         main_css = File.read(File.join(ASSETS_PATH, "css", "main.css"))
         css_content = resolve_css_imports(main_css)
         minified = CSSminify.compress(css_content)
+        minified = fix_calc_whitespace(minified)
         hash = generate_hash(minified)
 
         write_bundled_asset(minified, hash, "css")
         log_compression_stats(css_content, minified, "CSS")
 
         hash
+      end
+
+      def fix_calc_whitespace(css)
+        css
+          .gsub(/\)\+(?!\s)/, ") + ")
+          .gsub(/\)-(?![-\s])/, ") - ")
+          .gsub(/(\d[a-z]*)\+(?=[\w(])/, '\1 + ')
+          .gsub(/([lch])\+(?=[\d.])/, '\1 + ')
+          .gsub(/([lch])-(?=[\d.])/, '\1 - ')
       end
 
       def resolve_css_imports(css_content)
@@ -92,8 +102,8 @@ module Docyard
       end
 
       def update_html_references(css_hash, js_hash)
-        html_files = Dir.glob(File.join(config.build.output_dir, "**", "*.html"))
-        base_url = normalize_base_url(config.build.base_url)
+        html_files = Dir.glob(File.join(config.build.output, "**", "*.html"))
+        base_url = normalize_base_url(config.build.base)
 
         html_files.each do |file|
           content = replace_asset_references(File.read(file), css_hash, js_hash, base_url)
@@ -112,7 +122,7 @@ module Docyard
 
       def write_bundled_asset(content, hash, extension)
         filename = "bundle.#{hash}.#{extension}"
-        output_path = File.join(config.build.output_dir, "_docyard", filename)
+        output_path = File.join(config.build.output, "_docyard", filename)
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, content)
       end

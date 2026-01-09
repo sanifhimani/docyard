@@ -30,7 +30,7 @@ module Docyard
         return 0 unless Dir.exist?(public_dir)
 
         files = find_files_in_dir(public_dir)
-        files.each { |file| copy_single_file(file, "#{public_dir}/", config.build.output_dir) }
+        files.each { |file| copy_single_file(file, "#{public_dir}/", config.build.output) }
 
         log "[✓] Copied #{files.size} public files from #{public_dir}/" if files.any?
         files.size
@@ -66,7 +66,7 @@ module Docyard
           source_path = File.join(templates_assets, asset_file)
           next unless File.exist?(source_path)
 
-          dest_path = File.join(config.build.output_dir, DOCYARD_OUTPUT_DIR, asset_file)
+          dest_path = File.join(config.build.output, DOCYARD_OUTPUT_DIR, asset_file)
           FileUtils.mkdir_p(File.dirname(dest_path))
           FileUtils.cp(source_path, dest_path)
 
@@ -78,7 +78,7 @@ module Docyard
       end
 
       def copy_user_branding_assets
-        %w[logo logo_dark favicon].sum { |asset_key| copy_single_branding_asset(asset_key) }
+        %w[logo favicon].sum { |asset_key| copy_single_branding_asset(asset_key) }
       end
 
       def copy_single_branding_asset(asset_key)
@@ -88,7 +88,7 @@ module Docyard
         full_path = File.join("docs", asset_path)
         return 0 unless File.exist?(full_path)
 
-        dest_path = File.join(config.build.output_dir, asset_path)
+        dest_path = File.join(config.build.output, asset_path)
         FileUtils.mkdir_p(File.dirname(dest_path))
         FileUtils.cp(full_path, dest_path)
 

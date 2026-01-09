@@ -6,8 +6,7 @@ RSpec.describe Docyard::Search::DevIndexer do
   let(:config) do
     Dir.chdir(temp_dir) do
       create_config(<<~YAML)
-        site:
-          title: "Test Docs"
+        title: "Test Docs"
         search:
           enabled: true
       YAML
@@ -31,8 +30,7 @@ RSpec.describe Docyard::Search::DevIndexer do
       let(:config) do
         Dir.chdir(temp_dir) do
           create_config(<<~YAML)
-            site:
-              title: "Test Docs"
+            title: "Test Docs"
             search:
               enabled: false
           YAML
@@ -105,8 +103,7 @@ RSpec.describe Docyard::Search::DevIndexer do
       let(:config) do
         Dir.chdir(temp_dir) do
           create_config(<<~YAML)
-            site:
-              title: "Test Docs"
+            title: "Test Docs"
             search:
               enabled: true
               exclude:
@@ -198,6 +195,38 @@ RSpec.describe Docyard::Search::DevIndexer do
 
       it "does not raise an error" do
         expect { indexer.cleanup }.not_to raise_error
+      end
+    end
+  end
+
+  describe "filtering" do
+    context "when docs include landing pages" do
+      before do
+        create_doc("index.md", <<~MD)
+          ---
+          landing:
+            hero:
+              title: Welcome
+          ---
+          # Landing Page
+        MD
+        create_doc("guide.md", "---\ntitle: Guide\n---\n\n# Guide")
+
+        allow(Open3).to receive(:capture3)
+          .with("npx", "pagefind", "--version")
+          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
+
+        allow(Open3).to receive(:capture3)
+          .with("npx", "pagefind", "--site", anything)
+          .and_return(["Indexed 1 page", "", instance_double(Process::Status, success?: true)])
+      end
+
+      it "excludes landing pages from indexing", :aggregate_failures do
+        indexer.generate
+        html_files = Dir.glob(File.join(indexer.temp_dir, "**", "*.html"))
+
+        expect(html_files.size).to eq(1)
+        expect(html_files.first).to include("guide")
       end
     end
   end

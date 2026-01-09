@@ -21,6 +21,8 @@ module Docyard
 
         exclusions = config.search.exclude || []
         exclusions.each do |pattern|
+          next if pattern.start_with?("/")
+
           args += ["--exclude-selectors", pattern]
         end
 

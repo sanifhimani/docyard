@@ -100,7 +100,6 @@ module Docyard
 
     def assign_branding_variables(branding)
       assign_site_branding(branding)
-      assign_display_options(branding)
       assign_search_options(branding)
       assign_credits_and_social(branding)
     end
@@ -111,11 +110,7 @@ module Docyard
       @logo = branding[:logo] || Constants::DEFAULT_LOGO_PATH
       @logo_dark = branding[:logo_dark]
       @favicon = branding[:favicon] || Constants::DEFAULT_FAVICON_PATH
-    end
-
-    def assign_display_options(branding)
-      @display_logo = branding[:display_logo].nil? || branding[:display_logo]
-      @display_title = branding[:display_title].nil? || branding[:display_title]
+      @has_custom_logo = branding[:has_custom_logo] || false
     end
 
     def assign_search_options(branding)
