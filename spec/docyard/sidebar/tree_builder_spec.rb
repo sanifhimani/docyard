@@ -67,13 +67,13 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         expect(guide[:type]).to eq(:directory)
       end
 
-      it "creates Introduction child as first item", :aggregate_failures do
+      it "creates Overview child as first item", :aggregate_failures do
         result = builder.build(file_items)
 
         guide = result[0]
         intro = guide[:children].first
 
-        expect(intro[:title]).to eq("Introduction")
+        expect(intro[:title]).to eq("Overview")
         expect(intro[:path]).to eq("/guide")
         expect(intro[:type]).to eq(:file)
       end
@@ -125,9 +125,9 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
       end
     end
 
-    context "with nested group containing index (depth 2+)" do
+    context "with nested directory containing index (depth 2+)" do
       before do
-        create_file("advanced/customization/index.md", "---\ntitle: Customization\n---\n\nContent")
+        create_file("advanced/customization/index.md", "---\nsidebar:\n  text: Customization Overview\n---\n\nContent")
         create_file("advanced/customization/themes.md", "---\ntitle: Themes\n---\n\nContent")
       end
 
@@ -150,7 +150,7 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         }]
       end
 
-      it "makes group header clickable", :aggregate_failures do
+      it "renders nested directory as collapsible group (not section)", :aggregate_failures do
         result = builder.build(file_items)
 
         advanced = result[0]
@@ -158,16 +158,18 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
 
         expect(customization[:path]).to eq("/advanced/customization")
         expect(customization[:has_index]).to be true
+        expect(customization[:section]).to be false
         expect(customization[:title]).to eq("Customization")
       end
 
-      it "filters index from group children", :aggregate_failures do
+      it "makes header clickable and does NOT add Overview child", :aggregate_failures do
         result = builder.build(file_items)
 
         advanced = result[0]
         customization = advanced[:children][0]
 
         expect(customization[:children].length).to eq(1)
+        expect(customization[:children][0][:title]).to eq("Themes")
         expect(customization[:children][0][:path]).to eq("/advanced/customization/themes")
       end
     end
@@ -326,11 +328,12 @@ RSpec.describe Docyard::Sidebar::TreeBuilder do
         create_file("guide/setup.md")
       end
 
-      it "collapses directory when no child is active" do
+      it "sections are not collapsed (they are static headers)", :aggregate_failures do
         result = builder.build(file_items)
 
         guide = result.find { |item| item[:type] == :directory }
-        expect(guide[:collapsed]).to be true
+        expect(guide[:collapsed]).to be false
+        expect(guide[:section]).to be true
       end
     end
 

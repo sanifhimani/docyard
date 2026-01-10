@@ -45,6 +45,7 @@ RSpec.describe Docyard::Sidebar::Renderer do
           path: nil,
           active: false,
           type: :directory,
+          section: true,
           children: [
             {
               title: "Setup",
@@ -57,12 +58,73 @@ RSpec.describe Docyard::Sidebar::Renderer do
         }]
       end
 
-      it "renders nested lists with button group", :aggregate_failures do
+      it "renders section header by default", :aggregate_failures do
         html = renderer.render(tree)
 
         expect(html).to include('<h5 class="nav-section-title">Guide</h5>')
         expect(html).to include('<a href="/guide/setup"')
         expect(html).to include(">Setup</span>")
+      end
+    end
+
+    context "with collapsible group" do
+      let(:tree) do
+        [{
+          title: "Resources",
+          path: nil,
+          active: false,
+          type: :directory,
+          section: false,
+          collapsed: false,
+          children: [
+            {
+              title: "FAQ",
+              path: "/resources/faq",
+              active: false,
+              type: :file,
+              children: []
+            }
+          ]
+        }]
+      end
+
+      it "renders collapsible group when section is false", :aggregate_failures do
+        html = renderer.render(tree)
+
+        expect(html).to include('class="nav-group-header')
+        expect(html).to include(">Resources</span>")
+        expect(html).to include('<a href="/resources/faq"')
+        expect(html).to include(">FAQ</span>")
+      end
+    end
+
+    context "with section icon" do
+      let(:tree) do
+        [{
+          title: "API",
+          path: nil,
+          active: false,
+          type: :directory,
+          section: true,
+          icon: "code",
+          children: [
+            {
+              title: "Reference",
+              path: "/api/reference",
+              active: false,
+              type: :file,
+              children: []
+            }
+          ]
+        }]
+      end
+
+      it "renders section header with icon", :aggregate_failures do
+        html = renderer.render(tree)
+
+        expect(html).to include('<h5 class="nav-section-title">')
+        expect(html).to include("nav-section-icon")
+        expect(html).to include("API</h5>")
       end
     end
 

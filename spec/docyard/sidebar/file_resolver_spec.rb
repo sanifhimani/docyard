@@ -162,23 +162,64 @@ RSpec.describe Docyard::Sidebar::FileResolver do
       MD
     end
 
-    it "creates file item with nested children", :aggregate_failures do
-      parsed_items = [
+    let(:parsed_items) do
+      [
         Docyard::Sidebar::Item.new(text: "Child 1", path: "/child1", type: :file),
         Docyard::Sidebar::Item.new(text: "Child 2", path: "/child2", type: :file)
       ]
+    end
 
+    it "creates section item by default at depth 1", :aggregate_failures do
       item = resolver.build_file_with_children(
-        slug: "parent",
-        options: { "icon" => "custom-icon" },
-        base_path: "",
-        parsed_items: parsed_items
+        slug: "parent", options: { "icon" => "custom-icon" }, base_path: "", parsed_items: parsed_items, depth: 1
+      )
+
+      expect(item.text).to eq("Parent Page")
+      expect(item.icon).to eq("custom-icon")
+      expect(item.path).to be_nil
+      expect(item.type).to eq(:section)
+      expect(item.section).to be true
+      expect(item.items.length).to eq(2)
+    end
+
+    it "creates collapsible file item by default at depth 2+", :aggregate_failures do
+      item = resolver.build_file_with_children(
+        slug: "parent", options: { "icon" => "custom-icon" }, base_path: "", parsed_items: parsed_items, depth: 2
       )
 
       expect(item.text).to eq("Parent Page")
       expect(item.icon).to eq("custom-icon")
       expect(item.path).to eq("/parent")
       expect(item.type).to eq(:file)
+      expect(item.section).to be false
+      expect(item.items.length).to eq(2)
+    end
+
+    it "creates section item when collapsible is explicitly false", :aggregate_failures do
+      item = resolver.build_file_with_children(
+        slug: "parent", options: { "icon" => "custom-icon", "collapsible" => false },
+        base_path: "", parsed_items: parsed_items, depth: 2
+      )
+
+      expect(item.text).to eq("Parent Page")
+      expect(item.icon).to eq("custom-icon")
+      expect(item.path).to be_nil
+      expect(item.type).to eq(:section)
+      expect(item.section).to be true
+      expect(item.items.length).to eq(2)
+    end
+
+    it "creates collapsible file item when collapsible is explicitly true at depth 1", :aggregate_failures do
+      item = resolver.build_file_with_children(
+        slug: "parent", options: { "icon" => "custom-icon", "collapsible" => true },
+        base_path: "", parsed_items: parsed_items, depth: 1
+      )
+
+      expect(item.text).to eq("Parent Page")
+      expect(item.icon).to eq("custom-icon")
+      expect(item.path).to eq("/parent")
+      expect(item.type).to eq(:file)
+      expect(item.section).to be false
       expect(item.items.length).to eq(2)
     end
 

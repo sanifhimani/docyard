@@ -90,10 +90,14 @@ RSpec.describe Docyard::Sidebar::Item do
     end
 
     it "includes collapsible status", :aggregate_failures do
-      item_with_children = described_class.new(items: [described_class.new(text: "Child")])
+      # With section: false, children make it collapsible
+      item_with_children = described_class.new(items: [described_class.new(text: "Child")], section: false)
+      # Sections with children are not collapsible
+      section_with_children = described_class.new(items: [described_class.new(text: "Child")], section: true)
       item_without = described_class.new(items: [])
 
       expect(item_with_children.to_h[:collapsible]).to be true
+      expect(section_with_children.to_h[:collapsible]).to be false
       expect(item_without.to_h[:collapsible]).to be false
     end
 
