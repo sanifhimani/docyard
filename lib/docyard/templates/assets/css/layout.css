@@ -277,6 +277,19 @@ main.content {
     padding: var(--spacing-4) var(--spacing-6);
   }
 
+  .header-center {
+    flex: 0;
+    padding: 0;
+    margin-left: auto;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-left: 0;
+  }
+
   .layout {
     padding-top: calc(var(--header-height) + 3rem);
     flex-direction: column;
