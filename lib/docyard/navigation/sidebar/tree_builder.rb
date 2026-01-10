@@ -39,7 +39,11 @@ module Docyard
         dir_context = build_directory_context(dir_path)
         children = build_directory_children(item, dir_path, depth)
 
-        depth == 1 ? build_section(item, children, dir_context) : build_group(item, children, dir_context)
+        if depth == 1
+          build_section(item, children, dir_context)
+        else
+          build_collapsible_group(item, children, dir_context)
+        end
       end
 
       def build_directory_children(item, dir_path, depth)
@@ -80,35 +84,33 @@ module Docyard
 
       def build_section_hash(item, children, metadata)
         { title: Utils::TextFormatter.titleize(item[:name]), path: nil, icon: metadata[:icon],
-          active: false, type: :directory, collapsible: true,
-          collapsed: resolve_collapsed(metadata[:collapsed], children),
-          has_index: false, order: metadata[:order], children: children }
+          active: false, type: :directory, section: true,
+          collapsed: false, has_index: false, order: metadata[:order], children: children }
       end
 
-      def build_group(item, children, context)
-        metadata = context[:has_index] ? metadata_reader.extract_file_metadata(context[:index_file_path]) : {}
-        filtered_children = context[:has_index] ? filter_index_from_children(children, context[:url_path]) : children
+      def build_collapsible_group(item, children, context)
+        filtered_children = filter_index_from_children(children, context[:url_path])
+        metadata = context[:has_index] ? metadata_reader.extract_index_metadata(context[:index_file_path]) : {}
         is_active = context[:has_index] && current_path == context[:url_path]
 
-        build_group_hash(item, filtered_children, metadata, context, is_active)
+        build_collapsible_hash(item, filtered_children, context, metadata, is_active)
       end
 
-      def build_group_hash(item, children, metadata, context, is_active)
-        { title: metadata[:title] || Utils::TextFormatter.titleize(item[:name]),
-          path: context[:url_path], icon: metadata[:icon], active: is_active,
-          type: :directory, collapsible: true,
-          collapsed: resolve_collapsed(metadata[:collapsed], children, is_active: is_active),
-          has_index: context[:has_index], order: metadata[:order], children: children }
+      def build_collapsible_hash(item, children, context, metadata, is_active)
+        { title: Utils::TextFormatter.titleize(item[:name]), path: context[:url_path],
+          icon: metadata[:icon], active: is_active, type: :directory, section: false,
+          collapsed: collapsible_collapsed?(children, is_active), has_index: context[:has_index],
+          order: metadata[:order], children: children }
       end
 
-      def resolve_collapsed(explicit_collapsed, children, is_active: false)
-        return explicit_collapsed unless explicit_collapsed.nil?
+      def collapsible_collapsed?(children, is_active)
+        return false if is_active || active_child?(children)
 
-        !is_active && !active_child?(children)
+        true
       end
 
       def build_overview_item(metadata, url_path)
-        { title: metadata[:sidebar_text] || "Introduction", path: url_path,
+        { title: metadata[:sidebar_text] || "Overview", path: url_path,
           icon: metadata[:icon], active: current_path == url_path, type: :file, children: [] }
       end
 
