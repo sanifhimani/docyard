@@ -17,6 +17,7 @@
 .nav-section-title {
   display: flex;
   align-items: center;
+  gap: var(--spacing-2);
   height: 2rem;
   padding: 0 var(--spacing-2);
   font-size: var(--text-xs);
@@ -29,6 +30,17 @@
   transition: margin var(--transition-base), opacity var(--transition-base);
   pointer-events: none;
   user-select: none;
+}
+
+.nav-section-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-section-icon .docyard-icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 .sidebar nav ul {
@@ -133,6 +145,31 @@
   background-color: oklch(from var(--sidebar-primary) l c h / 10%);
   color: var(--sidebar-primary);
   text-shadow: -0.2px 0 0 currentColor, 0.2px 0 0 currentColor;
+}
+
+.nav-nested-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-nested-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  height: 2rem;
+  padding: 0 var(--spacing-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: oklch(from var(--sidebar-foreground) l c h / 70%);
+  margin: var(--spacing-2) 0 0 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.nav-nested-section-children {
+  display: flex;
+  flex-direction: column;
 }
 
 .nav-group {

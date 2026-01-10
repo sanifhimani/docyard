@@ -1,6 +1,6 @@
 <div class="nav-section">
   <% if @section_name %>
-    <h5 class="nav-section-title"><%= @section_name %></h5>
+    <h5 class="nav-section-title"><% if @section_icon %><span class="nav-section-icon"><%= icon(@section_icon) %></span> <% end %><%= @section_name %></h5>
   <% end %>
   <%= @section_content %>
 </div>

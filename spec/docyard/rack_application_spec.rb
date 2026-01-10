@@ -36,6 +36,47 @@ RSpec.describe Docyard::RackApplication do
         expect(body.first).to include("Documentation")
       end
 
+      it "includes sidebar with navigation links", :aggregate_failures do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        _status, _headers, body = app.call(env)
+
+        expect(body.first).to include("sidebar")
+        expect(body.first).to include('href="/"')
+      end
+
+      it "includes prev/next navigation when multiple pages exist", :aggregate_failures do
+        Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
+          File.write(File.join(temp_dir, "intro.md"), "---\ntitle: Introduction\n---\n# Intro")
+          File.write(File.join(temp_dir, "guide.md"), "---\ntitle: Guide\n---\n# Guide")
+
+          temp_app = described_class.new(docs_path: temp_dir, file_watcher: file_watcher)
+          env = { "PATH_INFO" => "/intro", "QUERY_STRING" => "" }
+
+          _status, _headers, body = temp_app.call(env)
+
+          expect(body.first).to include("pager")
+          expect(body.first).to include("Previous")
+          expect(body.first).to include('href="/guide"')
+        end
+      end
+
+      it "marks current page as active in sidebar", :aggregate_failures do
+        Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
+          File.write(File.join(temp_dir, "intro.md"), "---\ntitle: Introduction\n---\n# Intro")
+          File.write(File.join(temp_dir, "guide.md"), "---\ntitle: Guide\n---\n# Guide")
+
+          temp_app = described_class.new(docs_path: temp_dir, file_watcher: file_watcher)
+          env = { "PATH_INFO" => "/guide", "QUERY_STRING" => "" }
+
+          _status, _headers, body = temp_app.call(env)
+
+          expect(body.first).to match(%r{href="/guide"[^>]*class="[^"]*active})
+        end
+      end
+
       it "uses config site title when provided" do
         Dir.mktmpdir do |temp_dir|
           File.write(File.join(temp_dir, "docyard.yml"), "title: 'Custom Docs'")

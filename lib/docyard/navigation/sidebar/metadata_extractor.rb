@@ -39,11 +39,21 @@ module Docyard
       def extract_common_options(options)
         collapsed_value = options["collapsed"]
         collapsed_value = options[:collapsed] if collapsed_value.nil?
+        collapsible_value = options["collapsible"]
+        collapsible_value = options[:collapsible] if collapsible_value.nil?
+        collapsible_value = true if !collapsed_value.nil? && collapsible_value.nil?
         {
           text: options["text"] || options[:text],
           icon: options["icon"] || options[:icon],
-          collapsed: collapsed_value
+          collapsed: collapsed_value,
+          section: section_from_collapsible(collapsible_value)
         }
+      end
+
+      def section_from_collapsible(collapsible_value)
+        return nil if collapsible_value.nil?
+
+        collapsible_value != true
       end
 
       def resolve_item_text(slug, file_path, options, frontmatter_text)

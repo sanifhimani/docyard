@@ -1,0 +1,11 @@
+<div class="nav-nested-section">
+  <h6 class="nav-nested-section-title">
+    <% if @icon %>
+      <span class="nav-item-icon"><%= icon(@icon) %></span>
+    <% end %>
+    <span class="nav-item-text"><%= @title %></span>
+  </h6>
+  <div class="nav-nested-section-children">
+    <%= @children_html %>
+  </div>
+</div>

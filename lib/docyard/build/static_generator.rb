@@ -2,6 +2,7 @@
 
 require "tty-progressbar"
 require_relative "../rendering/template_resolver"
+require_relative "../navigation/prev_next_builder"
 
 module Docyard
   module Build
@@ -80,11 +81,15 @@ module Docyard
       def render_markdown_file(markdown_file_path, current_path)
         markdown = Markdown.new(File.read(markdown_file_path))
         template_resolver = TemplateResolver.new(markdown.frontmatter, config.data)
-        sidebar_html = template_resolver.show_sidebar? ? build_sidebar(current_path) : ""
+
+        sidebar_builder = build_sidebar_instance(current_path)
+        sidebar_html = template_resolver.show_sidebar? ? sidebar_builder.to_html : ""
+        prev_next_html = template_resolver.show_sidebar? ? build_prev_next(sidebar_builder, current_path, markdown) : ""
 
         renderer.render_file(
           markdown_file_path,
           sidebar_html: sidebar_html,
+          prev_next_html: prev_next_html,
           branding: branding_options,
           template_options: template_resolver.to_options
         )
@@ -122,11 +127,20 @@ module Docyard
         end
       end
 
-      def build_sidebar(current_path)
+      def build_sidebar_instance(current_path)
         SidebarBuilder.new(
           docs_path: "docs",
           current_path: current_path,
           config: config
+        )
+      end
+
+      def build_prev_next(sidebar_builder, current_path, markdown)
+        PrevNextBuilder.new(
+          sidebar_tree: sidebar_builder.tree,
+          current_path: current_path,
+          frontmatter: markdown.frontmatter,
+          config: {}
         ).to_html
       end
 

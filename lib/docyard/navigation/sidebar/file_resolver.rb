@@ -29,24 +29,32 @@ module Docyard
         )
       end
 
-      def build_file_with_children(slug:, options:, base_path:, parsed_items:)
+      def build_file_with_children(slug:, options:, base_path:, parsed_items:, depth: 1)
         common_opts = metadata_extractor.extract_common_options(options)
         file_path = File.join(docs_path, base_path, "#{slug}.md")
         url_path = Utils::PathResolver.to_url(File.join(base_path, slug))
+        is_section = section_for_depth?(common_opts[:section], depth)
 
         Item.new(
           slug: slug,
           text: common_opts[:text] || metadata_extractor.extract_file_title(file_path, slug),
-          path: url_path,
+          path: is_section ? nil : url_path,
           icon: common_opts[:icon],
-          collapsed: common_opts[:collapsed],
+          collapsed: is_section ? false : common_opts[:collapsed],
           items: parsed_items,
-          active: current_path == url_path,
-          type: :file
+          active: is_section ? false : current_path == url_path,
+          type: is_section ? :section : :file,
+          section: is_section
         )
       end
 
       private
+
+      def section_for_depth?(explicit_section, depth)
+        return explicit_section unless explicit_section.nil?
+
+        depth == 1
+      end
 
       def build_context(slug, base_path, options)
         file_path = File.join(docs_path, base_path, "#{slug}.md")

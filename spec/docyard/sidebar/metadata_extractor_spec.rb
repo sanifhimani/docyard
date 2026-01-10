@@ -203,6 +203,52 @@ RSpec.describe Docyard::Sidebar::MetadataExtractor do
     end
   end
 
+  describe "#section_from_collapsible" do
+    it "returns nil when collapsible is nil" do
+      result = extractor.section_from_collapsible(nil)
+
+      expect(result).to be_nil
+    end
+
+    it "returns false when collapsible is true" do
+      result = extractor.section_from_collapsible(true)
+
+      expect(result).to be false
+    end
+
+    it "returns true when collapsible is false" do
+      result = extractor.section_from_collapsible(false)
+
+      expect(result).to be true
+    end
+  end
+
+  describe "#extract_common_options section handling" do
+    it "returns section nil when collapsible not specified" do
+      result = extractor.extract_common_options({})
+
+      expect(result[:section]).to be_nil
+    end
+
+    it "returns section false when collapsible is true" do
+      result = extractor.extract_common_options({ "collapsible" => true })
+
+      expect(result[:section]).to be false
+    end
+
+    it "returns section true when collapsible is false" do
+      result = extractor.extract_common_options({ "collapsible" => false })
+
+      expect(result[:section]).to be true
+    end
+
+    it "infers collapsible true when collapsed is set" do
+      result = extractor.extract_common_options({ "collapsed" => true })
+
+      expect(result[:section]).to be false
+    end
+  end
+
   describe "#resolve_item_icon" do
     it "uses option icon when provided (string key)" do
       result = extractor.resolve_item_icon({ "icon" => "rocket" }, "star")

@@ -130,7 +130,7 @@ RSpec.describe Docyard::SidebarBuilder do
       expect(html).to include("<nav>")
       expect(html).to include("Getting Started")
       expect(html).to include("Setup")
-      expect(html).to include("Introduction")
+      expect(html).to include("Overview")
       expect(html).to include("Performance")
     end
   end

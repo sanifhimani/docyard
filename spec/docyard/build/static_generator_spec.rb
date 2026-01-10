@@ -21,8 +21,9 @@ RSpec.describe Docyard::Build::StaticGenerator do
   describe "#generate" do
     context "with simple markdown files" do
       before do
-        File.write(File.join(docs_dir, "index.md"), "# Home\n\nWelcome to the docs!")
-        File.write(File.join(docs_dir, "guide.md"), "# Guide\n\nHow to use it")
+        File.write(File.join(docs_dir, "index.md"), "---\ntitle: Home\n---\n# Home\n\nWelcome to the docs!")
+        File.write(File.join(docs_dir, "intro.md"), "---\ntitle: Introduction\n---\n# Intro")
+        File.write(File.join(docs_dir, "guide.md"), "---\ntitle: Guide\n---\n# Guide\n\nHow to use it")
       end
 
       it "generates HTML files for all markdown files", :aggregate_failures do
@@ -30,8 +31,9 @@ RSpec.describe Docyard::Build::StaticGenerator do
           generator = described_class.new(config, verbose: false)
           count = generator.generate
 
-          expect(count).to eq(2)
+          expect(count).to eq(3)
           expect(File.exist?(File.join(output_dir, "index.html"))).to be true
+          expect(File.exist?(File.join(output_dir, "intro", "index.html"))).to be true
           expect(File.exist?(File.join(output_dir, "guide", "index.html"))).to be true
         end
       end
@@ -48,14 +50,29 @@ RSpec.describe Docyard::Build::StaticGenerator do
         end
       end
 
-      it "includes sidebar in generated HTML" do
+      it "includes sidebar with navigation links", :aggregate_failures do
         Dir.chdir(temp_dir) do
           generator = described_class.new(config, verbose: false)
           generator.generate
 
-          index_html = File.read(File.join(output_dir, "index.html"))
+          guide_html = File.read(File.join(output_dir, "guide", "index.html"))
 
-          expect(index_html).to include("sidebar")
+          expect(guide_html).to include("sidebar")
+          expect(guide_html).to include('href="/guide"')
+          expect(guide_html).to include('href="/intro"')
+        end
+      end
+
+      it "includes prev/next navigation", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          intro_html = File.read(File.join(output_dir, "intro", "index.html"))
+
+          expect(intro_html).to include("pager")
+          expect(intro_html).to include("Previous")
+          expect(intro_html).to include('href="/guide"')
         end
       end
     end
@@ -63,9 +80,10 @@ RSpec.describe Docyard::Build::StaticGenerator do
     context "with nested directory structure" do
       before do
         FileUtils.mkdir_p(File.join(docs_dir, "getting-started"))
-        File.write(File.join(docs_dir, "index.md"), "# Home")
-        File.write(File.join(docs_dir, "getting-started", "intro.md"), "# Intro")
-        File.write(File.join(docs_dir, "getting-started", "index.md"), "# Getting Started")
+        File.write(File.join(docs_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
+        File.write(File.join(docs_dir, "getting-started", "intro.md"), "---\ntitle: Intro\n---\n# Intro")
+        File.write(File.join(docs_dir, "getting-started", "index.md"),
+                   "---\ntitle: Getting Started\n---\n# Getting Started")
       end
 
       it "preserves directory structure with pretty URLs", :aggregate_failures do
@@ -76,6 +94,43 @@ RSpec.describe Docyard::Build::StaticGenerator do
           expect(File.exist?(File.join(output_dir, "index.html"))).to be true
           expect(File.exist?(File.join(output_dir, "getting-started", "index.html"))).to be true
           expect(File.exist?(File.join(output_dir, "getting-started", "intro", "index.html"))).to be true
+        end
+      end
+
+      it "includes sidebar with section navigation", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          intro_html = File.read(File.join(output_dir, "getting-started", "intro", "index.html"))
+
+          expect(intro_html).to include("Getting Started")
+          expect(intro_html).to include('href="/getting-started"')
+          expect(intro_html).to include('href="/getting-started/intro"')
+        end
+      end
+
+      it "includes prev/next navigation within sections", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          intro_html = File.read(File.join(output_dir, "getting-started", "intro", "index.html"))
+
+          expect(intro_html).to include("pager")
+          expect(intro_html).to include("Previous")
+          expect(intro_html).to include('href="/getting-started"')
+        end
+      end
+
+      it "marks current page as active in sidebar" do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          intro_html = File.read(File.join(output_dir, "getting-started", "intro", "index.html"))
+
+          expect(intro_html).to match(%r{href="/getting-started/intro"[^>]*class="[^"]*active})
         end
       end
     end
@@ -176,6 +231,116 @@ RSpec.describe Docyard::Build::StaticGenerator do
           expect(draft_html).to include("data-pagefind-ignore")
           expect(draft_html).not_to include("data-pagefind-body")
           expect(guide_html).to include("data-pagefind-body")
+        end
+      end
+    end
+
+    context "with headings for TOC" do
+      before do
+        File.write(File.join(docs_dir, "index.md"),
+                   "---\ntitle: Home\n---\n# Main Title\n\n## Section One\n\nContent here.\n\n" \
+                   "## Section Two\n\nMore content.\n\n### Subsection\n\nDetails.\n")
+      end
+
+      it "adds anchor links to headings", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include('id="section-one"')
+          expect(index_html).to include('id="section-two"')
+          expect(index_html).to include("heading-anchor")
+        end
+      end
+
+      it "generates table of contents", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include("toc")
+          expect(index_html).to include('href="#section-one"')
+          expect(index_html).to include('href="#section-two"')
+        end
+      end
+    end
+
+    context "with branding configuration" do
+      before do
+        File.write(File.join(docs_dir, "index.md"), "# Home")
+        config.data["title"] = "My Custom Docs"
+      end
+
+      it "includes site title in generated HTML" do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include("My Custom Docs")
+        end
+      end
+
+      it "includes default logo path" do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include("logo")
+        end
+      end
+    end
+
+    context "with markdown content features" do
+      before do
+        File.write(File.join(docs_dir, "index.md"),
+                   "---\ntitle: Features\n---\n# Features\n\n" \
+                   "**Bold text** and *italic text* and `inline code`.\n\n" \
+                   "```ruby\ndef hello\n  puts \"world\"\nend\n```\n\n" \
+                   "| Column 1 | Column 2 |\n|----------|----------|\n| Data 1   | Data 2   |\n")
+      end
+
+      it "renders markdown formatting correctly", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include("<strong>Bold text</strong>")
+          expect(index_html).to include("<em>italic text</em>")
+          expect(index_html).to include("inline code</code>")
+        end
+      end
+
+      it "renders code blocks with syntax highlighting", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include("highlight")
+          expect(index_html).to include("def")
+        end
+      end
+
+      it "wraps tables for responsive display", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+
+          expect(index_html).to include("table-wrapper")
+          expect(index_html).to include("<table")
         end
       end
     end

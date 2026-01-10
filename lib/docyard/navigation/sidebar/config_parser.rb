@@ -109,24 +109,32 @@ module Docyard
       end
 
       def prepend_intro_if_needed(context, depth)
-        return context[:parsed_items] unless depth == 1 && context[:has_index]
+        is_section = section_for_depth?(context[:common_opts][:section], depth)
+        return context[:parsed_items] unless is_section && context[:has_index]
 
         [build_introduction_item(context[:index_file_path], context[:url_path])] + context[:parsed_items]
       end
 
       def create_directory_item(slug, context, depth)
-        is_top_level = depth == 1
+        is_section = section_for_depth?(context[:common_opts][:section], depth)
         Item.new(
           slug: slug,
           text: context[:common_opts][:text] || Utils::TextFormatter.titleize(slug),
-          path: is_top_level ? nil : context[:url_path],
+          path: is_section ? nil : context[:url_path],
           icon: context[:common_opts][:icon],
-          collapsed: directory_collapsed?(context),
-          active: is_top_level ? false : context[:is_active],
-          has_index: is_top_level ? false : context[:has_index],
+          collapsed: is_section ? false : directory_collapsed?(context),
+          active: is_section ? false : context[:is_active],
+          has_index: is_section ? false : context[:has_index],
           items: context[:parsed_items],
-          type: :directory
+          type: :directory,
+          section: is_section
         )
+      end
+
+      def section_for_depth?(explicit_section, depth)
+        return explicit_section unless explicit_section.nil?
+
+        depth == 1
       end
 
       def directory_collapsed?(context)
@@ -138,7 +146,7 @@ module Docyard
       def build_introduction_item(index_file_path, url_path)
         metadata = metadata_extractor.extract_index_metadata(index_file_path)
         Item.new(
-          slug: "index", text: metadata[:sidebar_text] || "Introduction",
+          slug: "index", text: metadata[:sidebar_text] || "Overview",
           path: url_path, icon: metadata[:icon], active: current_path == url_path, type: :file
         )
       end
@@ -146,7 +154,8 @@ module Docyard
       def build_file_with_children_item(slug, options, nested_items, base_path, depth:)
         file_resolver.build_file_with_children(
           slug: slug, options: options, base_path: base_path,
-          parsed_items: parse_items(nested_items, base_path, depth: depth + 1)
+          parsed_items: parse_items(nested_items, base_path, depth: depth + 1),
+          depth: depth
         )
       end
 

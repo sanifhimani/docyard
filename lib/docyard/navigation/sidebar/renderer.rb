@@ -39,44 +39,50 @@ module Docyard
 
       def render_tree_with_sections(items)
         filtered_items = items.reject { |item| item[:title]&.downcase == site_title.downcase }
-        grouped_items = group_by_section(filtered_items)
+        grouped = group_items_by_section(filtered_items)
 
-        grouped_items.map do |section_name, section_items|
-          render_section(section_name, section_items)
+        grouped.map do |group|
+          if group[:section]
+            render_section(group[:item])
+          else
+            render_item_group(group[:items])
+          end
         end.join
       end
 
-      def render_section(section_name, section_items)
-        section_content = render_tree(section_items)
-        render_partial(:nav_section, section_name: section_name, section_content: section_content)
-      end
-
-      def group_by_section(items)
-        sections = {}
-        root_items = []
+      def group_items_by_section(items)
+        groups = []
+        current_non_section_items = []
 
         items.each do |item|
-          process_section_item(item, sections, root_items)
+          if item[:section]
+            if current_non_section_items.any?
+              groups << { section: false, items: current_non_section_items }
+              current_non_section_items = []
+            end
+            groups << { section: true, item: item }
+          else
+            current_non_section_items << item
+          end
         end
 
-        build_section_result(sections, root_items)
+        groups << { section: false, items: current_non_section_items } if current_non_section_items.any?
+        groups
       end
 
-      def process_section_item(item, sections, root_items)
-        return if item[:title]&.downcase == site_title.downcase
-
-        if item[:type] == :directory && !item[:children].empty?
-          section_name = item[:title]
-          sections[section_name] = item[:children]
-        else
-          root_items << item
-        end
+      def render_section(item)
+        section_content = render_tree(item[:children])
+        render_partial(:nav_section,
+                       section_name: item[:title],
+                       section_icon: item[:icon],
+                       section_content: section_content)
       end
 
-      def build_section_result(sections, root_items)
-        result = {}
-        result[nil] = root_items unless root_items.empty?
-        result.merge!(sections)
+      def render_item_group(items)
+        render_partial(:nav_section,
+                       section_name: nil,
+                       section_icon: nil,
+                       section_content: render_tree(items))
       end
 
       def render_tree(items)
@@ -89,6 +95,8 @@ module Docyard
       def render_item(item)
         item_content = if item[:children].empty?
                          render_leaf_item(item)
+                       elsif item[:section]
+                         render_nested_section(item)
                        else
                          render_group_item(item)
                        end
@@ -104,6 +112,16 @@ module Docyard
           active: item[:active],
           icon: item[:icon],
           target: item[:target]
+        )
+      end
+
+      def render_nested_section(item)
+        children_html = render_tree(item[:children])
+        render_partial(
+          :nav_nested_section,
+          title: item[:title],
+          icon: item[:icon],
+          children_html: children_html
         )
       end
 

@@ -231,6 +231,73 @@ RSpec.describe Docyard::Sidebar::ConfigParser do
       end
     end
 
+    context "with depth-based section defaults" do
+      before do
+        create_file("section/intro.md", "# Introduction")
+        create_file("section/nested/page.md", "# Nested Page")
+      end
+
+      it "defaults depth 1 directory to section", :aggregate_failures do
+        config_items = [{ "section" => { "items" => ["intro"] } }]
+        items = described_class.new(config_items, docs_path: docs_path, current_path: current_path).parse
+
+        expect(items.first.section).to be true
+        expect(items.first.path).to be_nil
+      end
+
+      it "defaults depth 2+ directory to collapsible", :aggregate_failures do
+        config_items = [{ "section" => { "items" => [{ "nested" => { "items" => ["page"] } }] } }]
+        items = described_class.new(config_items, docs_path: docs_path, current_path: current_path).parse
+
+        nested = items.first.children.first
+        expect(nested.section).to be false
+        expect(nested.type).to eq(:directory)
+      end
+
+      it "allows explicit collapsible true at depth 1", :aggregate_failures do
+        config_items = [{ "section" => { "collapsible" => true, "items" => ["intro"] } }]
+        items = described_class.new(config_items, docs_path: docs_path, current_path: current_path).parse
+
+        expect(items.first.section).to be false
+      end
+
+      it "allows explicit collapsible false at depth 2+", :aggregate_failures do
+        nested_config = { "nested" => { "collapsible" => false, "items" => ["page"] } }
+        config_items = [{ "section" => { "items" => [nested_config] } }]
+        items = described_class.new(config_items, docs_path: docs_path, current_path: current_path).parse
+
+        nested = items.first.children.first
+        expect(nested.section).to be true
+        expect(nested.path).to be_nil
+      end
+    end
+
+    context "with files having children (virtual groups)" do
+      before do
+        create_file("parent.md", "---\ntitle: Parent\n---\n# Parent")
+        create_file("child1.md", "# Child 1")
+        create_file("child2.md", "# Child 2")
+      end
+
+      it "defaults depth 1 file with children to section", :aggregate_failures do
+        config_items = [{ "parent" => { "items" => %w[child1 child2] } }]
+        items = described_class.new(config_items, docs_path: docs_path, current_path: current_path).parse
+
+        expect(items.first.section).to be true
+        expect(items.first.path).to be_nil
+        expect(items.first.type).to eq(:section)
+      end
+
+      it "allows explicit collapsible true for depth 1 file with children", :aggregate_failures do
+        config_items = [{ "parent" => { "collapsible" => true, "items" => %w[child1 child2] } }]
+        items = described_class.new(config_items, docs_path: docs_path, current_path: current_path).parse
+
+        expect(items.first.section).to be false
+        expect(items.first.path).to eq("/parent")
+        expect(items.first.type).to eq(:file)
+      end
+    end
+
     context "with nil handling" do
       it "handles nil options gracefully", :aggregate_failures do
         create_file("intro.md", "# Introduction")
