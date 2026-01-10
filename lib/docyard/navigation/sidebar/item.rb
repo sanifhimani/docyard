@@ -3,7 +3,7 @@
 module Docyard
   module Sidebar
     class Item
-      attr_reader :slug, :text, :icon, :link, :target, :collapsed, :items, :path, :active, :type, :has_index
+      attr_reader :slug, :text, :icon, :link, :target, :collapsed, :items, :path, :active, :type, :has_index, :section
 
       DEFAULTS = {
         target: "_self",
@@ -11,7 +11,8 @@ module Docyard
         items: [],
         active: false,
         type: :file,
-        has_index: false
+        has_index: false,
+        section: true
       }.freeze
 
       def initialize(**options)
@@ -29,13 +30,22 @@ module Docyard
       end
 
       def assign_optional_attributes(options)
+        assign_navigation_attributes(options)
+        assign_state_attributes(options)
+      end
+
+      def assign_navigation_attributes(options)
         @target = options.fetch(:target, DEFAULTS[:target])
-        @collapsed = options.fetch(:collapsed, DEFAULTS[:collapsed])
-        @items = options.fetch(:items, DEFAULTS[:items])
         @path = options[:path] || options[:link]
         @active = options.fetch(:active, DEFAULTS[:active])
         @type = options.fetch(:type, DEFAULTS[:type])
+      end
+
+      def assign_state_attributes(options)
+        @collapsed = options.fetch(:collapsed, DEFAULTS[:collapsed])
+        @items = options.fetch(:items, DEFAULTS[:items])
         @has_index = options.fetch(:has_index, DEFAULTS[:has_index])
+        @section = options.fetch(:section, DEFAULTS[:section])
       end
 
       public
@@ -59,7 +69,11 @@ module Docyard
       end
 
       def collapsible?
-        children?
+        children? && !section
+      end
+
+      def section?
+        section == true
       end
 
       def to_h
@@ -73,6 +87,7 @@ module Docyard
           collapsible: collapsible?,
           target: target,
           has_index: has_index,
+          section: section,
           children: children.map(&:to_h)
         }
       end
