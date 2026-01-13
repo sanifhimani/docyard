@@ -1,0 +1,157 @@
+/* Tab Bar - Desktop navigation below header */
+
+.tab-bar {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  height: var(--tab-bar-height);
+  background: var(--background);
+  z-index: var(--z-header);
+  display: none;
+}
+
+.has-tabs .tab-bar {
+  display: block;
+}
+
+/* Hide tab bar on landing/splash pages */
+.splash-page .tab-bar {
+  display: none;
+}
+
+.tab-bar-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+  gap: var(--spacing-2);
+  border-bottom: 1px solid var(--hr-color);
+}
+
+.tab-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 var(--spacing-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.tab-item:hover {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.tab-item.is-active {
+  color: var(--foreground);
+}
+
+.tab-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.tab-icon .docyard-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tab-item.is-active .tab-icon {
+  opacity: 1;
+}
+
+.tab-external-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* Sliding indicator */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+  pointer-events: none;
+  view-transition-name: tab-indicator;
+}
+
+.tab-indicator.is-ready {
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* View Transitions API - animate indicator between pages */
+::view-transition-group(tab-indicator) {
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(tab-indicator),
+::view-transition-new(tab-indicator) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Faster page transition */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.15s;
+}
+
+/* Layout adjustments when tabs are present */
+.has-tabs .layout {
+  padding-top: calc(var(--header-height) + var(--tab-bar-height));
+}
+
+.has-tabs .sidebar {
+  top: calc(var(--header-height) + var(--tab-bar-height));
+  height: calc(100vh - var(--header-height) - var(--tab-bar-height));
+}
+
+.has-tabs .secondary-header {
+  top: calc(var(--header-height) + var(--tab-bar-height));
+}
+
+/* Hide tab bar on mobile */
+@media (max-width: 1024px) {
+  .tab-bar {
+    display: none;
+  }
+
+  .has-tabs .layout {
+    padding-top: calc(var(--header-height) + 3rem);
+  }
+
+  .has-tabs .sidebar {
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .has-tabs .secondary-header {
+    top: var(--header-height);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .tab-item,
+  .tab-indicator {
+    transition: none;
+  }
+}
