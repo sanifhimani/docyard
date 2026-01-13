@@ -161,6 +161,82 @@ RSpec.describe Docyard::PrevNextBuilder do
         expect(links[:next][:title]).to eq("Third")
       end
     end
+
+    context "with directory items that have index pages" do
+      let(:sidebar_tree) do
+        [
+          { title: "First", path: "/first", type: :file, children: [] },
+          { title: "Section", path: "/section", type: :directory, has_index: true, children: [
+            { title: "Nested", path: "/section/nested", type: :file, children: [] }
+          ] },
+          { title: "Last", path: "/last", type: :file, children: [] }
+        ]
+      end
+
+      context "when on page before directory with index" do
+        let(:builder) do
+          described_class.new(
+            sidebar_tree: sidebar_tree,
+            current_path: "/first",
+            frontmatter: {},
+            config: config
+          )
+        end
+
+        it "links to directory index as next", :aggregate_failures do
+          links = builder.prev_next_links
+
+          expect(links[:next][:title]).to eq("Section")
+          expect(links[:next][:path]).to eq("/section")
+        end
+      end
+
+      context "when on directory index page" do
+        let(:builder) do
+          described_class.new(
+            sidebar_tree: sidebar_tree,
+            current_path: "/section",
+            frontmatter: {},
+            config: config
+          )
+        end
+
+        it "has prev and next links", :aggregate_failures do
+          links = builder.prev_next_links
+
+          expect(links[:prev][:title]).to eq("First")
+          expect(links[:next][:title]).to eq("Nested")
+        end
+      end
+    end
+
+    context "with directory items without index pages" do
+      let(:sidebar_tree) do
+        [
+          { title: "First", path: "/first", type: :file, children: [] },
+          { title: "Section", path: "/section", type: :directory, has_index: false, children: [
+            { title: "Nested", path: "/section/nested", type: :file, children: [] }
+          ] },
+          { title: "Last", path: "/last", type: :file, children: [] }
+        ]
+      end
+
+      let(:builder) do
+        described_class.new(
+          sidebar_tree: sidebar_tree,
+          current_path: "/first",
+          frontmatter: {},
+          config: config
+        )
+      end
+
+      it "skips directory and links to first nested item", :aggregate_failures do
+        links = builder.prev_next_links
+
+        expect(links[:next][:title]).to eq("Nested")
+        expect(links[:next][:path]).to eq("/section/nested")
+      end
+    end
   end
 
   describe "#to_html" do
