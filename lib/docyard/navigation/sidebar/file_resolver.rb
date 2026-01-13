@@ -25,7 +25,8 @@ module Docyard
           path: config["link"] || config[:link],
           icon: config["icon"] || config[:icon],
           target: config["target"] || config[:target] || "_blank",
-          type: :external
+          type: :external,
+          section: false
         )
       end
 
@@ -68,7 +69,8 @@ module Docyard
           path: final_path,
           icon: metadata_extractor.resolve_item_icon(options, frontmatter[:icon]),
           active: current_path == final_path,
-          type: :file
+          type: :file,
+          section: false
         }
       end
     end

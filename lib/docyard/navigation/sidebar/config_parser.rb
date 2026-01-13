@@ -8,7 +8,7 @@ require_relative "file_resolver"
 
 module Docyard
   module Sidebar
-    class ConfigParser
+    class ConfigParser # rubocop:disable Metrics/ClassLength
       attr_reader :config_items, :docs_path, :current_path, :metadata_extractor,
                   :children_discoverer, :file_resolver
 
@@ -64,18 +64,41 @@ module Docyard
         config.key?("link") || config.key?(:link)
       end
 
+      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def parse_nested_item(slug, options, base_path, depth:)
         slug = slug.to_s
         nested_items = options["items"] || options[:items] || []
         dir_path = File.join(docs_path, base_path, slug)
+        is_virtual_group = (options["section"] == false || options[:section] == false) && nested_items.any?
 
-        if File.directory?(dir_path)
+        if is_virtual_group
+          build_virtual_group_item(slug, options, nested_items, base_path, depth: depth)
+        elsif File.directory?(dir_path)
           build_directory_item(slug, options, nested_items, base_path, depth: depth)
         elsif nested_items.any?
           build_file_with_children_item(slug, options, nested_items, base_path, depth: depth)
         else
           file_resolver.resolve(slug, base_path, options)
         end
+      end
+      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+      def build_virtual_group_item(slug, options, nested_items, base_path, depth:)
+        common_opts = metadata_extractor.extract_common_options(options)
+        parsed_items = parse_items(nested_items, base_path, depth: depth + 1)
+        is_collapsed = common_opts[:collapsed] != false && !active_child?(parsed_items)
+
+        Item.new(
+          slug: slug,
+          text: common_opts[:text] || Utils::TextFormatter.titleize(slug),
+          path: nil,
+          icon: common_opts[:icon],
+          collapsed: is_collapsed,
+          active: false,
+          items: parsed_items,
+          type: :directory,
+          section: false
+        )
       end
 
       def build_directory_item(slug, options, nested_items, base_path, depth:)
