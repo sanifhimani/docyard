@@ -286,8 +286,8 @@
   position: relative;
 }
 
-.sidebar-scroll > nav {
-  padding: var(--spacing-2) 0;
+.sidebar-scroll>nav {
+  padding: var(--spacing-4) var(--spacing-4);
 }
 
 .sidebar::before,
