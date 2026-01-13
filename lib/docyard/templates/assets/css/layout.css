@@ -541,7 +541,7 @@ main.content {
   height: 18px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .footer-content {
     flex-direction: column;
     gap: 1rem;

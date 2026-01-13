@@ -91,7 +91,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .pager {
     flex-direction: column;
     gap: var(--spacing-2);
