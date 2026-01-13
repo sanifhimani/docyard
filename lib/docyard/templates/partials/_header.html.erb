@@ -39,6 +39,11 @@
       </div>
       <% end %>
       <%= render_partial('_theme_toggle') %>
+      <% if @has_tabs %>
+      <button class="nav-menu-btn" id="navMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false">
+        <%= icon(:equals) %>
+      </button>
+      <% end %>
     </div>
   </div>
 </header>

@@ -3,10 +3,12 @@
 <head>
   <%= render_partial('_head') %>
 </head>
-<body>
+<body<%= ' class="has-tabs"' if @has_tabs %>>
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <%= render_partial('_header') %>
+  <%= render_partial('_tab_bar') %>
+  <%= render_partial('_nav_menu') %>
 
   <div class="secondary-header">
     <button class="secondary-header-menu" aria-label="Toggle navigation menu" aria-expanded="false">
