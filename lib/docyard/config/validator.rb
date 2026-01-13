@@ -15,6 +15,7 @@ module Docyard
         validate_tabs_section
         validate_build_section
         validate_search_section
+        validate_navigation_section
 
         raise ConfigError, format_errors if @errors.any?
       end
@@ -83,6 +84,38 @@ module Docyard
         validate_boolean(search["enabled"], "search.enabled") if search.key?("enabled")
         validate_string(search["placeholder"], "search.placeholder") if search.key?("placeholder")
         validate_array(search["exclude"], "search.exclude") if search.key?("exclude")
+      end
+
+      def validate_navigation_section
+        cta = @config.dig("navigation", "cta")
+        return if cta.nil?
+        return add_array_error("navigation.cta") unless cta.is_a?(Array)
+
+        validate_cta_max_count(cta)
+        validate_cta_items(cta)
+      end
+
+      def validate_cta_items(cta)
+        cta.each_with_index do |item, idx|
+          validate_string(item["text"], "navigation.cta[#{idx}].text")
+          validate_string(item["href"], "navigation.cta[#{idx}].href")
+          validate_cta_variant(item["variant"], idx) if item.key?("variant")
+          validate_boolean(item["external"], "navigation.cta[#{idx}].external") if item.key?("external")
+        end
+      end
+
+      def validate_cta_max_count(cta)
+        return if cta.length <= 2
+
+        add_error(field: "navigation.cta", error: "maximum 2 CTAs allowed",
+                  got: "#{cta.length} items", fix: "Remove extra CTA items to have at most 2")
+      end
+
+      def validate_cta_variant(variant, idx)
+        return if variant.nil? || %w[primary secondary].include?(variant)
+
+        add_error(field: "navigation.cta[#{idx}].variant", error: "must be 'primary' or 'secondary'",
+                  got: variant, fix: "Change to 'primary' or 'secondary'")
       end
 
       def validate_string(value, field_name)
@@ -154,18 +187,15 @@ module Docyard
       end
 
       def add_array_error(field)
-        parts = field.split(".")
-        value = parts.reduce(@config) { |h, k| h&.[](k) }
+        value = field.split(".").reduce(@config) { |h, k| h&.[](k) }
         add_error(field: field, error: "must be an array", got: value.class.name, fix: "Change to an array")
       end
 
       def format_errors
-        message = "Error in docyard.yml:\n\n"
-        @errors.each do |err|
-          message += "   Field: #{err[:field]}\n   Error: #{err[:error]}\n"
-          message += "   Got: #{err[:got]}\n   Fix: #{err[:fix]}\n\n"
-        end
-        message.chomp
+        errors_text = @errors.map do |err|
+          "   Field: #{err[:field]}\n   Error: #{err[:error]}\n   Got: #{err[:got]}\n   Fix: #{err[:fix]}"
+        end.join("\n\n")
+        "Error in docyard.yml:\n\n#{errors_text}"
       end
     end
   end

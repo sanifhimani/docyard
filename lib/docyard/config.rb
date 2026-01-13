@@ -24,6 +24,9 @@ module Docyard
         "enabled" => true,
         "placeholder" => "Search...",
         "exclude" => []
+      },
+      "navigation" => {
+        "cta" => []
       }
     }.freeze
 
@@ -70,6 +73,10 @@ module Docyard
 
     def search
       @search ||= ConfigSection.new(data["search"])
+    end
+
+    def navigation
+      @navigation ||= ConfigSection.new(data["navigation"])
     end
 
     private
