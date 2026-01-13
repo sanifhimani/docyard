@@ -210,6 +210,47 @@ RSpec.describe Docyard::RackApplication do
       end
     end
 
+    context "with tab navigation configured" do
+      let(:tab_temp_dir) { Dir.mktmpdir }
+
+      before do
+        File.write(File.join(tab_temp_dir, "docyard.yml"), <<~YAML)
+          tabs:
+            - text: Guide
+              href: /guide
+            - text: API
+              href: /api
+        YAML
+        FileUtils.mkdir_p(File.join(tab_temp_dir, "guide"))
+        FileUtils.mkdir_p(File.join(tab_temp_dir, "api"))
+        File.write(File.join(tab_temp_dir, "guide", "index.md"), "---\ntitle: Guide\n---\n# Guide")
+        File.write(File.join(tab_temp_dir, "guide", "setup.md"), "---\ntitle: Setup\n---\n# Setup")
+        File.write(File.join(tab_temp_dir, "api", "index.md"), "---\ntitle: API\n---\n# API")
+      end
+
+      after { FileUtils.rm_rf(tab_temp_dir) }
+
+      it "renders tab navigation and marks correct tab as active", :aggregate_failures do
+        config = Docyard::Config.load(tab_temp_dir)
+        temp_app = described_class.new(docs_path: tab_temp_dir, file_watcher: file_watcher, config: config)
+        _status, _headers, body = temp_app.call({ "PATH_INFO" => "/guide/setup", "QUERY_STRING" => "" })
+
+        expect(body.first).to include("tab-bar")
+        expect(body.first).to match(%r{href="/guide"[^>]*class="[^"]*is-active})
+        expect(body.first).not_to match(%r{href="/api"[^>]*class="[^"]*is-active})
+      end
+
+      it "scopes sidebar to current tab section", :aggregate_failures do
+        config = Docyard::Config.load(tab_temp_dir)
+        temp_app = described_class.new(docs_path: tab_temp_dir, file_watcher: file_watcher, config: config)
+        _status, _headers, body = temp_app.call({ "PATH_INFO" => "/guide/setup", "QUERY_STRING" => "" })
+        sidebar_section = body.first[%r{class="sidebar".*?</nav>}m]
+
+        expect(body.first).to include('href="/guide/setup"')
+        expect(sidebar_section).not_to include('href="/api"')
+      end
+    end
+
     context "with custom HTML landing page" do
       it "serves index.html directly when it exists at root", :aggregate_failures do
         Dir.mktmpdir do |temp_dir|
