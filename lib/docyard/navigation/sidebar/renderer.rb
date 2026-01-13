@@ -11,18 +11,19 @@ module Docyard
 
       PARTIALS_PATH = File.join(__dir__, "../../templates/partials")
 
-      attr_reader :site_title, :base_url
+      attr_reader :site_title, :base_url, :header_ctas
 
-      def initialize(site_title: "Documentation", base_url: "/")
+      def initialize(site_title: "Documentation", base_url: "/", header_ctas: [])
         @site_title = site_title
         @base_url = normalize_base_url(base_url)
+        @header_ctas = header_ctas
       end
 
       def render(tree)
         return "" if tree.empty?
 
         nav_content = render_tree_with_sections(tree)
-        render_partial(:sidebar, nav_content: nav_content)
+        render_partial(:sidebar, nav_content: nav_content, header_ctas: header_ctas)
       end
 
       private
