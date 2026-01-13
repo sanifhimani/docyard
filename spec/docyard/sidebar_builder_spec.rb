@@ -183,9 +183,213 @@ RSpec.describe Docyard::SidebarBuilder do
         tree = sidebar.tree
 
         expect(tree.length).to eq(3)
-        # Filesystem order (alphabetical)
         expect(tree.map { |i| i[:title] }).to include("Introduction", "Getting Started", "Advanced Topics")
       end
+    end
+  end
+
+  describe "distributed vs root _sidebar.yml consistency" do
+    let(:current_path) { "/guide/installation" }
+
+    before do
+      create_doc("guide/index.md", "---\ntitle: Guide Overview\n---")
+      create_doc("guide/installation.md", "---\ntitle: Installation\n---")
+      create_doc("guide/configuration.md", "---\ntitle: Configuration\n---")
+    end
+
+    context "with root _sidebar.yml using section wrapper" do
+      let(:config) do
+        create_config(<<~YAML)
+          tabs:
+            - text: Guide
+              href: /guide
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
+
+      before do
+        File.write(File.join(docs_dir, "guide", "_sidebar.yml"), <<~YAML)
+          - _:
+              text: Guide
+              icon: book
+              section: true
+              items:
+                - index:
+                    text: Overview
+                - installation:
+                    text: Installation
+                - configuration:
+                    text: Configuration
+        YAML
+      end
+
+      it "renders section as top-level group", :aggregate_failures do
+        tree = sidebar.tree
+
+        expect(tree.length).to eq(1)
+        expect(tree[0][:section]).to be true
+        expect(tree[0][:title]).to eq("Guide")
+      end
+
+      it "includes all children under section", :aggregate_failures do
+        tree = sidebar.tree
+        children = tree[0][:children]
+
+        expect(children.length).to eq(3)
+        expect(children.map { |c| c[:title] }).to eq(%w[Overview Installation Configuration])
+      end
+
+      it "prefixes paths correctly", :aggregate_failures do
+        tree = sidebar.tree
+        children = tree[0][:children]
+
+        expect(children[0][:path]).to eq("/guide")
+        expect(children[1][:path]).to eq("/guide/installation")
+        expect(children[2][:path]).to eq("/guide/configuration")
+      end
+
+      it "marks correct item as active", :aggregate_failures do
+        tree = sidebar.tree
+        children = tree[0][:children]
+
+        expect(children[1][:active]).to be true
+        expect(children[0][:active]).to be false
+        expect(children[2][:active]).to be false
+      end
+    end
+
+    context "with simple list _sidebar.yml" do
+      let(:config) do
+        create_config(<<~YAML)
+          tabs:
+            - text: Guide
+              href: /guide
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
+
+      before do
+        File.write(File.join(docs_dir, "guide", "_sidebar.yml"), <<~YAML)
+          - installation:
+              text: Installation
+          - configuration:
+              text: Configuration
+        YAML
+      end
+
+      it "auto-prepends Overview when index.md exists", :aggregate_failures do
+        tree = sidebar.tree
+
+        expect(tree.length).to eq(3)
+        expect(tree[0][:title]).to eq("Overview")
+        expect(tree[0][:path]).to eq("/guide")
+      end
+
+      it "renders configured items in order", :aggregate_failures do
+        tree = sidebar.tree
+
+        expect(tree[1][:title]).to eq("Installation")
+        expect(tree[2][:title]).to eq("Configuration")
+      end
+    end
+  end
+
+  describe "tab-based sidebar scoping" do
+    let(:current_path) { "/guide/setup" }
+
+    before do
+      create_doc("guide/index.md", "---\ntitle: Guide\n---")
+      create_doc("guide/setup.md", "---\ntitle: Setup\n---")
+      create_doc("api/index.md", "---\ntitle: API\n---")
+      create_doc("api/reference.md", "---\ntitle: Reference\n---")
+    end
+
+    context "without tabs configured" do
+      it "shows all docs in sidebar", :aggregate_failures do
+        tree = sidebar.tree
+
+        titles = extract_all_titles(tree)
+        expect(titles).to include("Guide", "Api")
+      end
+    end
+
+    context "with tabs configured on guide section" do
+      let(:config) do
+        create_config(<<~YAML)
+          tabs:
+            - text: Guide
+              href: /guide
+            - text: API
+              href: /api
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
+      let(:current_path) { "/guide/setup" }
+
+      it "shows only guide section in sidebar", :aggregate_failures do
+        tree = sidebar.tree
+
+        titles = extract_all_titles(tree)
+        expect(titles).to include("Setup")
+        expect(titles).not_to include("Reference")
+      end
+    end
+
+    context "with tabs configured on api section" do
+      let(:config) do
+        create_config(<<~YAML)
+          tabs:
+            - text: Guide
+              href: /guide
+            - text: API
+              href: /api
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
+      let(:current_path) { "/api/reference" }
+
+      it "shows only api section in sidebar", :aggregate_failures do
+        tree = sidebar.tree
+
+        titles = extract_all_titles(tree)
+        expect(titles).to include("Reference")
+        expect(titles).not_to include("Setup")
+      end
+    end
+
+    context "with scoped _sidebar.yml in tab folder" do
+      let(:config) do
+        create_config(<<~YAML)
+          tabs:
+            - text: Guide
+              href: /guide
+        YAML
+        Docyard::Config.load(temp_dir)
+      end
+
+      before do
+        File.write(File.join(docs_dir, "guide", "_sidebar.yml"), <<~YAML)
+          - setup:
+              text: Getting Setup
+              icon: wrench
+        YAML
+      end
+
+      it "uses folder-specific _sidebar.yml", :aggregate_failures do
+        tree = sidebar.tree
+
+        setup_item = tree.find { |i| i[:title] == "Getting Setup" }
+        expect(setup_item).not_to be_nil
+        expect(setup_item[:icon]).to eq("wrench")
+      end
+    end
+  end
+
+  private
+
+  def extract_all_titles(tree)
+    tree.flat_map do |item|
+      [item[:title]] + extract_all_titles(item[:children] || [])
     end
   end
 end

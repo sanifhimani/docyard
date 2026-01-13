@@ -140,12 +140,8 @@
   border-top: 1px solid var(--table-row-border);
 }
 
-.content tbody tr {
-  transition: background-color var(--transition-fast);
-}
-
 .content tbody tr:hover {
-  background-color: oklch(from var(--muted) l c h / 30%);
+  background-color: oklch(from var(--muted) l c h / 40%);
 }
 
 .content img {

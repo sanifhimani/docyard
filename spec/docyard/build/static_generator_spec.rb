@@ -298,6 +298,56 @@ RSpec.describe Docyard::Build::StaticGenerator do
       end
     end
 
+    context "with tab navigation configured" do
+      before do
+        config.data["tabs"] = [
+          { "text" => "Guide", "href" => "/guide" },
+          { "text" => "API", "href" => "/api" }
+        ]
+        FileUtils.mkdir_p(File.join(docs_dir, "guide"))
+        FileUtils.mkdir_p(File.join(docs_dir, "api"))
+        File.write(File.join(docs_dir, "guide", "index.md"), "---\ntitle: Guide\n---\n# Guide")
+        File.write(File.join(docs_dir, "guide", "setup.md"), "---\ntitle: Setup\n---\n# Setup")
+        File.write(File.join(docs_dir, "api", "index.md"), "---\ntitle: API\n---\n# API")
+      end
+
+      it "renders tab navigation in generated HTML" do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          guide_html = File.read(File.join(output_dir, "guide", "index.html"))
+
+          expect(guide_html).to include("tab-bar")
+        end
+      end
+
+      it "marks the correct tab as active based on current path", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          guide_html = File.read(File.join(output_dir, "guide", "setup", "index.html"))
+
+          expect(guide_html).to match(%r{href="/guide"[^>]*class="[^"]*is-active})
+          expect(guide_html).not_to match(%r{href="/api"[^>]*class="[^"]*is-active})
+        end
+      end
+
+      it "scopes sidebar to current tab section", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          guide_html = File.read(File.join(output_dir, "guide", "setup", "index.html"))
+
+          expect(guide_html).to include('href="/guide/setup"')
+          sidebar_section = guide_html[%r{class="sidebar".*?</nav>}m]
+          expect(sidebar_section).not_to include('href="/api"')
+        end
+      end
+    end
+
     context "with markdown content features" do
       before do
         File.write(File.join(docs_dir, "index.md"),

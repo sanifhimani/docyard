@@ -21,7 +21,8 @@ module Docyard
       @config = config
     end
 
-    def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {}, template_options: {})
+    def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {}, template_options: {},
+                    current_path: "/")
       markdown_content = File.read(file_path)
       markdown = Markdown.new(markdown_content, config: config)
 
@@ -37,11 +38,13 @@ module Docyard
           toc: toc
         },
         branding: branding,
-        template_options: template_options
+        template_options: template_options,
+        current_path: current_path
       )
     end
 
-    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, navigation: {}, branding: {}, template_options: {})
+    def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, navigation: {}, branding: {},
+               template_options: {}, current_path: "/")
       layout = template_options[:template] || DEFAULT_LAYOUT
       layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
       template = File.read(layout_path)
@@ -51,7 +54,7 @@ module Docyard
       toc = navigation[:toc] || []
 
       assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
-      assign_branding_variables(branding)
+      assign_branding_variables(branding, current_path)
       assign_template_variables(template_options)
 
       ERB.new(template).result(binding)
@@ -98,10 +101,11 @@ module Docyard
       @toc = toc
     end
 
-    def assign_branding_variables(branding)
+    def assign_branding_variables(branding, current_path = "/")
       assign_site_branding(branding)
       assign_search_options(branding)
       assign_credits_and_social(branding)
+      assign_tabs(branding, current_path)
     end
 
     def assign_site_branding(branding)
@@ -122,6 +126,25 @@ module Docyard
       @credits = branding[:credits] != false
       @social = branding[:social] || []
       @header_ctas = branding[:header_ctas] || []
+    end
+
+    def assign_tabs(branding, current_path)
+      tabs = branding[:tabs] || []
+      @tabs = tabs.map { |tab| tab.merge(active: tab_active?(tab[:href], current_path)) }
+      @has_tabs = branding[:has_tabs] || false
+      @current_path = current_path
+    end
+
+    def tab_active?(tab_href, current_path)
+      return false if tab_href.nil? || current_path.nil?
+      return false if tab_href.start_with?("http://", "https://")
+
+      normalized_tab = tab_href.chomp("/")
+      normalized_current = current_path.chomp("/")
+
+      return true if normalized_tab == normalized_current
+
+      current_path.start_with?("#{normalized_tab}/")
     end
 
     def assign_template_variables(template_options)

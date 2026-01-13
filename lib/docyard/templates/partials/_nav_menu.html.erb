@@ -1,0 +1,42 @@
+<% if @has_tabs %>
+<div class="nav-menu-overlay" id="navMenuOverlay" aria-hidden="true"></div>
+<div class="nav-menu-dropdown" id="navMenuDropdown" role="dialog" aria-label="Navigation menu">
+  <div class="nav-menu-content">
+    <% @tabs.each do |tab| %>
+    <a href="<%= tab[:external] ? tab[:href] : link_path(tab[:href]) %>"
+       class="nav-menu-item<%= ' is-active' if tab[:active] %>"
+       <%= 'target="_blank" rel="noopener noreferrer"' if tab[:external] %>>
+      <% if tab[:icon] %>
+      <span class="nav-menu-item-icon"><%= icon(tab[:icon].to_sym) %></span>
+      <% end %>
+      <span class="nav-menu-item-text"><%= tab[:text] %></span>
+      <% if tab[:external] %>
+      <svg class="nav-menu-item-external" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+      <% end %>
+    </a>
+    <% end %>
+
+    <% if @header_ctas&.any? %>
+    <div class="nav-menu-divider"></div>
+    <div class="nav-menu-ctas">
+      <% @header_ctas.sort_by { |cta| cta[:variant] == 'secondary' ? 0 : 1 }.each do |cta| %>
+      <a href="<%= cta[:external] ? cta[:href] : link_path(cta[:href]) %>"
+         class="nav-menu-cta nav-menu-cta--<%= cta[:variant] || 'primary' %>"
+         <%= 'target="_blank" rel="noopener noreferrer"' if cta[:external] %>>
+        <%= cta[:text] %>
+        <% if cta[:variant] != 'secondary' %>
+        <svg class="nav-menu-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5l7 7-7 7"/>
+        </svg>
+        <% end %>
+      </a>
+      <% end %>
+    </div>
+    <% end %>
+  </div>
+</div>
+<% end %>

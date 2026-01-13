@@ -35,6 +35,7 @@ module Docyard
         .merge(credits_options)
         .merge(social_options)
         .merge(navigation_options)
+        .merge(tabs_options)
     end
 
     def site_options
@@ -140,6 +141,29 @@ module Docyard
           text: item["text"],
           href: item["href"],
           variant: item["variant"] || "primary",
+          external: item["external"] == true
+        }
+      end
+    end
+
+    def tabs_options
+      tab_items = config.tabs || []
+      {
+        tabs: normalize_tab_items(tab_items),
+        has_tabs: tab_items.any?
+      }
+    end
+
+    def normalize_tab_items(items)
+      return [] unless items.is_a?(Array)
+
+      items.filter_map do |item|
+        next unless item.is_a?(Hash) && item["text"] && item["href"]
+
+        {
+          text: item["text"],
+          href: item["href"],
+          icon: item["icon"],
           external: item["external"] == true
         }
       end

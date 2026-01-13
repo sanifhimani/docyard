@@ -454,6 +454,78 @@ RSpec.describe Docyard::TemplateResolver do
     end
   end
 
+  describe "#footer_config" do
+    it "returns nil for non-landing pages" do
+      resolver = described_class.new({ "footer" => { "links" => [] } })
+      expect(resolver.footer_config).to be_nil
+    end
+
+    it "returns nil when footer is not a hash" do
+      resolver = described_class.new({ "landing" => { "hero" => { "title" => "Test" }, "footer" => "invalid" } })
+      expect(resolver.footer_config).to be_nil
+    end
+
+    it "returns symbolized footer config for landing page", :aggregate_failures do
+      frontmatter = {
+        "landing" => {
+          "hero" => { "title" => "Test" },
+          "footer" => { "links" => [{ "text" => "Privacy", "link" => "/privacy" }] }
+        }
+      }
+      resolver = described_class.new(frontmatter)
+      config = resolver.footer_config
+
+      expect(config[:links]).to be_an(Array)
+      expect(config[:links].length).to eq(1)
+      expect(config[:links][0]).to eq({ text: "Privacy", link: "/privacy" })
+    end
+
+    it "handles missing links" do
+      frontmatter = {
+        "landing" => {
+          "hero" => { "title" => "Test" },
+          "footer" => {}
+        }
+      }
+      resolver = described_class.new(frontmatter)
+      config = resolver.footer_config
+
+      expect(config[:links]).to be_nil
+    end
+
+    it "handles non-array links" do
+      frontmatter = {
+        "landing" => {
+          "hero" => { "title" => "Test" },
+          "footer" => { "links" => "invalid" }
+        }
+      }
+      resolver = described_class.new(frontmatter)
+      config = resolver.footer_config
+
+      expect(config[:links]).to be_nil
+    end
+
+    it "filters out non-hash items in links", :aggregate_failures do
+      frontmatter = {
+        "landing" => {
+          "hero" => { "title" => "Test" },
+          "footer" => {
+            "links" => [
+              { "text" => "Valid", "link" => "/valid" },
+              "invalid"
+            ]
+          }
+        }
+      }
+      resolver = described_class.new(frontmatter)
+      config = resolver.footer_config
+
+      expect(config[:links].length).to eq(1)
+      expect(config[:links][0][:text]).to eq("Valid")
+    end
+  end
+
   describe "#to_options" do
     it "returns complete options hash for landing page", :aggregate_failures do
       landing = { "hero" => { "title" => "Test" }, "features" => [{ "title" => "Feature" }],

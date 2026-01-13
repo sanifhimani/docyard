@@ -98,7 +98,8 @@ module Docyard
 
       navigation = build_navigation_html(template_resolver, current_path, markdown, branding[:header_ctas])
       html = renderer.render_file(file_path, **navigation, branding: branding,
-                                                           template_options: template_resolver.to_options)
+                                                           template_options: template_resolver.to_options,
+                                                           current_path: current_path)
 
       [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
     end

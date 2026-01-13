@@ -186,6 +186,39 @@ RSpec.describe Docyard::Markdown do
     end
   end
 
+  describe "#description" do
+    context "when description exists in frontmatter" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          title: Test Page
+          description: A detailed description of the page content
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the description" do
+        markdown = described_class.new(text)
+        expect(markdown.description).to eq("A detailed description of the page content")
+      end
+    end
+
+    context "when description does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.description).to be_nil
+      end
+    end
+
+    context "when frontmatter does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("# Content")
+        expect(markdown.description).to be_nil
+      end
+    end
+  end
+
   describe "#sidebar_icon" do
     context "when sidebar.icon exists in frontmatter" do
       let(:text) do

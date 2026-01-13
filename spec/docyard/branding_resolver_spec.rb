@@ -484,5 +484,101 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:header_ctas][0][:text]).to eq("Valid CTA")
       end
     end
+
+    context "with default tabs" do
+      it "returns empty tabs array by default" do
+        result = resolver.resolve
+
+        expect(result[:tabs]).to eq([])
+      end
+
+      it "returns has_tabs false by default" do
+        result = resolver.resolve
+
+        expect(result[:has_tabs]).to be false
+      end
+    end
+
+    context "when tabs are configured" do
+      before do
+        create_config(<<~YAML)
+          tabs:
+            - text: "Guide"
+              href: "/guide"
+              icon: "book"
+            - text: "API"
+              href: "/api"
+        YAML
+      end
+
+      it "normalizes tabs to array", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:tabs]).to be_an(Array)
+        expect(result[:tabs].length).to eq(2)
+      end
+
+      it "sets has_tabs to true" do
+        result = resolver.resolve
+
+        expect(result[:has_tabs]).to be true
+      end
+
+      it "includes text, href, icon, and external for each tab", :aggregate_failures do
+        result = resolver.resolve
+        guide_tab = result[:tabs][0]
+        api_tab = result[:tabs][1]
+
+        expect(guide_tab[:text]).to eq("Guide")
+        expect(guide_tab[:href]).to eq("/guide")
+        expect(guide_tab[:icon]).to eq("book")
+        expect(guide_tab[:external]).to be false
+
+        expect(api_tab[:text]).to eq("API")
+        expect(api_tab[:href]).to eq("/api")
+        expect(api_tab[:icon]).to be_nil
+        expect(api_tab[:external]).to be false
+      end
+    end
+
+    context "when tabs have external links" do
+      before do
+        create_config(<<~YAML)
+          tabs:
+            - text: "Docs"
+              href: "/docs"
+            - text: "GitHub"
+              href: "https://github.com/example"
+              external: true
+        YAML
+      end
+
+      it "marks external tabs correctly", :aggregate_failures do
+        result = resolver.resolve
+        github_tab = result[:tabs].find { |t| t[:text] == "GitHub" }
+
+        expect(github_tab[:external]).to be true
+        expect(github_tab[:href]).to eq("https://github.com/example")
+      end
+    end
+
+    context "when tabs are missing required fields" do
+      before do
+        create_config(<<~YAML)
+          tabs:
+            - text: "Valid Tab"
+              href: "/valid"
+            - text: "Missing href"
+            - href: "/missing-text"
+        YAML
+      end
+
+      it "filters out invalid tab items", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:tabs].length).to eq(1)
+        expect(result[:tabs][0][:text]).to eq("Valid Tab")
+      end
+    end
   end
 end

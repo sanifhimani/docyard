@@ -98,6 +98,91 @@ RSpec.describe Docyard::Renderer do
     end
   end
 
+  describe "tab navigation" do
+    let(:tabs) do
+      [
+        { text: "Guide", href: "/guide", icon: "book", external: false },
+        { text: "API", href: "/api", icon: nil, external: false }
+      ]
+    end
+
+    context "when current path matches tab href exactly" do
+      it "marks the tab as active" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { tabs: tabs, has_tabs: true },
+          current_path: "/guide"
+        )
+
+        expect(html).to match(%r{href="/guide"[^>]*class="[^"]*is-active})
+      end
+    end
+
+    context "when current path is under tab href" do
+      it "marks the tab as active" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { tabs: tabs, has_tabs: true },
+          current_path: "/guide/setup"
+        )
+
+        expect(html).to match(%r{href="/guide"[^>]*class="[^"]*is-active})
+      end
+    end
+
+    context "when current path does not match tab href" do
+      it "does not mark the tab as active" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { tabs: tabs, has_tabs: true },
+          current_path: "/api/reference"
+        )
+
+        expect(html).not_to match(%r{href="/guide"[^>]*class="[^"]*is-active})
+      end
+    end
+
+    context "when tab is external link" do
+      let(:tabs) do
+        [{ text: "GitHub", href: "https://github.com", external: true }]
+      end
+
+      it "does not mark external tabs as active" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { tabs: tabs, has_tabs: true },
+          current_path: "/"
+        )
+
+        expect(html).not_to match(%r{href="https://github\.com"[^>]*class="[^"]*is-active})
+      end
+    end
+
+    context "when has_tabs is false" do
+      it "does not render tab navigation" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { tabs: tabs, has_tabs: false },
+          current_path: "/guide"
+        )
+
+        expect(html).not_to include("tab-bar")
+      end
+    end
+
+    context "when has_tabs is true" do
+      it "renders tab navigation" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { tabs: tabs, has_tabs: true },
+          current_path: "/guide"
+        )
+
+        expect(html).to include("tab-bar")
+      end
+    end
+  end
+
   describe "#render_file" do
     let(:temp_file) { Tempfile.new(["test", ".md"]) }
 

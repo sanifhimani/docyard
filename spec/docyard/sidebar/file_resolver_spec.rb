@@ -48,6 +48,12 @@ RSpec.describe Docyard::Sidebar::FileResolver do
         expect(item.path).to eq("/intro")
         expect(item.type).to eq(:file)
       end
+
+      it "sets section to false for regular files" do
+        item = resolver.resolve("intro", "")
+
+        expect(item.section).to be false
+      end
     end
 
     context "when options override frontmatter" do
@@ -147,6 +153,14 @@ RSpec.describe Docyard::Sidebar::FileResolver do
       item = resolver.build_link_item(config)
 
       expect(item.target).to eq("_blank")
+    end
+
+    it "sets section to false for external links" do
+      config = { "link" => "https://example.com", "text" => "Link" }
+
+      item = resolver.build_link_item(config)
+
+      expect(item.section).to be false
     end
   end
 

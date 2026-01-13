@@ -22,7 +22,11 @@ Metrics/ClassLength:
   Max: 150
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 16
+
+Metrics/ParameterLists:
+  MaxOptionalParameters: 6
+  CountKeywordArgs: false
 
 Style/Documentation:
   Enabled: false
