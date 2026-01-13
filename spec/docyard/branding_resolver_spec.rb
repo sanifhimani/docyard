@@ -419,5 +419,70 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:social][0][:platform]).to eq("github")
       end
     end
+
+    context "with default navigation CTAs" do
+      it "returns empty header_ctas array by default" do
+        result = resolver.resolve
+
+        expect(result[:header_ctas]).to eq([])
+      end
+    end
+
+    context "when navigation CTAs are configured" do
+      before do
+        create_config(<<~YAML)
+          navigation:
+            cta:
+              - text: "Get Started"
+                href: "/guide/quickstart"
+              - text: "GitHub"
+                href: "https://github.com/example/repo"
+                variant: secondary
+                external: true
+        YAML
+      end
+
+      it "normalizes CTA items to array", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:header_ctas]).to be_an(Array)
+        expect(result[:header_ctas].length).to eq(2)
+      end
+
+      it "includes text, href, variant, and external for each CTA", :aggregate_failures do
+        result = resolver.resolve
+        primary_cta = result[:header_ctas][0]
+        secondary_cta = result[:header_ctas][1]
+
+        expect(primary_cta[:text]).to eq("Get Started")
+        expect(primary_cta[:href]).to eq("/guide/quickstart")
+        expect(primary_cta[:variant]).to eq("primary")
+        expect(primary_cta[:external]).to be false
+
+        expect(secondary_cta[:text]).to eq("GitHub")
+        expect(secondary_cta[:href]).to eq("https://github.com/example/repo")
+        expect(secondary_cta[:variant]).to eq("secondary")
+        expect(secondary_cta[:external]).to be true
+      end
+    end
+
+    context "when navigation CTA is missing required fields" do
+      before do
+        create_config(<<~YAML)
+          navigation:
+            cta:
+              - text: "Valid CTA"
+                href: "/guide"
+              - text: "Missing href"
+        YAML
+      end
+
+      it "filters out invalid CTA items", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:header_ctas].length).to eq(1)
+        expect(result[:header_ctas][0][:text]).to eq("Valid CTA")
+      end
+    end
   end
 end

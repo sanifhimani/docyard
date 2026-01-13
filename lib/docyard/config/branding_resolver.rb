@@ -34,6 +34,7 @@ module Docyard
         .merge(search_options)
         .merge(credits_options)
         .merge(social_options)
+        .merge(navigation_options)
     end
 
     def site_options
@@ -120,6 +121,28 @@ module Docyard
           icon: platform.to_s
         }
       end.compact
+    end
+
+    def navigation_options
+      cta_items = config.navigation.cta || []
+      {
+        header_ctas: normalize_cta_items(cta_items)
+      }
+    end
+
+    def normalize_cta_items(items)
+      return [] unless items.is_a?(Array)
+
+      items.first(2).filter_map do |item|
+        next unless item.is_a?(Hash) && item["text"] && item["href"]
+
+        {
+          text: item["text"],
+          href: item["href"],
+          variant: item["variant"] || "primary",
+          external: item["external"] == true
+        }
+      end
     end
   end
 end
