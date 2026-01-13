@@ -121,6 +121,7 @@ module Docyard
     def assign_credits_and_social(branding)
       @credits = branding[:credits] != false
       @social = branding[:social] || []
+      @header_ctas = branding[:header_ctas] || []
     end
 
     def assign_template_variables(template_options)

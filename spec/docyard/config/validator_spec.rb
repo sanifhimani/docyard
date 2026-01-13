@@ -269,5 +269,90 @@ RSpec.describe Docyard::Config::Validator do
         expect { validator.validate! }.not_to raise_error
       end
     end
+
+    context "with valid navigation section" do
+      it "does not raise for valid CTA items" do
+        config = valid_config(
+          "navigation" => {
+            "cta" => [
+              { "text" => "Get Started", "href" => "/guide" },
+              { "text" => "GitHub", "href" => "https://github.com", "variant" => "secondary", "external" => true }
+            ]
+          }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+
+      it "does not raise for empty CTA array" do
+        config = valid_config("navigation" => { "cta" => [] })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+    end
+
+    context "with invalid navigation section" do
+      it "raises ConfigError for non-array cta" do
+        config = valid_config("navigation" => { "cta" => "string" })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /navigation\.cta.*must be an array/m)
+      end
+
+      it "raises ConfigError for non-string CTA text" do
+        config = valid_config("navigation" => { "cta" => [{ "text" => 123, "href" => "/guide" }] })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.text.*must be a string/m)
+      end
+
+      it "raises ConfigError for non-string CTA href" do
+        config = valid_config("navigation" => { "cta" => [{ "text" => "Get Started", "href" => 123 }] })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.href.*must be a string/m)
+      end
+
+      it "raises ConfigError for invalid variant" do
+        config = valid_config(
+          "navigation" => { "cta" => [{ "text" => "CTA", "href" => "/", "variant" => "invalid" }] }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.variant.*must be 'primary' or 'secondary'/m)
+      end
+
+      it "raises ConfigError for non-boolean external" do
+        config = valid_config(
+          "navigation" => { "cta" => [{ "text" => "CTA", "href" => "/", "external" => "yes" }] }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.external.*must be true or false/m)
+      end
+
+      it "raises ConfigError for more than 2 CTAs" do
+        config = valid_config(
+          "navigation" => {
+            "cta" => [
+              { "text" => "CTA 1", "href" => "/one" },
+              { "text" => "CTA 2", "href" => "/two" },
+              { "text" => "CTA 3", "href" => "/three" }
+            ]
+          }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /navigation\.cta.*maximum 2 CTAs allowed/m)
+      end
+    end
   end
 end

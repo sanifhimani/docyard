@@ -9,12 +9,13 @@ require_relative "sidebar/local_config_loader"
 
 module Docyard
   class SidebarBuilder
-    attr_reader :docs_path, :current_path, :config
+    attr_reader :docs_path, :current_path, :config, :header_ctas
 
-    def initialize(docs_path:, current_path: "/", config: nil)
+    def initialize(docs_path:, current_path: "/", config: nil, header_ctas: [])
       @docs_path = docs_path
       @current_path = current_path
       @config = config
+      @header_ctas = header_ctas
     end
 
     def tree
@@ -78,7 +79,8 @@ module Docyard
     def renderer
       @renderer ||= Sidebar::Renderer.new(
         site_title: extract_site_title,
-        base_url: extract_base_url
+        base_url: extract_base_url,
+        header_ctas: header_ctas
       )
     end
 

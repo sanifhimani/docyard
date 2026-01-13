@@ -22,6 +22,22 @@
     <% end %>
 
     <div class="header-actions">
+      <% if @header_ctas&.any? %>
+      <div class="header-ctas">
+        <% @header_ctas.sort_by { |cta| cta[:variant] == 'secondary' ? 0 : 1 }.each do |cta| %>
+        <a href="<%= cta[:external] ? cta[:href] : link_path(cta[:href]) %>"
+           class="header-cta header-cta--<%= cta[:variant] || 'primary' %>"
+           <%= 'target="_blank" rel="noopener noreferrer"' if cta[:external] %>>
+          <%= cta[:text] %>
+          <% if cta[:variant] != 'secondary' %>
+          <svg class="header-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5l7 7-7 7"/>
+          </svg>
+          <% end %>
+        </a>
+        <% end %>
+      </div>
+      <% end %>
       <%= render_partial('_theme_toggle') %>
     </div>
   </div>
