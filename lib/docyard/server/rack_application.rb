@@ -92,25 +92,23 @@ module Docyard
     end
 
     def render_documentation_page(file_path, current_path)
-      markdown_content = File.read(file_path)
-      markdown = Markdown.new(markdown_content)
+      markdown = Markdown.new(File.read(file_path))
       template_resolver = TemplateResolver.new(markdown.frontmatter, @config&.data)
+      branding = branding_options
 
-      sidebar_builder = build_sidebar_instance(current_path)
-      template_options = template_resolver.to_options
-
-      sidebar_html = template_resolver.show_sidebar? ? sidebar_builder.to_html : ""
-      prev_next_html = template_resolver.show_sidebar? ? build_prev_next(sidebar_builder, current_path, markdown) : ""
-
-      html = renderer.render_file(
-        file_path,
-        sidebar_html: sidebar_html,
-        prev_next_html: prev_next_html,
-        branding: branding_options,
-        template_options: template_options
-      )
+      navigation = build_navigation_html(template_resolver, current_path, markdown, branding[:header_ctas])
+      html = renderer.render_file(file_path, **navigation, branding: branding,
+                                                           template_options: template_resolver.to_options)
 
       [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
+    end
+
+    def build_navigation_html(template_resolver, current_path, markdown, header_ctas)
+      return { sidebar_html: "", prev_next_html: "" } unless template_resolver.show_sidebar?
+
+      sidebar_builder = build_sidebar_instance(current_path, header_ctas)
+      { sidebar_html: sidebar_builder.to_html,
+        prev_next_html: build_prev_next(sidebar_builder, current_path, markdown) }
     end
 
     def render_not_found_page
@@ -118,11 +116,12 @@ module Docyard
       [Constants::STATUS_NOT_FOUND, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
     end
 
-    def build_sidebar_instance(current_path)
+    def build_sidebar_instance(current_path, header_ctas = [])
       SidebarBuilder.new(
         docs_path: docs_path,
         current_path: current_path,
-        config: config
+        config: config,
+        header_ctas: header_ctas
       )
     end
 

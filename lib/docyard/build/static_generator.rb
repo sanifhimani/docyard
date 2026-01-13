@@ -81,18 +81,19 @@ module Docyard
       def render_markdown_file(markdown_file_path, current_path)
         markdown = Markdown.new(File.read(markdown_file_path))
         template_resolver = TemplateResolver.new(markdown.frontmatter, config.data)
+        branding = branding_options
 
-        sidebar_builder = build_sidebar_instance(current_path)
-        sidebar_html = template_resolver.show_sidebar? ? sidebar_builder.to_html : ""
-        prev_next_html = template_resolver.show_sidebar? ? build_prev_next(sidebar_builder, current_path, markdown) : ""
+        navigation = build_navigation_html(template_resolver, current_path, markdown, branding[:header_ctas])
+        renderer.render_file(markdown_file_path, **navigation, branding: branding,
+                                                               template_options: template_resolver.to_options)
+      end
 
-        renderer.render_file(
-          markdown_file_path,
-          sidebar_html: sidebar_html,
-          prev_next_html: prev_next_html,
-          branding: branding_options,
-          template_options: template_resolver.to_options
-        )
+      def build_navigation_html(template_resolver, current_path, markdown, header_ctas)
+        return { sidebar_html: "", prev_next_html: "" } unless template_resolver.show_sidebar?
+
+        sidebar_builder = build_sidebar_instance(current_path, header_ctas)
+        { sidebar_html: sidebar_builder.to_html,
+          prev_next_html: build_prev_next(sidebar_builder, current_path, markdown) }
       end
 
       def write_output(output_path, html_content)
@@ -127,11 +128,12 @@ module Docyard
         end
       end
 
-      def build_sidebar_instance(current_path)
+      def build_sidebar_instance(current_path, header_ctas = [])
         SidebarBuilder.new(
           docs_path: "docs",
           current_path: current_path,
-          config: config
+          config: config,
+          header_ctas: header_ctas
         )
       end
 
