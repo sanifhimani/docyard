@@ -12,6 +12,7 @@ module Docyard
     CodeBlockFocusPreprocessor = Processors::CodeBlockFocusPreprocessor
     CodeBlockOptionsPreprocessor = Processors::CodeBlockOptionsPreprocessor
     CodeSnippetImportPreprocessor = Processors::CodeSnippetImportPreprocessor
+    CustomAnchorProcessor = Processors::CustomAnchorProcessor
     IncludeProcessor = Processors::IncludeProcessor
     HeadingAnchorProcessor = Processors::HeadingAnchorProcessor
     IconProcessor = Processors::IconProcessor

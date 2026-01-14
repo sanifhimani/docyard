@@ -20,6 +20,7 @@ require_relative "../components/processors/code_block_diff_preprocessor"
 require_relative "../components/processors/code_block_focus_preprocessor"
 require_relative "../components/processors/table_wrapper_processor"
 require_relative "../components/processors/heading_anchor_processor"
+require_relative "../components/processors/custom_anchor_processor"
 require_relative "../components/processors/table_of_contents_processor"
 require_relative "../components/aliases"
 
