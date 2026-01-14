@@ -3,6 +3,9 @@
     <span class="nav-item-icon"><%= icon(@icon) %></span>
   <% end %>
   <span class="nav-item-text"><%= @title %></span>
+  <% if @badge %>
+    <span class="docyard-badge docyard-badge--<%= @badge_type || 'default' %>"><%= @badge %></span>
+  <% end %>
   <% if @target == "_blank" %>
     <span class="nav-item-external"><%= icon(:link_external) %></span>
   <% end %>

@@ -112,7 +112,9 @@ module Docyard
           title: item[:title],
           active: item[:active],
           icon: item[:icon],
-          target: item[:target]
+          target: item[:target],
+          badge: item[:badge],
+          badge_type: item[:badge_type]
         )
       end
 
@@ -136,7 +138,9 @@ module Docyard
           children_html: children_html,
           icon: item[:icon],
           collapsed: item[:collapsed],
-          has_index: item[:has_index]
+          has_index: item[:has_index],
+          badge: item[:badge],
+          badge_type: item[:badge_type]
         )
       end
     end
