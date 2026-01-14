@@ -3,6 +3,7 @@
 module Docyard
   module Components
     AccordionProcessor = Processors::AccordionProcessor
+    BadgeProcessor = Processors::BadgeProcessor
     StepsProcessor = Processors::StepsProcessor
     CardsProcessor = Processors::CardsProcessor
     CalloutProcessor = Processors::CalloutProcessor
