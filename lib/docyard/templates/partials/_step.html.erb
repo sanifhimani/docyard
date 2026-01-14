@@ -1,0 +1,14 @@
+<div class="docyard-step<%= ' docyard-step--last' if @is_last %>">
+  <div class="docyard-step__indicator">
+    <span class="docyard-step__number"><%= @number %></span>
+    <% unless @is_last %><div class="docyard-step__connector"></div><% end %>
+  </div>
+  <div class="docyard-step__content">
+    <h3 class="docyard-step__title"><%= @title %></h3>
+    <% unless @content_html.empty? %>
+    <div class="docyard-step__body">
+      <%= @content_html %>
+    </div>
+    <% end %>
+  </div>
+</div>
