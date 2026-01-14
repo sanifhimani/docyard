@@ -132,7 +132,8 @@ module Docyard
 
         { title: metadata[:title] || title_extractor.extract(full_file_path),
           path: url_path, icon: metadata[:icon], active: current_path == url_path,
-          type: :file, order: metadata[:order], children: [] }
+          type: :file, order: metadata[:order], badge: metadata[:badge],
+          badge_type: metadata[:badge_type], children: [] }
       end
     end
   end
