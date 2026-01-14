@@ -1,0 +1,9 @@
+<details class="docyard-accordion"<%= ' open' if @open %>>
+  <summary class="docyard-accordion__summary">
+    <span class="docyard-accordion__icon" aria-hidden="true"><%= @icon_svg %></span>
+    <span class="docyard-accordion__title"><%= @title %></span>
+  </summary>
+  <div class="docyard-accordion__content">
+    <%= @content_html %>
+  </div>
+</details>
