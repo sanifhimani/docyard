@@ -70,6 +70,14 @@ module Docyard
       frontmatter.dig("sidebar", "order")
     end
 
+    def sidebar_badge
+      frontmatter.dig("sidebar", "badge")
+    end
+
+    def sidebar_badge_type
+      frontmatter.dig("sidebar", "badge_type")
+    end
+
     def toc
       @context[:toc] || []
     end
