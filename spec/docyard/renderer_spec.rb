@@ -98,6 +98,58 @@ RSpec.describe Docyard::Renderer do
     end
   end
 
+  describe "announcement banner" do
+    context "when announcement is nil" do
+      it "does not render the banner" do
+        html = renderer.render(content: "<p>Content</p>", branding: { announcement: nil })
+
+        expect(html).not_to include("docyard-announcement")
+      end
+    end
+
+    context "when announcement is configured" do
+      let(:announcement) do
+        {
+          text: "New version available!",
+          link: "/changelog",
+          button: { text: "Learn more", link: "/features" },
+          dismissible: true
+        }
+      end
+
+      it "renders the announcement banner", :aggregate_failures do
+        html = renderer.render(content: "<p>Content</p>", branding: { announcement: announcement })
+
+        expect(html).to include("docyard-announcement")
+        expect(html).to include("New version available!")
+        expect(html).to include('href="/changelog"')
+        expect(html).to include("Learn more")
+        expect(html).to include('href="/features"')
+      end
+
+      it "renders dismiss button when dismissible" do
+        html = renderer.render(content: "<p>Content</p>", branding: { announcement: announcement })
+
+        expect(html).to include("docyard-announcement__dismiss")
+      end
+    end
+
+    context "when announcement is not dismissible" do
+      let(:announcement) do
+        {
+          text: "Important notice",
+          dismissible: false
+        }
+      end
+
+      it "does not render dismiss button" do
+        html = renderer.render(content: "<p>Content</p>", branding: { announcement: announcement })
+
+        expect(html).not_to include("docyard-announcement__dismiss")
+      end
+    end
+  end
+
   describe "tab navigation" do
     let(:tabs) do
       [
