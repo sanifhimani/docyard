@@ -23,7 +23,7 @@ module Docyard
 
     def render_file(file_path, sidebar_html: "", prev_next_html: "", breadcrumbs: nil, branding: {},
                     template_options: {}, current_path: "/")
-      markdown = Markdown.new(File.read(file_path), config: config)
+      markdown = Markdown.new(File.read(file_path), config: config, file_path: file_path)
 
       render(
         content: strip_md_from_links(markdown.html),

@@ -14,6 +14,7 @@ require_relative "../components/processors/tabs_processor"
 require_relative "../components/processors/icon_processor"
 require_relative "../components/processors/code_block_processor"
 require_relative "../components/processors/code_snippet_import_preprocessor"
+require_relative "../components/processors/include_processor"
 require_relative "../components/processors/code_block_options_preprocessor"
 require_relative "../components/processors/code_block_diff_preprocessor"
 require_relative "../components/processors/code_block_focus_preprocessor"
@@ -28,9 +29,10 @@ module Docyard
 
     attr_reader :raw, :config
 
-    def initialize(raw, config: nil)
+    def initialize(raw, config: nil, file_path: nil)
       @raw = raw.freeze
       @config = config
+      @file_path = file_path
       @context = {}
     end
 
@@ -99,6 +101,8 @@ module Docyard
 
     def render_html
       @context[:config] = config&.data
+      @context[:current_file] = @file_path
+      @context[:docs_root] = "docs"
 
       preprocessed_content = Components::Registry.run_preprocessors(content, @context)
 
