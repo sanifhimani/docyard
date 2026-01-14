@@ -30,10 +30,19 @@
         <%= @content %>
 
         <%= @prev_next_html %>
+
+        <div class="doc-footer-mobile">
+          <%= render_partial('_doc_footer') %>
+        </div>
       </main>
     </div>
 
-    <%= render_partial('_table_of_contents') %>
+    <aside class="doc-aside">
+      <%= render_partial('_table_of_contents') %>
+      <div class="doc-footer-desktop">
+        <%= render_partial('_doc_footer') %>
+      </div>
+    </aside>
   </div>
 
   <%= render_partial('_scripts') %>

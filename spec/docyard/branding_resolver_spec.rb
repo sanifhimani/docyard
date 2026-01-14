@@ -369,6 +369,29 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
+    context "with default copyright" do
+      it "returns nil copyright by default" do
+        result = resolver.resolve
+
+        expect(result[:copyright]).to be_nil
+      end
+    end
+
+    context "when copyright is configured" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            copyright: "2025 Docyard. All rights reserved."
+        YAML
+      end
+
+      it "returns the configured copyright" do
+        result = resolver.resolve
+
+        expect(result[:copyright]).to eq("2025 Docyard. All rights reserved.")
+      end
+    end
+
     context "with default social links" do
       it "returns empty social array by default" do
         result = resolver.resolve
@@ -417,6 +440,62 @@ RSpec.describe Docyard::BrandingResolver do
 
         expect(result[:social].length).to eq(1)
         expect(result[:social][0][:platform]).to eq("github")
+      end
+    end
+
+    context "when social platforms have special icon mappings" do
+      before do
+        create_config(<<~YAML)
+          socials:
+            x: https://x.com/docyard
+            twitter: https://twitter.com/docyard
+            discord: https://discord.gg/docyard
+            linkedin: https://linkedin.com/company/docyard
+        YAML
+      end
+
+      it "maps x platform to x-logo icon" do
+        result = resolver.resolve
+        x_social = result[:social].find { |s| s[:platform] == "x" }
+
+        expect(x_social[:icon]).to eq("x-logo")
+      end
+
+      it "maps twitter platform to x-logo icon" do
+        result = resolver.resolve
+        twitter_social = result[:social].find { |s| s[:platform] == "twitter" }
+
+        expect(twitter_social[:icon]).to eq("x-logo")
+      end
+
+      it "maps discord platform to discord-logo icon" do
+        result = resolver.resolve
+        discord_social = result[:social].find { |s| s[:platform] == "discord" }
+
+        expect(discord_social[:icon]).to eq("discord-logo")
+      end
+
+      it "maps linkedin platform to linkedin-logo icon" do
+        result = resolver.resolve
+        linkedin_social = result[:social].find { |s| s[:platform] == "linkedin" }
+
+        expect(linkedin_social[:icon]).to eq("linkedin-logo")
+      end
+    end
+
+    context "when social platform has no special icon mapping" do
+      before do
+        create_config(<<~YAML)
+          socials:
+            github: https://github.com/docyard
+        YAML
+      end
+
+      it "uses the platform name as the icon" do
+        result = resolver.resolve
+        github_social = result[:social].find { |s| s[:platform] == "github" }
+
+        expect(github_social[:icon]).to eq("github")
       end
     end
 

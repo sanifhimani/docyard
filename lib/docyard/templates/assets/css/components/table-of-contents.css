@@ -1,20 +1,24 @@
 .docyard-toc {
-  width: var(--toc-width);
-  position: fixed;
-  top: var(--header-height);
-  right: max(0px, calc((100vw - var(--layout-max-width)) / 2));
-  height: calc(100vh - var(--header-height));
+  min-height: 0;
   background-color: var(--background);
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.doc-aside.has-overflow .docyard-toc {
+  flex: 1;
 }
 
 .docyard-toc__scroll {
-  flex: 1;
-  overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
   padding: var(--spacing-3) var(--spacing-4);
+}
+
+.doc-aside.has-overflow .docyard-toc__scroll {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .docyard-toc::before,

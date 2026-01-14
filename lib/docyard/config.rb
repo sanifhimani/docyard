@@ -12,7 +12,8 @@ module Docyard
       "branding" => {
         "logo" => nil,
         "favicon" => nil,
-        "credits" => true
+        "credits" => true,
+        "copyright" => nil
       },
       "socials" => {},
       "tabs" => [],
