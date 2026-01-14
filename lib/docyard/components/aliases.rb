@@ -3,6 +3,7 @@
 module Docyard
   module Components
     AccordionProcessor = Processors::AccordionProcessor
+    StepsProcessor = Processors::StepsProcessor
     CalloutProcessor = Processors::CalloutProcessor
     CodeBlockProcessor = Processors::CodeBlockProcessor
     CodeBlockDiffPreprocessor = Processors::CodeBlockDiffPreprocessor
