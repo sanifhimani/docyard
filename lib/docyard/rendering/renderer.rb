@@ -21,26 +21,22 @@ module Docyard
       @config = config
     end
 
-    def render_file(file_path, sidebar_html: "", prev_next_html: "", branding: {}, template_options: {},
-                    current_path: "/")
-      markdown_content = File.read(file_path)
-      markdown = Markdown.new(markdown_content, config: config)
-
-      html_content = strip_md_from_links(markdown.html)
-      toc = markdown.toc
+    def render_file(file_path, sidebar_html: "", prev_next_html: "", breadcrumbs: nil, branding: {},
+                    template_options: {}, current_path: "/")
+      markdown = Markdown.new(File.read(file_path), config: config)
 
       render(
-        content: html_content,
+        content: strip_md_from_links(markdown.html),
         page_title: markdown.title || Constants::DEFAULT_SITE_TITLE,
-        navigation: {
-          sidebar_html: sidebar_html,
-          prev_next_html: prev_next_html,
-          toc: toc
-        },
+        navigation: build_navigation(sidebar_html, prev_next_html, markdown.toc, breadcrumbs),
         branding: branding,
         template_options: template_options,
         current_path: current_path
       )
+    end
+
+    def build_navigation(sidebar_html, prev_next_html, toc, breadcrumbs)
+      { sidebar_html: sidebar_html, prev_next_html: prev_next_html, toc: toc, breadcrumbs: breadcrumbs }
     end
 
     def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, navigation: {}, branding: {},
@@ -49,11 +45,7 @@ module Docyard
       layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
       template = File.read(layout_path)
 
-      sidebar_html = navigation[:sidebar_html] || ""
-      prev_next_html = navigation[:prev_next_html] || ""
-      toc = navigation[:toc] || []
-
-      assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
+      assign_content_variables(content, page_title, navigation)
       assign_branding_variables(branding, current_path)
       assign_template_variables(template_options)
 
@@ -93,12 +85,13 @@ module Docyard
 
     private
 
-    def assign_content_variables(content, page_title, sidebar_html, prev_next_html, toc)
+    def assign_content_variables(content, page_title, navigation)
       @content = content
       @page_title = page_title
-      @sidebar_html = sidebar_html
-      @prev_next_html = prev_next_html
-      @toc = toc
+      @sidebar_html = navigation[:sidebar_html] || ""
+      @prev_next_html = navigation[:prev_next_html] || ""
+      @toc = navigation[:toc] || []
+      @breadcrumbs = navigation[:breadcrumbs]
     end
 
     def assign_branding_variables(branding, current_path = "/")

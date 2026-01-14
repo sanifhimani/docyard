@@ -3,6 +3,7 @@
 require "tty-progressbar"
 require_relative "../rendering/template_resolver"
 require_relative "../navigation/prev_next_builder"
+require_relative "../navigation/breadcrumb_builder"
 
 module Docyard
   module Build
@@ -90,11 +91,14 @@ module Docyard
       end
 
       def build_navigation_html(template_resolver, current_path, markdown, header_ctas)
-        return { sidebar_html: "", prev_next_html: "" } unless template_resolver.show_sidebar?
+        return { sidebar_html: "", prev_next_html: "", breadcrumbs: nil } unless template_resolver.show_sidebar?
 
         sidebar_builder = build_sidebar_instance(current_path, header_ctas)
-        { sidebar_html: sidebar_builder.to_html,
-          prev_next_html: build_prev_next(sidebar_builder, current_path, markdown) }
+        {
+          sidebar_html: sidebar_builder.to_html,
+          prev_next_html: build_prev_next(sidebar_builder, current_path, markdown),
+          breadcrumbs: build_breadcrumbs(sidebar_builder.tree, current_path)
+        }
       end
 
       def write_output(output_path, html_content)
@@ -145,6 +149,16 @@ module Docyard
           frontmatter: markdown.frontmatter,
           config: {}
         ).to_html
+      end
+
+      def build_breadcrumbs(sidebar_tree, current_path)
+        return nil unless breadcrumbs_enabled?
+
+        BreadcrumbBuilder.new(sidebar_tree: sidebar_tree, current_path: current_path)
+      end
+
+      def breadcrumbs_enabled?
+        config.navigation.breadcrumbs != false
       end
 
       def branding_options

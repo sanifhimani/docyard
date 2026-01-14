@@ -1,3 +1,23 @@
+html {
+  scroll-padding-top: calc(var(--header-height) + var(--spacing-6));
+}
+
+html:has(.has-tabs) {
+  scroll-padding-top: calc(var(--header-height) + var(--tab-bar-height) + var(--spacing-6));
+}
+
+@media (max-width: 1280px) and (min-width: 1025px) {
+  html {
+    scroll-padding-top: calc(var(--header-height) + var(--tab-bar-height) + var(--spacing-6));
+  }
+}
+
+@media (max-width: 1024px) {
+  html {
+    scroll-padding-top: calc(var(--header-height) + var(--tab-bar-height) + var(--spacing-6));
+  }
+}
+
 .page-wrapper {
   max-width: var(--layout-max-width);
   margin: 0 auto;
@@ -333,6 +353,37 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 1025px) {
+  .sidebar-collapsed .sidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sidebar-collapsed .layout-main {
+    margin-left: 0;
+  }
+
+  .sidebar-collapsed main.content {
+    max-width: 100%;
+  }
+
+  .sidebar-collapsed .secondary-header {
+    left: max(0px, calc((100vw - var(--layout-max-width)) / 2));
+  }
+
+  .sidebar {
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  main.content {
+    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 @media (max-width: 1280px) and (min-width: 1025px) {
@@ -345,7 +396,7 @@ main.content {
   flex: 1;
   max-width: var(--content-max-width);
   width: 100%;
-  padding: var(--spacing-16) var(--spacing-10);
+  padding: var(--spacing-8) var(--spacing-10) var(--spacing-16);
   margin: 0 auto;
   min-width: 0;
   box-sizing: border-box;
