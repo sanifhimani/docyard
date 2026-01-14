@@ -23,12 +23,14 @@ module Docyard
       end
 
       def extract_frontmatter_metadata(file_path)
-        return { text: nil, icon: nil } unless File.exist?(file_path)
+        return { text: nil, icon: nil, badge: nil, badge_type: nil } unless File.exist?(file_path)
 
         markdown = Markdown.new(File.read(file_path))
         {
           text: markdown.sidebar_text || markdown.title,
-          icon: markdown.sidebar_icon
+          icon: markdown.sidebar_icon,
+          badge: markdown.sidebar_badge,
+          badge_type: markdown.sidebar_badge_type
         }
       end
 

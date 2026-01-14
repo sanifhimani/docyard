@@ -12,7 +12,9 @@ module Docyard
           title: markdown.sidebar_text || markdown.title,
           icon: markdown.sidebar_icon,
           collapsed: markdown.sidebar_collapsed,
-          order: markdown.sidebar_order
+          order: markdown.sidebar_order,
+          badge: markdown.sidebar_badge,
+          badge_type: markdown.sidebar_badge_type
         }
       rescue StandardError
         empty_file_metadata
@@ -27,7 +29,9 @@ module Docyard
           sidebar_text: markdown.sidebar_text,
           icon: markdown.sidebar_icon,
           collapsed: markdown.sidebar_collapsed,
-          order: markdown.sidebar_order
+          order: markdown.sidebar_order,
+          badge: markdown.sidebar_badge,
+          badge_type: markdown.sidebar_badge_type
         }
       rescue StandardError
         empty_index_metadata
@@ -36,11 +40,11 @@ module Docyard
       private
 
       def empty_file_metadata
-        { title: nil, icon: nil, collapsed: nil, order: nil }
+        { title: nil, icon: nil, collapsed: nil, order: nil, badge: nil, badge_type: nil }
       end
 
       def empty_index_metadata
-        { sidebar_text: nil, icon: nil, collapsed: nil, order: nil }
+        { sidebar_text: nil, icon: nil, collapsed: nil, order: nil, badge: nil, badge_type: nil }
       end
     end
   end
