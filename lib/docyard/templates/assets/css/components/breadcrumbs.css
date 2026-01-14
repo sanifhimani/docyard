@@ -1,0 +1,143 @@
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-6);
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+}
+
+.breadcrumb-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.breadcrumb-toggle:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.breadcrumb-toggle:active {
+  background-color: var(--muted);
+}
+
+.breadcrumb-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
+}
+
+.breadcrumb-toggle .docyard-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-collapsed .breadcrumb-toggle {
+  background-color: var(--muted);
+  border-color: var(--border);
+}
+
+.breadcrumb-list,
+.content .breadcrumb-list {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.breadcrumb-link,
+.breadcrumb-text {
+  display: block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb-link,
+.content .breadcrumb-link {
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  border-bottom: none;
+  font-weight: var(--font-normal);
+}
+
+.breadcrumb-link:hover,
+.content .breadcrumb-link:hover {
+  color: var(--foreground);
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.breadcrumb-item--current .breadcrumb-text {
+  color: var(--foreground);
+  font-weight: var(--font-medium);
+}
+
+.breadcrumb-separator {
+  color: var(--border);
+  flex-shrink: 0;
+  user-select: none;
+  padding: 0 var(--spacing-0-5);
+}
+
+.breadcrumb-ellipsis {
+  color: var(--muted-foreground);
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 1024px) {
+  .breadcrumb-toggle {
+    display: none;
+  }
+
+  .breadcrumbs {
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .breadcrumbs--single {
+    display: none;
+  }
+
+  .breadcrumb-link,
+  .breadcrumb-text {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 640px) {
+  .breadcrumb-link,
+  .breadcrumb-text {
+    max-width: 120px;
+  }
+
+  .breadcrumbs {
+    font-size: var(--text-xs);
+    margin-bottom: var(--spacing-3);
+  }
+}
