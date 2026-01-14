@@ -7,6 +7,9 @@
           <span class="nav-item-icon"><%= icon(@icon) %></span>
         <% end %>
         <span class="nav-item-text"><%= @title %></span>
+        <% if @badge %>
+          <span class="docyard-badge docyard-badge--<%= @badge_type || 'default' %>"><%= @badge %></span>
+        <% end %>
       </span>
       <span class="nav-group-icon"><%= icon(:caret_right) %></span>
     </a>
@@ -17,6 +20,9 @@
           <span class="nav-item-icon"><%= icon(@icon) %></span>
         <% end %>
         <span class="nav-item-text"><%= @title %></span>
+        <% if @badge %>
+          <span class="docyard-badge docyard-badge--<%= @badge_type || 'default' %>"><%= @badge %></span>
+        <% end %>
       </span>
       <span class="nav-group-icon"><%= icon(:caret_right) %></span>
     </button>

@@ -58,17 +58,29 @@ module Docyard
       end
 
       def build_context(slug, base_path, options)
+        paths = resolve_paths(slug, base_path, options)
+        frontmatter = metadata_extractor.extract_frontmatter_metadata(paths[:file])
+
+        build_context_hash(slug, paths, options, frontmatter)
+      end
+
+      def resolve_paths(slug, base_path, options)
         file_path = File.join(docs_path, base_path, "#{slug}.md")
         url_path = Utils::PathResolver.to_url(File.join(base_path, slug))
-        frontmatter = metadata_extractor.extract_frontmatter_metadata(file_path)
         final_path = options["link"] || options[:link] || url_path
 
+        { file: file_path, final: final_path }
+      end
+
+      def build_context_hash(slug, paths, options, frontmatter)
         {
           slug: slug,
-          text: metadata_extractor.resolve_item_text(slug, file_path, options, frontmatter[:text]),
-          path: final_path,
+          text: metadata_extractor.resolve_item_text(slug, paths[:file], options, frontmatter[:text]),
+          path: paths[:final],
           icon: metadata_extractor.resolve_item_icon(options, frontmatter[:icon]),
-          active: current_path == final_path,
+          badge: frontmatter[:badge],
+          badge_type: frontmatter[:badge_type],
+          active: current_path == paths[:final],
           type: :file,
           section: false
         }

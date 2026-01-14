@@ -58,7 +58,7 @@ RSpec.describe Docyard::Sidebar::MetadataReader do
       it "returns nil for all fields" do
         result = reader.extract_file_metadata("/nonexistent/path.md")
 
-        expect(result).to eq({ title: nil, icon: nil, collapsed: nil, order: nil })
+        expect(result).to eq({ title: nil, icon: nil, collapsed: nil, order: nil, badge: nil, badge_type: nil })
       end
     end
 

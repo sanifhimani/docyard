@@ -3,7 +3,8 @@
 module Docyard
   module Sidebar
     class Item
-      attr_reader :slug, :text, :icon, :link, :target, :collapsed, :items, :path, :active, :type, :has_index, :section
+      attr_reader :slug, :text, :icon, :link, :target, :collapsed, :items, :path, :active, :type, :has_index, :section,
+                  :badge, :badge_type
 
       DEFAULTS = {
         target: "_self",
@@ -27,6 +28,8 @@ module Docyard
         @text = options[:text]
         @icon = options[:icon]
         @link = options[:link]
+        @badge = options[:badge]
+        @badge_type = options[:badge_type]
       end
 
       def assign_optional_attributes(options)
@@ -88,6 +91,8 @@ module Docyard
           target: target,
           has_index: has_index,
           section: section,
+          badge: badge,
+          badge_type: badge_type,
           children: children.map(&:to_h)
         }
       end

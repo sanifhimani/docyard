@@ -348,4 +348,57 @@ RSpec.describe Docyard::Markdown do
       end
     end
   end
+
+  describe "#sidebar_badge" do
+    context "when sidebar.badge is set" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          sidebar:
+            badge: New
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the badge text" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_badge).to eq("New")
+      end
+    end
+
+    context "when sidebar.badge does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.sidebar_badge).to be_nil
+      end
+    end
+  end
+
+  describe "#sidebar_badge_type" do
+    context "when sidebar.badge_type is set" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          sidebar:
+            badge: New
+            badge_type: success
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the badge type" do
+        markdown = described_class.new(text)
+        expect(markdown.sidebar_badge_type).to eq("success")
+      end
+    end
+
+    context "when sidebar.badge_type does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.sidebar_badge_type).to be_nil
+      end
+    end
+  end
 end

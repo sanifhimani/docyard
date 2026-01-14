@@ -106,7 +106,7 @@ RSpec.describe Docyard::Sidebar::MetadataExtractor do
     it "returns nil values when file does not exist" do
       result = extractor.extract_frontmatter_metadata("/nonexistent/path.md")
 
-      expect(result).to eq({ text: nil, icon: nil })
+      expect(result).to eq({ text: nil, icon: nil, badge: nil, badge_type: nil })
     end
   end
 
