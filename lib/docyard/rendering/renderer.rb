@@ -120,6 +120,7 @@ module Docyard
       @copyright = branding[:copyright]
       @social = branding[:social] || []
       @header_ctas = branding[:header_ctas] || []
+      @announcement = branding[:announcement]
     end
 
     def assign_tabs(branding, current_path)

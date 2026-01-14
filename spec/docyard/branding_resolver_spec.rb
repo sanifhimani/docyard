@@ -659,5 +659,120 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:tabs][0][:text]).to eq("Valid Tab")
       end
     end
+
+    context "with default announcement" do
+      it "returns nil announcement by default" do
+        result = resolver.resolve
+
+        expect(result[:announcement]).to be_nil
+      end
+    end
+
+    context "when announcement is configured with text only" do
+      before do
+        create_config(<<~YAML)
+          announcement:
+            text: "Welcome to our documentation!"
+        YAML
+      end
+
+      it "returns announcement with text", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:announcement][:text]).to eq("Welcome to our documentation!")
+        expect(result[:announcement][:link]).to be_nil
+        expect(result[:announcement][:button]).to be_nil
+        expect(result[:announcement][:dismissible]).to be true
+      end
+    end
+
+    context "when announcement is configured with link" do
+      before do
+        create_config(<<~YAML)
+          announcement:
+            text: "v1.0 is here!"
+            link: "/changelog"
+        YAML
+      end
+
+      it "returns announcement with link", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:announcement][:text]).to eq("v1.0 is here!")
+        expect(result[:announcement][:link]).to eq("/changelog")
+      end
+    end
+
+    context "when announcement is configured with button" do
+      before do
+        create_config(<<~YAML)
+          announcement:
+            text: "Check out our new features!"
+            link: "/changelog"
+            button:
+              text: "Learn more"
+              link: "/features"
+        YAML
+      end
+
+      it "returns announcement with button", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:announcement][:button][:text]).to eq("Learn more")
+        expect(result[:announcement][:button][:link]).to eq("/features")
+      end
+    end
+
+    context "when announcement button has no link" do
+      before do
+        create_config(<<~YAML)
+          announcement:
+            text: "Check out our new features!"
+            link: "/changelog"
+            button:
+              text: "Learn more"
+        YAML
+      end
+
+      it "uses announcement link for button", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:announcement][:button][:text]).to eq("Learn more")
+        expect(result[:announcement][:button][:link]).to eq("/changelog")
+      end
+    end
+
+    context "when announcement dismissible is false" do
+      before do
+        create_config(<<~YAML)
+          announcement:
+            text: "Important notice"
+            dismissible: false
+        YAML
+      end
+
+      it "returns dismissible as false" do
+        result = resolver.resolve
+
+        expect(result[:announcement][:dismissible]).to be false
+      end
+    end
+
+    context "when announcement button text is missing" do
+      before do
+        create_config(<<~YAML)
+          announcement:
+            text: "Check out our new features!"
+            button:
+              link: "/features"
+        YAML
+      end
+
+      it "returns nil button" do
+        result = resolver.resolve
+
+        expect(result[:announcement][:button]).to be_nil
+      end
+    end
   end
 end

@@ -1,0 +1,27 @@
+<% if @announcement %>
+<div class="docyard-announcement" data-dismissible="<%= @announcement[:dismissible] %>"<%= @announcement[:button] ? ' data-has-button="true"' : '' %>>
+  <div class="docyard-announcement__content">
+    <% if @announcement[:link] %>
+      <a href="<%= @announcement[:link] %>" class="docyard-announcement__link">
+        <span class="docyard-announcement__text"><%= @announcement[:text] %></span>
+        <%= icon("arrow-right") %>
+      </a>
+    <% else %>
+      <span class="docyard-announcement__text"><%= @announcement[:text] %></span>
+    <% end %>
+
+    <% if @announcement[:button] %>
+      <a href="<%= @announcement[:button][:link] %>" class="docyard-announcement__button">
+        <%= @announcement[:button][:text] %>
+      </a>
+    <% end %>
+  </div>
+
+  <% if @announcement[:dismissible] %>
+    <button class="docyard-announcement__dismiss" aria-label="Dismiss announcement">
+      <%= icon("x") %>
+    </button>
+  <% end %>
+</div>
+<script>document.body.classList.add('has-announcement');</script>
+<% end %>

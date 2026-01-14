@@ -29,7 +29,8 @@ module Docyard
       "navigation" => {
         "cta" => [],
         "breadcrumbs" => true
-      }
+      },
+      "announcement" => nil
     }.freeze
 
     attr_reader :data, :file_path
@@ -79,6 +80,10 @@ module Docyard
 
     def navigation
       @navigation ||= ConfigSection.new(data["navigation"])
+    end
+
+    def announcement
+      @announcement ||= data["announcement"] ? ConfigSection.new(data["announcement"]) : nil
     end
 
     private

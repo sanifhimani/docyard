@@ -191,6 +191,29 @@ RSpec.describe Docyard::Config do
     end
   end
 
+  describe "#announcement" do
+    it "returns nil when not configured" do
+      config = described_class.load(temp_dir)
+
+      expect(config.announcement).to be_nil
+    end
+
+    it "provides access to announcement config", :aggregate_failures do
+      create_config(<<~YAML)
+        announcement:
+          text: "New version available!"
+          link: "/changelog"
+          dismissible: true
+      YAML
+
+      config = described_class.load(temp_dir)
+
+      expect(config.announcement.text).to eq("New version available!")
+      expect(config.announcement.link).to eq("/changelog")
+      expect(config.announcement.dismissible).to be true
+    end
+  end
+
   describe "validation" do
     context "with invalid values" do
       it "raises ConfigError for invalid title" do
