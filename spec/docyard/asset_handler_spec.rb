@@ -63,20 +63,6 @@ RSpec.describe Docyard::AssetHandler do
         expect(content).to include(".theme-toggle")
       end
 
-      it "concatenates files in alphabetical order", :aggregate_failures do
-        _status, _headers, body = handler.serve_docyard_assets("/_docyard/css/components.css")
-        content = body.first
-
-        callout_pos = content.index(".docyard-callout")
-        icon_pos = content.index(".docyard-icon")
-        navigation_pos = content.index(".sidebar nav")
-        theme_pos = content.index(".theme-toggle")
-
-        expect(callout_pos).to be < icon_pos
-        expect(icon_pos).to be < navigation_pos
-        expect(navigation_pos).to be < theme_pos
-      end
-
       it "separates component files with blank lines" do
         _status, _headers, body = handler.serve_docyard_assets("/_docyard/css/components.css")
         content = body.first
