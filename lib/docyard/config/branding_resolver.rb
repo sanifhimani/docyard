@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "logo_detector"
+
 module Docyard
   class BrandingResolver
     def initialize(config)
@@ -45,57 +47,26 @@ module Docyard
         .merge(social_options)
         .merge(navigation_options)
         .merge(tabs_options)
+        .merge(announcement_options)
     end
 
     def site_options
       {
         site_title: config.title || Constants::DEFAULT_SITE_TITLE,
         site_description: config.description || "",
-        favicon: config.branding.favicon || auto_detect_favicon
+        favicon: config.branding.favicon || LogoDetector.auto_detect_favicon
       }
     end
 
     def logo_options
       branding = config.branding
-      logo = branding.logo || auto_detect_logo
+      logo = branding.logo || LogoDetector.auto_detect_logo
       has_custom_logo = !logo.nil?
       {
         logo: logo || Constants::DEFAULT_LOGO_PATH,
-        logo_dark: detect_dark_logo(logo) || Constants::DEFAULT_LOGO_DARK_PATH,
+        logo_dark: LogoDetector.detect_dark_logo(logo) || Constants::DEFAULT_LOGO_DARK_PATH,
         has_custom_logo: has_custom_logo
       }
-    end
-
-    def auto_detect_logo
-      detect_public_file("logo", %w[svg png])
-    end
-
-    def auto_detect_favicon
-      detect_public_file("favicon", %w[ico svg png])
-    end
-
-    def detect_public_file(name, extensions)
-      extensions.each do |ext|
-        path = File.join(Constants::PUBLIC_DIR, "#{name}.#{ext}")
-        return "#{name}.#{ext}" if File.exist?(path)
-      end
-      nil
-    end
-
-    def detect_dark_logo(logo)
-      return nil unless logo
-
-      ext = File.extname(logo)
-      base = File.basename(logo, ext)
-      dark_filename = "#{base}-dark#{ext}"
-
-      if File.absolute_path?(logo)
-        dark_path = File.join(File.dirname(logo), dark_filename)
-        File.exist?(dark_path) ? dark_path : logo
-      else
-        dark_path = File.join("docs/public", dark_filename)
-        File.exist?(dark_path) ? dark_filename : logo
-      end
     end
 
     def search_options
@@ -178,6 +149,30 @@ module Docyard
           external: item["external"] == true
         }
       end
+    end
+
+    def announcement_options
+      announcement = config.announcement
+      return { announcement: nil } unless announcement
+
+      {
+        announcement: {
+          text: announcement.text,
+          link: announcement.link,
+          button: build_announcement_button(announcement),
+          dismissible: announcement.dismissible != false
+        }
+      }
+    end
+
+    def build_announcement_button(announcement)
+      button = announcement.button
+      return nil unless button.is_a?(Hash) && button["text"]
+
+      {
+        text: button["text"],
+        link: button["link"] || announcement.link
+      }
     end
   end
 end
