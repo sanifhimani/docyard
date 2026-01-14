@@ -36,6 +36,7 @@ module Docyard
         css_content = resolve_css_imports(main_css)
         minified = CSSminify.compress(css_content)
         minified = fix_calc_whitespace(minified)
+        minified = fix_css_math_functions(minified)
         hash = generate_hash(minified)
 
         write_bundled_asset(minified, hash, "css")
@@ -51,6 +52,10 @@ module Docyard
           .gsub(/(\d[a-z]*)\+(?=[\w(])/, '\1 + ')
           .gsub(/([lch])\+(?=[\d.])/, '\1 + ')
           .gsub(/([lch])-(?=[\d.])/, '\1 - ')
+      end
+
+      def fix_css_math_functions(css)
+        css.gsub(/\bmax\(0,/, "max(0px,").gsub(/\bmin\(0,/, "min(0px,)")
       end
 
       def resolve_css_imports(css_content)

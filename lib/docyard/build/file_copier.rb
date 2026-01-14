@@ -59,22 +59,45 @@ module Docyard
       end
 
       def copy_default_branding_assets
-        templates_assets = File.join(__dir__, "..", "templates", "assets")
-        count = 0
+        templates_assets = templates_assets_path
+        count = copy_branding_files(templates_assets)
+        count + copy_fonts(templates_assets)
+      end
 
-        ["logo.svg", "logo-dark.svg", "favicon.svg"].each do |asset_file|
-          source_path = File.join(templates_assets, asset_file)
-          next unless File.exist?(source_path)
+      def templates_assets_path
+        File.join(__dir__, "..", "templates", "assets")
+      end
 
-          dest_path = File.join(config.build.output, DOCYARD_OUTPUT_DIR, asset_file)
-          FileUtils.mkdir_p(File.dirname(dest_path))
-          FileUtils.cp(source_path, dest_path)
+      def copy_branding_files(templates_assets)
+        branding_files = %w[logo.svg logo-dark.svg favicon.svg]
+        branding_files.sum { |asset_file| copy_asset_to_docyard(templates_assets, asset_file, "default branding") }
+      end
 
-          log "  Copied default branding: #{asset_file}" if verbose
-          count += 1
-        end
+      def copy_asset_to_docyard(source_dir, filename, label)
+        source_path = File.join(source_dir, filename)
+        return 0 unless File.exist?(source_path)
 
-        count
+        dest_path = File.join(config.build.output, DOCYARD_OUTPUT_DIR, filename)
+        FileUtils.mkdir_p(File.dirname(dest_path))
+        FileUtils.cp(source_path, dest_path)
+        log "  Copied #{label}: #{filename}" if verbose
+        1
+      end
+
+      def copy_fonts(templates_assets)
+        fonts_dir = File.join(templates_assets, "fonts")
+        return 0 unless Dir.exist?(fonts_dir)
+
+        font_files = Dir.glob(File.join(fonts_dir, "*")).select { |f| File.file?(f) }
+        font_files.sum { |font_file| copy_single_font(font_file) }
+      end
+
+      def copy_single_font(font_file)
+        dest_path = File.join(config.build.output, DOCYARD_OUTPUT_DIR, "fonts", File.basename(font_file))
+        FileUtils.mkdir_p(File.dirname(dest_path))
+        FileUtils.cp(font_file, dest_path)
+        log "  Copied font: #{File.basename(font_file)}" if verbose
+        1
       end
 
       def copy_user_branding_assets
