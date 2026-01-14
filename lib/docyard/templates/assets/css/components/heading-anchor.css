@@ -4,19 +4,26 @@
 .content h5[id],
 .content h6[id] {
   position: relative;
-  scroll-margin-top: 100px;
+  scroll-margin-top: calc(var(--header-height) + var(--spacing-6));
   display: flex;
   align-items: center;
 }
 
-@media (max-width: 1280px) and (min-width: 1025px) {
+.has-tabs .content h2[id],
+.has-tabs .content h3[id],
+.has-tabs .content h4[id],
+.has-tabs .content h5[id],
+.has-tabs .content h6[id] {
+  scroll-margin-top: calc(var(--header-height) + 3rem + var(--spacing-6));
+}
 
+@media (max-width: 1280px) and (min-width: 1025px) {
   .content h2[id],
   .content h3[id],
   .content h4[id],
   .content h5[id],
   .content h6[id] {
-    scroll-margin-top: calc(var(--header-height) + 3rem + var(--spacing-4));
+    scroll-margin-top: calc(var(--header-height) + 3rem + var(--spacing-6));
   }
 }
 
