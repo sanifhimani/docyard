@@ -1,5 +1,5 @@
 <% collapsed = @collapsed || false %>
-<div class="nav-group">
+<div class="nav-group" data-default-collapsed="<%= collapsed %>">
   <% if @has_index && @path %>
     <a href="<%= link_path(@path) %>" class="nav-group-header nav-group-header--link<%= ' active' if @active %>" data-nav-toggle aria-expanded="<%= collapsed ? 'false' : 'true' %>">
       <span class="nav-group-title">

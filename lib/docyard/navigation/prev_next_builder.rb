@@ -124,7 +124,10 @@ module Docyard
     end
 
     def valid_navigation_item?(item)
-      item[:type] == :file && item[:path] && !external_link?(item[:path])
+      return false unless item[:path]
+      return false if external_link?(item[:path])
+
+      item[:type] == :file || (item[:type] == :directory && item[:has_index])
     end
 
     def build_link(item)

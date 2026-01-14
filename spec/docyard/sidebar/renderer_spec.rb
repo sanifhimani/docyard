@@ -96,6 +96,41 @@ RSpec.describe Docyard::Sidebar::Renderer do
         expect(html).to include('<a href="/resources/faq"')
         expect(html).to include(">FAQ</span>")
       end
+
+      it "renders data-default-collapsed attribute" do
+        html = renderer.render(tree)
+
+        expect(html).to include('data-default-collapsed="false"')
+      end
+    end
+
+    context "with collapsed group" do
+      let(:tree) do
+        [{
+          title: "Advanced",
+          path: nil,
+          active: false,
+          type: :directory,
+          section: false,
+          collapsed: true,
+          children: [
+            {
+              title: "Config",
+              path: "/advanced/config",
+              active: false,
+              type: :file,
+              children: []
+            }
+          ]
+        }]
+      end
+
+      it "renders data-default-collapsed as true when collapsed", :aggregate_failures do
+        html = renderer.render(tree)
+
+        expect(html).to include('data-default-collapsed="true"')
+        expect(html).to include('aria-expanded="false"')
+      end
     end
 
     context "with section icon" do

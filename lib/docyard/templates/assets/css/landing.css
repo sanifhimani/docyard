@@ -707,7 +707,7 @@ a.feature-card:active {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .hero {
     min-height: auto;
   }
