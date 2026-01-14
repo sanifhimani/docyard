@@ -1,0 +1,122 @@
+.docyard-steps {
+  margin: var(--spacing-6) 0;
+}
+
+.docyard-step {
+  display: flex;
+  gap: var(--spacing-4);
+  position: relative;
+}
+
+.docyard-step:not(.docyard-step--last) {
+  padding-bottom: var(--spacing-6);
+}
+
+.docyard-step__indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.docyard-step__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  flex-shrink: 0;
+}
+
+.docyard-step__connector {
+  width: 2px;
+  flex: 1;
+  background-color: var(--border);
+  margin-top: var(--spacing-2);
+}
+
+.docyard-step__content {
+  flex: 1;
+  min-width: 0;
+  padding-top: var(--spacing-1);
+}
+
+.docyard-step__title {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+  line-height: var(--leading-tight);
+}
+
+.docyard-step__body {
+  margin-top: var(--spacing-3);
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+  line-height: var(--leading-relaxed);
+}
+
+.docyard-step__body > *:first-child {
+  margin-top: 0;
+}
+
+.docyard-step__body > *:last-child {
+  margin-bottom: 0;
+}
+
+.docyard-step__body p {
+  margin: var(--spacing-2) 0;
+}
+
+.docyard-step__body a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.docyard-step__body a:hover {
+  color: var(--foreground);
+}
+
+.docyard-step__body pre {
+  margin: var(--spacing-4) 0;
+  border-radius: var(--radius-lg);
+}
+
+.docyard-step__body :not(pre) > code {
+  background-color: var(--muted);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875em;
+}
+
+.docyard-step__body ul,
+.docyard-step__body ol {
+  margin: var(--spacing-2) 0;
+  padding-left: var(--spacing-4);
+}
+
+.docyard-step__body li {
+  margin: var(--spacing-1) 0;
+}
+
+@media (max-width: 640px) {
+  .docyard-step {
+    gap: var(--spacing-3);
+  }
+
+  .docyard-step__number {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: var(--text-xs);
+  }
+
+  .docyard-step__title {
+    font-size: var(--text-sm);
+  }
+}
