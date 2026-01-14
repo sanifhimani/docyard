@@ -214,5 +214,47 @@ RSpec.describe Docyard::Sidebar::Renderer do
         expect(html).not_to include(">Documentation</a>")
       end
     end
+
+    context "with sidebar badges" do
+      let(:tree) do
+        [{
+          title: "New Feature",
+          path: "/new-feature",
+          active: false,
+          type: :file,
+          badge: "New",
+          badge_type: "success",
+          children: []
+        }]
+      end
+
+      it "renders badge with text and type", :aggregate_failures do
+        html = renderer.render(tree)
+
+        expect(html).to include('class="docyard-badge docyard-badge--success"')
+        expect(html).to include(">New</span>")
+      end
+    end
+
+    context "with sidebar badge without type" do
+      let(:tree) do
+        [{
+          title: "Beta Feature",
+          path: "/beta",
+          active: false,
+          type: :file,
+          badge: "Beta",
+          badge_type: nil,
+          children: []
+        }]
+      end
+
+      it "renders badge with default type", :aggregate_failures do
+        html = renderer.render(tree)
+
+        expect(html).to include('class="docyard-badge docyard-badge--default"')
+        expect(html).to include(">Beta</span>")
+      end
+    end
   end
 end
