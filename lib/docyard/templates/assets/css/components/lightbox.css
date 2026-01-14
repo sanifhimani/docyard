@@ -1,0 +1,65 @@
+.docyard-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: oklch(from var(--background) l c h / 75%);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  cursor: zoom-out;
+}
+
+.docyard-lightbox.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.docyard-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: default;
+}
+
+.docyard-lightbox.active img {
+  transform: scale(1);
+}
+
+.docyard-lightbox-close {
+  position: absolute;
+  top: var(--spacing-6);
+  right: var(--spacing-6);
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-4xl);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.docyard-lightbox-close:hover {
+  color: var(--foreground);
+  background-color: var(--muted);
+}
+
+.dark .docyard-lightbox-close:hover {
+  background-color: oklch(from var(--muted) l c h / 50%);
+}
+
+.docyard-lightbox-close svg {
+  width: 18px;
+  height: 18px;
+}
