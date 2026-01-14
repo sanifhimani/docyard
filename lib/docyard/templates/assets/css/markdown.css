@@ -145,11 +145,13 @@
 }
 
 .content img {
+  display: block;
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-xl);
-  margin: var(--spacing-4) 0;
+  margin: var(--spacing-4) auto;
   border: 1px solid var(--border);
+  cursor: zoom-in;
 }
 
 .content a:not(.heading-anchor):not(.pager-link):not(.breadcrumb-link):not(.site-footer__link):not(.site-footer__attribution):not(.docyard-card):not(.docyard-announcement__link):not(.docyard-announcement__button) {
