@@ -1,0 +1,22 @@
+.docyard-figure {
+  margin: var(--spacing-6) 0;
+  padding: 0;
+  text-align: center;
+}
+
+.docyard-figure img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  cursor: zoom-in;
+}
+
+.docyard-figure figcaption {
+  margin-top: var(--spacing-3);
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+  text-align: center;
+  font-style: italic;
+}
