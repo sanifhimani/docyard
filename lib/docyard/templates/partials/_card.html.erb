@@ -1,0 +1,23 @@
+<% if @href %>
+<a href="<%= @href %>" class="docyard-card">
+<% else %>
+<div class="docyard-card">
+<% end %>
+  <% if @icon_svg %>
+  <div class="docyard-card__icon">
+    <%= @icon_svg %>
+  </div>
+  <% end %>
+  <div class="docyard-card__content">
+    <h3 class="docyard-card__title"><%= @title %></h3>
+    <% unless @content_html.empty? %>
+    <div class="docyard-card__body">
+      <%= @content_html %>
+    </div>
+    <% end %>
+  </div>
+<% if @href %>
+</a>
+<% else %>
+</div>
+<% end %>
