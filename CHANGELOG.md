@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-01-13
+
+### Added
+- **Landing Pages** - Hero sections, feature grids, and custom footer layouts for documentation homepages (#45)
+- **Tab Navigation** - Top-level navigation tabs for organizing documentation into sections like Guide, API, Components (#52)
+- **Header CTAs** - Configurable call-to-action buttons in the header with primary/secondary variants (#51)
+- **Breadcrumbs** - Path navigation with auto-truncation for deep nesting and configurable via `navigation.breadcrumbs` (#54)
+- **Doc Page Footer** - Social icons, "Built with Docyard" attribution, and copyright text in TOC column (#55)
+- **Auto-detect Branding** - Automatic logo and favicon detection from `docs/public/` directory (#49)
+- **Social Icon Mapping** - 16 social platform icons with automatic platform-to-icon mapping (#55)
+
+### Changed
+- **Sidebar Overhaul** - Per-section `_sidebar.yml` files, improved collapsible behavior, and better active state handling (#50, #53)
+- **Config Schema** - Reorganized configuration with `branding`, `navigation`, and `socials` sections (#48)
+- **Sidebar Convention** - Section-based sidebar configuration in `docs/<section>/_sidebar.yml` (#47)
+- **UI Refresh** - Updated typography, spacing, and visual consistency across components (#44)
+- **Logo Update** - New logo with cyan accent and dark mode support (#46)
+
 ## [0.7.0] - 2026-01-01
 
 ### Added
@@ -122,7 +140,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/sanifhimani/docyard/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/sanifhimani/docyard/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/sanifhimani/docyard/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/sanifhimani/docyard/compare/v0.4.0...v0.5.0
