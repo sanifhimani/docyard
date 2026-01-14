@@ -26,7 +26,8 @@ module Docyard
         "exclude" => []
       },
       "navigation" => {
-        "cta" => []
+        "cta" => [],
+        "breadcrumbs" => true
       }
     }.freeze
 
