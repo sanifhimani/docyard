@@ -117,6 +117,7 @@ module Docyard
 
     def assign_credits_and_social(branding)
       @credits = branding[:credits] != false
+      @copyright = branding[:copyright]
       @social = branding[:social] || []
       @header_ctas = branding[:header_ctas] || []
     end

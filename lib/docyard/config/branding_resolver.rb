@@ -6,6 +6,15 @@ module Docyard
       @config = config
     end
 
+    SOCIAL_ICON_MAP = {
+      "x" => "x-logo", "twitter" => "x-logo", "discord" => "discord-logo",
+      "linkedin" => "linkedin-logo", "youtube" => "youtube-logo", "instagram" => "instagram-logo",
+      "facebook" => "facebook-logo", "tiktok" => "tiktok-logo", "twitch" => "twitch-logo",
+      "reddit" => "reddit-logo", "mastodon" => "mastodon-logo", "threads" => "threads-logo",
+      "pinterest" => "pinterest-logo", "medium" => "medium-logo", "slack" => "slack-logo",
+      "gitlab" => "gitlab-logo"
+    }.freeze
+
     def resolve
       return default_branding unless config
 
@@ -98,7 +107,8 @@ module Docyard
 
     def credits_options
       {
-        credits: config.branding.credits != false
+        credits: config.branding.credits != false,
+        copyright: config.branding.copyright
       }
     end
 
@@ -112,16 +122,17 @@ module Docyard
     def normalize_social_links(socials)
       return [] unless socials.is_a?(Hash) && socials.any?
 
-      socials.map do |platform, url|
-        next if platform == "custom"
-        next unless url.is_a?(String) && !url.strip.empty?
+      socials.filter_map { |platform, url| build_social_link(platform.to_s, url) }
+    end
 
-        {
-          platform: platform.to_s,
-          url: url,
-          icon: platform.to_s
-        }
-      end.compact
+    def build_social_link(platform, url)
+      return if platform == "custom" || !valid_url?(url)
+
+      { platform: platform, url: url, icon: SOCIAL_ICON_MAP[platform] || platform }
+    end
+
+    def valid_url?(url)
+      url.is_a?(String) && !url.strip.empty?
     end
 
     def navigation_options
