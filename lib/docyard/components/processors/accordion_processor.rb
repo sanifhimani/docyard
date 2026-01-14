@@ -1,0 +1,73 @@
+# frozen_string_literal: true
+
+require_relative "../../rendering/icons"
+require_relative "../../rendering/renderer"
+require_relative "../base_processor"
+require "kramdown"
+require "kramdown-parser-gfm"
+
+module Docyard
+  module Components
+    module Processors
+      class AccordionProcessor < BaseProcessor
+        self.priority = 10
+
+        DETAILS_PATTERN = /^:::details(?:\{([^}]*)\})?\s*\n(.*?)^:::\s*$/m
+
+        def preprocess(markdown)
+          markdown.gsub(DETAILS_PATTERN) do
+            attributes = parse_attributes(Regexp.last_match(1))
+            content_markdown = Regexp.last_match(2)
+
+            title = attributes["title"] || "Details"
+            open = attributes.key?("open")
+            content_html = render_markdown_content(content_markdown.strip)
+
+            wrap_in_nomarkdown(render_accordion_html(title, content_html, open))
+          end
+        end
+
+        private
+
+        def parse_attributes(attr_string)
+          return {} if attr_string.nil? || attr_string.empty?
+
+          attrs = {}
+          attr_string.scan(/(\w+)(?:="([^"]*)")?/) do |key, value|
+            attrs[key] = value || true
+          end
+          attrs
+        end
+
+        def render_markdown_content(content_markdown)
+          return "" if content_markdown.empty?
+
+          Kramdown::Document.new(
+            content_markdown,
+            input: "GFM",
+            hard_wrap: false,
+            syntax_highlighter: "rouge"
+          ).to_html
+        end
+
+        def wrap_in_nomarkdown(html)
+          "{::nomarkdown}\n#{html}\n{:/nomarkdown}"
+        end
+
+        def render_accordion_html(title, content_html, open)
+          icon_svg = Icons.render("caret-right") || ""
+          renderer = Renderer.new
+
+          renderer.render_partial(
+            "_accordion", {
+              title: title,
+              content_html: content_html,
+              icon_svg: icon_svg,
+              open: open
+            }
+          )
+        end
+      end
+    end
+  end
+end
