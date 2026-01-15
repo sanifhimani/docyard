@@ -25,7 +25,7 @@
     0 2px 4px -2px oklch(from var(--foreground) l c h / 6%);
   pointer-events: none;
   opacity: 0;
-  transform: translateY(4px) scale(0.96);
+  transform: translateY(-4px) scale(0.96);
   transition:
     opacity 0.15s ease,
     transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -36,17 +36,26 @@
   transform: translateY(0) scale(1);
 }
 
-.docyard-abbr-popover::before {
+.docyard-abbr-popover::after {
   content: "";
   position: absolute;
-  top: -6px;
+  bottom: -6px;
   left: var(--arrow-left, 16px);
   width: 10px;
   height: 10px;
   background: var(--background);
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  transform: rotate(45deg);
+}
+
+.docyard-abbr-popover.is-below::after {
+  top: -6px;
+  bottom: auto;
+  border-bottom: none;
+  border-right: none;
   border-top: 1px solid var(--border);
   border-left: 1px solid var(--border);
-  transform: rotate(45deg);
 }
 
 .docyard-abbr-popover__term {
