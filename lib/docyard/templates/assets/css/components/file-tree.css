@@ -1,0 +1,124 @@
+.docyard-filetree {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  margin: var(--spacing-4) 0;
+}
+
+.docyard-filetree__list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.docyard-filetree__list .docyard-filetree__list {
+  margin-left: var(--spacing-1) !important;
+  padding-left: var(--spacing-4) !important;
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.docyard-filetree__item {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.docyard-filetree__entry {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
+  margin: 0 calc(-1 * var(--spacing-2));
+  border-radius: var(--radius-md);
+  cursor: default;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.docyard-filetree__item--folder.docyard-filetree__item--has-children > .docyard-filetree__entry {
+  cursor: pointer;
+  user-select: none;
+}
+
+.docyard-filetree__item--folder.docyard-filetree__item--has-children > .docyard-filetree__entry:hover {
+  background-color: var(--muted);
+}
+
+.docyard-filetree__item--folder.docyard-filetree__item--has-children > .docyard-filetree__entry:active {
+  background-color: oklch(from var(--muted) calc(l - 0.05) c h);
+  transform: scale(0.995);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 1, 1), background-color 0.1s ease;
+}
+
+.docyard-filetree__entry .docyard-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.docyard-filetree__entry .docyard-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.docyard-filetree__entry .docyard-icon-folder-open,
+.docyard-filetree__entry .docyard-icon-folder {
+  color: var(--muted-foreground);
+}
+
+.docyard-filetree__entry .docyard-icon-file-text {
+  color: var(--muted-foreground);
+  opacity: 0.6;
+}
+
+.docyard-filetree__name {
+  color: var(--foreground);
+  transition: color 0.15s ease;
+}
+
+.docyard-filetree__item--folder > .docyard-filetree__entry .docyard-filetree__name {
+  font-weight: var(--font-medium);
+}
+
+.docyard-filetree__item--folder.docyard-filetree__item--has-children > .docyard-filetree__entry:hover .docyard-filetree__name {
+  color: var(--foreground);
+}
+
+.docyard-filetree__comment {
+  color: var(--muted-foreground);
+  font-style: italic;
+  margin-left: var(--spacing-2);
+  opacity: 0.7;
+  font-size: var(--text-sm);
+}
+
+.docyard-filetree__item--highlighted > .docyard-filetree__entry {
+  background-color: oklch(from var(--primary) l c h / 10%);
+}
+
+.docyard-filetree__item--highlighted > .docyard-filetree__entry .docyard-filetree__name {
+  color: var(--primary);
+}
+
+.docyard-filetree__item--highlighted > .docyard-filetree__entry:hover {
+  background-color: oklch(from var(--primary) l c h / 15%);
+}
+
+.docyard-filetree__item--collapsed > .docyard-filetree__list {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .docyard-filetree {
+    font-size: var(--text-sm);
+  }
+
+  .docyard-filetree__list .docyard-filetree__list {
+    padding-left: var(--spacing-3) !important;
+  }
+}

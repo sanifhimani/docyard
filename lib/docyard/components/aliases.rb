@@ -16,6 +16,7 @@ module Docyard
     ImageCaptionProcessor = Processors::ImageCaptionProcessor
     IncludeProcessor = Processors::IncludeProcessor
     VideoEmbedProcessor = Processors::VideoEmbedProcessor
+    FileTreeProcessor = Processors::FileTreeProcessor
     HeadingAnchorProcessor = Processors::HeadingAnchorProcessor
     IconProcessor = Processors::IconProcessor
     TableOfContentsProcessor = Processors::TableOfContentsProcessor
