@@ -10,10 +10,12 @@ module Docyard
 
         CODE_FENCE_REGEX = /^```(\w+)(?:\s*\[([^\]]+)\])?(:\S+)?(?:\s*\{([^}\n]+)\})?/
         TABS_BLOCK_REGEX = /^:::[ \t]*tabs[ \t]*\n.*?^:::[ \t]*$/m
+        CODE_GROUP_BLOCK_REGEX = /^:::[ \t]*code-group[ \t]*\n.*?^:::[ \t]*$/m
 
         def preprocess(content)
           context[:code_block_options] ||= []
           @tabs_ranges = find_tabs_ranges(content)
+          @code_group_ranges = find_code_group_ranges(content)
 
           process_code_fences(content)
         end
@@ -35,8 +37,19 @@ module Docyard
         end
 
         def process_fence_match(match)
-          store_code_block_options(match) unless inside_tabs?(match.begin(0))
+          position = match.begin(0)
+          return match[0] if inside_special_block?(position)
+
+          store_code_block_options(match)
           "```#{match[1]}"
+        end
+
+        def inside_special_block?(position)
+          inside_tabs?(position) || inside_code_group?(position)
+        end
+
+        def inside_code_group?(position)
+          @code_group_ranges.any? { |range| range.cover?(position) }
         end
 
         def store_code_block_options(match)
@@ -53,8 +66,16 @@ module Docyard
         end
 
         def find_tabs_ranges(content)
+          find_block_ranges(content, TABS_BLOCK_REGEX)
+        end
+
+        def find_code_group_ranges(content)
+          find_block_ranges(content, CODE_GROUP_BLOCK_REGEX)
+        end
+
+        def find_block_ranges(content, regex)
           ranges = []
-          content.scan(TABS_BLOCK_REGEX) do
+          content.scan(regex) do
             match = Regexp.last_match
             ranges << (match.begin(0)...match.end(0))
           end

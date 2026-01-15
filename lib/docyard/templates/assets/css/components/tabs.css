@@ -90,7 +90,7 @@
   bottom: 0;
   left: 0;
   height: 2px;
-  background: var(--foreground);
+  background: var(--primary);
   border-radius: 1px;
   pointer-events: none;
   z-index: 1;

@@ -9,6 +9,7 @@ module Docyard
     CardsProcessor = Processors::CardsProcessor
     CalloutProcessor = Processors::CalloutProcessor
     CodeBlockProcessor = Processors::CodeBlockProcessor
+    CodeGroupProcessor = Processors::CodeGroupProcessor
     CodeBlockDiffPreprocessor = Processors::CodeBlockDiffPreprocessor
     CodeBlockFocusPreprocessor = Processors::CodeBlockFocusPreprocessor
     CodeBlockOptionsPreprocessor = Processors::CodeBlockOptionsPreprocessor
