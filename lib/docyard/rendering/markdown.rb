@@ -24,6 +24,7 @@ require_relative "../components/processors/custom_anchor_processor"
 require_relative "../components/processors/image_caption_processor"
 require_relative "../components/processors/video_embed_processor"
 require_relative "../components/processors/file_tree_processor"
+require_relative "../components/processors/abbreviation_processor"
 require_relative "../components/processors/table_of_contents_processor"
 require_relative "../components/aliases"
 
