@@ -23,6 +23,7 @@ module Docyard
     TableOfContentsProcessor = Processors::TableOfContentsProcessor
     TableWrapperProcessor = Processors::TableWrapperProcessor
     TabsProcessor = Processors::TabsProcessor
+    TooltipProcessor = Processors::TooltipProcessor
 
     CodeDetector = Support::CodeDetector
     IconDetector = Support::Tabs::IconDetector
