@@ -15,6 +15,7 @@ module Docyard
     CustomAnchorProcessor = Processors::CustomAnchorProcessor
     ImageCaptionProcessor = Processors::ImageCaptionProcessor
     IncludeProcessor = Processors::IncludeProcessor
+    VideoEmbedProcessor = Processors::VideoEmbedProcessor
     HeadingAnchorProcessor = Processors::HeadingAnchorProcessor
     IconProcessor = Processors::IconProcessor
     TableOfContentsProcessor = Processors::TableOfContentsProcessor
