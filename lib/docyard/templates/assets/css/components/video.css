@@ -1,0 +1,41 @@
+.docyard-video {
+  position: relative;
+  width: 100%;
+  margin: var(--spacing-6) 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background-color: var(--muted);
+  aspect-ratio: 16 / 9;
+}
+
+.docyard-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.docyard-video[style*="height"] {
+  aspect-ratio: unset;
+}
+
+.docyard-callout__body .docyard-video {
+  margin: var(--spacing-4) 0;
+}
+
+.docyard-callout__body .docyard-video:first-child {
+  margin-top: 0;
+}
+
+.docyard-callout__body .docyard-video:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .docyard-video {
+    margin: var(--spacing-4) 0;
+    border-radius: var(--radius-lg);
+  }
+}
