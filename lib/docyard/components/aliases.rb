@@ -2,6 +2,7 @@
 
 module Docyard
   module Components
+    AbbreviationProcessor = Processors::AbbreviationProcessor
     AccordionProcessor = Processors::AccordionProcessor
     BadgeProcessor = Processors::BadgeProcessor
     StepsProcessor = Processors::StepsProcessor
