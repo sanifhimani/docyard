@@ -64,15 +64,12 @@ RSpec.describe Docyard::PreviewServer do
       it "starts without error" do
         Dir.chdir(temp_dir) do
           server = described_class.new
-          webrick_server = instance_double(WEBrick::HTTPServer)
-          webrick_config = {}
+          puma_launcher = instance_double(Puma::Launcher)
 
-          allow(server).to receive(:trap)
-          allow(webrick_server).to receive_messages(start: nil, config: webrick_config,
-                                                    define_singleton_method: nil, method: proc {})
-          allow(WEBrick::HTTPServer).to receive(:new).and_return(webrick_server)
+          allow(puma_launcher).to receive(:run)
+          allow(Puma::Launcher).to receive(:new).and_return(puma_launcher)
 
-          expect { server.start }.to output(/Preview server starting/).to_stdout
+          expect { server.start }.to output(/Starting preview server/).to_stdout
         end
       end
     end

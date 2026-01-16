@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
-require "webrick"
+require "puma"
+require "puma/configuration"
+require "puma/launcher"
+require "puma/log_writer"
+require "rack/mime"
 require_relative "../config"
 
 module Docyard
@@ -13,16 +17,13 @@ module Docyard
       @port = port
       @config = Config.load
       @output_dir = File.expand_path(@config.build.output)
+      @launcher = nil
     end
 
     def start
       validate_output_directory!
       print_server_info
-
-      server = create_server
-      trap("INT") { shutdown_server(server) }
-
-      server.start
+      run_server
     end
 
     private
@@ -35,59 +36,70 @@ module Docyard
     end
 
     def print_server_info
-      puts "Preview server starting..."
-      puts "=> Serving from: #{output_dir}/"
-      puts "=> Running at: http://localhost:#{port}"
-      puts "=> Press Ctrl+C to stop\n"
+      puts "Starting preview server..."
+      puts "* Version: #{Docyard::VERSION}"
+      puts "* Running at: http://localhost:#{port}"
+      puts "Use Ctrl+C to stop\n"
     end
 
-    def create_server
-      server = WEBrick::HTTPServer.new(
-        Port: port,
-        DocumentRoot: output_dir,
-        AccessLog: [],
-        Logger: WEBrick::Log.new(File::NULL),
-        MimeTypes: mime_types
-      )
+    def run_server
+      app = StaticFileApp.new(output_dir)
+      puma_config = build_puma_config(app)
+      log_writer = Puma::LogWriter.strings
 
-      server.config[:DirectoryIndex] = ["index.html"]
-      mount_custom_error_page(server)
-
-      server
+      @launcher = Puma::Launcher.new(puma_config, log_writer: log_writer)
+      @launcher.run
+    rescue Interrupt
+      puts "\nShutting down preview server..."
     end
 
-    def mount_custom_error_page(server)
-      error_page = File.join(output_dir, "404.html")
-      return unless File.exist?(error_page)
+    def build_puma_config(app)
+      server_port = port
 
-      server.config[:HTTPVersion] = WEBrick::HTTPVersion.new("1.1")
-
-      original_service = server.method(:service)
-      server.define_singleton_method(:service) do |req, res|
-        original_service.call(req, res)
-      rescue WEBrick::HTTPStatus::NotFound
-        res.status = 404
-        res.content_type = "text/html; charset=utf-8"
-        res.body = File.read(error_page)
+      Puma::Configuration.new do |config|
+        config.bind "tcp://localhost:#{server_port}"
+        config.app app
+        config.workers 0
+        config.threads 1, 4
+        config.quiet
       end
     end
 
-    def mime_types
-      WEBrick::HTTPUtils::DefaultMimeTypes.merge(
-        {
-          "css" => "text/css",
-          "js" => "application/javascript",
-          "json" => "application/json",
-          "svg" => "image/svg+xml",
-          "woff" => "font/woff",
-          "woff2" => "font/woff2"
-        }
-      )
-    end
+    class StaticFileApp
+      def initialize(root)
+        @root = root
+      end
 
-    def shutdown_server(server)
-      puts "\nShutting down preview server..."
-      server.shutdown
+      def call(env)
+        path = env["PATH_INFO"]
+        file_path = File.join(@root, path)
+
+        if path.end_with?("/") || File.directory?(file_path)
+          index_path = File.join(file_path, "index.html")
+          return serve_file(index_path) if File.file?(index_path)
+        elsif File.file?(file_path)
+          return serve_file(file_path)
+        end
+
+        serve_not_found
+      end
+
+      private
+
+      def serve_file(path)
+        content = File.read(path)
+        content_type = Rack::Mime.mime_type(File.extname(path), "application/octet-stream")
+        [200, { "content-type" => content_type }, [content]]
+      end
+
+      def serve_not_found
+        error_page = File.join(@root, "404.html")
+        if File.file?(error_page)
+          [404, { "content-type" => "text/html; charset=utf-8" }, [File.read(error_page)]]
+        else
+          [404, { "content-type" => "text/plain" }, ["Not Found"]]
+        end
+      end
     end
   end
 end
