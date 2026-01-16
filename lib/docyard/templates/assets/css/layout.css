@@ -34,6 +34,7 @@ html:has(.has-tabs) {
   backdrop-filter: blur(12px);
   z-index: var(--z-header);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .header.hide-on-scroll {
@@ -200,6 +201,7 @@ html:has(.has-tabs) {
     z-index: var(--z-secondary-header);
     transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    will-change: top, left;
   }
 
   .secondary-header.shift-up {
@@ -232,6 +234,7 @@ html:has(.has-tabs) {
     z-index: var(--z-secondary-header);
     transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    will-change: top;
   }
 
   .secondary-header.shift-up {
