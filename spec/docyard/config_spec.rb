@@ -90,6 +90,34 @@ RSpec.describe Docyard::Config do
     end
   end
 
+  describe "#url, #og_image, and #twitter" do
+    context "when not configured" do
+      it "returns nil for all OG-related fields", :aggregate_failures do
+        config = described_class.load(temp_dir)
+
+        expect(config.url).to be_nil
+        expect(config.og_image).to be_nil
+        expect(config.twitter).to be_nil
+      end
+    end
+
+    context "when configured" do
+      it "provides access to OG config", :aggregate_failures do
+        create_config(<<~YAML)
+          url: "https://docs.example.com"
+          og_image: "/images/og.png"
+          twitter: "docyard"
+        YAML
+
+        config = described_class.load(temp_dir)
+
+        expect(config.url).to eq("https://docs.example.com")
+        expect(config.og_image).to eq("/images/og.png")
+        expect(config.twitter).to eq("docyard")
+      end
+    end
+  end
+
   describe "#branding" do
     it "provides access to branding config", :aggregate_failures do
       logo_path = create_file("logo.svg", "<svg></svg>")

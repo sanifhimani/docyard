@@ -235,6 +235,140 @@ RSpec.describe Docyard::Renderer do
     end
   end
 
+  describe "OG meta tags" do
+    context "when site_url is not configured" do
+      it "does not render OG meta tags", :aggregate_failures do
+        html = renderer.render(content: "<p>Content</p>", branding: {})
+
+        expect(html).not_to include('property="og:')
+        expect(html).not_to include('name="twitter:')
+        expect(html).not_to include('rel="canonical"')
+      end
+    end
+
+    context "when site_url is configured" do
+      let(:branding) do
+        {
+          site_url: "https://example.com",
+          site_title: "My Docs"
+        }
+      end
+
+      it "renders canonical link", :aggregate_failures do
+        html = renderer.render(content: "<p>Content</p>", branding: branding, current_path: "/guide/intro")
+
+        expect(html).to include('<link rel="canonical" href="https://example.com/guide/intro">')
+      end
+
+      it "renders OG meta tags", :aggregate_failures do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          page_title: "Test Page",
+          branding: branding,
+          current_path: "/test"
+        )
+
+        expect(html).to include('property="og:type" content="website"')
+        expect(html).to include('property="og:site_name" content="My Docs"')
+        expect(html).to include('property="og:title" content="Test Page"')
+        expect(html).to include('property="og:url" content="https://example.com/test"')
+      end
+
+      it "renders Twitter card meta tags", :aggregate_failures do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          page_title: "Test Page",
+          branding: branding
+        )
+
+        expect(html).to include('name="twitter:card" content="summary"')
+        expect(html).to include('name="twitter:title" content="Test Page"')
+      end
+    end
+
+    context "with description" do
+      let(:branding) { { site_url: "https://example.com", site_description: "Site description" } }
+
+      it "renders OG and Twitter description from page description when provided", :aggregate_failures do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          page_description: "Page-specific description",
+          branding: branding
+        )
+
+        expect(html).to include('property="og:description" content="Page-specific description"')
+        expect(html).to include('name="twitter:description" content="Page-specific description"')
+      end
+
+      it "falls back to site description when page description is nil" do
+        html = renderer.render(content: "<p>Content</p>", branding: branding)
+
+        expect(html).to include('property="og:description" content="Site description"')
+      end
+    end
+
+    context "with og_image" do
+      let(:branding) { { site_url: "https://example.com", og_image: "/images/og.png" } }
+
+      it "renders OG image with absolute URL", :aggregate_failures do
+        html = renderer.render(content: "<p>Content</p>", branding: branding)
+
+        expect(html).to include('property="og:image" content="https://example.com/images/og.png"')
+        expect(html).to include('name="twitter:image" content="https://example.com/images/og.png"')
+      end
+
+      it "uses summary_large_image card type when image is present" do
+        html = renderer.render(content: "<p>Content</p>", branding: branding)
+
+        expect(html).to include('name="twitter:card" content="summary_large_image"')
+      end
+
+      it "preserves absolute image URLs" do
+        branding_with_absolute = branding.merge(og_image: "https://cdn.example.com/og.png")
+        html = renderer.render(content: "<p>Content</p>", branding: branding_with_absolute)
+
+        expect(html).to include('property="og:image" content="https://cdn.example.com/og.png"')
+      end
+
+      it "uses page og_image over site og_image" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          page_og_image: "/images/page-og.png",
+          branding: branding
+        )
+
+        expect(html).to include('property="og:image" content="https://example.com/images/page-og.png"')
+      end
+    end
+
+    context "with twitter handle" do
+      it "renders twitter:site with @ prefix" do
+        branding = { site_url: "https://example.com", twitter: "docyard" }
+        html = renderer.render(content: "<p>Content</p>", branding: branding)
+
+        expect(html).to include('name="twitter:site" content="@docyard"')
+      end
+
+      it "normalizes twitter handle with existing @", :aggregate_failures do
+        branding = { site_url: "https://example.com", twitter: "@docyard" }
+        html = renderer.render(content: "<p>Content</p>", branding: branding)
+
+        expect(html).to include('name="twitter:site" content="@docyard"')
+        expect(html).not_to include("@@")
+      end
+    end
+
+    context "with trailing slashes in URLs" do
+      it "handles site_url with trailing slash", :aggregate_failures do
+        branding = { site_url: "https://example.com/" }
+        html = renderer.render(content: "<p>Content</p>", branding: branding, current_path: "/guide")
+
+        expect(html).to include('href="https://example.com/guide"')
+        expect(html).not_to include("https://example.com//")
+      end
+    end
+  end
+
   describe "#render_file" do
     let(:temp_file) { Tempfile.new(["test", ".md"]) }
 
