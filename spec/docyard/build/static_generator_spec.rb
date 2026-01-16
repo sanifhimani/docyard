@@ -348,6 +348,38 @@ RSpec.describe Docyard::Build::StaticGenerator do
       end
     end
 
+    context "with error page generation" do
+      before do
+        File.write(File.join(docs_dir, "index.md"), "# Home")
+      end
+
+      it "generates default 404.html when no custom page exists", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          expect(File.exist?(File.join(output_dir, "404.html"))).to be true
+
+          error_html = File.read(File.join(output_dir, "404.html"))
+          expect(error_html).to include("404")
+          expect(error_html).to include("Page not found")
+          expect(error_html).to include("Back to home")
+        end
+      end
+
+      it "uses custom 404.html when provided", :aggregate_failures do
+        File.write(File.join(docs_dir, "404.html"), "<html><body>Custom 404 Page</body></html>")
+
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          error_html = File.read(File.join(output_dir, "404.html"))
+          expect(error_html).to eq("<html><body>Custom 404 Page</body></html>")
+        end
+      end
+    end
+
     context "with markdown content features" do
       before do
         File.write(File.join(docs_dir, "index.md"),

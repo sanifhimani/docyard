@@ -65,9 +65,11 @@ RSpec.describe Docyard::PreviewServer do
         Dir.chdir(temp_dir) do
           server = described_class.new
           webrick_server = instance_double(WEBrick::HTTPServer)
+          webrick_config = {}
 
           allow(server).to receive(:trap)
-          allow(webrick_server).to receive(:start)
+          allow(webrick_server).to receive_messages(start: nil, config: webrick_config,
+                                                    define_singleton_method: nil, method: proc {})
           allow(WEBrick::HTTPServer).to receive(:new).and_return(webrick_server)
 
           expect { server.start }.to output(/Preview server starting/).to_stdout

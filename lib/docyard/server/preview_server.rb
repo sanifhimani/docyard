@@ -42,13 +42,34 @@ module Docyard
     end
 
     def create_server
-      WEBrick::HTTPServer.new(
+      server = WEBrick::HTTPServer.new(
         Port: port,
         DocumentRoot: output_dir,
         AccessLog: [],
         Logger: WEBrick::Log.new(File::NULL),
         MimeTypes: mime_types
       )
+
+      server.config[:DirectoryIndex] = ["index.html"]
+      mount_custom_error_page(server)
+
+      server
+    end
+
+    def mount_custom_error_page(server)
+      error_page = File.join(output_dir, "404.html")
+      return unless File.exist?(error_page)
+
+      server.config[:HTTPVersion] = WEBrick::HTTPVersion.new("1.1")
+
+      original_service = server.method(:service)
+      server.define_singleton_method(:service) do |req, res|
+        original_service.call(req, res)
+      rescue WEBrick::HTTPStatus::NotFound
+        res.status = 404
+        res.content_type = "text/html; charset=utf-8"
+        res.body = File.read(error_page)
+      end
     end
 
     def mime_types

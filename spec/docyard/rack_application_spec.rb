@@ -206,7 +206,7 @@ RSpec.describe Docyard::RackApplication do
 
         expect(status).to eq(500)
         expect(headers["Content-Type"]).to eq("text/html; charset=utf-8")
-        expect(body.first).to include("500 - Internal Server Error")
+        expect(body.first).to include("Something went wrong")
       end
     end
 

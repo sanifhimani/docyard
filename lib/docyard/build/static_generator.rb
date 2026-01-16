@@ -33,6 +33,8 @@ module Docyard
           progress.advance
         end
 
+        generate_error_page
+
         markdown_files.size
       end
 
@@ -167,6 +169,19 @@ module Docyard
 
       def log(message)
         puts message if verbose
+      end
+
+      def generate_error_page
+        output_path = File.join(config.build.output, "404.html")
+
+        html_content = if File.exist?("docs/404.html")
+                         File.read("docs/404.html")
+                       else
+                         renderer.render_not_found
+                       end
+
+        File.write(output_path, html_content)
+        log "[✓] Generated 404.html"
       end
     end
   end
