@@ -1,20 +1,27 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 require_relative "../../rendering/icons"
 
 module Docyard
   module Components
     module Processors
       class FileTreeProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         FILETREE_PATTERN = /```filetree\n(.*?)```/m
 
         self.priority = 8
 
         def preprocess(content)
+          @code_block_ranges = find_code_block_ranges(content, exclude_language: "filetree")
+
           content.gsub(FILETREE_PATTERN) do
-            tree_content = Regexp.last_match(1)
-            build_file_tree(tree_content)
+            match = Regexp.last_match
+            next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
+
+            build_file_tree(match[1])
           end
         end
 

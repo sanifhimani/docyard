@@ -1,28 +1,36 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 
 module Docyard
   module Components
     module Processors
       class AbbreviationProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         DEFINITION_PATTERN = /^\*\[([^\]]+)\]:\s*(.+)$/
         self.priority = 5
 
         def preprocess(content)
-          abbreviations = extract_abbreviations(content)
+          abbreviations = extract_abbreviations_outside_code_blocks(content)
           return content if abbreviations.empty?
 
-          content = remove_definitions(content)
-          apply_abbreviations(content, abbreviations)
+          process_outside_code_blocks(content) do |segment|
+            segment = remove_definitions(segment)
+            apply_abbreviations(segment, abbreviations)
+          end
         end
 
         private
 
-        def extract_abbreviations(content)
+        def extract_abbreviations_outside_code_blocks(content)
           abbreviations = {}
-          content.scan(DEFINITION_PATTERN) do |term, definition|
-            abbreviations[term] = definition.strip
+          process_outside_code_blocks(content) do |segment|
+            segment.scan(DEFINITION_PATTERN) do |term, definition|
+              abbreviations[term] = definition.strip
+            end
+            segment
           end
           abbreviations
         end

@@ -1,19 +1,24 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 
 module Docyard
   module Components
     module Processors
       class TooltipProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         TOOLTIP_PATTERN = /:tooltip\[([^\]]+)\]\{([^}]+)\}/
         self.priority = 6
 
         def preprocess(content)
-          content.gsub(TOOLTIP_PATTERN) do |_match|
-            term = ::Regexp.last_match(1)
-            attributes = parse_attributes(::Regexp.last_match(2))
-            build_tooltip_tag(term, attributes)
+          process_outside_code_blocks(content) do |segment|
+            segment.gsub(TOOLTIP_PATTERN) do |_match|
+              term = ::Regexp.last_match(1)
+              attributes = parse_attributes(::Regexp.last_match(2))
+              build_tooltip_tag(term, attributes)
+            end
           end
         end
 

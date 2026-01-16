@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 
 module Docyard
   module Components
     module Processors
       class VideoEmbedProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         YOUTUBE_PATTERN = /::youtube\[([^\]]+)\](?:\{([^}]*)\})?/
         VIMEO_PATTERN = /::vimeo\[([^\]]+)\](?:\{([^}]*)\})?/
         VIDEO_PATTERN = /::video\[([^\]]+)\](?:\{([^}]*)\})?/
@@ -13,6 +16,14 @@ module Docyard
         self.priority = 5
 
         def preprocess(content)
+          process_outside_code_blocks(content) do |segment|
+            process_video_embeds(segment)
+          end
+        end
+
+        private
+
+        def process_video_embeds(content)
           result = content.gsub(YOUTUBE_PATTERN) do
             video_id = Regexp.last_match(1)
             attrs_string = Regexp.last_match(2)
@@ -31,8 +42,6 @@ module Docyard
             build_native_video(src, parse_attributes(attrs_string))
           end
         end
-
-        private
 
         def parse_attributes(attrs_string)
           return {} if attrs_string.nil? || attrs_string.empty?

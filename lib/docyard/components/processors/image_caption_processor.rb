@@ -1,17 +1,22 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 
 module Docyard
   module Components
     module Processors
       class ImageCaptionProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         IMAGE_ATTRS_PATTERN = /!\[([^\]]*)\]\(([^)]+)\)\{([^}]+)\}/
 
         self.priority = 5
 
         def preprocess(content)
-          process_images_with_attrs(content)
+          process_outside_code_blocks(content) do |segment|
+            process_images_with_attrs(segment)
+          end
         end
 
         private

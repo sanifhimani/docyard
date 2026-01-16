@@ -2,6 +2,7 @@
 
 require_relative "../../rendering/renderer"
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 require "kramdown"
 require "kramdown-parser-gfm"
 
@@ -9,14 +10,21 @@ module Docyard
   module Components
     module Processors
       class StepsProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         self.priority = 10
 
         STEPS_PATTERN = /^:::steps\s*\n(.*?)^:::\s*$/m
         STEP_HEADING_PATTERN = /^###\s+(.+)$/
 
         def preprocess(markdown)
+          @code_block_ranges = find_code_block_ranges(markdown)
+
           markdown.gsub(STEPS_PATTERN) do
-            content = Regexp.last_match(1)
+            match = Regexp.last_match
+            next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
+
+            content = match[1]
             steps = parse_steps(content)
 
             wrap_in_nomarkdown(render_steps_html(steps))

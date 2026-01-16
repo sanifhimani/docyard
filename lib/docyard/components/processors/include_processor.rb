@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 
 module Docyard
   module Components
     module Processors
       class IncludeProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         INCLUDE_PATTERN = /<!--\s*@include:\s*([^\s]+)\s*-->/
 
         self.priority = 0
@@ -15,7 +18,9 @@ module Docyard
           @docs_root = context[:docs_root] || "docs"
           @included_files = Set.new
 
-          process_includes(content)
+          process_outside_code_blocks(content) do |segment|
+            process_includes(segment)
+          end
         end
 
         private
