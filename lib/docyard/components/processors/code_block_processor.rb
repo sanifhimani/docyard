@@ -67,8 +67,14 @@ module Docyard
         def process_code_block(original_html, inner_html)
           block_data = extract_block_data(inner_html)
           processed_html = process_html_for_highlighting(original_html, block_data)
+          processed_html = inject_scroll_spacer(processed_html) unless block_data[:title]
 
           render_code_block_with_copy(block_data.merge(html: processed_html))
+        end
+
+        def inject_scroll_spacer(html)
+          spacer = '<span class="docyard-code-block__scroll-spacer" aria-hidden="true"></span>'
+          html.sub("\n", "#{spacer}\n")
         end
 
         def extract_block_data(inner_html)

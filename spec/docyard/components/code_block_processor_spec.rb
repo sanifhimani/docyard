@@ -634,5 +634,46 @@ puts "world"</code></pre></div>'
         expect(result).to include("example.rb")
       end
     end
+
+    context "with scroll spacer for untitled blocks" do
+      it "injects scroll spacer at end of first line for untitled blocks", :aggregate_failures do
+        html = <<~HTML
+          <div class="highlight"><pre><code>line 1
+          line 2</code></pre></div>
+        HTML
+
+        result = processor.postprocess(html)
+
+        expect(result).to include('class="docyard-code-block__scroll-spacer"')
+        expect(result).to include('aria-hidden="true"')
+      end
+
+      it "places scroll spacer at end of first line before newline" do
+        html = '<div class="highlight"><pre><code>first line
+second line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).to match(%r{first line<span class="docyard-code-block__scroll-spacer".*?></span>\nsecond line})
+      end
+
+      it "does not inject scroll spacer for titled blocks" do
+        context[:code_block_options] = [{ lang: "js", title: "config.js", option: nil, highlights: [] }]
+        html = '<div class="highlight"><pre><code>line 1
+line 2</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include('class="docyard-code-block__scroll-spacer"')
+      end
+
+      it "handles single line code blocks without newlines" do
+        html = '<div class="highlight"><pre><code>single line</code></pre></div>'
+
+        result = processor.postprocess(html)
+
+        expect(result).not_to include('class="docyard-code-block__scroll-spacer"')
+      end
+    end
   end
 end

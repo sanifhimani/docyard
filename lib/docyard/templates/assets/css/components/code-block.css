@@ -121,6 +121,16 @@
   overscroll-behavior-x: contain;
 }
 
+.docyard-code-block__scroll-spacer {
+  display: inline;
+  padding-right: 5rem;
+}
+
+.docyard-code-block:not(.docyard-code-block--titled) .docyard-code-block__copy {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 .docyard-code-line {
   display: block;
 }

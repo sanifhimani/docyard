@@ -128,6 +128,7 @@
   gap: var(--spacing-1-5);
   height: 1.75rem;
   padding: 0 var(--spacing-2-5);
+  margin-bottom: var(--spacing-2);
   border: none;
   border-radius: 9999px;
   background-color: var(--code-block-copy-bg);
