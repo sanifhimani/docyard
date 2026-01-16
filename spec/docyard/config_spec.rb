@@ -273,6 +273,34 @@ RSpec.describe Docyard::Config do
     end
   end
 
+  describe "#analytics" do
+    it "returns default values when not configured", :aggregate_failures do
+      config = described_class.load(temp_dir)
+
+      expect(config.analytics.google).to be_nil
+      expect(config.analytics.plausible).to be_nil
+      expect(config.analytics.fathom).to be_nil
+      expect(config.analytics.script).to be_nil
+    end
+
+    it "provides access to analytics config", :aggregate_failures do
+      create_config(<<~YAML)
+        analytics:
+          google: "G-XXXXXXXXXX"
+          plausible: "example.com"
+          fathom: "ABCDEFGH"
+          script: "/custom-analytics.js"
+      YAML
+
+      config = described_class.load(temp_dir)
+
+      expect(config.analytics.google).to eq("G-XXXXXXXXXX")
+      expect(config.analytics.plausible).to eq("example.com")
+      expect(config.analytics.fathom).to eq("ABCDEFGH")
+      expect(config.analytics.script).to eq("/custom-analytics.js")
+    end
+  end
+
   describe "validation" do
     context "with invalid values" do
       it "raises ConfigError for invalid title" do

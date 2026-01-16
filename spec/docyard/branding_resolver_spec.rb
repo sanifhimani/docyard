@@ -933,5 +933,124 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:show_edit_link]).to be false
       end
     end
+
+    context "with default analytics options" do
+      it "returns nil for all analytics providers", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:analytics_google]).to be_nil
+        expect(result[:analytics_plausible]).to be_nil
+        expect(result[:analytics_fathom]).to be_nil
+        expect(result[:analytics_script]).to be_nil
+      end
+
+      it "returns has_analytics false by default" do
+        result = resolver.resolve
+
+        expect(result[:has_analytics]).to be false
+      end
+    end
+
+    context "when Google Analytics is configured" do
+      before do
+        create_config(<<~YAML)
+          analytics:
+            google: "G-XXXXXXXXXX"
+        YAML
+      end
+
+      it "returns analytics_google" do
+        result = resolver.resolve
+
+        expect(result[:analytics_google]).to eq("G-XXXXXXXXXX")
+      end
+
+      it "returns has_analytics true" do
+        result = resolver.resolve
+
+        expect(result[:has_analytics]).to be true
+      end
+    end
+
+    context "when Plausible Analytics is configured" do
+      before do
+        create_config(<<~YAML)
+          analytics:
+            plausible: "example.com"
+        YAML
+      end
+
+      it "returns analytics_plausible" do
+        result = resolver.resolve
+
+        expect(result[:analytics_plausible]).to eq("example.com")
+      end
+
+      it "returns has_analytics true" do
+        result = resolver.resolve
+
+        expect(result[:has_analytics]).to be true
+      end
+    end
+
+    context "when Fathom Analytics is configured" do
+      before do
+        create_config(<<~YAML)
+          analytics:
+            fathom: "ABCDEFGH"
+        YAML
+      end
+
+      it "returns analytics_fathom" do
+        result = resolver.resolve
+
+        expect(result[:analytics_fathom]).to eq("ABCDEFGH")
+      end
+
+      it "returns has_analytics true" do
+        result = resolver.resolve
+
+        expect(result[:has_analytics]).to be true
+      end
+    end
+
+    context "when custom analytics script is configured" do
+      before do
+        create_config(<<~YAML)
+          analytics:
+            script: "/custom-analytics.js"
+        YAML
+      end
+
+      it "returns analytics_script" do
+        result = resolver.resolve
+
+        expect(result[:analytics_script]).to eq("/custom-analytics.js")
+      end
+
+      it "returns has_analytics true" do
+        result = resolver.resolve
+
+        expect(result[:has_analytics]).to be true
+      end
+    end
+
+    context "when multiple analytics providers are configured" do
+      before do
+        create_config(<<~YAML)
+          analytics:
+            google: "G-XXXXXXXXXX"
+            plausible: "example.com"
+        YAML
+      end
+
+      it "returns all configured providers", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:analytics_google]).to eq("G-XXXXXXXXXX")
+        expect(result[:analytics_plausible]).to eq("example.com")
+        expect(result[:has_analytics]).to be true
+      end
+    end
   end
 end
