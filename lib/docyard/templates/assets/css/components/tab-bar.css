@@ -89,10 +89,12 @@
   border-radius: 2px 2px 0 0;
   pointer-events: none;
   view-transition-name: tab-indicator;
+  opacity: 0;
 }
 
 .tab-indicator.is-ready {
-  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
 }
 
 /* View Transitions API - animate indicator between pages */
