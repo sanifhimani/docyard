@@ -13,9 +13,8 @@ require_relative "pagefind_handler"
 
 module Docyard
   class RackApplication
-    def initialize(docs_path:, file_watcher:, config: nil, pagefind_path: nil)
+    def initialize(docs_path:, config: nil, pagefind_path: nil)
       @docs_path = docs_path
-      @file_watcher = file_watcher
       @config = config
       @router = Router.new(docs_path: docs_path)
       @renderer = Renderer.new(base_url: config&.build&.base || "/", config: config)
@@ -29,12 +28,11 @@ module Docyard
 
     private
 
-    attr_reader :docs_path, :file_watcher, :config, :router, :renderer, :asset_handler, :pagefind_handler
+    attr_reader :docs_path, :config, :router, :renderer, :asset_handler, :pagefind_handler
 
     def handle_request(env)
       path = env["PATH_INFO"]
 
-      return handle_reload_check(env) if path == Constants::RELOAD_ENDPOINT
       return asset_handler.serve_docyard_assets(path) if path.start_with?(Constants::DOCYARD_ASSETS_PREFIX)
       return pagefind_handler.serve(path) if path.start_with?(Constants::PAGEFIND_PREFIX)
 
@@ -155,31 +153,6 @@ module Docyard
 
     def branding_options
       BrandingResolver.new(config).resolve
-    end
-
-    def handle_reload_check(env)
-      since = parse_since_timestamp(env)
-      reload_needed = file_watcher.changed_since?(since)
-
-      build_reload_response(reload_needed)
-    rescue StandardError => e
-      log_reload_error(e)
-      build_reload_response(false)
-    end
-
-    def parse_since_timestamp(env)
-      query = Rack::Utils.parse_query(env["QUERY_STRING"])
-      query["since"] ? Time.at(query["since"].to_f) : Time.now
-    end
-
-    def log_reload_error(error)
-      Docyard.logger.error "Reload check error: #{error.message}"
-      Docyard.logger.debug error.backtrace.join("\n")
-    end
-
-    def build_reload_response(reload_needed)
-      response_body = { reload: reload_needed, timestamp: Time.now.to_f }.to_json
-      [Constants::STATUS_OK, { "Content-Type" => Constants::CONTENT_TYPE_JSON }, [response_body]]
     end
 
     def handle_error(error)

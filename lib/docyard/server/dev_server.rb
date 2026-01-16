@@ -2,7 +2,6 @@
 
 require "webrick"
 require "stringio"
-require_relative "file_watcher"
 require_relative "rack_application"
 require_relative "../config"
 
@@ -19,7 +18,6 @@ module Docyard
       @docs_path = docs_path
       @search_enabled = search
       @config = Config.load
-      @file_watcher = FileWatcher.new(File.expand_path(docs_path))
       @search_indexer = nil
       @app = nil
     end
@@ -29,7 +27,6 @@ module Docyard
       generate_search_index if @search_enabled
       initialize_app
       print_server_info
-      @file_watcher.start
 
       http_server.mount_proc("/") { |req, res| handle_request(req, res) }
       trap("INT") { shutdown_server }
@@ -51,14 +48,12 @@ module Docyard
     def initialize_app
       @app = RackApplication.new(
         docs_path: File.expand_path(docs_path),
-        file_watcher: @file_watcher,
         config: @config,
         pagefind_path: @search_indexer&.pagefind_path
       )
     end
 
     def cleanup
-      @file_watcher.stop
       @search_indexer&.cleanup
     end
 
