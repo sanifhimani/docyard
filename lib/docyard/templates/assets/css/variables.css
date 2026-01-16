@@ -308,3 +308,15 @@
     --text-4xl: 1.875rem;
   }
 }
+
+.no-transition,
+.no-transition *,
+.no-transition *::before,
+.no-transition *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+.banner-dismissed .docyard-announcement {
+  display: none !important;
+}

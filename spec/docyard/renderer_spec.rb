@@ -103,7 +103,7 @@ RSpec.describe Docyard::Renderer do
       it "does not render the banner" do
         html = renderer.render(content: "<p>Content</p>", branding: { announcement: nil })
 
-        expect(html).not_to include("docyard-announcement")
+        expect(html).not_to include('<div class="docyard-announcement"')
       end
     end
 

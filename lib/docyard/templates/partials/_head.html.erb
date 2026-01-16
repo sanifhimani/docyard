@@ -36,13 +36,35 @@
 
 <script>
   (function() {
-    const theme = localStorage.getItem('theme') ||
-                 (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    var html = document.documentElement;
+
+    html.classList.add('no-transition');
+
+    var theme = localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    html.classList.toggle('dark', theme === 'dark');
 
     if (localStorage.getItem('docyard_sidebar_collapsed') === 'true') {
-      document.documentElement.classList.add('sidebar-collapsed');
+      html.classList.add('sidebar-collapsed');
     }
+
+    var BANNER_KEY = 'docyard-announcement-dismissed';
+    try {
+      var dismissed = localStorage.getItem(BANNER_KEY);
+      if (dismissed) {
+        var dismissedAt = parseInt(dismissed, 10);
+        var sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        if (dismissedAt > sevenDaysAgo) {
+          html.classList.add('banner-dismissed');
+        }
+      }
+    } catch (e) {}
+
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        html.classList.remove('no-transition');
+      });
+    });
   })();
 </script>
 

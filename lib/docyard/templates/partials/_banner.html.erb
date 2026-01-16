@@ -23,5 +23,5 @@
     </button>
   <% end %>
 </div>
-<script>document.body.classList.add('has-announcement');</script>
+<script>if(!document.documentElement.classList.contains('banner-dismissed'))document.body.classList.add('has-announcement');</script>
 <% end %>
