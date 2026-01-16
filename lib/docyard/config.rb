@@ -40,6 +40,12 @@ module Docyard
         "edit_path" => "docs",
         "edit_link" => true,
         "last_updated" => true
+      },
+      "analytics" => {
+        "google" => nil,
+        "plausible" => nil,
+        "fathom" => nil,
+        "script" => nil
       }
     }.freeze
 
@@ -110,6 +116,10 @@ module Docyard
 
     def repo
       @repo ||= ConfigSection.new(data["repo"])
+    end
+
+    def analytics
+      @analytics ||= ConfigSection.new(data["analytics"])
     end
 
     private

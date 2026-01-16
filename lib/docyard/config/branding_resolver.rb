@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "logo_detector"
+require_relative "analytics_resolver"
 
 module Docyard
   class BrandingResolver
+    include AnalyticsResolver
+
     def initialize(config)
       @config = config
     end
@@ -31,15 +34,10 @@ module Docyard
     end
 
     def config_branding_options
-      site_options
-        .merge(logo_options)
-        .merge(search_options)
-        .merge(credits_options)
-        .merge(social_options)
-        .merge(navigation_options)
-        .merge(tabs_options)
-        .merge(announcement_options)
-        .merge(repo_options)
+      [
+        site_options, logo_options, search_options, credits_options, social_options,
+        navigation_options, tabs_options, announcement_options, repo_options, analytics_options
+      ].reduce({}, :merge)
     end
 
     def site_options
