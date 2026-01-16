@@ -219,5 +219,27 @@ RSpec.describe Docyard::Components::AccordionProcessor do
         expect(result).to include("What's the deal?")
       end
     end
+
+    context "with code blocks" do
+      it "does not process accordion syntax inside code blocks", :aggregate_failures do
+        markdown = <<~MD
+          :::details{title="Real"}
+          Real content
+          :::
+
+          ```markdown
+          :::details{title="Example"}
+          Example syntax
+          :::
+          ```
+        MD
+
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-accordion"')
+        expect(result.scan('docyard-accordion"').count).to eq(1)
+        expect(result).to include(':::details{title="Example"}')
+      end
+    end
   end
 end

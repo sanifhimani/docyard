@@ -522,4 +522,15 @@ RSpec.describe Docyard::Components::TabsProcessor do
       expect(time.real).to be < 1.0
     end
   end
+
+  describe "code block preservation" do
+    it "does not process tabs syntax inside code blocks", :aggregate_failures do
+      markdown = ":::tabs\n== Real Tab\nReal content\n:::\n\n```markdown\n:::tabs\n== Example\n:::\n```"
+      result = processor.preprocess(markdown)
+
+      expect(result).to include('class="docyard-tabs"')
+      expect(result.scan('docyard-tabs"').count).to eq(1)
+      expect(result).to include(":::tabs\n== Example")
+    end
+  end
 end

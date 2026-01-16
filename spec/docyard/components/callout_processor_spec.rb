@@ -338,4 +338,26 @@ RSpec.describe Docyard::Components::CalloutProcessor do
       expect(result).to include('role="alert"')
     end
   end
+
+  describe "code block preservation" do
+    it "does not process callout syntax inside code blocks", :aggregate_failures do
+      markdown = <<~MD
+        :::note
+        Real callout
+        :::
+
+        ```markdown
+        :::note
+        Example callout syntax
+        :::
+        ```
+      MD
+
+      result = processor.preprocess(markdown)
+
+      expect(result).to include('class="docyard-callout docyard-callout--note"')
+      expect(result.scan('class="docyard-callout docyard-callout--').count).to eq(1)
+      expect(result).to include(":::note\nExample callout syntax\n:::")
+    end
+  end
 end

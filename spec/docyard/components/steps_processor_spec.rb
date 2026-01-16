@@ -241,5 +241,29 @@ RSpec.describe Docyard::Components::StepsProcessor do
         expect(result).to include('class="docyard-steps"')
       end
     end
+
+    context "with code blocks" do
+      it "does not process steps syntax inside code blocks", :aggregate_failures do
+        markdown = <<~MD
+          :::steps
+          ### Real Step
+          Real content
+          :::
+
+          ```markdown
+          :::steps
+          ### Example Step
+          Example syntax
+          :::
+          ```
+        MD
+
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-steps"')
+        expect(result.scan("docyard-steps").count).to eq(1)
+        expect(result).to include(":::steps\n### Example Step")
+      end
+    end
   end
 end

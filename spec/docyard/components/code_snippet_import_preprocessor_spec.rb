@@ -279,4 +279,22 @@ RSpec.describe Docyard::Components::CodeSnippetImportPreprocessor do
       end
     end
   end
+
+  describe "code block preservation" do
+    it "does not process import syntax inside code blocks", :aggregate_failures do
+      File.write(File.join(docs_dir, "real.rb"), "real_code")
+      content = <<~MARKDOWN
+        <<< @/real.rb
+
+        ```markdown
+        <<< @/example.rb
+        ```
+      MARKDOWN
+      result = processor.preprocess(content)
+
+      expect(result).to include("```ruby")
+      expect(result).to include("real_code")
+      expect(result).to include("<<< @/example.rb")
+    end
+  end
 end

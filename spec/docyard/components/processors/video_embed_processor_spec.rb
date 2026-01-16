@@ -451,5 +451,23 @@ RSpec.describe Docyard::Components::Processors::VideoEmbedProcessor do
         expect(result.scan("docyard-video--native").count).to eq(1)
       end
     end
+
+    context "with code blocks" do
+      it "does not process video syntax inside code blocks", :aggregate_failures do
+        content = <<~MARKDOWN
+          ::youtube[realvideo]
+
+          ```markdown
+          ::youtube[examplevideo]
+          ::vimeo[examplevimeo]
+          ```
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include("youtube-nocookie.com/embed/realvideo")
+        expect(result).to include("::youtube[examplevideo]")
+        expect(result).to include("::vimeo[examplevimeo]")
+      end
+    end
   end
 end

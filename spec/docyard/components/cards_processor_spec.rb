@@ -191,5 +191,19 @@ RSpec.describe Docyard::Components::CardsProcessor do
         expect(result).to include('class="docyard-cards"')
       end
     end
+
+    context "with code blocks" do
+      let(:markdown) do
+        ":::cards\n::card{title=\"A\"}\nX\n::\n:::\n\n```md\n:::cards\n::card{title=\"B\"}\n::\n:::\n```"
+      end
+
+      it "does not process cards syntax inside code blocks", :aggregate_failures do
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-cards"')
+        expect(result.scan("docyard-cards").count).to eq(1)
+        expect(result).to include('::card{title="B"}')
+      end
+    end
   end
 end

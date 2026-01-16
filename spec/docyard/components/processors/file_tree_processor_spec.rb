@@ -197,5 +197,16 @@ RSpec.describe Docyard::Components::Processors::FileTreeProcessor do
         expect(result).to include('markdown="0"')
       end
     end
+
+    context "with code blocks" do
+      it "does not process filetree syntax inside code blocks", :aggregate_failures do
+        content = "```filetree\nsrc/\n```\n\n```markdown\n```filetree\nexample/\n```\n```"
+        result = processor.preprocess(content)
+
+        expect(result).to include('class="docyard-filetree"')
+        expect(result.scan('class="docyard-filetree"').count).to eq(1)
+        expect(result).to include("```filetree\nexample/")
+      end
+    end
   end
 end

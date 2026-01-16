@@ -122,5 +122,21 @@ RSpec.describe Docyard::Components::Processors::TooltipProcessor do
         expect(result).to include('data-link="https://github.com"')
       end
     end
+
+    context "with code blocks" do
+      it "does not process tooltip syntax inside code blocks", :aggregate_failures do
+        content = <<~MARKDOWN
+          Use :tooltip[API]{description="Interface"} here.
+
+          ```markdown
+          :tooltip[API]{description="Example syntax"}
+          ```
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include('<span class="docyard-tooltip"')
+        expect(result).to include(':tooltip[API]{description="Example syntax"}')
+      end
+    end
   end
 end
