@@ -207,5 +207,21 @@ RSpec.describe Docyard::Components::Processors::ImageCaptionProcessor do
         expect(result).to include("<figure")
       end
     end
+
+    context "with code blocks" do
+      it "does not process image caption syntax inside code blocks", :aggregate_failures do
+        content = <<~MARKDOWN
+          ![Real](real.png){caption="Real caption"}
+
+          ```markdown
+          ![Example](example.png){caption="Example syntax"}
+          ```
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include("<figure")
+        expect(result).to include('![Example](example.png){caption="Example syntax"}')
+      end
+    end
   end
 end

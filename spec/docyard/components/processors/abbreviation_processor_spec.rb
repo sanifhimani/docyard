@@ -129,5 +129,57 @@ RSpec.describe Docyard::Components::Processors::AbbreviationProcessor do
         expect(result).to include('data-definition="Frequently Asked Questions about common issues and problems"')
       end
     end
+
+    context "with code blocks" do
+      it "does not process definitions inside code blocks", :aggregate_failures do
+        content = <<~MARKDOWN
+          Use the API here.
+
+          ```markdown
+          *[API]: Application Programming Interface
+          ```
+
+          *[API]: Application Programming Interface
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include(">API</abbr>")
+        expect(result).to include("```markdown\n*[API]: Application Programming Interface\n```")
+      end
+
+      it "does not replace terms inside code blocks", :aggregate_failures do
+        content = <<~MARKDOWN
+          The API is great.
+
+          ```ruby
+          API_KEY = "secret"
+          ```
+
+          *[API]: Application Programming Interface
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include(">API</abbr> is great")
+        expect(result).to include('API_KEY = "secret"')
+        expect(result).not_to include(">API</abbr>_KEY")
+      end
+
+      it "processes definitions outside code blocks only", :aggregate_failures do
+        content = <<~MARKDOWN
+          ```markdown
+          *[FAKE]: Not a real definition
+          ```
+
+          Use the API.
+
+          *[API]: Real definition
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include(">API</abbr>")
+        expect(result).not_to include(">FAKE</abbr>")
+        expect(result).to include("*[FAKE]: Not a real definition")
+      end
+    end
   end
 end

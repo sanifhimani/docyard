@@ -291,5 +291,19 @@ RSpec.describe Docyard::Components::Processors::CodeGroupProcessor do
         expect(result).to include('data-code="const code = &quot;test&quot;;"')
       end
     end
+
+    context "with code blocks" do
+      let(:content) do
+        ":::code-group\n```js [A]\nx\n```\n:::\n\n```md\n:::code-group\n```js [B]\ny\n```\n:::\n```"
+      end
+
+      it "does not process code-group syntax inside code blocks", :aggregate_failures do
+        result = processor.preprocess(content)
+
+        expect(result).to include('class="docyard-code-group"')
+        expect(result.scan('class="docyard-code-group"').count).to eq(1)
+        expect(result).to include(":::code-group")
+      end
+    end
   end
 end

@@ -173,5 +173,25 @@ RSpec.describe Docyard::Components::Processors::IncludeProcessor do
         expect(result).to eq("Paragraph before.\n\nSnippet text\n\nParagraph after.")
       end
     end
+
+    context "with code blocks" do
+      before do
+        create_file("docs/real.md", "Real included content")
+      end
+
+      it "does not process include syntax inside code blocks", :aggregate_failures do
+        content = <<~MARKDOWN
+          <!--@include: real.md-->
+
+          ```markdown
+          <!--@include: example.md-->
+          ```
+        MARKDOWN
+        result = processor.preprocess(content)
+
+        expect(result).to include("Real included content")
+        expect(result).to include("<!--@include: example.md-->")
+      end
+    end
   end
 end
