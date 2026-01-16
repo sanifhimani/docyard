@@ -1,0 +1,20 @@
+<% if @has_analytics %>
+<% if @analytics_google %>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%= @analytics_google %>"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '<%= @analytics_google %>');
+</script>
+<% end %>
+<% if @analytics_plausible %>
+<script defer data-domain="<%= @analytics_plausible %>" src="https://plausible.io/js/script.js"></script>
+<% end %>
+<% if @analytics_fathom %>
+<script src="https://cdn.usefathom.com/script.js" data-site="<%= @analytics_fathom %>" defer></script>
+<% end %>
+<% if @analytics_script %>
+<script defer src="<%= asset_path(@analytics_script) %>"></script>
+<% end %>
+<% end %>

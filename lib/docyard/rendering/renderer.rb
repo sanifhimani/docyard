@@ -107,6 +107,7 @@ module Docyard
       assign_search_options(branding)
       assign_credits_and_social(branding)
       assign_tabs(branding, current_path)
+      assign_analytics(branding)
     end
 
     def assign_site_branding(branding)
@@ -129,6 +130,14 @@ module Docyard
       @social = branding[:social] || []
       @header_ctas = branding[:header_ctas] || []
       @announcement = branding[:announcement]
+    end
+
+    def assign_analytics(branding)
+      @has_analytics = branding[:has_analytics] || false
+      @analytics_google = branding[:analytics_google]
+      @analytics_plausible = branding[:analytics_plausible]
+      @analytics_fathom = branding[:analytics_fathom]
+      @analytics_script = branding[:analytics_script]
     end
 
     def assign_tabs(branding, current_path)
