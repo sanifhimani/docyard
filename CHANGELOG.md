@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-01-15
+
+### Added
+- **Accordions** - Collapsible content sections with `:::details{title="..."}` syntax (#62)
+- **Steps** - Numbered step-by-step instructions with `:::steps` syntax and vertical connector lines (#63)
+- **Cards** - Grid of linked content blocks with `:::cards` and `::card{title="" icon="" href=""}` syntax (#64)
+- **Badges** - Inline status indicators with `:badge[text]{type="success|warning|danger"}` syntax (#65)
+- **Sidebar Badges** - Navigation labels via frontmatter `sidebar.badge` and `sidebar.badge_type` (#66)
+- **Announcement Banner** - Dismissible top banner with optional action button via config (#56)
+- **Markdown Inclusion** - Include content from other files with `<!--@include: ./file.md-->` syntax (#57)
+- **Custom Anchor IDs** - Override auto-generated heading IDs with `## Heading {#custom-id}` syntax (#58)
+- **Image Captions** - Figure elements with captions using `![](image.png){caption="..."}` syntax (#59)
+- **Video Embeds** - YouTube and Vimeo embedding with `::youtube[ID]` and `::vimeo[ID]` syntax (#60)
+- **File Tree** - Display directory structures with icons using `filetree` code blocks (#67)
+- **Tooltips** - Inline hover definitions with `:tooltip[term]{description="..."}` syntax (#68)
+- **Abbreviations** - Auto-expanding terms with `*[TERM]: Definition` syntax (#68)
+- **Code Groups** - Tabbed code blocks with `:::code-group` syntax, syncs selection across page (#70)
+
+### Fixed
+- **Copy Button Overlap** - Repositioned copy button to prevent overlapping code content in non-titled blocks (#71)
+- **Code Fence Protection** - Preprocessors now skip content inside fenced code blocks, allowing documentation to show raw syntax examples (#72)
+
 ## [0.8.0] - 2026-01-13
 
 ### Added
@@ -140,7 +162,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/sanifhimani/docyard/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/sanifhimani/docyard/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/sanifhimani/docyard/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/sanifhimani/docyard/compare/v0.5.0...v0.6.0
