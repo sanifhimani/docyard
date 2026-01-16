@@ -4,13 +4,122 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 - Page Not Found</title>
-  <link rel="stylesheet" href="/_docyard/css/main.css">
+  <style>
+    @font-face {
+      font-family: 'Inter';
+      src: url('/_docyard/fonts/Inter-Variable.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    :root {
+      --background: #ffffff;
+      --foreground: #0f0f10;
+      --muted-foreground: #71717a;
+      --border: #e4e4e7;
+      --primary: oklch(0.61 0.11 222);
+      --primary-foreground: oklch(0.98 0.02 201);
+      --radius: 0.5rem;
+    }
+
+    .dark {
+      --background: #09090b;
+      --foreground: #fafafa;
+      --muted-foreground: #a1a1aa;
+      --border: #27272a;
+      --primary: oklch(0.71 0.13 215);
+      --primary-foreground: oklch(0.30 0.05 230);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .error-page {
+      text-align: center;
+      max-width: 450px;
+    }
+
+    .error-code {
+      font-size: 8rem;
+      font-weight: 700;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--border);
+      line-height: 1;
+    }
+
+    .error-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .error-message {
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: var(--primary-foreground);
+      transition: opacity 0.15s;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .error-code {
+        font-size: 5rem;
+      }
+    }
+  </style>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme') ||
+                   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    })();
+  </script>
 </head>
 <body>
-  <main>
-    <h1>404 - Page Not Found</h1>
-    <p>The page you're looking for doesn't exist.</p>
-    <p><a href="/">Go back home</a></p>
+  <main class="error-page">
+    <p class="error-code">404</p>
+    <h1 class="error-title">Page not found</h1>
+    <p class="error-message">This page doesn't exist or has been moved.</p>
+    <a href="/" class="btn">
+      <%= icon(:house_line) %>
+      Back to home
+    </a>
   </main>
 </body>
 </html>
