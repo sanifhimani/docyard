@@ -5,6 +5,33 @@
 <title><%= @page_title %> | <%= @site_title %></title>
 <link rel="icon" href="<%= asset_path(@favicon) %>" type="image/svg+xml">
 
+<% if @og_enabled %>
+<link rel="canonical" href="<%= @og_url %>">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="<%= @site_title %>">
+<meta property="og:title" content="<%= @page_title %>">
+<meta property="og:url" content="<%= @og_url %>">
+<% if @og_description && !@og_description.empty? %>
+<meta property="og:description" content="<%= @og_description %>">
+<% end %>
+<% if @og_image %>
+<meta property="og:image" content="<%= @og_image %>">
+<% end %>
+
+<meta name="twitter:card" content="<%= @og_image ? 'summary_large_image' : 'summary' %>">
+<meta name="twitter:title" content="<%= @page_title %>">
+<% if @og_description && !@og_description.empty? %>
+<meta name="twitter:description" content="<%= @og_description %>">
+<% end %>
+<% if @og_image %>
+<meta name="twitter:image" content="<%= @og_image %>">
+<% end %>
+<% if @og_twitter %>
+<meta name="twitter:site" content="@<%= @og_twitter.delete_prefix('@') %>">
+<% end %>
+<% end %>
+
 <link rel="preload" href="/_docyard/fonts/Inter-Variable.ttf" as="font" type="font/ttf" crossorigin>
 
 <script>

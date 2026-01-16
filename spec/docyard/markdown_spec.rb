@@ -219,6 +219,39 @@ RSpec.describe Docyard::Markdown do
     end
   end
 
+  describe "#og_image" do
+    context "when og_image exists in frontmatter" do
+      let(:text) do
+        <<~MARKDOWN
+          ---
+          title: Test Page
+          og_image: /images/og-custom.png
+          ---
+          # Content
+        MARKDOWN
+      end
+
+      it "returns the og_image" do
+        markdown = described_class.new(text)
+        expect(markdown.og_image).to eq("/images/og-custom.png")
+      end
+    end
+
+    context "when og_image does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("---\ntitle: Test\n---\n# Content")
+        expect(markdown.og_image).to be_nil
+      end
+    end
+
+    context "when frontmatter does not exist" do
+      it "returns nil" do
+        markdown = described_class.new("# Content")
+        expect(markdown.og_image).to be_nil
+      end
+    end
+  end
+
   describe "#sidebar_icon" do
     context "when sidebar.icon exists in frontmatter" do
       let(:text) do

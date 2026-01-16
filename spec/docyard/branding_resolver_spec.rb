@@ -70,6 +70,44 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
+    context "with OG meta config not configured" do
+      it "returns nil for OG-related fields", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:site_url]).to be_nil
+        expect(result[:og_image]).to be_nil
+        expect(result[:twitter]).to be_nil
+      end
+    end
+
+    context "with OG meta config configured" do
+      before do
+        create_config(<<~YAML)
+          url: "https://docs.example.com"
+          og_image: "/images/og.png"
+          twitter: "docyard"
+        YAML
+      end
+
+      it "includes site_url in branding", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:site_url]).to eq("https://docs.example.com")
+      end
+
+      it "includes og_image in branding" do
+        result = resolver.resolve
+
+        expect(result[:og_image]).to eq("/images/og.png")
+      end
+
+      it "includes twitter handle in branding" do
+        result = resolver.resolve
+
+        expect(result[:twitter]).to eq("docyard")
+      end
+    end
+
     context "with custom branding config" do
       before do
         create_file("logo.svg", "<svg></svg>")
