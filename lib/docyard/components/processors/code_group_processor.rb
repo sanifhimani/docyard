@@ -4,6 +4,7 @@ require_relative "../base_processor"
 require_relative "../support/code_block/feature_extractor"
 require_relative "../support/code_block/line_wrapper"
 require_relative "../support/code_group/html_builder"
+require_relative "../support/markdown_code_block_helper"
 require_relative "../../rendering/icons"
 require_relative "../../rendering/renderer"
 require "securerandom"
@@ -16,6 +17,7 @@ module Docyard
     module Processors
       class CodeGroupProcessor < BaseProcessor
         include Utils::HtmlHelpers
+        include Support::MarkdownCodeBlockHelper
 
         self.priority = 12
 
@@ -29,8 +31,13 @@ module Docyard
         def preprocess(content)
           return content unless content.include?(":::code-group")
 
+          @code_block_ranges = find_code_block_ranges(content)
+
           content.gsub(CODE_GROUP_PATTERN) do
-            process_code_group(::Regexp.last_match(1))
+            match = ::Regexp.last_match
+            next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
+
+            process_code_group(match[1])
           end
         end
 

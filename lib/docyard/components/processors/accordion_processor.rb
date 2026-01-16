@@ -3,6 +3,7 @@
 require_relative "../../rendering/icons"
 require_relative "../../rendering/renderer"
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 require "kramdown"
 require "kramdown-parser-gfm"
 
@@ -10,14 +11,21 @@ module Docyard
   module Components
     module Processors
       class AccordionProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         self.priority = 10
 
         DETAILS_PATTERN = /^:::details(?:\{([^}]*)\})?\s*\n(.*?)^:::\s*$/m
 
         def preprocess(markdown)
+          @code_block_ranges = find_code_block_ranges(markdown)
+
           markdown.gsub(DETAILS_PATTERN) do
-            attributes = parse_attributes(Regexp.last_match(1))
-            content_markdown = Regexp.last_match(2)
+            match = Regexp.last_match
+            next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
+
+            attributes = parse_attributes(match[1])
+            content_markdown = match[2]
 
             title = attributes["title"] || "Details"
             open = attributes.key?("open")

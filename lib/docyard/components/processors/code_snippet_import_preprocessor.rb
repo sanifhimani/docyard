@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 
 module Docyard
   module Components
     module Processors
       class CodeSnippetImportPreprocessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         EXTENSION_MAP = {
           "rb" => "ruby",
           "js" => "javascript",
@@ -25,7 +28,9 @@ module Docyard
 
         def preprocess(content)
           @docs_root = context[:docs_root] || "docs"
-          content.gsub(IMPORT_PATTERN) { |_| process_import(Regexp.last_match) }
+          process_outside_code_blocks(content) do |segment|
+            segment.gsub(IMPORT_PATTERN) { |_| process_import(Regexp.last_match) }
+          end
         end
 
         private

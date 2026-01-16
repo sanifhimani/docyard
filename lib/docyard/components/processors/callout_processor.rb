@@ -3,6 +3,7 @@
 require_relative "../../rendering/icons"
 require_relative "../../rendering/renderer"
 require_relative "../base_processor"
+require_relative "../support/markdown_code_block_helper"
 require "kramdown"
 require "kramdown-parser-gfm"
 
@@ -10,6 +11,8 @@ module Docyard
   module Components
     module Processors
       class CalloutProcessor < BaseProcessor
+        include Support::MarkdownCodeBlockHelper
+
         self.priority = 10
 
         CALLOUT_TYPES = {
@@ -29,6 +32,7 @@ module Docyard
         }.freeze
 
         def preprocess(markdown)
+          @code_block_ranges = find_code_block_ranges(markdown)
           process_container_syntax(markdown)
         end
 
@@ -40,8 +44,10 @@ module Docyard
 
         def process_container_syntax(markdown)
           markdown.gsub(/^:::[ \t]*(\w+)(?:[ \t]+([^\n]+?))?[ \t]*\n(.*?)^:::[ \t]*$/m) do
-            process_callout_match(Regexp.last_match(0), Regexp.last_match(1), Regexp.last_match(2),
-                                  Regexp.last_match(3))
+            match = Regexp.last_match
+            next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
+
+            process_callout_match(match[0], match[1], match[2], match[3])
           end
         end
 
