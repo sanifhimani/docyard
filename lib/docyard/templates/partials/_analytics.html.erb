@@ -1,5 +1,7 @@
 <% if @has_analytics %>
 <% if @analytics_google %>
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id=<%= @analytics_google %>"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -9,9 +11,11 @@
 </script>
 <% end %>
 <% if @analytics_plausible %>
+<link rel="preconnect" href="https://plausible.io" crossorigin>
 <script defer data-domain="<%= @analytics_plausible %>" src="https://plausible.io/js/script.js"></script>
 <% end %>
 <% if @analytics_fathom %>
+<link rel="preconnect" href="https://cdn.usefathom.com" crossorigin>
 <script src="https://cdn.usefathom.com/script.js" data-site="<%= @analytics_fathom %>" defer></script>
 <% end %>
 <% if @analytics_script %>
