@@ -30,6 +30,10 @@
         <%= render_partial('_breadcrumbs') %>
         <%= @content %>
 
+        <div class="git-info-mobile">
+          <%= render_partial('_git_info') %>
+        </div>
+
         <%= @prev_next_html %>
 
         <div class="doc-footer-mobile">
@@ -41,6 +45,7 @@
     <aside class="doc-aside">
       <%= render_partial('_table_of_contents') %>
       <div class="doc-footer-desktop">
+        <%= render_partial('_git_info') %>
         <%= render_partial('_doc_footer') %>
       </div>
     </aside>
