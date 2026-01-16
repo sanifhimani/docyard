@@ -2,12 +2,15 @@
 
 require "erb"
 require_relative "../config/constants"
+require_relative "../utils/git_info"
 require_relative "icon_helpers"
+require_relative "og_helpers"
 
 module Docyard
   class Renderer
     include Utils::UrlHelpers
     include IconHelpers
+    include OgHelpers
 
     LAYOUTS_PATH = File.join(__dir__, "../templates", "layouts")
     ERRORS_PATH = File.join(__dir__, "../templates", "errors")
@@ -33,7 +36,8 @@ module Docyard
         navigation: build_navigation(sidebar_html, prev_next_html, markdown.toc, breadcrumbs),
         branding: branding,
         template_options: template_options,
-        current_path: current_path
+        current_path: current_path,
+        file_path: file_path
       )
     end
 
@@ -42,7 +46,7 @@ module Docyard
     end
 
     def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, page_description: nil, page_og_image: nil,
-               navigation: {}, branding: {}, template_options: {}, current_path: "/")
+               navigation: {}, branding: {}, template_options: {}, current_path: "/", file_path: nil)
       layout = template_options[:template] || DEFAULT_LAYOUT
       layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
       template = File.read(layout_path)
@@ -51,6 +55,7 @@ module Docyard
       assign_branding_variables(branding, current_path)
       assign_og_variables(branding, page_description, page_og_image, current_path)
       assign_template_variables(template_options)
+      assign_git_info(branding, file_path)
 
       ERB.new(template).result(binding)
     end
@@ -145,35 +150,6 @@ module Docyard
       current_path.start_with?("#{normalized_tab}/")
     end
 
-    def assign_og_variables(branding, page_description, page_og_image, current_path)
-      site_url = branding[:site_url]
-      @og_enabled = !site_url.nil? && !site_url.empty?
-      return unless @og_enabled
-
-      @og_url = build_canonical_url(site_url, current_path)
-      @og_description = page_description || @site_description
-      @og_image = build_og_image_url(site_url, page_og_image || branding[:og_image])
-      @og_twitter = branding[:twitter]
-    end
-
-    def build_canonical_url(site_url, current_path)
-      base = site_url.chomp("/")
-      path = current_path.start_with?("/") ? current_path : "/#{current_path}"
-      "#{base}#{path}"
-    end
-
-    def build_og_image_url(site_url, og_image)
-      return nil if og_image.nil?
-
-      if og_image.start_with?("http://", "https://")
-        og_image
-      else
-        base = site_url.chomp("/")
-        path = og_image.start_with?("/") ? og_image : "/#{og_image}"
-        "#{base}#{path}"
-      end
-    end
-
     def assign_template_variables(template_options)
       @hero = template_options[:hero]
       @features = template_options[:features]
@@ -191,6 +167,21 @@ module Docyard
 
     def strip_md_from_links(html)
       html.gsub(/href="([^"]+)\.md"/, 'href="\1"')
+    end
+
+    def assign_git_info(branding, file_path)
+      @show_edit_link = branding[:show_edit_link] && file_path
+      @show_last_updated = branding[:show_last_updated] && file_path
+      return unless @show_edit_link || @show_last_updated
+
+      git_info = Utils::GitInfo.new(
+        repo_url: branding[:repo_url],
+        branch: branding[:repo_branch],
+        edit_path: branding[:repo_edit_path]
+      )
+
+      @edit_url = git_info.edit_url(file_path) if @show_edit_link
+      @last_updated = git_info.last_updated(file_path) if @show_last_updated
     end
   end
 end

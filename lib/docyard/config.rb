@@ -33,7 +33,14 @@ module Docyard
         "cta" => [],
         "breadcrumbs" => true
       },
-      "announcement" => nil
+      "announcement" => nil,
+      "repo" => {
+        "url" => nil,
+        "branch" => "main",
+        "edit_path" => "docs",
+        "edit_link" => true,
+        "last_updated" => true
+      }
     }.freeze
 
     attr_reader :data, :file_path
@@ -99,6 +106,10 @@ module Docyard
 
     def announcement
       @announcement ||= data["announcement"] ? ConfigSection.new(data["announcement"]) : nil
+    end
+
+    def repo
+      @repo ||= ConfigSection.new(data["repo"])
     end
 
     private
