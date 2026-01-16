@@ -63,6 +63,10 @@ module Docyard
       frontmatter["description"]
     end
 
+    def og_image
+      frontmatter["og_image"]
+    end
+
     def sidebar_icon
       frontmatter.dig("sidebar", "icon")
     end

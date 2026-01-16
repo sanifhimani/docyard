@@ -9,6 +9,9 @@ module Docyard
     DEFAULT_CONFIG = {
       "title" => Constants::DEFAULT_SITE_TITLE,
       "description" => "",
+      "url" => nil,
+      "og_image" => nil,
+      "twitter" => nil,
       "branding" => {
         "logo" => nil,
         "favicon" => nil,
@@ -56,6 +59,18 @@ module Docyard
 
     def description
       data["description"]
+    end
+
+    def url
+      data["url"]
+    end
+
+    def og_image
+      data["og_image"]
+    end
+
+    def twitter
+      data["twitter"]
     end
 
     def branding

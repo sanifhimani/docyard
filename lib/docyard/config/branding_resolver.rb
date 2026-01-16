@@ -54,6 +54,9 @@ module Docyard
       {
         site_title: config.title || Constants::DEFAULT_SITE_TITLE,
         site_description: config.description || "",
+        site_url: config.url,
+        og_image: config.og_image,
+        twitter: config.twitter,
         favicon: config.branding.favicon || LogoDetector.auto_detect_favicon
       }
     end
