@@ -812,5 +812,126 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:announcement][:button]).to be_nil
       end
     end
+
+    context "with default repo options" do
+      it "returns nil repo_url by default" do
+        result = resolver.resolve
+
+        expect(result[:repo_url]).to be_nil
+      end
+
+      it "returns false for show_edit_link when repo_url is nil" do
+        result = resolver.resolve
+
+        expect(result[:show_edit_link]).to be false
+      end
+
+      it "returns false for show_last_updated when repo_url is nil" do
+        result = resolver.resolve
+
+        expect(result[:show_last_updated]).to be false
+      end
+    end
+
+    context "when repo is configured" do
+      before do
+        create_config(<<~YAML)
+          repo:
+            url: "https://github.com/docyard/docyard"
+            branch: "develop"
+            edit_path: "documentation"
+        YAML
+      end
+
+      it "returns repo_url", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:repo_url]).to eq("https://github.com/docyard/docyard")
+      end
+
+      it "returns repo_branch" do
+        result = resolver.resolve
+
+        expect(result[:repo_branch]).to eq("develop")
+      end
+
+      it "returns repo_edit_path" do
+        result = resolver.resolve
+
+        expect(result[:repo_edit_path]).to eq("documentation")
+      end
+
+      it "returns show_edit_link true when repo_url is present" do
+        result = resolver.resolve
+
+        expect(result[:show_edit_link]).to be true
+      end
+
+      it "returns show_last_updated true when repo_url is present" do
+        result = resolver.resolve
+
+        expect(result[:show_last_updated]).to be true
+      end
+    end
+
+    context "when repo has edit_link disabled" do
+      before do
+        create_config(<<~YAML)
+          repo:
+            url: "https://github.com/docyard/docyard"
+            edit_link: false
+        YAML
+      end
+
+      it "returns show_edit_link false" do
+        result = resolver.resolve
+
+        expect(result[:show_edit_link]).to be false
+      end
+
+      it "returns show_last_updated true" do
+        result = resolver.resolve
+
+        expect(result[:show_last_updated]).to be true
+      end
+    end
+
+    context "when repo has last_updated disabled" do
+      before do
+        create_config(<<~YAML)
+          repo:
+            url: "https://github.com/docyard/docyard"
+            last_updated: false
+        YAML
+      end
+
+      it "returns show_edit_link true" do
+        result = resolver.resolve
+
+        expect(result[:show_edit_link]).to be true
+      end
+
+      it "returns show_last_updated false" do
+        result = resolver.resolve
+
+        expect(result[:show_last_updated]).to be false
+      end
+    end
+
+    context "when repo url is nil" do
+      before do
+        create_config(<<~YAML)
+          repo:
+            branch: "develop"
+            edit_link: true
+        YAML
+      end
+
+      it "returns show_edit_link false even if edit_link is true" do
+        result = resolver.resolve
+
+        expect(result[:show_edit_link]).to be false
+      end
+    end
   end
 end
