@@ -134,6 +134,7 @@
   transform: scale(0.95) translateY(-10px);
   opacity: 0;
   transition: transform var(--transition-base), opacity var(--transition-fast);
+  will-change: transform, opacity;
 }
 
 .search-modal.is-open .search-modal-container {
