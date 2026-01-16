@@ -154,7 +154,7 @@
   cursor: zoom-in;
 }
 
-.content a:not(.heading-anchor):not(.pager-link):not(.breadcrumb-link):not(.site-footer__link):not(.site-footer__attribution):not(.docyard-card):not(.docyard-announcement__link):not(.docyard-announcement__button) {
+.content a:not(.heading-anchor):not(.pager-link):not(.breadcrumb-link):not(.site-footer__link):not(.site-footer__attribution):not(.docyard-card):not(.docyard-announcement__link):not(.docyard-announcement__button):not(.git-info__edit-link) {
   color: var(--foreground);
   font-weight: var(--font-semibold);
   text-decoration: none;
@@ -162,7 +162,7 @@
   transition: border-bottom var(--transition-fast);
 }
 
-.content a:not(.heading-anchor):not(.pager-link):not(.breadcrumb-link):not(.site-footer__link):not(.site-footer__attribution):not(.docyard-card):not(.docyard-announcement__link):not(.docyard-announcement__button):hover {
+.content a:not(.heading-anchor):not(.pager-link):not(.breadcrumb-link):not(.site-footer__link):not(.site-footer__attribution):not(.docyard-card):not(.docyard-announcement__link):not(.docyard-announcement__button):not(.git-info__edit-link):hover {
   border-bottom: 2px solid var(--primary);
 }
 

@@ -8,15 +8,6 @@ module Docyard
       @config = config
     end
 
-    SOCIAL_ICON_MAP = {
-      "x" => "x-logo", "twitter" => "x-logo", "discord" => "discord-logo",
-      "linkedin" => "linkedin-logo", "youtube" => "youtube-logo", "instagram" => "instagram-logo",
-      "facebook" => "facebook-logo", "tiktok" => "tiktok-logo", "twitch" => "twitch-logo",
-      "reddit" => "reddit-logo", "mastodon" => "mastodon-logo", "threads" => "threads-logo",
-      "pinterest" => "pinterest-logo", "medium" => "medium-logo", "slack" => "slack-logo",
-      "gitlab" => "gitlab-logo"
-    }.freeze
-
     def resolve
       return default_branding unless config
 
@@ -48,6 +39,7 @@ module Docyard
         .merge(navigation_options)
         .merge(tabs_options)
         .merge(announcement_options)
+        .merge(repo_options)
     end
 
     def site_options
@@ -102,7 +94,7 @@ module Docyard
     def build_social_link(platform, url)
       return if platform == "custom" || !valid_url?(url)
 
-      { platform: platform, url: url, icon: SOCIAL_ICON_MAP[platform] || platform }
+      { platform: platform, url: url, icon: Constants::SOCIAL_ICON_MAP[platform] || platform }
     end
 
     def valid_url?(url)
@@ -175,6 +167,18 @@ module Docyard
       {
         text: button["text"],
         link: button["link"] || announcement.link
+      }
+    end
+
+    def repo_options
+      repo = config.repo
+      has_repo_url = !repo.url.nil? && !repo.url.empty?
+      {
+        repo_url: repo.url,
+        repo_branch: repo.branch || "main",
+        repo_edit_path: repo.edit_path || "docs",
+        show_edit_link: has_repo_url && repo.edit_link != false,
+        show_last_updated: has_repo_url && repo.last_updated != false
       }
     end
   end

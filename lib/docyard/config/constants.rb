@@ -27,5 +27,14 @@ module Docyard
     DEFAULT_LOGO_PATH = "_docyard/logo.svg"
     DEFAULT_LOGO_DARK_PATH = "_docyard/logo-dark.svg"
     DEFAULT_FAVICON_PATH = "_docyard/favicon.svg"
+
+    SOCIAL_ICON_MAP = {
+      "x" => "x-logo", "twitter" => "x-logo", "discord" => "discord-logo",
+      "linkedin" => "linkedin-logo", "youtube" => "youtube-logo", "instagram" => "instagram-logo",
+      "facebook" => "facebook-logo", "tiktok" => "tiktok-logo", "twitch" => "twitch-logo",
+      "reddit" => "reddit-logo", "mastodon" => "mastodon-logo", "threads" => "threads-logo",
+      "pinterest" => "pinterest-logo", "medium" => "medium-logo", "slack" => "slack-logo",
+      "gitlab" => "gitlab-logo"
+    }.freeze
   end
 end

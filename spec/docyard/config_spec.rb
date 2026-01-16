@@ -242,6 +242,37 @@ RSpec.describe Docyard::Config do
     end
   end
 
+  describe "#repo" do
+    it "returns default values when not configured", :aggregate_failures do
+      config = described_class.load(temp_dir)
+
+      expect(config.repo.url).to be_nil
+      expect(config.repo.branch).to eq("main")
+      expect(config.repo.edit_path).to eq("docs")
+      expect(config.repo.edit_link).to be true
+      expect(config.repo.last_updated).to be true
+    end
+
+    it "provides access to repo config", :aggregate_failures do
+      create_config(<<~YAML)
+        repo:
+          url: "https://github.com/user/repo"
+          branch: "develop"
+          edit_path: "documentation"
+          edit_link: false
+          last_updated: false
+      YAML
+
+      config = described_class.load(temp_dir)
+
+      expect(config.repo.url).to eq("https://github.com/user/repo")
+      expect(config.repo.branch).to eq("develop")
+      expect(config.repo.edit_path).to eq("documentation")
+      expect(config.repo.edit_link).to be false
+      expect(config.repo.last_updated).to be false
+    end
+  end
+
   describe "validation" do
     context "with invalid values" do
       it "raises ConfigError for invalid title" do
