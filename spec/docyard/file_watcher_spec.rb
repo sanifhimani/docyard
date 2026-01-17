@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require "tmpdir"
-require "fileutils"
 
 RSpec.describe Docyard::FileWatcher do
-  let(:docs_dir) { Dir.mktmpdir }
+  let(:docs_dir) { "/fake/docs/path" }
   let(:changes) { [] }
+  let(:mock_docs_listener) { instance_double(Listen::Listener, start: nil, stop: nil) }
+  let(:mock_config_listener) { instance_double(Listen::Listener, start: nil, stop: nil) }
   let(:watcher) do
     described_class.new(
       docs_path: docs_dir,
@@ -15,22 +15,22 @@ RSpec.describe Docyard::FileWatcher do
   end
 
   before do
-    FileUtils.mkdir_p(docs_dir)
-  end
-
-  after do
-    watcher.stop
-    FileUtils.rm_rf(docs_dir)
+    allow(Listen).to receive(:to).and_return(mock_docs_listener, mock_config_listener)
   end
 
   describe "#start" do
-    it "starts without error" do
+    it "starts listeners without error" do
       expect { watcher.start }.not_to raise_error
+    end
+
+    it "creates listeners for docs and config" do
+      watcher.start
+      expect(Listen).to have_received(:to).twice
     end
   end
 
   describe "#stop" do
-    it "stops without error" do
+    it "stops listeners without error" do
       watcher.start
       expect { watcher.stop }.not_to raise_error
     end
