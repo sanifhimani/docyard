@@ -13,11 +13,14 @@ require_relative "pagefind_handler"
 
 module Docyard
   class RackApplication
-    def initialize(docs_path:, config: nil, pagefind_path: nil)
+    def initialize(docs_path:, config: nil, pagefind_path: nil, sse_port: nil)
       @docs_path = docs_path
       @config = config
+      @sse_port = sse_port
+      @dev_mode = !sse_port.nil?
       @router = Router.new(docs_path: docs_path)
-      @renderer = Renderer.new(base_url: config&.build&.base || "/", config: config)
+      @renderer = Renderer.new(base_url: config&.build&.base || "/", config: config, dev_mode: @dev_mode,
+                               sse_port: sse_port)
       @asset_handler = AssetHandler.new
       @pagefind_handler = PagefindHandler.new(pagefind_path: pagefind_path, config: config)
     end
@@ -28,7 +31,7 @@ module Docyard
 
     private
 
-    attr_reader :docs_path, :config, :router, :renderer, :asset_handler, :pagefind_handler
+    attr_reader :docs_path, :config, :router, :renderer, :asset_handler, :pagefind_handler, :dev_mode
 
     def handle_request(env)
       path = env["PATH_INFO"]

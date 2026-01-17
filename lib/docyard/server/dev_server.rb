@@ -5,6 +5,8 @@ require "puma/configuration"
 require "puma/launcher"
 require "puma/log_writer"
 require_relative "rack_application"
+require_relative "sse_server"
+require_relative "file_watcher"
 require_relative "../config"
 
 module Docyard
@@ -21,12 +23,15 @@ module Docyard
       @search_enabled = search
       @config = Config.load
       @search_indexer = nil
+      @sse_server = nil
+      @file_watcher = nil
       @launcher = nil
     end
 
     def start
       validate_docs_directory!
       generate_search_index if @search_enabled
+      setup_hot_reload
       print_server_info
       run_server
     ensure
@@ -43,7 +48,39 @@ module Docyard
       @search_indexer.generate
     end
 
+    def setup_hot_reload
+      @sse_server = SSEServer.new(port: sse_port)
+      @sse_server.start
+
+      @file_watcher = FileWatcher.new(
+        docs_path: docs_path,
+        on_change: ->(change_type) { handle_file_change(change_type) }
+      )
+      @file_watcher.start
+    end
+
+    def sse_port
+      port + 1
+    end
+
+    def handle_file_change(change_type)
+      log_file_change(change_type)
+      @sse_server.broadcast("reload", { type: change_type.to_s })
+    end
+
+    def log_file_change(change_type)
+      message = case change_type
+                when :content then "Content changed, reloading..."
+                when :config then "Config changed, full reload..."
+                when :asset then "Asset changed, reloading..."
+                else "File changed, reloading..."
+                end
+      puts "* #{message}"
+    end
+
     def cleanup
+      @file_watcher&.stop
+      @sse_server&.stop
       @search_indexer&.cleanup
     end
 
@@ -58,6 +95,7 @@ module Docyard
       puts "Starting Docyard server..."
       puts "* Version: #{Docyard::VERSION}"
       puts "* Running at: http://#{host}:#{port}"
+      puts "* Hot reload: ws://127.0.0.1:#{sse_port}"
       puts "* Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}"
       puts "Use Ctrl+C to stop\n"
     end
@@ -69,15 +107,14 @@ module Docyard
 
       @launcher = Puma::Launcher.new(puma_config, log_writer: log_writer)
       @launcher.run
-    rescue Interrupt
-      puts "\nShutting down server..."
     end
 
     def build_rack_app
       RackApplication.new(
         docs_path: File.expand_path(docs_path),
         config: @config,
-        pagefind_path: @search_indexer&.pagefind_path
+        pagefind_path: @search_indexer&.pagefind_path,
+        sse_port: sse_port
       )
     end
 
@@ -89,7 +126,7 @@ module Docyard
         config.bind "tcp://#{server_host}:#{server_port}"
         config.app app
         config.workers 0
-        config.threads 1, 4
+        config.threads 4, 8
         config.quiet
       end
     end
