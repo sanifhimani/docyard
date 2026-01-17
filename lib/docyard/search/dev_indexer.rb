@@ -147,8 +147,8 @@ module Docyard
       end
 
       def log_success(page_count)
-        puts "=> Search index generated (#{page_count} pages indexed)"
-        puts "=> Temp directory: #{temp_dir}" if ENV["DOCYARD_DEBUG"]
+        puts "* Search index generated (#{page_count} pages indexed)"
+        puts "* Temp directory: #{temp_dir}" if ENV["DOCYARD_DEBUG"]
       end
     end
   end

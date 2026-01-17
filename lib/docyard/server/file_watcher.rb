@@ -4,39 +4,89 @@ require "listen"
 
 module Docyard
   class FileWatcher
-    attr_reader :last_modified_time
+    DEBOUNCE_DELAY = 0.1
+    ROOT_CONFIG_FILE = "docyard.yml"
+    CONFIG_FILES = %w[docyard.yml _sidebar.yml].freeze
+    CONTENT_EXTENSIONS = %w[.md .markdown].freeze
+    ASSET_EXTENSIONS = %w[.css .js .html .erb].freeze
 
-    def initialize(docs_path)
-      @docs_path = docs_path
-      @last_modified_time = Time.now
-      @listener = nil
+    def initialize(docs_path:, on_change:)
+      @docs_path = File.expand_path(docs_path)
+      @project_root = File.dirname(@docs_path)
+      @on_change = on_change
+      @docs_listener = nil
+      @config_listener = nil
+      @pending_changes = { content: false, config: false, asset: false }
+      @debounce_timer = nil
+      @mutex = Mutex.new
     end
 
     def start
-      @listener = Listen.to(@docs_path, only: /\.md$/) do |modified, added, removed|
-        handle_changes(modified, added, removed)
+      @docs_listener = Listen.to(@docs_path, latency: DEBOUNCE_DELAY) do |modified, added, removed|
+        handle_changes(modified + added + removed)
       end
+      @docs_listener.start
 
-      @listener.start
+      @config_listener = Listen.to(@project_root, only: /\Adocyard\.yml\z/) do |modified, added, removed|
+        handle_changes(modified + added + removed)
+      end
+      @config_listener.start
     end
 
     def stop
-      @listener&.stop
-    rescue StandardError => e
-      Docyard.logger.error "Error stopping file watcher: #{e.class} - #{e.message}"
-    end
-
-    def changed_since?(timestamp)
-      @last_modified_time > timestamp
+      @docs_listener&.stop
+      @config_listener&.stop
+      @debounce_timer&.kill
     end
 
     private
 
-    def handle_changes(modified, added, removed)
-      return if modified.empty? && added.empty? && removed.empty?
+    def handle_changes(paths)
+      return if paths.empty?
 
-      @last_modified_time = Time.now
-      Docyard.logger.info "Files changed, triggering reload..."
+      @mutex.synchronize do
+        paths.each { |path| categorize_change(path) }
+        schedule_notification
+      end
+    end
+
+    def categorize_change(path)
+      filename = File.basename(path)
+
+      if CONFIG_FILES.include?(filename)
+        @pending_changes[:config] = true
+      elsif CONTENT_EXTENSIONS.include?(File.extname(path))
+        @pending_changes[:content] = true
+      elsif ASSET_EXTENSIONS.include?(File.extname(path))
+        @pending_changes[:asset] = true
+      end
+    end
+
+    def schedule_notification
+      @debounce_timer&.kill
+      @debounce_timer = Thread.new do
+        sleep DEBOUNCE_DELAY
+        send_notification
+      end
+    end
+
+    def send_notification
+      changes = nil
+      @mutex.synchronize do
+        changes = @pending_changes.dup
+        @pending_changes = { content: false, config: false, asset: false }
+      end
+
+      change_type = determine_change_type(changes)
+      @on_change.call(change_type) if change_type
+    end
+
+    def determine_change_type(changes)
+      return :full if changes[:config]
+      return :content if changes[:content]
+      return :asset if changes[:asset]
+
+      nil
     end
   end
 end

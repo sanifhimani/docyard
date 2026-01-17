@@ -4,4 +4,7 @@
 
 <script src="/_docyard/js/theme.js" defer></script>
 <script src="/_docyard/js/components.js" defer></script>
-<script src="/_docyard/js/reload.js" defer></script>
+<% if @dev_mode %>
+<script>window.__DOCYARD_SSE_PORT__ = <%= @sse_port %>;</script>
+<script src="/_docyard/js/hot-reload.js" defer></script>
+<% end %>

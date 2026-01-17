@@ -224,12 +224,11 @@ Clean separation of concerns:
 lib/docyard/
   cli.rb              # Command-line interface (Thor)
   initializer.rb      # Project scaffolding (init command)
-  server.rb           # Server lifecycle (WEBrick, signals)
+  server.rb           # Server lifecycle (Puma, signals)
   rack_application.rb # HTTP request handling (routing, rendering)
   router.rb           # URL → file path mapping
   renderer.rb         # Markdown → HTML conversion
   markdown.rb         # Markdown parsing & frontmatter extraction
-  file_watcher.rb     # Live reload file monitoring
   asset_handler.rb    # Static asset serving
 ```
 

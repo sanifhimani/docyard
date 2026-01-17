@@ -17,11 +17,13 @@ module Docyard
     PARTIALS_PATH = File.join(__dir__, "../templates", "partials")
     DEFAULT_LAYOUT = "default"
 
-    attr_reader :base_url, :config
+    attr_reader :base_url, :config, :dev_mode, :sse_port
 
-    def initialize(base_url: "/", config: nil)
+    def initialize(base_url: "/", config: nil, dev_mode: false, sse_port: nil)
       @base_url = normalize_base_url(base_url)
       @config = config
+      @dev_mode = dev_mode
+      @sse_port = sse_port
     end
 
     def render_file(file_path, sidebar_html: "", prev_next_html: "", breadcrumbs: nil, branding: {},

@@ -7,7 +7,6 @@ module Docyard
     CONTENT_TYPE_CSS = "text/css; charset=utf-8"
     CONTENT_TYPE_JS = "application/javascript; charset=utf-8"
 
-    RELOAD_ENDPOINT = "/_docyard/reload"
     DOCYARD_ASSETS_PREFIX = "/_docyard/"
     PAGEFIND_PREFIX = "/pagefind/"
     PUBLIC_DIR = "docs/public"

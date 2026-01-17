@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
-require "webrick"
-require "stringio"
-require_relative "file_watcher"
+require "puma"
+require "puma/configuration"
+require "puma/launcher"
+require "puma/log_writer"
 require_relative "rack_application"
+require_relative "sse_server"
+require_relative "file_watcher"
 require_relative "../config"
 
 module Docyard
@@ -19,22 +22,19 @@ module Docyard
       @docs_path = docs_path
       @search_enabled = search
       @config = Config.load
-      @file_watcher = FileWatcher.new(File.expand_path(docs_path))
       @search_indexer = nil
-      @app = nil
+      @sse_server = nil
+      @file_watcher = nil
+      @launcher = nil
     end
 
     def start
       validate_docs_directory!
       generate_search_index if @search_enabled
-      initialize_app
+      setup_hot_reload
       print_server_info
-      @file_watcher.start
-
-      http_server.mount_proc("/") { |req, res| handle_request(req, res) }
-      trap("INT") { shutdown_server }
-
-      http_server.start
+      run_server
+    ensure
       cleanup
     end
 
@@ -48,17 +48,39 @@ module Docyard
       @search_indexer.generate
     end
 
-    def initialize_app
-      @app = RackApplication.new(
-        docs_path: File.expand_path(docs_path),
-        file_watcher: @file_watcher,
-        config: @config,
-        pagefind_path: @search_indexer&.pagefind_path
+    def setup_hot_reload
+      @sse_server = SSEServer.new(port: sse_port)
+      @sse_server.start
+
+      @file_watcher = FileWatcher.new(
+        docs_path: docs_path,
+        on_change: ->(change_type) { handle_file_change(change_type) }
       )
+      @file_watcher.start
+    end
+
+    def sse_port
+      port + 1
+    end
+
+    def handle_file_change(change_type)
+      log_file_change(change_type)
+      @sse_server.broadcast("reload", { type: change_type.to_s })
+    end
+
+    def log_file_change(change_type)
+      message = case change_type
+                when :content then "Content changed, reloading..."
+                when :config then "Config changed, full reload..."
+                when :asset then "Asset changed, reloading..."
+                else "File changed, reloading..."
+                end
+      puts "* #{message}"
     end
 
     def cleanup
-      @file_watcher.stop
+      @file_watcher&.stop
+      @sse_server&.stop
       @search_indexer&.cleanup
     end
 
@@ -71,47 +93,42 @@ module Docyard
 
     def print_server_info
       puts "Starting Docyard server..."
-      puts "=> Serving docs from: #{docs_path}/"
-      puts "=> Running at: http://#{host}:#{port}"
-      puts "=> Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}"
-      puts "=> Press Ctrl+C to stop\n"
+      puts "* Version: #{Docyard::VERSION}"
+      puts "* Running at: http://#{host}:#{port}"
+      puts "* Hot reload: ws://127.0.0.1:#{sse_port}"
+      puts "* Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}"
+      puts "Use Ctrl+C to stop\n"
     end
 
-    def shutdown_server
-      puts "\nShutting down server..."
-      http_server.shutdown
+    def run_server
+      app = build_rack_app
+      puma_config = build_puma_config(app)
+      log_writer = Puma::LogWriter.strings
+
+      @launcher = Puma::Launcher.new(puma_config, log_writer: log_writer)
+      @launcher.run
     end
 
-    def http_server
-      @http_server ||= WEBrick::HTTPServer.new(
-        Port: port,
-        BindAddress: host,
-        AccessLog: [],
-        Logger: WEBrick::Log.new(File::NULL)
+    def build_rack_app
+      RackApplication.new(
+        docs_path: File.expand_path(docs_path),
+        config: @config,
+        pagefind_path: @search_indexer&.pagefind_path,
+        sse_port: sse_port
       )
     end
 
-    def handle_request(req, res)
-      env = build_rack_env(req)
-      status, headers, body = @app.call(env)
+    def build_puma_config(app)
+      server_host = host
+      server_port = port
 
-      res.status = status
-      headers.each { |key, value| res[key] = value }
-      body.each { |chunk| res.body << chunk }
-    end
-
-    def build_rack_env(req)
-      {
-        "REQUEST_METHOD" => req.request_method,
-        "PATH_INFO" => req.path,
-        "QUERY_STRING" => req.query_string || "",
-        "SERVER_NAME" => req.host,
-        "SERVER_PORT" => req.port.to_s,
-        "rack.version" => Rack::VERSION,
-        "rack.url_scheme" => "http",
-        "rack.input" => StringIO.new,
-        "rack.errors" => $stderr
-      }
+      Puma::Configuration.new do |config|
+        config.bind "tcp://#{server_host}:#{server_port}"
+        config.app app
+        config.workers 0
+        config.threads 4, 8
+        config.quiet
+      end
     end
   end
 end
