@@ -17,7 +17,7 @@ module Docyard
       end
 
       def build_pagefind_args(site_dir)
-        args = ["pagefind", "--site", site_dir]
+        args = ["pagefind", "--site", site_dir, "--output-subdir", "_docyard/pagefind"]
 
         exclusions = config.search.exclude || []
         exclusions.each do |pattern|
