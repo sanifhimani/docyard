@@ -21,6 +21,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
   describe "#generate" do
     context "with simple markdown files" do
       before do
+        config.data["sidebar"] = "auto"
         File.write(File.join(docs_dir, "index.md"), "---\ntitle: Home\n---\n# Home\n\nWelcome to the docs!")
         File.write(File.join(docs_dir, "intro.md"), "---\ntitle: Introduction\n---\n# Intro")
         File.write(File.join(docs_dir, "guide.md"), "---\ntitle: Guide\n---\n# Guide\n\nHow to use it")
@@ -79,6 +80,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
 
     context "with nested directory structure" do
       before do
+        config.data["sidebar"] = "auto"
         FileUtils.mkdir_p(File.join(docs_dir, "getting-started"))
         File.write(File.join(docs_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
         File.write(File.join(docs_dir, "getting-started", "intro.md"), "---\ntitle: Intro\n---\n# Intro")
@@ -309,6 +311,16 @@ RSpec.describe Docyard::Build::StaticGenerator do
         File.write(File.join(docs_dir, "guide", "index.md"), "---\ntitle: Guide\n---\n# Guide")
         File.write(File.join(docs_dir, "guide", "setup.md"), "---\ntitle: Setup\n---\n# Setup")
         File.write(File.join(docs_dir, "api", "index.md"), "---\ntitle: API\n---\n# API")
+
+        File.write(File.join(docs_dir, "_sidebar.yml"), <<~YAML)
+          - guide:
+              items:
+                - index: { text: Guide }
+                - setup: { text: Setup }
+          - api:
+              items:
+                - index: { text: API }
+        YAML
       end
 
       it "renders tab navigation in generated HTML" do

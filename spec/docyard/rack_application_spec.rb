@@ -46,11 +46,13 @@ RSpec.describe Docyard::RackApplication do
 
       it "includes prev/next navigation when multiple pages exist", :aggregate_failures do
         Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "docyard.yml"), "sidebar: auto")
           File.write(File.join(temp_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
           File.write(File.join(temp_dir, "intro.md"), "---\ntitle: Introduction\n---\n# Intro")
           File.write(File.join(temp_dir, "guide.md"), "---\ntitle: Guide\n---\n# Guide")
 
-          temp_app = described_class.new(docs_path: temp_dir)
+          config = Docyard::Config.load(temp_dir)
+          temp_app = described_class.new(docs_path: temp_dir, config: config)
           env = { "PATH_INFO" => "/intro", "QUERY_STRING" => "" }
 
           _status, _headers, body = temp_app.call(env)
@@ -63,11 +65,13 @@ RSpec.describe Docyard::RackApplication do
 
       it "marks current page as active in sidebar", :aggregate_failures do
         Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "docyard.yml"), "sidebar: auto")
           File.write(File.join(temp_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
           File.write(File.join(temp_dir, "intro.md"), "---\ntitle: Introduction\n---\n# Intro")
           File.write(File.join(temp_dir, "guide.md"), "---\ntitle: Guide\n---\n# Guide")
 
-          temp_app = described_class.new(docs_path: temp_dir)
+          config = Docyard::Config.load(temp_dir)
+          temp_app = described_class.new(docs_path: temp_dir, config: config)
           env = { "PATH_INFO" => "/guide", "QUERY_STRING" => "" }
 
           _status, _headers, body = temp_app.call(env)
@@ -187,6 +191,16 @@ RSpec.describe Docyard::RackApplication do
         File.write(File.join(tab_temp_dir, "guide", "index.md"), "---\ntitle: Guide\n---\n# Guide")
         File.write(File.join(tab_temp_dir, "guide", "setup.md"), "---\ntitle: Setup\n---\n# Setup")
         File.write(File.join(tab_temp_dir, "api", "index.md"), "---\ntitle: API\n---\n# API")
+
+        File.write(File.join(tab_temp_dir, "_sidebar.yml"), <<~YAML)
+          - guide:
+              items:
+                - index: { text: Guide }
+                - setup: { text: Setup }
+          - api:
+              items:
+                - index: { text: API }
+        YAML
       end
 
       after { FileUtils.rm_rf(tab_temp_dir) }
