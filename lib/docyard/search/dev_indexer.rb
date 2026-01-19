@@ -26,7 +26,7 @@ module Docyard
         @temp_dir = Dir.mktmpdir("docyard-search-")
         generate_html_files
         page_count = run_pagefind
-        @pagefind_path = File.join(temp_dir, "pagefind")
+        @pagefind_path = File.join(temp_dir, "_docyard", "pagefind")
 
         log_success(page_count)
         pagefind_path
