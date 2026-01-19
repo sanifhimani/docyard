@@ -13,11 +13,12 @@ require_relative "pagefind_handler"
 
 module Docyard
   class RackApplication
-    def initialize(docs_path:, config: nil, pagefind_path: nil, sse_port: nil)
+    def initialize(docs_path:, config: nil, pagefind_path: nil, sse_port: nil, sidebar_cache: nil)
       @docs_path = docs_path
       @config = config
       @sse_port = sse_port
       @dev_mode = !sse_port.nil?
+      @sidebar_cache = sidebar_cache
       @router = Router.new(docs_path: docs_path)
       @renderer = Renderer.new(base_url: config&.build&.base || "/", config: config, dev_mode: @dev_mode,
                                sse_port: sse_port)
@@ -127,7 +128,8 @@ module Docyard
         docs_path: docs_path,
         current_path: current_path,
         config: config,
-        header_ctas: header_ctas
+        header_ctas: header_ctas,
+        sidebar_cache: @sidebar_cache
       )
     end
 
