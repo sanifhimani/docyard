@@ -4,19 +4,22 @@ require "tty-progressbar"
 require_relative "../rendering/template_resolver"
 require_relative "../navigation/prev_next_builder"
 require_relative "../navigation/breadcrumb_builder"
+require_relative "../navigation/sidebar/cache"
 
 module Docyard
   module Build
     class StaticGenerator
-      attr_reader :config, :verbose, :renderer
+      attr_reader :config, :verbose, :renderer, :sidebar_cache
 
       def initialize(config, verbose: false)
         @config = config
         @verbose = verbose
         @renderer = Renderer.new(base_url: config.build.base, config: config)
+        @sidebar_cache = nil
       end
 
       def generate
+        build_sidebar_cache
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
@@ -135,12 +138,21 @@ module Docyard
         end
       end
 
+      def build_sidebar_cache
+        @sidebar_cache = Sidebar::Cache.new(
+          docs_path: "docs",
+          config: config
+        )
+        @sidebar_cache.build
+      end
+
       def build_sidebar_instance(current_path, header_ctas = [])
         SidebarBuilder.new(
           docs_path: "docs",
           current_path: current_path,
           config: config,
-          header_ctas: header_ctas
+          header_ctas: header_ctas,
+          sidebar_cache: sidebar_cache
         )
       end
 
