@@ -417,4 +417,81 @@ RSpec.describe Docyard::Renderer do
       end
     end
   end
+
+  describe "#render_for_search" do
+    let(:temp_file) { Tempfile.new(["test", ".md"]) }
+
+    after { temp_file.unlink }
+
+    context "with standard markdown content" do
+      before do
+        temp_file.write("---\ntitle: Search Test\n---\n# Hello\n\nThis is searchable content.")
+        temp_file.rewind
+      end
+
+      it "generates minimal HTML with title and content", :aggregate_failures do
+        html = renderer.render_for_search(temp_file.path)
+
+        expect(html).to include("<!DOCTYPE html>")
+        expect(html).to include("<title>Search Test</title>")
+        expect(html).to include("<h1")
+        expect(html).to include("searchable content")
+      end
+
+      it "wraps content in data-pagefind-body for indexing" do
+        html = renderer.render_for_search(temp_file.path)
+
+        expect(html).to include("<main data-pagefind-body>")
+      end
+
+      it "does not include sidebar, footer, or scripts", :aggregate_failures do
+        html = renderer.render_for_search(temp_file.path)
+
+        expect(html).not_to include("sidebar")
+        expect(html).not_to include("footer")
+        expect(html).not_to include("<script")
+        expect(html).not_to include("stylesheet")
+      end
+    end
+
+    context "with special characters in title" do
+      before do
+        temp_file.write("---\ntitle: Test & \"Quotes\" <Tags>\n---\n# Content")
+        temp_file.rewind
+      end
+
+      it "escapes HTML entities in title" do
+        html = renderer.render_for_search(temp_file.path)
+
+        expect(html).to include("<title>Test &amp; &quot;Quotes&quot; &lt;Tags&gt;</title>")
+      end
+    end
+
+    context "with markdown links" do
+      before do
+        temp_file.write("---\ntitle: Links\n---\n# Page\n\n[Link](page.md)")
+        temp_file.rewind
+      end
+
+      it "strips .md extensions from links", :aggregate_failures do
+        html = renderer.render_for_search(temp_file.path)
+
+        expect(html).to include('href="page"')
+        expect(html).not_to include(".md")
+      end
+    end
+
+    context "without frontmatter title" do
+      before do
+        temp_file.write("# Just Content\n\nNo frontmatter here.")
+        temp_file.rewind
+      end
+
+      it "uses default title" do
+        html = renderer.render_for_search(temp_file.path)
+
+        expect(html).to include("<title>Documentation</title>")
+      end
+    end
+  end
 end

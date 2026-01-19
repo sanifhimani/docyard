@@ -3,12 +3,15 @@
 require "fileutils"
 require "tmpdir"
 require "open3"
+require "parallel"
 require "tty-progressbar"
 
 module Docyard
   module Search
     class DevIndexer
       include PagefindSupport
+
+      PARALLEL_THRESHOLD = 10
 
       attr_reader :docs_path, :config, :temp_dir, :pagefind_path
 
@@ -54,18 +57,39 @@ module Docyard
         markdown_files = Dir.glob(File.join(docs_path, "**", "*.md"))
         markdown_files = filter_excluded_files(markdown_files)
         markdown_files = filter_non_indexable_files(markdown_files)
-        renderer = Renderer.new(base_url: "/", config: config)
 
         progress = TTY::ProgressBar.new(
           "Indexing search [:bar] :current/:total (:percent)",
           total: markdown_files.size,
           width: 50
         )
+        mutex = Mutex.new
 
+        if markdown_files.size >= PARALLEL_THRESHOLD
+          generate_files_in_parallel(markdown_files, progress, mutex)
+        else
+          generate_files_sequentially(markdown_files, progress)
+        end
+      end
+
+      def generate_files_in_parallel(markdown_files, progress, mutex)
+        Parallel.each(markdown_files, in_threads: Parallel.processor_count) do |file_path|
+          renderer = thread_local_renderer
+          generate_html_file(file_path, renderer)
+          mutex.synchronize { progress.advance }
+        end
+      end
+
+      def generate_files_sequentially(markdown_files, progress)
+        renderer = Renderer.new(base_url: "/", config: config)
         markdown_files.each do |file_path|
           generate_html_file(file_path, renderer)
           progress.advance
         end
+      end
+
+      def thread_local_renderer
+        Thread.current[:docyard_search_renderer] ||= Renderer.new(base_url: "/", config: config)
       end
 
       def filter_excluded_files(files)
@@ -111,7 +135,7 @@ module Docyard
         relative_path = markdown_file.delete_prefix("#{docs_path}/")
         output_path = determine_output_path(relative_path)
 
-        html = renderer.render_file(markdown_file, branding: branding_options)
+        html = renderer.render_for_search(markdown_file)
 
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, html)
@@ -126,10 +150,6 @@ module Docyard
         else
           File.join(temp_dir, dir_name, base_name, "index.html")
         end
-      end
-
-      def branding_options
-        BrandingResolver.new(config).resolve
       end
 
       def run_pagefind
