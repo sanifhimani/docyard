@@ -8,6 +8,7 @@ require_relative "rack_application"
 require_relative "sse_server"
 require_relative "file_watcher"
 require_relative "../config"
+require_relative "../navigation/sidebar/cache"
 
 module Docyard
   class Server
@@ -26,10 +27,12 @@ module Docyard
       @sse_server = nil
       @file_watcher = nil
       @launcher = nil
+      @sidebar_cache = nil
     end
 
     def start
       validate_docs_directory!
+      build_sidebar_cache
       generate_search_index if @search_enabled
       setup_hot_reload
       print_server_info
@@ -39,6 +42,14 @@ module Docyard
     end
 
     private
+
+    def build_sidebar_cache
+      @sidebar_cache = Sidebar::Cache.new(
+        docs_path: File.expand_path(docs_path),
+        config: @config
+      )
+      @sidebar_cache.build
+    end
 
     def generate_search_index
       @search_indexer = Search::DevIndexer.new(
@@ -64,8 +75,14 @@ module Docyard
     end
 
     def handle_file_change(change_type)
+      invalidate_sidebar_cache if change_type == :full
       log_file_change(change_type)
       @sse_server.broadcast("reload", { type: change_type.to_s })
+    end
+
+    def invalidate_sidebar_cache
+      @sidebar_cache&.invalidate
+      @sidebar_cache&.build
     end
 
     def log_file_change(change_type)
@@ -114,7 +131,8 @@ module Docyard
         docs_path: File.expand_path(docs_path),
         config: @config,
         pagefind_path: @search_indexer&.pagefind_path,
-        sse_port: sse_port
+        sse_port: sse_port,
+        sidebar_cache: @sidebar_cache
       )
     end
 
