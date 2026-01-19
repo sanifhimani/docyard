@@ -8,7 +8,7 @@ module Docyard
     CONTENT_TYPE_JS = "application/javascript; charset=utf-8"
 
     DOCYARD_ASSETS_PREFIX = "/_docyard/"
-    PAGEFIND_PREFIX = "/pagefind/"
+    PAGEFIND_PREFIX = "/_docyard/pagefind/"
     PUBLIC_DIR = "docs/public"
 
     INDEX_FILE = "index"
