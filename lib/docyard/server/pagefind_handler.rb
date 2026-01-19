@@ -31,7 +31,7 @@ module Docyard
       return File.join(pagefind_path, relative_path) if pagefind_path && Dir.exist?(pagefind_path)
 
       output_dir = config&.build&.output_dir || "dist"
-      File.join(output_dir, "pagefind", relative_path)
+      File.join(output_dir, "_docyard", "pagefind", relative_path)
     end
 
     def serve_file(file_path)

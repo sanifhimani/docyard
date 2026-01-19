@@ -5,12 +5,15 @@ require_relative "../config/constants"
 require_relative "../utils/git_info"
 require_relative "icon_helpers"
 require_relative "og_helpers"
+require_relative "branding_variables"
 
 module Docyard
   class Renderer
     include Utils::UrlHelpers
+    include Utils::HtmlHelpers
     include IconHelpers
     include OgHelpers
+    include BrandingVariables
 
     LAYOUTS_PATH = File.join(__dir__, "../templates", "layouts")
     ERRORS_PATH = File.join(__dir__, "../templates", "errors")
@@ -41,6 +44,20 @@ module Docyard
         current_path: current_path,
         file_path: file_path
       )
+    end
+
+    def render_for_search(file_path)
+      markdown = Markdown.new(File.read(file_path), config: config, file_path: file_path)
+      title = markdown.title || Constants::DEFAULT_SITE_TITLE
+      content = strip_md_from_links(markdown.html)
+
+      <<~HTML
+        <!DOCTYPE html>
+        <html>
+        <head><title>#{escape_html(title)}</title></head>
+        <body><main data-pagefind-body>#{content}</main></body>
+        </html>
+      HTML
     end
 
     def build_navigation(sidebar_html, prev_next_html, toc, breadcrumbs)
@@ -102,63 +119,6 @@ module Docyard
       @prev_next_html = navigation[:prev_next_html] || ""
       @toc = navigation[:toc] || []
       @breadcrumbs = navigation[:breadcrumbs]
-    end
-
-    def assign_branding_variables(branding, current_path = "/")
-      assign_site_branding(branding)
-      assign_search_options(branding)
-      assign_credits_and_social(branding)
-      assign_tabs(branding, current_path)
-      assign_analytics(branding)
-    end
-
-    def assign_site_branding(branding)
-      @site_title = branding[:site_title] || Constants::DEFAULT_SITE_TITLE
-      @site_description = branding[:site_description] || ""
-      @logo = branding[:logo] || Constants::DEFAULT_LOGO_PATH
-      @logo_dark = branding[:logo_dark]
-      @favicon = branding[:favicon] || Constants::DEFAULT_FAVICON_PATH
-      @has_custom_logo = branding[:has_custom_logo] || false
-    end
-
-    def assign_search_options(branding)
-      @search_enabled = branding[:search_enabled].nil? || branding[:search_enabled]
-      @search_placeholder = branding[:search_placeholder] || "Search documentation..."
-    end
-
-    def assign_credits_and_social(branding)
-      @credits = branding[:credits] != false
-      @copyright = branding[:copyright]
-      @social = branding[:social] || []
-      @header_ctas = branding[:header_ctas] || []
-      @announcement = branding[:announcement]
-    end
-
-    def assign_analytics(branding)
-      @has_analytics = branding[:has_analytics] || false
-      @analytics_google = branding[:analytics_google]
-      @analytics_plausible = branding[:analytics_plausible]
-      @analytics_fathom = branding[:analytics_fathom]
-      @analytics_script = branding[:analytics_script]
-    end
-
-    def assign_tabs(branding, current_path)
-      tabs = branding[:tabs] || []
-      @tabs = tabs.map { |tab| tab.merge(active: tab_active?(tab[:href], current_path)) }
-      @has_tabs = branding[:has_tabs] || false
-      @current_path = current_path
-    end
-
-    def tab_active?(tab_href, current_path)
-      return false if tab_href.nil? || current_path.nil?
-      return false if tab_href.start_with?("http://", "https://")
-
-      normalized_tab = tab_href.chomp("/")
-      normalized_current = current_path.chomp("/")
-
-      return true if normalized_tab == normalized_current
-
-      current_path.start_with?("#{normalized_tab}/")
     end
 
     def assign_template_variables(template_options)

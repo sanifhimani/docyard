@@ -3,6 +3,14 @@
 module Docyard
   module Utils
     module HtmlHelpers
+      def escape_html(text)
+        text.to_s
+          .gsub("&", "&amp;")
+          .gsub("<", "&lt;")
+          .gsub(">", "&gt;")
+          .gsub('"', "&quot;")
+      end
+
       def escape_html_attribute(text)
         text.gsub('"', "&quot;")
           .gsub("'", "&#39;")

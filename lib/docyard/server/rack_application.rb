@@ -37,8 +37,8 @@ module Docyard
     def handle_request(env)
       path = env["PATH_INFO"]
 
-      return asset_handler.serve_docyard_assets(path) if path.start_with?(Constants::DOCYARD_ASSETS_PREFIX)
       return pagefind_handler.serve(path) if path.start_with?(Constants::PAGEFIND_PREFIX)
+      return asset_handler.serve_docyard_assets(path) if path.start_with?(Constants::DOCYARD_ASSETS_PREFIX)
 
       public_response = asset_handler.serve_public_file(path)
       return public_response if public_response
