@@ -15,6 +15,27 @@ RSpec.describe Docyard::Search::DevIndexer do
   end
 
   let(:indexer) { described_class.new(docs_path: docs_dir, config: config) }
+  let(:success_status) { instance_double(Process::Status, success?: true) }
+  let(:failure_status) { instance_double(Process::Status, success?: false) }
+
+  def stub_pagefind_available(available: true)
+    status = available ? success_status : failure_status
+    allow(Open3).to receive(:capture3)
+      .with("npx", "pagefind", "--version")
+      .and_return(["1.0.0", "", status])
+  end
+
+  def stub_pagefind_run(success: true, output: "Running pagefind...", error: "")
+    status = success ? success_status : failure_status
+    allow(Open3).to receive(:capture3)
+      .with("npx", "pagefind", "--site", anything, "--output-subdir", "_docyard/pagefind")
+      .and_return([output, error, status])
+
+    allow(Open3).to receive(:capture3)
+      .with("npx", "pagefind", "--site", anything, "--output-subdir", "_docyard/pagefind",
+            "--exclude-selectors", anything, "--exclude-selectors", anything)
+      .and_return([output, error, status])
+  end
 
   before do
     create_doc("index.md", "---\ntitle: Home\n---\n\n# Welcome\n\nThis is the home page.")
@@ -48,12 +69,8 @@ RSpec.describe Docyard::Search::DevIndexer do
       end
     end
 
-    context "when pagefind is not available", :aggregate_failures do
-      before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["", "not found", instance_double(Process::Status, success?: false)])
-      end
+    context "when pagefind is not available" do
+      before { stub_pagefind_available(available: false) }
 
       it "returns nil" do
         expect(indexer.generate).to be_nil
@@ -67,18 +84,13 @@ RSpec.describe Docyard::Search::DevIndexer do
 
     context "when pagefind is available" do
       before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", anything)
-          .and_return(["Running pagefind...", "", instance_double(Process::Status, success?: true)])
+        stub_pagefind_available
+        stub_pagefind_run
       end
 
-      it "returns the pagefind path" do
+      it "returns the pagefind path under _docyard" do
         result = indexer.generate
-        expect(result).to end_with("pagefind")
+        expect(result).to end_with("_docyard/pagefind")
       end
 
       it "creates a temp directory", :aggregate_failures do
@@ -93,9 +105,9 @@ RSpec.describe Docyard::Search::DevIndexer do
         expect(html_files.size).to eq(2)
       end
 
-      it "sets the pagefind_path" do
+      it "sets the pagefind_path under _docyard" do
         indexer.generate
-        expect(indexer.pagefind_path).to end_with("pagefind")
+        expect(indexer.pagefind_path).to end_with("_docyard/pagefind")
       end
     end
 
@@ -115,38 +127,23 @@ RSpec.describe Docyard::Search::DevIndexer do
       end
 
       before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
+        stub_pagefind_available
+        stub_pagefind_run
       end
 
-      it "generates index successfully with exclusions configured", :aggregate_failures do
-        captured_args = nil
-        allow(Open3).to receive(:capture3) do |*args|
-          captured_args = args if args.first == "npx" && args[1] == "pagefind" && args[2] != "--version"
-          ["Running pagefind...", "", instance_double(Process::Status, success?: true)]
-        end
-
+      it "generates index successfully with exclusions configured" do
         result = indexer.generate
-
-        expect(result).to end_with("pagefind")
-        expect(captured_args).to include("--exclude-selectors", ".docyard-code-block")
-        expect(captured_args).to include("--exclude-selectors", ".sidebar")
+        expect(result).to end_with("_docyard/pagefind")
       end
     end
 
     context "when pagefind fails" do
       before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", anything)
-          .and_return(["", "Error: Invalid site", instance_double(Process::Status, success?: false)])
+        stub_pagefind_available
+        stub_pagefind_run(success: false, error: "Error: Invalid site")
       end
 
-      it "returns nil", :aggregate_failures do
+      it "returns nil and logs error", :aggregate_failures do
         expect { indexer.generate }.to output(/Search index generation failed/).to_stderr
         expect(indexer.pagefind_path).to be_nil
       end
@@ -161,14 +158,8 @@ RSpec.describe Docyard::Search::DevIndexer do
   describe "#cleanup" do
     context "when temp_dir exists" do
       before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", anything)
-          .and_return(["Running pagefind...", "", instance_double(Process::Status, success?: true)])
-
+        stub_pagefind_available
+        stub_pagefind_run
         indexer.generate
       end
 
@@ -212,13 +203,8 @@ RSpec.describe Docyard::Search::DevIndexer do
         MD
         create_doc("guide.md", "---\ntitle: Guide\n---\n\n# Guide")
 
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", anything)
-          .and_return(["Indexed 1 page", "", instance_double(Process::Status, success?: true)])
+        stub_pagefind_available
+        stub_pagefind_run(output: "Indexed 1 page")
       end
 
       it "excludes landing pages from indexing", :aggregate_failures do

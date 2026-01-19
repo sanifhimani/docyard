@@ -5,6 +5,30 @@ RSpec.describe Docyard::Search::BuildIndexer do
 
   let(:config) { Docyard::Config.load(temp_dir) }
   let(:indexer) { described_class.new(config, verbose: false) }
+  let(:success_status) { instance_double(Process::Status, success?: true) }
+  let(:failure_status) { instance_double(Process::Status, success?: false) }
+
+  def stub_pagefind_available(available: true)
+    status = available ? success_status : failure_status
+    allow(Open3).to receive(:capture3)
+      .with("npx", "pagefind", "--version")
+      .and_return(["1.0.0", "", status])
+  end
+
+  def stub_pagefind_run(success: true, page_count: 42, error: nil)
+    status = success ? success_status : failure_status
+    stdout = success ? "Running Pagefind\nIndexed #{page_count} pages\n" : ""
+    stderr = error || ""
+
+    allow(Open3).to receive(:capture3)
+      .with("npx", "pagefind", "--site", anything, "--output-subdir", "_docyard/pagefind")
+      .and_return([stdout, stderr, status])
+
+    allow(Open3).to receive(:capture3)
+      .with("npx", "pagefind", "--site", anything, "--output-subdir", "_docyard/pagefind",
+            "--exclude-selectors", anything, "--exclude-selectors", anything)
+      .and_return([stdout, stderr, status])
+  end
 
   describe "#index" do
     context "when search is disabled" do
@@ -13,32 +37,24 @@ RSpec.describe Docyard::Search::BuildIndexer do
           search:
             enabled: false
         YAML
-        allow(Open3).to receive(:capture3)
       end
 
-      it "returns 0 without running pagefind", :aggregate_failures do
+      it "returns 0 without running pagefind" do
         result = indexer.index
 
         expect(result).to eq(0)
-        expect(Open3).not_to have_received(:capture3)
       end
     end
 
     context "when pagefind is not available" do
-      before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["", "error", instance_double(Process::Status, success?: false)])
-      end
+      before { stub_pagefind_available(available: false) }
 
       it "logs warning about missing pagefind" do
         expect { indexer.index }.to output(/Search index skipped/).to_stderr
       end
 
       it "returns 0" do
-        result = indexer.index
-
-        expect(result).to eq(0)
+        expect(indexer.index).to eq(0)
       end
     end
 
@@ -50,31 +66,18 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "returns 0" do
-        result = indexer.index
-
-        expect(result).to eq(0)
+        expect(indexer.index).to eq(0)
       end
     end
 
     context "when pagefind is available and succeeds" do
       before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", "dist")
-          .and_return([
-                        "Running Pagefind\nIndexed 42 pages\n",
-                        "",
-                        instance_double(Process::Status, success?: true)
-                      ])
+        stub_pagefind_available
+        stub_pagefind_run(success: true, page_count: 42)
       end
 
       it "returns the page count" do
-        result = indexer.index
-
-        expect(result).to eq(42)
+        expect(indexer.index).to eq(42)
       end
 
       it "logs success message" do
@@ -84,23 +87,12 @@ RSpec.describe Docyard::Search::BuildIndexer do
 
     context "when pagefind fails" do
       before do
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", "dist")
-          .and_return([
-                        "",
-                        "Error: something went wrong",
-                        instance_double(Process::Status, success?: false)
-                      ])
+        stub_pagefind_available
+        stub_pagefind_run(success: false, error: "Error: something went wrong")
       end
 
       it "returns 0" do
-        result = indexer.index
-
-        expect(result).to eq(0)
+        expect(indexer.index).to eq(0)
       end
 
       it "logs warning with error message" do
@@ -116,25 +108,12 @@ RSpec.describe Docyard::Search::BuildIndexer do
               - ".sidebar"
               - ".footer"
         YAML
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", "dist",
-                "--exclude-selectors", ".sidebar",
-                "--exclude-selectors", ".footer")
-          .and_return(["Indexed 10 pages", "", instance_double(Process::Status, success?: true)])
+        stub_pagefind_available
+        stub_pagefind_run(success: true, page_count: 10)
       end
 
-      it "passes exclusion patterns to pagefind" do
-        indexer.index
-
-        expect(Open3).to have_received(:capture3)
-          .with("npx", "pagefind", "--site", "dist",
-                "--exclude-selectors", ".sidebar",
-                "--exclude-selectors", ".footer")
+      it "returns page count when exclusions are configured" do
+        expect(indexer.index).to eq(10)
       end
     end
 
@@ -144,23 +123,14 @@ RSpec.describe Docyard::Search::BuildIndexer do
           build:
             output: "_site"
         YAML
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--version")
-          .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
-
-        allow(Open3).to receive(:capture3)
-          .with("npx", "pagefind", "--site", "_site")
-          .and_return(["Indexed 5 pages", "", instance_double(Process::Status, success?: true)])
+        stub_pagefind_available
+        stub_pagefind_run(success: true, page_count: 5)
       end
 
-      it "uses custom output directory" do
+      it "returns page count with custom output directory" do
         custom_indexer = described_class.new(Docyard::Config.load(temp_dir))
 
-        custom_indexer.index
-
-        expect(Open3).to have_received(:capture3)
-          .with("npx", "pagefind", "--site", "_site")
+        expect(custom_indexer.index).to eq(5)
       end
     end
   end

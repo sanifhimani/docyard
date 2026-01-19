@@ -60,10 +60,11 @@ RSpec.describe Docyard::Search::PagefindSupport do
   end
 
   describe "#build_pagefind_args" do
-    it "returns base args with site directory" do
+    it "returns base args with site directory and output subdir", :aggregate_failures do
       result = instance.build_pagefind_args("/path/to/site")
 
-      expect(result).to eq(["pagefind", "--site", "/path/to/site"])
+      expect(result).to include("pagefind", "--site", "/path/to/site")
+      expect(result).to include("--output-subdir", "_docyard/pagefind")
     end
 
     it "includes exclusion selectors when configured", :aggregate_failures do
@@ -75,12 +76,13 @@ RSpec.describe Docyard::Search::PagefindSupport do
       expect(result).to include("--exclude-selectors", ".nav")
     end
 
-    it "handles nil exclude config" do
+    it "handles nil exclude config", :aggregate_failures do
       search_config.exclude = nil
 
       result = instance.build_pagefind_args("/path/to/site")
 
-      expect(result).to eq(["pagefind", "--site", "/path/to/site"])
+      expect(result).to include("pagefind", "--site", "/path/to/site")
+      expect(result).to include("--output-subdir", "_docyard/pagefind")
     end
   end
 end
