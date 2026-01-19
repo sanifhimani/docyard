@@ -3,50 +3,29 @@
 require "yaml"
 require_relative "config/validator"
 require_relative "config/constants"
+require_relative "config/hash_utils"
 
 module Docyard
   class Config
+    SIDEBAR_MODES = %w[config auto distributed].freeze
+
     DEFAULT_CONFIG = {
       "title" => Constants::DEFAULT_SITE_TITLE,
       "description" => "",
       "url" => nil,
       "og_image" => nil,
       "twitter" => nil,
-      "branding" => {
-        "logo" => nil,
-        "favicon" => nil,
-        "credits" => true,
-        "copyright" => nil
-      },
+      "branding" => { "logo" => nil, "favicon" => nil, "credits" => true, "copyright" => nil },
       "socials" => {},
       "tabs" => [],
-      "build" => {
-        "output" => "dist",
-        "base" => "/"
-      },
-      "search" => {
-        "enabled" => true,
-        "placeholder" => "Search...",
-        "exclude" => []
-      },
-      "navigation" => {
-        "cta" => [],
-        "breadcrumbs" => true
-      },
+      "sidebar" => "config",
+      "build" => { "output" => "dist", "base" => "/" },
+      "search" => { "enabled" => true, "placeholder" => "Search...", "exclude" => [] },
+      "navigation" => { "cta" => [], "breadcrumbs" => true },
       "announcement" => nil,
-      "repo" => {
-        "url" => nil,
-        "branch" => "main",
-        "edit_path" => "docs",
-        "edit_link" => true,
-        "last_updated" => true
-      },
-      "analytics" => {
-        "google" => nil,
-        "plausible" => nil,
-        "fathom" => nil,
-        "script" => nil
-      }
+      "repo" => { "url" => nil, "branch" => "main", "edit_path" => "docs", "edit_link" => true,
+                  "last_updated" => true },
+      "analytics" => { "google" => nil, "plausible" => nil, "fathom" => nil, "script" => nil }
     }.freeze
 
     attr_reader :data, :file_path
@@ -66,107 +45,47 @@ module Docyard
       File.exist?(file_path)
     end
 
-    def title
-      data["title"]
-    end
+    def title = data["title"]
+    def description = data["description"]
+    def url = data["url"]
+    def og_image = data["og_image"]
+    def twitter = data["twitter"]
+    def socials = data["socials"]
+    def tabs = data["tabs"]
+    def sidebar = data["sidebar"]
 
-    def description
-      data["description"]
-    end
+    def sidebar_config? = sidebar == "config"
+    def sidebar_auto? = sidebar == "auto"
+    def sidebar_distributed? = sidebar == "distributed"
 
-    def url
-      data["url"]
-    end
-
-    def og_image
-      data["og_image"]
-    end
-
-    def twitter
-      data["twitter"]
-    end
-
-    def branding
-      @branding ||= ConfigSection.new(data["branding"])
-    end
-
-    def socials
-      data["socials"]
-    end
-
-    def tabs
-      data["tabs"]
-    end
-
-    def build
-      @build ||= ConfigSection.new(data["build"])
-    end
-
-    def search
-      @search ||= ConfigSection.new(data["search"])
-    end
-
-    def navigation
-      @navigation ||= ConfigSection.new(data["navigation"])
-    end
+    def branding = @branding ||= ConfigSection.new(data["branding"])
+    def build = @build ||= ConfigSection.new(data["build"])
+    def search = @search ||= ConfigSection.new(data["search"])
+    def navigation = @navigation ||= ConfigSection.new(data["navigation"])
+    def repo = @repo ||= ConfigSection.new(data["repo"])
+    def analytics = @analytics ||= ConfigSection.new(data["analytics"])
 
     def announcement
       @announcement ||= data["announcement"] ? ConfigSection.new(data["announcement"]) : nil
     end
 
-    def repo
-      @repo ||= ConfigSection.new(data["repo"])
-    end
-
-    def analytics
-      @analytics ||= ConfigSection.new(data["analytics"])
-    end
-
     private
 
     def load_config_data
-      if file_exists?
-        load_and_merge_config
-      else
-        deep_dup(DEFAULT_CONFIG)
-      end
+      file_exists? ? load_and_merge_config : HashUtils.deep_dup(DEFAULT_CONFIG)
     end
 
     def load_and_merge_config
       yaml_content = YAML.load_file(file_path)
-      deep_merge(deep_dup(DEFAULT_CONFIG), yaml_content || {})
+      HashUtils.deep_merge(HashUtils.deep_dup(DEFAULT_CONFIG), yaml_content || {})
     rescue Psych::SyntaxError => e
       raise ConfigError, build_yaml_error_message(e)
     rescue StandardError => e
       raise ConfigError, "Error loading docyard.yml: #{e.message}"
     end
 
-    def deep_merge(hash1, hash2)
-      hash1.merge(hash2) do |_key, v1, v2|
-        if v2.nil?
-          v1
-        elsif v1.is_a?(Hash) && v2.is_a?(Hash)
-          deep_merge(v1, v2)
-        else
-          v2
-        end
-      end
-    end
-
-    def deep_dup(hash)
-      hash.transform_values do |value|
-        case value
-        when Hash then deep_dup(value)
-        when Array then value.map { |v| v.is_a?(Hash) ? deep_dup(v) : v }
-        else value
-        end
-      end
-    end
-
     def build_yaml_error_message(error)
-      message = "Invalid YAML in docyard.yml:\n\n"
-      message += "  #{error.message}\n\n"
-      message += "Fix: Check YAML syntax"
+      message = "Invalid YAML in docyard.yml:\n\n  #{error.message}\n\nFix: Check YAML syntax"
       message += " at line #{error.line}" if error.respond_to?(:line)
       message
     end
