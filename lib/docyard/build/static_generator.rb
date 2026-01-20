@@ -1,20 +1,23 @@
 # frozen_string_literal: true
 
+require "parallel"
 require "tty-progressbar"
 require_relative "../rendering/template_resolver"
 require_relative "../navigation/prev_next_builder"
 require_relative "../navigation/breadcrumb_builder"
 require_relative "../navigation/sidebar/cache"
+require_relative "../utils/path_utils"
 
 module Docyard
   module Build
     class StaticGenerator
-      attr_reader :config, :verbose, :renderer, :sidebar_cache
+      PARALLEL_THRESHOLD = 10
+
+      attr_reader :config, :verbose, :sidebar_cache
 
       def initialize(config, verbose: false)
         @config = config
         @verbose = verbose
-        @renderer = Renderer.new(base_url: config.build.base, config: config)
         @sidebar_cache = nil
       end
 
@@ -25,23 +28,28 @@ module Docyard
         markdown_files = collect_markdown_files
         puts "\n[✓] Found #{markdown_files.size} markdown files"
 
-        progress = TTY::ProgressBar.new(
-          "Generating pages [:bar] :current/:total (:percent)",
-          total: markdown_files.size,
-          width: 50
-        )
-
-        markdown_files.each do |file_path|
-          generate_page(file_path)
-          progress.advance
-        end
-
+        generate_all_pages(markdown_files)
         generate_error_page
 
         markdown_files.size
       end
 
       private
+
+      def generate_all_pages(markdown_files)
+        progress = TTY::ProgressBar.new(
+          "Generating pages [:bar] :current/:total (:percent)",
+          total: markdown_files.size,
+          width: 50
+        )
+        mutex = Mutex.new
+
+        if markdown_files.size >= PARALLEL_THRESHOLD
+          generate_pages_in_parallel(markdown_files, progress, mutex)
+        else
+          generate_pages_sequentially(markdown_files, progress)
+        end
+      end
 
       def custom_landing_page?
         File.file?("docs/index.html")
@@ -60,11 +68,35 @@ module Docyard
         files
       end
 
-      def generate_page(markdown_file_path)
-        output_path = determine_output_path(markdown_file_path)
-        current_path = determine_current_path(markdown_file_path)
+      def generate_pages_in_parallel(markdown_files, progress, mutex)
+        Parallel.each(markdown_files, in_threads: Parallel.processor_count) do |file_path|
+          generate_page(file_path, thread_local_renderer)
+          mutex.synchronize { progress.advance }
+        end
+      end
 
-        html_content = render_markdown_file(markdown_file_path, current_path)
+      def generate_pages_sequentially(markdown_files, progress)
+        renderer = build_renderer
+        markdown_files.each do |file_path|
+          generate_page(file_path, renderer)
+          progress.advance
+        end
+      end
+
+      def thread_local_renderer
+        Thread.current[:docyard_build_renderer] ||= build_renderer
+      end
+
+      def build_renderer
+        Renderer.new(base_url: config.build.base, config: config)
+      end
+
+      def generate_page(markdown_file_path, renderer)
+        relative_path = markdown_file_path.delete_prefix("docs/")
+        output_path = Utils::PathUtils.markdown_to_html_output(relative_path, config.build.output)
+        current_path = Utils::PathUtils.markdown_file_to_url(markdown_file_path, "docs")
+
+        html_content = render_markdown_file(markdown_file_path, current_path, renderer)
         html_content = apply_search_exclusion(html_content, current_path)
         write_output(output_path, html_content)
       end
@@ -84,7 +116,7 @@ module Docyard
         end
       end
 
-      def render_markdown_file(markdown_file_path, current_path)
+      def render_markdown_file(markdown_file_path, current_path, renderer)
         markdown = Markdown.new(File.read(markdown_file_path))
         template_resolver = TemplateResolver.new(markdown.frontmatter, config.data)
         branding = branding_options
@@ -110,32 +142,6 @@ module Docyard
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, html_content)
         log "Generated: #{output_path}" if verbose
-      end
-
-      def determine_output_path(markdown_file_path)
-        relative_path = markdown_file_path.delete_prefix("docs/")
-        base_name = File.basename(relative_path, ".md")
-        dir_name = File.dirname(relative_path)
-
-        output_dir = config.build.output
-
-        if base_name == "index"
-          File.join(output_dir, dir_name, "index.html")
-        else
-          File.join(output_dir, dir_name, base_name, "index.html")
-        end
-      end
-
-      def determine_current_path(markdown_file_path)
-        relative_path = markdown_file_path.delete_prefix("docs/")
-        base_name = File.basename(relative_path, ".md")
-        dir_name = File.dirname(relative_path)
-
-        if base_name == "index"
-          dir_name == "." ? "/" : "/#{dir_name}"
-        else
-          dir_name == "." ? "/#{base_name}" : "/#{dir_name}/#{base_name}"
-        end
       end
 
       def build_sidebar_cache
@@ -166,13 +172,9 @@ module Docyard
       end
 
       def build_breadcrumbs(sidebar_tree, current_path)
-        return nil unless breadcrumbs_enabled?
+        return nil if config.navigation.breadcrumbs == false
 
         BreadcrumbBuilder.new(sidebar_tree: sidebar_tree, current_path: current_path)
-      end
-
-      def breadcrumbs_enabled?
-        config.navigation.breadcrumbs != false
       end
 
       def branding_options
@@ -189,7 +191,7 @@ module Docyard
         html_content = if File.exist?("docs/404.html")
                          File.read("docs/404.html")
                        else
-                         renderer.render_not_found
+                         build_renderer.render_not_found
                        end
 
         File.write(output_path, html_content)

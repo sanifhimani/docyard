@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../utils/path_utils"
+
 module Docyard
   class Router
     attr_reader :docs_path
@@ -23,9 +25,7 @@ module Docyard
     private
 
     def sanitize_path(request_path)
-      clean = request_path.delete_prefix("/").delete_suffix("/")
-      clean = Constants::INDEX_FILE if clean.empty?
-      clean.delete_suffix(Constants::MARKDOWN_EXTENSION)
+      Utils::PathUtils.sanitize_url_path(request_path)
     end
   end
 end
