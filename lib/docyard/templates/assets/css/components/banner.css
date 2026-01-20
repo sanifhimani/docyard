@@ -53,6 +53,10 @@ body.has-announcement .secondary-header {
   top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height));
 }
 
+body.has-announcement:not(.has-tabs) .secondary-header {
+  top: calc(var(--header-height) + var(--announcement-height));
+}
+
 body.has-announcement .layout {
   padding-top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height));
 }
@@ -68,6 +72,16 @@ body.has-announcement:not(.has-tabs) .doc-aside {
 
 body.has-announcement:not(.has-tabs) .layout {
   padding-top: calc(var(--header-height) + var(--announcement-height));
+}
+
+@media (max-width: 1280px) {
+  body.has-announcement .layout {
+    padding-top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height) + 3rem);
+  }
+
+  body.has-announcement:not(.has-tabs) .layout {
+    padding-top: calc(var(--header-height) + var(--announcement-height) + 3rem);
+  }
 }
 
 .docyard-announcement__content {
