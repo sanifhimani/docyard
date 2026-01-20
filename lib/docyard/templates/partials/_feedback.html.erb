@@ -1,0 +1,14 @@
+<% if @feedback_enabled %>
+<div class="feedback" data-pagefind-ignore>
+  <p class="feedback__question"><%= @feedback_question %></p>
+  <div class="feedback__buttons">
+    <button type="button" class="feedback__btn" data-feedback="yes" aria-label="Yes, this page was helpful">
+      <%= icon(:thumbs_up) %>
+    </button>
+    <button type="button" class="feedback__btn" data-feedback="no" aria-label="No, this page was not helpful">
+      <%= icon(:thumbs_down) %>
+    </button>
+  </div>
+  <p class="feedback__thanks" aria-live="polite" hidden>Thanks for your feedback!</p>
+</div>
+<% end %>

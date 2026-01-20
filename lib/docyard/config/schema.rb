@@ -7,7 +7,7 @@ module Docyard
         title description url og_image twitter source
         branding socials tabs sidebar
         build search navigation announcement
-        repo analytics
+        repo analytics feedback
       ].freeze
 
       SECTIONS = {
@@ -17,7 +17,8 @@ module Docyard
         "navigation" => %w[cta breadcrumbs],
         "repo" => %w[url branch edit_path edit_link last_updated],
         "analytics" => %w[google plausible fathom script],
-        "announcement" => %w[text link button dismissible]
+        "announcement" => %w[text link button dismissible],
+        "feedback" => %w[enabled question]
       }.freeze
 
       TAB = %w[text href icon external].freeze
