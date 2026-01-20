@@ -110,4 +110,112 @@ RSpec.describe Docyard::Utils::PathUtils do
       expect(result).to eq("/var/www/html/./guide/index.html")
     end
   end
+
+  describe ".safe_path?" do
+    let(:base_dir) { "/app/docs" }
+
+    it "returns true for valid path within base directory" do
+      expect(described_class.safe_path?("/app/docs/guide.md", base_dir)).to be true
+    end
+
+    it "returns true for nested path within base directory" do
+      expect(described_class.safe_path?("/app/docs/api/v2/guide.md", base_dir)).to be true
+    end
+
+    it "returns true for exact base directory" do
+      expect(described_class.safe_path?("/app/docs", base_dir)).to be true
+    end
+
+    it "returns false for path outside base directory" do
+      expect(described_class.safe_path?("/etc/passwd", base_dir)).to be false
+    end
+
+    it "returns false for path traversal attempt" do
+      expect(described_class.safe_path?("/app/docs/../etc/passwd", base_dir)).to be false
+    end
+
+    it "returns false for path that starts with base but is sibling" do
+      expect(described_class.safe_path?("/app/docs_backup/file.md", base_dir)).to be false
+    end
+
+    it "returns false for nil requested path" do
+      expect(described_class.safe_path?(nil, base_dir)).to be false
+    end
+
+    it "returns false for nil base dir" do
+      expect(described_class.safe_path?("/app/docs/file.md", nil)).to be false
+    end
+  end
+
+  describe ".resolve_safe_path" do
+    let(:base_dir) { Dir.mktmpdir }
+
+    after { FileUtils.rm_rf(base_dir) }
+
+    it "returns expanded path for valid relative path" do
+      result = described_class.resolve_safe_path("guide.md", base_dir)
+      expect(result).to eq(File.join(base_dir, "guide.md"))
+    end
+
+    it "returns expanded path for nested relative path" do
+      result = described_class.resolve_safe_path("api/guide.md", base_dir)
+      expect(result).to eq(File.join(base_dir, "api/guide.md"))
+    end
+
+    it "returns nil for ../ traversal attempt" do
+      result = described_class.resolve_safe_path("../../../etc/passwd", base_dir)
+      expect(result).to be_nil
+    end
+
+    it "returns nil for URL-encoded traversal attempt" do
+      result = described_class.resolve_safe_path("%2e%2e/%2e%2e/etc/passwd", base_dir)
+      expect(result).to be_nil
+    end
+
+    it "returns nil for backslash traversal attempt" do
+      result = described_class.resolve_safe_path("..\\..\\etc\\passwd", base_dir)
+      expect(result).to be_nil
+    end
+
+    it "returns nil for path that resolves outside base" do
+      result = described_class.resolve_safe_path("valid/../../../etc/passwd", base_dir)
+      expect(result).to be_nil
+    end
+
+    it "returns nil for nil relative path" do
+      result = described_class.resolve_safe_path(nil, base_dir)
+      expect(result).to be_nil
+    end
+
+    it "returns nil for nil base dir" do
+      result = described_class.resolve_safe_path("guide.md", nil)
+      expect(result).to be_nil
+    end
+  end
+
+  describe ".decode_path" do
+    it "decodes URL-encoded characters" do
+      expect(described_class.decode_path("%2e%2e")).to eq("..")
+    end
+
+    it "converts backslashes to forward slashes" do
+      expect(described_class.decode_path("path\\to\\file")).to eq("path/to/file")
+    end
+
+    it "handles combined encoding and backslashes" do
+      expect(described_class.decode_path("%2e%2e\\..")).to eq("../..")
+    end
+
+    it "handles normal paths unchanged" do
+      expect(described_class.decode_path("docs/guide.md")).to eq("docs/guide.md")
+    end
+
+    it "returns original string on invalid encoding" do
+      expect(described_class.decode_path("%ZZ")).to eq("%ZZ")
+    end
+
+    it "handles nil gracefully" do
+      expect(described_class.decode_path(nil)).to eq("")
+    end
+  end
 end

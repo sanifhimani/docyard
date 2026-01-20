@@ -49,6 +49,26 @@ RSpec.describe Docyard::AssetHandler do
       end
     end
 
+    context "when path contains URL-encoded traversal" do
+      it "returns 403 for %2e%2e encoding" do
+        status, = handler.serve_docyard_assets("/_docyard/%2e%2e/%2e%2e/etc/passwd")
+
+        expect(status).to eq(403)
+      end
+
+      it "returns 403 for mixed encoding" do
+        status, = handler.serve_docyard_assets("/_docyard/css/%2e%2e/../secret.txt")
+
+        expect(status).to eq(403)
+      end
+
+      it "returns 403 for backslash traversal" do
+        status, = handler.serve_docyard_assets("/_docyard/..\\..\\etc\\passwd")
+
+        expect(status).to eq(403)
+      end
+    end
+
     context "when serving components.css (concatenated)" do
       it "returns 200 with concatenated CSS from all component files", :aggregate_failures do
         status, headers, body = handler.serve_docyard_assets("/_docyard/css/components.css")
