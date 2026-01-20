@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../../rendering/icons"
 
 module Docyard
   module Components
@@ -40,8 +41,10 @@ module Docyard
           position = match.begin(0)
           return match[0] if inside_special_block?(position)
 
+          original_lang = match[1]
           store_code_block_options(match)
-          "```#{match[1]}"
+          highlight_lang = Icons.highlight_language(original_lang)
+          "```#{highlight_lang}"
         end
 
         def inside_special_block?(position)
