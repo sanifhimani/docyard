@@ -21,12 +21,39 @@ module Docyard
     DEFAULT_FAVICON_PATH = "_docyard/favicon.svg"
 
     SOCIAL_ICON_MAP = {
-      "x" => "x-logo", "twitter" => "x-logo", "discord" => "discord-logo",
-      "linkedin" => "linkedin-logo", "youtube" => "youtube-logo", "instagram" => "instagram-logo",
-      "facebook" => "facebook-logo", "tiktok" => "tiktok-logo", "twitch" => "twitch-logo",
-      "reddit" => "reddit-logo", "mastodon" => "mastodon-logo", "threads" => "threads-logo",
-      "pinterest" => "pinterest-logo", "medium" => "medium-logo", "slack" => "slack-logo",
-      "gitlab" => "gitlab-logo"
+      "github" => "github-logo",
+      "x" => "x-logo",
+      "twitter" => "x-logo",
+      "discord" => "discord-logo",
+      "slack" => "slack-logo",
+      "linkedin" => "linkedin-logo",
+      "youtube" => "youtube-logo",
+      "twitch" => "twitch-logo",
+      "instagram" => "instagram-logo",
+      "facebook" => "facebook-logo",
+      "tiktok" => "tiktok-logo",
+      "reddit" => "reddit-logo",
+      "mastodon" => "mastodon-logo",
+      "threads" => "threads-logo",
+      "pinterest" => "pinterest-logo",
+      "medium" => "medium-logo",
+      "gitlab" => "gitlab-logo",
+      "figma" => "figma-logo",
+      "dribbble" => "dribbble-logo",
+      "behance" => "behance-logo",
+      "codepen" => "codepen-logo",
+      "codesandbox" => "codesandbox-logo",
+      "notion" => "notion-logo",
+      "spotify" => "spotify-logo",
+      "soundcloud" => "soundcloud-logo",
+      "whatsapp" => "whatsapp-logo",
+      "telegram" => "telegram-logo",
+      "snapchat" => "snapchat-logo",
+      "patreon" => "patreon-logo",
+      "paypal" => "paypal-logo",
+      "stripe" => "stripe-logo",
+      "google-podcasts" => "google-podcasts-logo",
+      "apple-podcasts" => "apple-podcasts-logo"
     }.freeze
   end
 end
