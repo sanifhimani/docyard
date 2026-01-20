@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "docyard/version"
-require_relative "docyard/config/constants"
-require_relative "docyard/utils/errors"
+require_relative "docyard/constants"
+require_relative "docyard/errors"
 require_relative "docyard/utils/logging"
 
 require_relative "docyard/utils/text_formatter"
