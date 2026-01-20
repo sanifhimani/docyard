@@ -60,8 +60,10 @@ module Docyard
 
       def copy_custom_landing_page
         output_path = File.join(config.build.output, "index.html")
-        FileUtils.mkdir_p(File.dirname(output_path))
-        FileUtils.cp("docs/index.html", output_path)
+        safe_file_write(output_path) do
+          FileUtils.mkdir_p(File.dirname(output_path))
+          FileUtils.cp("docs/index.html", output_path)
+        end
         log "[✓] Copied custom landing page (index.html)"
       end
 
@@ -148,9 +150,23 @@ module Docyard
       end
 
       def write_output(output_path, html_content)
-        FileUtils.mkdir_p(File.dirname(output_path))
-        File.write(output_path, html_content)
+        safe_file_write(output_path) do
+          FileUtils.mkdir_p(File.dirname(output_path))
+          File.write(output_path, html_content)
+        end
         log "Generated: #{output_path}" if verbose
+      end
+
+      def safe_file_write(path, &block)
+        block.call
+      rescue Errno::EACCES => e
+        raise BuildError, "Permission denied writing to #{path}: #{e.message}"
+      rescue Errno::ENOSPC => e
+        raise BuildError, "Disk full, cannot write to #{path}: #{e.message}"
+      rescue Errno::EROFS => e
+        raise BuildError, "Read-only filesystem, cannot write to #{path}: #{e.message}"
+      rescue SystemCallError => e
+        raise BuildError, "Failed to write #{path}: #{e.message}"
       end
 
       def build_sidebar_cache
@@ -171,15 +187,13 @@ module Docyard
 
       def generate_error_page
         output_path = File.join(config.build.output, "404.html")
-
-        html_content = if File.exist?("docs/404.html")
-                         File.read("docs/404.html")
-                       else
-                         build_renderer.render_not_found
-                       end
-
-        File.write(output_path, html_content)
+        html_content = load_error_page_content
+        safe_file_write(output_path) { File.write(output_path, html_content) }
         log "[✓] Generated 404.html"
+      end
+
+      def load_error_page_content
+        File.exist?("docs/404.html") ? File.read("docs/404.html") : build_renderer.render_not_found
       end
     end
   end
