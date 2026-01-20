@@ -260,21 +260,19 @@ RSpec.describe Docyard::Components::TabsProcessor do
     end
 
     context "with auto-detected icons for code-only tabs" do
-      it "detects terminal commands (bash)", :aggregate_failures do
+      it "detects bash icon", :aggregate_failures do
         markdown = ":::tabs\n== Install\n```bash\nnpm install docyard\n```\n:::"
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include("terminal-window")
-        expect(result).to include("ph-")
+        expect(result).to include("devicon-bash-plain")
       end
 
-      it "detects terminal commands (sh)", :aggregate_failures do
+      it "detects sh as bash icon", :aggregate_failures do
         markdown = ":::tabs\n== Script\n```sh\necho 'test'\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include("terminal-window")
+        expect(result).not_to include('class="docyard-tabs__icon"')
       end
 
       it "detects file extension for JavaScript", :aggregate_failures do
@@ -282,7 +280,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include("file")
+        expect(result).to include("devicon-javascript")
       end
 
       it "detects file extension for TypeScript", :aggregate_failures do
@@ -290,7 +288,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include("file")
+        expect(result).to include("devicon-typescript")
       end
 
       it "detects file extension for Python", :aggregate_failures do
@@ -298,7 +296,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include("file")
+        expect(result).to include("devicon-python")
       end
     end
 
@@ -307,58 +305,56 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Code\n```js\nconst x = 1;\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-javascript")
       end
 
       it "maps ts to .ts extension", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```ts\nconst x: number = 1;\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-typescript")
       end
 
       it "maps py to .py extension", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```py\nx = 1\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-python")
       end
 
       it "maps rb to .rb extension", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```rb\nx = 1\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-ruby")
       end
 
-      it "maps shell commands to terminal-window (Phosphor)", :aggregate_failures do
+      it "maps sh to no icon (no devicon)", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```sh\necho test\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("terminal-window")
-        expect(result).to include("ph-")
+        expect(result).not_to include('class="docyard-tabs__icon"')
       end
 
-      it "maps bash to terminal-window (Phosphor)", :aggregate_failures do
+      it "maps bash to devicon", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```bash\necho test\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("terminal-window")
-        expect(result).to include("ph-")
+        expect(result).to include("devicon-bash-plain")
       end
 
       it "maps html to .html extension", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```html\n<div></div>\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-html5")
       end
 
       it "maps yml to .yaml extension", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```yml\nkey: value\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-yaml")
       end
     end
 
@@ -372,13 +368,11 @@ RSpec.describe Docyard::Components::TabsProcessor do
     end
 
     context "with fallback behavior for unknown languages" do
-      it "uses fallback file icon for unrecognized language", :aggregate_failures do
+      it "shows no icon for unrecognized language", :aggregate_failures do
         markdown = ":::tabs\n== Code\n```unknownlang\nsome code\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include("file")
-        expect(result).to include("ph-")
+        expect(result).not_to include('class="docyard-tabs__icon"')
       end
     end
 
@@ -422,7 +416,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         markdown = ":::tabs\n== Tab\n```JavaScript\nconsole.log();\n```\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("file")
+        expect(result).to include("devicon-javascript")
       end
 
       it "handles whitespace around icon syntax", :aggregate_failures do
@@ -435,29 +429,31 @@ RSpec.describe Docyard::Components::TabsProcessor do
     end
 
     context "with all supported file extensions and terminal" do
-      it "supports common programming languages (currently shows file icon)", :aggregate_failures do
-        languages = %w[javascript typescript python ruby go rust php html css json yaml toml sql graphql]
+      it "supports common programming languages with Devicon icons", :aggregate_failures do
+        languages = %w[javascript typescript python ruby go rust php html css json yaml sql graphql]
 
         languages.each do |lang|
           markdown = ":::tabs\n== Code\n```#{lang}\ncode\n```\n:::"
           result = processor.preprocess(markdown)
 
           expect(result).to include('class="docyard-tabs__icon"'), "Expected icon for #{lang}"
-          expect(result).to include("file"), "Expected file icon for #{lang}"
+          expect(result).to include("devicon-"), "Expected Devicon for #{lang}"
         end
       end
 
-      it "supports terminal commands with terminal-window icon", :aggregate_failures do
-        shell_langs = %w[bash sh shell]
+      it "shows no icon for unsupported languages", :aggregate_failures do
+        markdown = ":::tabs\n== Code\n```toml\nkey = 'value'\n```\n:::"
+        result = processor.preprocess(markdown)
 
-        shell_langs.each do |shell|
-          markdown = ":::tabs\n== Command\n```#{shell}\necho test\n```\n:::"
-          result = processor.preprocess(markdown)
+        expect(result).not_to include('class="docyard-tabs__icon"')
+      end
 
-          expect(result).to include('class="docyard-tabs__icon"'), "Expected icon for #{shell}"
-          expect(result).to include("terminal-window"), "Expected terminal-window icon for #{shell}"
-          expect(result).to include("ph-"), "Expected Phosphor viewBox for #{shell}"
-        end
+      it "supports bash with devicon", :aggregate_failures do
+        markdown = ":::tabs\n== Command\n```bash\necho test\n```\n:::"
+        result = processor.preprocess(markdown)
+
+        expect(result).to include('class="docyard-tabs__icon"')
+        expect(result).to include("devicon-bash-plain")
       end
     end
   end

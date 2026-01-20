@@ -2,119 +2,119 @@
 
 require "spec_helper"
 
-RSpec.describe Docyard::Components::CodeDetector do
+RSpec.describe Docyard::Components::Support::CodeDetector do
   describe ".detect" do
     context "with code-only content" do
       it "detects JavaScript code block" do
         content = "```javascript\nconst foo = 'bar';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "js", source: "file-extension" })
+        expect(result).to eq({ language: "javascript" })
       end
 
       it "detects TypeScript code block" do
         content = "```typescript\nlet x: string = 'hello';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "ts", source: "file-extension" })
+        expect(result).to eq({ language: "typescript" })
       end
 
       it "detects Python code block" do
         content = "```python\nprint('hello')\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "py", source: "file-extension" })
+        expect(result).to eq({ language: "python" })
       end
 
       it "detects Ruby code block" do
         content = "```ruby\nputs 'hello'\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "rb", source: "file-extension" })
+        expect(result).to eq({ language: "ruby" })
       end
 
       it "detects Go code block" do
         content = "```go\nfmt.Println(\"hello\")\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "go", source: "file-extension" })
+        expect(result).to eq({ language: "go" })
       end
 
       it "detects Rust code block" do
         content = "```rust\nprintln!(\"hello\");\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "rs", source: "file-extension" })
+        expect(result).to eq({ language: "rust" })
       end
 
-      it "detects bash terminal commands" do
+      it "detects bash commands" do
         content = "```bash\nnpm install\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "terminal-window", source: "phosphor" })
+        expect(result).to eq({ language: "bash" })
       end
 
-      it "detects sh terminal commands" do
+      it "detects sh commands" do
         content = "```sh\nls -la\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "terminal-window", source: "phosphor" })
+        expect(result).to eq({ language: "sh" })
       end
 
-      it "detects shell terminal commands" do
+      it "detects shell commands" do
         content = "```shell\necho 'hello'\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "terminal-window", source: "phosphor" })
+        expect(result).to eq({ language: "shell" })
       end
 
-      it "detects powershell terminal commands" do
+      it "detects powershell commands" do
         content = "```powershell\nWrite-Host 'hello'\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "terminal-window", source: "phosphor" })
+        expect(result).to eq({ language: "powershell" })
       end
 
       it "is case insensitive for language detection" do
         content = "```JavaScript\nconst foo = 'bar';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "js", source: "file-extension" })
+        expect(result).to eq({ language: "javascript" })
       end
 
-      it "handles language aliases (js -> javascript)" do
+      it "returns language alias as-is (js)" do
         content = "```js\nconst foo = 'bar';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "js", source: "file-extension" })
+        expect(result).to eq({ language: "js" })
       end
 
-      it "handles language aliases (ts -> typescript)" do
+      it "returns language alias as-is (ts)" do
         content = "```ts\nlet x: string = 'hello';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "ts", source: "file-extension" })
+        expect(result).to eq({ language: "ts" })
       end
 
-      it "handles language aliases (py -> python)" do
+      it "returns language alias as-is (py)" do
         content = "```py\nprint('hello')\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "py", source: "file-extension" })
+        expect(result).to eq({ language: "py" })
       end
 
-      it "handles language aliases (yml -> yaml)" do
+      it "returns language alias as-is (yml)" do
         content = "```yml\nkey: value\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "yaml", source: "file-extension" })
+        expect(result).to eq({ language: "yml" })
       end
 
-      it "uses fallback file icon for unknown language" do
+      it "returns unknown language as-is" do
         content = "```unknown\nsome code\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "file", source: "phosphor" })
+        expect(result).to eq({ language: "unknown" })
       end
     end
 
@@ -201,29 +201,13 @@ RSpec.describe Docyard::Components::CodeDetector do
       end
     end
 
-    context "with all supported languages" do
-      {
-        "html" => "html",
-        "css" => "css",
-        "json" => "json",
-        "yaml" => "yaml",
-        "toml" => "toml",
-        "sql" => "sql",
-        "mysql" => "mysql",
-        "postgresql" => "pgsql",
-        "graphql" => "graphql",
-        "vue" => "vue",
-        "svelte" => "svelte",
-        "proto" => "proto",
-        "jsx" => "jsx",
-        "tsx" => "tsx",
-        "php" => "php"
-      }.each do |lang, expected_extension|
+    context "with various languages" do
+      %w[html css json yaml toml sql mysql postgresql graphql vue svelte proto jsx tsx php].each do |lang|
         it "detects #{lang} code block" do
           content = "```#{lang}\nsome code\n```"
           result = described_class.detect(content)
 
-          expect(result).to eq({ icon: expected_extension, source: "file-extension" })
+          expect(result).to eq({ language: lang })
         end
       end
     end
@@ -233,21 +217,21 @@ RSpec.describe Docyard::Components::CodeDetector do
         content = "  ```javascript\nconst foo = 'bar';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "js", source: "file-extension" })
+        expect(result).to eq({ language: "javascript" })
       end
 
       it "handles content with trailing whitespace" do
         content = "```javascript\nconst foo = 'bar';\n```  "
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "js", source: "file-extension" })
+        expect(result).to eq({ language: "javascript" })
       end
 
       it "handles content with whitespace around language identifier" do
         content = "```  javascript  \nconst foo = 'bar';\n```"
         result = described_class.detect(content)
 
-        expect(result).to eq({ icon: "js", source: "file-extension" })
+        expect(result).to eq({ language: "javascript" })
       end
     end
   end
