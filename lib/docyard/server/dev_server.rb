@@ -92,7 +92,7 @@ module Docyard
                 when :asset then "Asset changed, reloading..."
                 else "File changed, reloading..."
                 end
-      puts "* #{message}"
+      Docyard.logger.info("* #{message}")
     end
 
     def cleanup
@@ -109,12 +109,12 @@ module Docyard
     end
 
     def print_server_info
-      puts "Starting Docyard server..."
-      puts "* Version: #{Docyard::VERSION}"
-      puts "* Running at: http://#{host}:#{port}"
-      puts "* Hot reload: ws://127.0.0.1:#{sse_port}"
-      puts "* Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}"
-      puts "Use Ctrl+C to stop\n"
+      Docyard.logger.info("Starting Docyard server...")
+      Docyard.logger.info("* Version: #{Docyard::VERSION}")
+      Docyard.logger.info("* Running at: http://#{host}:#{port}")
+      Docyard.logger.info("* Hot reload: ws://127.0.0.1:#{sse_port}")
+      Docyard.logger.info("* Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}")
+      Docyard.logger.info("Use Ctrl+C to stop\n")
     end
 
     def run_server

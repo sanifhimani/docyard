@@ -28,7 +28,7 @@ module Docyard
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
-        puts "\n[✓] Found #{markdown_files.size} markdown files"
+        Docyard.logger.info("\n[✓] Found #{markdown_files.size} markdown files")
 
         generate_all_pages(markdown_files)
         generate_error_page
@@ -182,7 +182,7 @@ module Docyard
       end
 
       def log(message)
-        puts message if verbose
+        Docyard.logger.info(message) if verbose
       end
 
       def generate_error_page

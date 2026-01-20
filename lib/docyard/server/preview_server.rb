@@ -36,10 +36,10 @@ module Docyard
     end
 
     def print_server_info
-      puts "Starting preview server..."
-      puts "* Version: #{Docyard::VERSION}"
-      puts "* Running at: http://localhost:#{port}"
-      puts "Use Ctrl+C to stop\n"
+      Docyard.logger.info("Starting preview server...")
+      Docyard.logger.info("* Version: #{Docyard::VERSION}")
+      Docyard.logger.info("* Running at: http://localhost:#{port}")
+      Docyard.logger.info("Use Ctrl+C to stop\n")
     end
 
     def run_server
@@ -50,7 +50,7 @@ module Docyard
       @launcher = Puma::Launcher.new(puma_config, log_writer: log_writer)
       @launcher.run
     rescue Interrupt
-      puts "\nShutting down preview server..."
+      Docyard.logger.info("\nShutting down preview server...")
     end
 
     def build_puma_config(app)

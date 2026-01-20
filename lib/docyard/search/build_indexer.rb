@@ -63,11 +63,11 @@ module Docyard
       end
 
       def log(message)
-        puts message
+        Docyard.logger.info(message)
       end
 
       def log_warning(message)
-        warn message
+        Docyard.logger.warn(message)
       end
     end
   end
