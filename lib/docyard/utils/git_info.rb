@@ -104,7 +104,7 @@ module Docyard
       def extract_relative_path(file_path)
         return nil unless file_path
 
-        match = file_path.match(%r{docs/(.+)$})
+        match = file_path.match(%r{#{Regexp.escape(edit_path)}/(.+)$})
         match ? match[1] : nil
       end
 
