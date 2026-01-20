@@ -248,7 +248,7 @@ RSpec.describe Docyard::Config do
 
       expect(config.repo.url).to be_nil
       expect(config.repo.branch).to eq("main")
-      expect(config.repo.edit_path).to eq("docs")
+      expect(config.repo.edit_path).to be_nil
       expect(config.repo.edit_link).to be true
       expect(config.repo.last_updated).to be true
     end

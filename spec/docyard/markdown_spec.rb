@@ -144,7 +144,7 @@ RSpec.describe Docyard::Markdown do
 
     context "with global line numbers config" do
       let(:config) do
-        instance_double(Docyard::Config, data: { "markdown" => { "lineNumbers" => true } })
+        instance_double(Docyard::Config, data: { "markdown" => { "lineNumbers" => true } }, source: "docs")
       end
 
       it "renders line numbers for all code blocks when enabled globally" do
