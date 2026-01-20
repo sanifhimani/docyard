@@ -111,6 +111,40 @@ RSpec.describe Docyard::AssetHandler do
     end
   end
 
+  describe "cache headers" do
+    it "includes Cache-Control header on static files" do
+      _status, headers, _body = handler.serve_docyard_assets("/_docyard/css/main.css")
+
+      expect(headers["Cache-Control"]).to eq("public, max-age=3600")
+    end
+
+    it "includes ETag header on static files" do
+      _status, headers, _body = handler.serve_docyard_assets("/_docyard/css/main.css")
+
+      expect(headers["ETag"]).to match(/^"[a-f0-9]{32}"$/)
+    end
+
+    it "includes Last-Modified header on static files" do
+      _status, headers, _body = handler.serve_docyard_assets("/_docyard/css/main.css")
+
+      expect(headers["Last-Modified"]).to match(/\w{3}, \d{2} \w{3} \d{4}/)
+    end
+
+    it "includes cache headers on concatenated CSS", :aggregate_failures do
+      _status, headers, _body = handler.serve_docyard_assets("/_docyard/css/components.css")
+
+      expect(headers["Cache-Control"]).to eq("public, max-age=3600")
+      expect(headers["ETag"]).to match(/^"[a-f0-9]{32}"$/)
+    end
+
+    it "includes cache headers on concatenated JS", :aggregate_failures do
+      _status, headers, _body = handler.serve_docyard_assets("/_docyard/js/components.js")
+
+      expect(headers["Cache-Control"]).to eq("public, max-age=3600")
+      expect(headers["ETag"]).to match(/^"[a-f0-9]{32}"$/)
+    end
+  end
+
   describe "#serve_public_file" do
     context "when serving user files from docs/public" do
       it "serves user file when it exists in docs/public", :aggregate_failures do
