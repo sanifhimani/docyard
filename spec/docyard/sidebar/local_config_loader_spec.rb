@@ -79,8 +79,10 @@ RSpec.describe Docyard::Sidebar::LocalConfigLoader do
         File.write(config_file_path, "invalid: yaml: content: [")
       end
 
-      it "returns nil and prints warning", :aggregate_failures do
-        expect { loader.load }.to output(/Warning: Invalid YAML/).to_stderr
+      it "returns nil and logs warning", :aggregate_failures do
+        output = capture_logger_output { loader.load }
+
+        expect(output).to match(/Invalid YAML/)
         expect(loader.load).to be_nil
       end
     end

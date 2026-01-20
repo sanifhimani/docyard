@@ -45,7 +45,7 @@ module Docyard
 
       handle_documentation_request(path)
     rescue StandardError => e
-      handle_error(e)
+      handle_error(e, env)
     end
 
     def handle_documentation_request(path)
@@ -160,11 +160,19 @@ module Docyard
       BrandingResolver.new(config).resolve
     end
 
-    def handle_error(error)
-      Docyard.logger.error "Request error: #{error.message}"
-      Docyard.logger.debug error.backtrace.join("\n")
+    def handle_error(error, env)
+      request_context = build_request_context(env)
+      Docyard.logger.error("Request error: #{error.message} [#{request_context}]")
+      Docyard.logger.debug(error.backtrace.join("\n"))
       [Constants::STATUS_INTERNAL_ERROR, { "Content-Type" => Constants::CONTENT_TYPE_HTML },
        [renderer.render_server_error(error)]]
+    end
+
+    def build_request_context(env)
+      method = env["REQUEST_METHOD"]
+      path = env["PATH_INFO"]
+      user_agent = env["HTTP_USER_AGENT"]&.slice(0, 50)
+      user_agent ? "#{method} #{path} - #{user_agent}" : "#{method} #{path}"
     end
   end
 end
