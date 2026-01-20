@@ -47,17 +47,17 @@ module Docyard
         site_url: config.url,
         og_image: config.og_image,
         twitter: config.twitter,
-        favicon: config.branding.favicon || LogoDetector.auto_detect_favicon
+        favicon: config.branding.favicon || LogoDetector.auto_detect_favicon(public_dir: config.public_dir)
       }
     end
 
     def logo_options
       branding = config.branding
-      logo = branding.logo || LogoDetector.auto_detect_logo
+      logo = branding.logo || LogoDetector.auto_detect_logo(public_dir: config.public_dir)
       has_custom_logo = !logo.nil?
       {
         logo: logo || Constants::DEFAULT_LOGO_PATH,
-        logo_dark: LogoDetector.detect_dark_logo(logo) || Constants::DEFAULT_LOGO_DARK_PATH,
+        logo_dark: LogoDetector.detect_dark_logo(logo, public_dir: config.public_dir) || Constants::DEFAULT_LOGO_DARK_PATH,
         has_custom_logo: has_custom_logo
       }
     end
@@ -174,7 +174,7 @@ module Docyard
       {
         repo_url: repo.url,
         repo_branch: repo.branch || "main",
-        repo_edit_path: repo.edit_path || "docs",
+        repo_edit_path: repo.edit_path || config.source,
         show_edit_link: has_repo_url && repo.edit_link != false,
         show_last_updated: has_repo_url && repo.last_updated != false
       }
