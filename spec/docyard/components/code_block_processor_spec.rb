@@ -81,15 +81,15 @@ RSpec.describe Docyard::Components::CodeBlockProcessor do
         expect(result).to include(expected_html)
       end
 
-      it "includes the copy icon SVG", :aggregate_failures do
+      it "includes the copy icon", :aggregate_failures do
         html = <<~HTML
           <div class="highlight"><pre><code>test</code></pre></div>
         HTML
 
         result = processor.postprocess(html)
 
-        expect(result).to include("<svg")
-        expect(result).to include("</svg>")
+        expect(result).to include("ph-copy")
+        expect(result).to include('aria-hidden="true"')
       end
 
       it "decodes HTML entities in code text", :aggregate_failures do
@@ -540,7 +540,7 @@ block 2 line 2</code></pre></div>'
         result = processor.postprocess(html)
 
         expect(result).to include('class="docyard-code-block__icon"')
-        expect(result).to include("<svg")
+        expect(result).to include("ph-")
       end
 
       it "renders terminal icon for shell languages", :aggregate_failures do
@@ -550,7 +550,7 @@ block 2 line 2</code></pre></div>'
         result = processor.postprocess(html)
 
         expect(result).to include('class="docyard-code-block__icon"')
-        expect(result).to include("docyard-icon")
+        expect(result).to include("ph-")
       end
 
       it "renders file icon for unknown languages", :aggregate_failures do

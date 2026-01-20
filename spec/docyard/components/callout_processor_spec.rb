@@ -77,7 +77,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
         markdown = "::: note\nContent\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("<svg")
+        expect(result).to include("ph-")
         expect(result).to include('class="docyard-callout__icon"')
       end
 
@@ -258,7 +258,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
         html = "<blockquote><p>[!NOTE]<br />Content</p></blockquote>"
         result = processor.postprocess(html)
 
-        expect(result).to include("<svg")
+        expect(result).to include("ph-")
         expect(result).to include('class="docyard-callout__icon"')
       end
 
@@ -284,35 +284,35 @@ RSpec.describe Docyard::Components::CalloutProcessor do
       markdown = "::: note\nContent\n:::"
       result = processor.preprocess(markdown)
 
-      expect(result).to include("<svg")
+      expect(result).to include("ph-")
     end
 
     it "uses lightbulb icon for tip type" do
       markdown = "::: tip\nContent\n:::"
       result = processor.preprocess(markdown)
 
-      expect(result).to include("<svg")
+      expect(result).to include("ph-")
     end
 
     it "uses warning-circle icon for important type" do
       markdown = "::: important\nContent\n:::"
       result = processor.preprocess(markdown)
 
-      expect(result).to include("<svg")
+      expect(result).to include("ph-")
     end
 
     it "uses warning icon for warning type" do
       markdown = "::: warning\nContent\n:::"
       result = processor.preprocess(markdown)
 
-      expect(result).to include("<svg")
+      expect(result).to include("ph-")
     end
 
     it "uses siren icon for danger type" do
       markdown = "::: danger\nContent\n:::"
       result = processor.preprocess(markdown)
 
-      expect(result).to include("<svg")
+      expect(result).to include("ph-")
     end
   end
 

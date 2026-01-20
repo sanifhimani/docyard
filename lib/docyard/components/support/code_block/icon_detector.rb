@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../../rendering/language_mapping"
+require_relative "../../../rendering/icons"
 
 module Docyard
   module Components
@@ -22,20 +22,13 @@ module Docyard
               }
             end
 
-            icon, icon_source = auto_detect_icon(language)
-            { title: title, icon: icon, icon_source: icon_source }
+            { title: title, icon: language, icon_source: "language" }
           end
 
-          def auto_detect_icon(language)
-            return [nil, nil] if language.nil?
+          def render_icon(language)
+            return "" if language.nil? || language.to_s.empty?
 
-            if LanguageMapping.terminal_language?(language)
-              %w[terminal-window phosphor]
-            elsif (ext = LanguageMapping.extension_for(language))
-              [ext, "file-extension"]
-            else
-              %w[file phosphor]
-            end
+            Icons.render_for_language(language)
           end
         end
       end

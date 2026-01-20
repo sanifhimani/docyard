@@ -26,7 +26,7 @@ RSpec.describe Docyard::Components::Processors::FileTreeProcessor do
         content = "```filetree\nindex.js\n```"
         result = processor.preprocess(content)
 
-        expect(result).to include("docyard-icon-file-text")
+        expect(result).to include("ph-file-text")
         expect(result).to include("docyard-filetree__item--file")
       end
     end
@@ -36,7 +36,7 @@ RSpec.describe Docyard::Components::Processors::FileTreeProcessor do
         content = "```filetree\nsrc/\n```"
         result = processor.preprocess(content)
 
-        expect(result).to include("docyard-icon-folder-open")
+        expect(result).to include("ph-folder-open")
         expect(result).to include("docyard-filetree__item--folder")
       end
 

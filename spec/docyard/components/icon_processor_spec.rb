@@ -9,7 +9,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<p>I :heart: Ruby</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-heart")
+        expect(result).to include('<i class="ph ph-heart" aria-hidden="true"></i>')
         expect(result).not_to include(":heart:")
       end
 
@@ -17,7 +17,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<p>:check: Complete</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-check")
+        expect(result).to include("ph-check")
         expect(result).not_to include(":check:")
       end
 
@@ -25,7 +25,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<p>:x: Error</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-x")
+        expect(result).to include("ph-x")
         expect(result).not_to include(":x:")
       end
 
@@ -33,7 +33,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<p>Click :arrow-right: to continue</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-arrow-right")
+        expect(result).to include("ph-arrow-right")
         expect(result).not_to include(":arrow-right:")
       end
 
@@ -41,67 +41,74 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<p>:check: Done :heart: Love :arrow-right: Next</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-check")
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("docyard-icon-arrow-right")
+        expect(result).to include("ph-check")
+        expect(result).to include("ph-heart")
+        expect(result).to include("ph-arrow-right")
+      end
+
+      it "renders icon with accessibility attributes" do
+        html = "<p>:heart:</p>"
+        result = processor.postprocess(html)
+
+        expect(result).to include('aria-hidden="true"')
+      end
+
+      it "renders any icon name via CDN", :aggregate_failures do
+        html = "<p>:acorn: :air-traffic-control: :airplane-taxiing:</p>"
+        result = processor.postprocess(html)
+
+        expect(result).to include("ph-acorn")
+        expect(result).to include("ph-air-traffic-control")
+        expect(result).to include("ph-airplane-taxiing")
       end
     end
 
     context "with weighted icon syntax" do
-      it "renders :heart:bold: with bold weight", :aggregate_failures do
+      it "renders :heart:bold: with bold weight class", :aggregate_failures do
         html = "<p>:heart:bold:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-heart")
+        expect(result).to include('<i class="ph-bold ph-heart"')
         expect(result).not_to include(":bold:")
       end
 
-      it "renders :heart:fill: with fill weight", :aggregate_failures do
+      it "renders :heart:fill: with fill weight class", :aggregate_failures do
         html = "<p>:heart:fill:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-heart")
+        expect(result).to include('<i class="ph-fill ph-heart"')
         expect(result).not_to include(":fill:")
       end
 
-      it "renders :heart:light: with light weight", :aggregate_failures do
+      it "renders :heart:light: with light weight class", :aggregate_failures do
         html = "<p>:heart:light:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-heart")
+        expect(result).to include('<i class="ph-light ph-heart"')
         expect(result).not_to include(":light:")
       end
 
-      it "renders :heart:thin: with thin weight", :aggregate_failures do
+      it "renders :heart:thin: with thin weight class", :aggregate_failures do
         html = "<p>:heart:thin:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-heart")
+        expect(result).to include('<i class="ph-thin ph-heart"')
         expect(result).not_to include(":thin:")
       end
 
-      it "renders :heart:duotone: with duotone weight", :aggregate_failures do
+      it "renders :heart:duotone: with duotone weight class", :aggregate_failures do
         html = "<p>:heart:duotone:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-heart")
+        expect(result).to include('<i class="ph-duotone ph-heart"')
         expect(result).not_to include(":duotone:")
       end
-    end
 
-    context "with unknown icons" do
-      it "leaves unknown icon syntax as-is" do
-        html = "<p>:unknown-icon: stays</p>"
+      it "falls back to regular weight for invalid weight" do
+        html = "<p>:heart:invalid:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to eq(html)
-      end
-
-      it "leaves unknown weight as-is" do
-        html = "<p>:heart:invalid: stays</p>"
-        result = processor.postprocess(html)
-
-        expect(result).to include(":heart:invalid:")
+        expect(result).to include('<i class="ph ph-heart"')
       end
     end
 
@@ -111,7 +118,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         result = processor.postprocess(html)
 
         expect(result).to include("<code>:heart:</code>")
-        expect(result).not_to include("docyard-icon-heart")
+        expect(result).not_to include("ph-heart")
       end
 
       it "does not process icons inside <pre> tags", :aggregate_failures do
@@ -119,7 +126,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         result = processor.postprocess(html)
 
         expect(result).to include("<pre>:check: Task complete</pre>")
-        expect(result).not_to include("docyard-icon")
+        expect(result).not_to include("ph-")
       end
 
       it "does not process icons inside syntax highlighted code blocks", :aggregate_failures do
@@ -128,17 +135,16 @@ RSpec.describe Docyard::Components::IconProcessor do
 
         expect(result).to include(":heart:")
         expect(result).to include(":rocket:")
-        expect(result).not_to include("docyard-icon")
+        expect(result).not_to include("ph-")
       end
 
       it "processes icons outside code blocks but not inside", :aggregate_failures do
         html = "<p>:check: Done <code>:warning:</code> :arrow-right:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-check")
-        expect(result).to include("docyard-icon-arrow-right")
+        expect(result).to include("ph-check")
+        expect(result).to include("ph-arrow-right")
         expect(result).to include("<code>:warning:</code>")
-        expect(result).not_to include("docyard-icon-warning")
       end
     end
 
@@ -147,7 +153,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<h1>:rocket-launch: Getting Started</h1>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-rocket-launch")
+        expect(result).to include("ph-rocket-launch")
         expect(result).to include("Getting Started")
       end
 
@@ -155,15 +161,15 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<ul><li>:check: Item 1</li><li>:x: Item 2</li></ul>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-check")
-        expect(result).to include("docyard-icon-x")
+        expect(result).to include("ph-check")
+        expect(result).to include("ph-x")
       end
 
       it "handles icons in bold text", :aggregate_failures do
         html = "<p><strong>:warning: Important</strong></p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-warning")
+        expect(result).to include("ph-warning")
         expect(result).to include("<strong>")
       end
 
@@ -171,7 +177,7 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = '<p><a href="/docs">:arrow-right: Read more</a></p>'
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-arrow-right")
+        expect(result).to include("ph-arrow-right")
         expect(result).to include('<a href="/docs">')
       end
     end
@@ -210,9 +216,9 @@ RSpec.describe Docyard::Components::IconProcessor do
         html = "<p>:check::heart::rocket-launch:</p>"
         result = processor.postprocess(html)
 
-        expect(result).to include("docyard-icon-check")
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("docyard-icon-rocket-launch")
+        expect(result).to include("ph-check")
+        expect(result).to include("ph-heart")
+        expect(result).to include("ph-rocket-launch")
       end
     end
   end

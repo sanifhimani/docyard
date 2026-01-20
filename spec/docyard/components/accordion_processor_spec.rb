@@ -46,7 +46,7 @@ RSpec.describe Docyard::Components::AccordionProcessor do
         markdown = ":::details{title=\"Test\"}\nContent\n:::"
         result = processor.preprocess(markdown)
 
-        expect(result).to include("<svg")
+        expect(result).to include("ph-")
         expect(result).to include('class="docyard-accordion__icon"')
       end
     end

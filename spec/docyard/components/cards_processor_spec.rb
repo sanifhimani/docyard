@@ -68,7 +68,7 @@ RSpec.describe Docyard::Components::CardsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-card__icon"')
-        expect(result).to include("<svg")
+        expect(result).to include("ph-")
       end
 
       it "omits icon section when not provided" do

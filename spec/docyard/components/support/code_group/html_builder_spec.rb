@@ -116,7 +116,7 @@ RSpec.describe Docyard::Components::Support::CodeGroup::HtmlBuilder do
       let(:html) { described_class.new(blocks, group_id).build }
 
       it "does not render icon for empty language" do
-        expect(html).not_to include("docyard-icon-file")
+        expect(html).not_to include("ph-file")
       end
     end
 
@@ -127,7 +127,7 @@ RSpec.describe Docyard::Components::Support::CodeGroup::HtmlBuilder do
       let(:html) { described_class.new(blocks, group_id).build }
 
       it "does not render icon for nil language" do
-        expect(html).not_to include("docyard-icon-file")
+        expect(html).not_to include("ph-file")
       end
     end
 

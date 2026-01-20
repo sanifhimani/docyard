@@ -460,7 +460,7 @@ RSpec.describe Docyard::BrandingResolver do
 
         expect(github[:platform]).to eq("github")
         expect(github[:url]).to eq("https://github.com/docyard/docyard")
-        expect(github[:icon]).to eq("github")
+        expect(github[:icon]).to eq("github-logo")
       end
     end
 
@@ -525,15 +525,15 @@ RSpec.describe Docyard::BrandingResolver do
       before do
         create_config(<<~YAML)
           socials:
-            github: https://github.com/docyard
+            bluesky: https://bsky.app/docyard
         YAML
       end
 
       it "uses the platform name as the icon" do
         result = resolver.resolve
-        github_social = result[:social].find { |s| s[:platform] == "github" }
+        bluesky_social = result[:social].find { |s| s[:platform] == "bluesky" }
 
-        expect(github_social[:icon]).to eq("github")
+        expect(bluesky_social[:icon]).to eq("bluesky")
       end
     end
 

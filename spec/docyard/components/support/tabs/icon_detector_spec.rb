@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Docyard::Components::IconDetector do
+RSpec.describe Docyard::Components::Support::Tabs::IconDetector do
   describe ".detect" do
     context "with manual icon syntax" do
       it "extracts icon name from :icon-name: syntax" do
@@ -106,8 +106,8 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "JavaScript",
-            icon: "js",
-            icon_source: "file-extension"
+            icon: "javascript",
+            icon_source: "language"
           }
         )
       end
@@ -121,8 +121,8 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "TypeScript",
-            icon: "ts",
-            icon_source: "file-extension"
+            icon: "typescript",
+            icon_source: "language"
           }
         )
       end
@@ -136,13 +136,13 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "Python",
-            icon: "py",
-            icon_source: "file-extension"
+            icon: "python",
+            icon_source: "language"
           }
         )
       end
 
-      it "detects terminal icon from bash code" do
+      it "detects icon from bash code" do
         tab_name = "Install"
         tab_content = "```bash\nnpm install\n```"
 
@@ -151,13 +151,13 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "Install",
-            icon: "terminal-window",
-            icon_source: "phosphor"
+            icon: "bash",
+            icon_source: "language"
           }
         )
       end
 
-      it "detects terminal icon from sh code" do
+      it "returns no icon for sh code (no devicon)" do
         tab_name = "Setup"
         tab_content = "```sh\nls -la\n```"
 
@@ -166,13 +166,13 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "Setup",
-            icon: "terminal-window",
-            icon_source: "phosphor"
+            icon: nil,
+            icon_source: nil
           }
         )
       end
 
-      it "detects file icon for unknown language" do
+      it "returns no icon for unknown language (no devicon)" do
         tab_name = "Unknown"
         tab_content = "```unknown\nsome code\n```"
 
@@ -181,8 +181,8 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "Unknown",
-            icon: "file",
-            icon_source: "phosphor"
+            icon: nil,
+            icon_source: nil
           }
         )
       end
@@ -322,8 +322,8 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "   JavaScript   ",
-            icon: "js",
-            icon_source: "file-extension"
+            icon: "javascript",
+            icon_source: "language"
           }
         )
       end
@@ -343,7 +343,7 @@ RSpec.describe Docyard::Components::IconDetector do
         )
       end
 
-      it "handles special characters in tab name" do
+      it "handles C++ with devicon" do
         tab_name = "C++"
         tab_content = "```cpp\nint main() {}\n```"
 
@@ -352,8 +352,8 @@ RSpec.describe Docyard::Components::IconDetector do
         expect(result).to eq(
           {
             name: "C++",
-            icon: "file",
-            icon_source: "phosphor"
+            icon: "cpp",
+            icon_source: "language"
           }
         )
       end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "patterns"
+require_relative "../../../rendering/icons"
 
 module Docyard
   module Components
@@ -18,7 +19,8 @@ module Docyard
             cleaned = markdown.gsub(CODE_FENCE_REGEX) do
               block_data = extract_block_data(Regexp.last_match)
               blocks << block_data
-              "```#{block_data[:lang]}\n#{block_data[:cleaned_content]}```"
+              highlight_lang = Icons.highlight_language(block_data[:lang])
+              "```#{highlight_lang}\n#{block_data[:cleaned_content]}```"
             end
             { cleaned_markdown: cleaned, blocks: blocks }
           end

@@ -22,7 +22,8 @@
   justify-content: center;
 }
 
-.docyard-callout__icon .docyard-icon {
+.docyard-callout__icon .docyard-icon,
+.docyard-callout__icon i[class*="ph-"] {
   width: 100%;
   height: 100%;
 }

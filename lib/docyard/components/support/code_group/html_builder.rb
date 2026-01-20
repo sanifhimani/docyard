@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../code_block/icon_detector"
 require_relative "../../../rendering/icons"
 
 module Docyard
@@ -60,10 +59,7 @@ module Docyard
           def render_icon(lang)
             return "" if lang.nil? || lang.empty?
 
-            icon, icon_source = CodeBlock::IconDetector.auto_detect_icon(lang)
-            return "" unless icon && icon_source == "file-extension"
-
-            Icons.render_file_extension(icon) || ""
+            Icons.render_for_language(lang)
           end
 
           def build_copy_button

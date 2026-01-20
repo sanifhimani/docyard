@@ -22,14 +22,56 @@
   color: var(--foreground);
 }
 
-.page-actions__copy-btn svg {
-  width: 16px;
-  height: 16px;
+.page-actions__copy-btn .docyard-icon,
+.page-actions__copy-btn i[class*="ph-"] {
+  font-size: 1rem;
   flex-shrink: 0;
+}
+
+.page-actions__copy-btn i[class*="ph-"] {
+  display: inline-block;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.page-actions__copy-btn.is-copied i[class*="ph-"] {
+  color: var(--success, #22c55e);
 }
 
 .page-actions__copy-btn.is-copied .page-actions__copy-text {
   color: var(--success, #22c55e);
+}
+
+.page-actions__copy-btn i.icon-animate-in {
+  animation: iconPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.page-actions__copy-btn i.icon-animate-out {
+  animation: iconPopOut 0.15s cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes iconPopIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes iconPopOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 }
 
 .page-actions__edit-link {
@@ -47,9 +89,9 @@
   color: var(--foreground);
 }
 
-.page-actions__edit-link svg {
-  width: 16px;
-  height: 16px;
+.page-actions__edit-link .docyard-icon,
+.page-actions__edit-link i[class*="ph-"] {
+  font-size: 1rem;
   flex-shrink: 0;
 }
 

@@ -1,100 +1,114 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Icons do
-  describe ".render" do
-    context "with valid icon name" do
-      it "renders heart icon with default weight", :aggregate_failures do
-        result = described_class.render("heart")
+  describe ".render_file_extension" do
+    context "with known file extension" do
+      it "renders Devicon for Ruby files", :aggregate_failures do
+        result = described_class.render_file_extension("rb")
 
-        expect(result).to include('class="docyard-icon docyard-icon-heart"')
+        expect(result).to include("devicon-ruby-plain")
         expect(result).to include('aria-hidden="true"')
-        expect(result).to include("<svg")
-        expect(result).to include('viewBox="0 0 256 256"')
-        expect(result).to include('fill="currentColor"')
+        expect(result).to include("<i")
       end
 
-      it "renders check icon", :aggregate_failures do
-        result = described_class.render("check")
+      it "renders Devicon for JavaScript files", :aggregate_failures do
+        result = described_class.render_file_extension("js")
 
-        expect(result).to include("docyard-icon-check")
-        expect(result).to include("<path")
-      end
-    end
-
-    context "with different weights" do
-      it "renders bold weight", :aggregate_failures do
-        result = described_class.render("heart", "bold")
-
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("<path")
+        expect(result).to include("devicon-javascript-plain")
+        expect(result).to include("<i")
       end
 
-      it "renders fill weight", :aggregate_failures do
-        result = described_class.render("heart", "fill")
+      it "renders Devicon for TypeScript files" do
+        result = described_class.render_file_extension("ts")
 
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("<path")
+        expect(result).to include("devicon-typescript-plain")
       end
 
-      it "renders light weight", :aggregate_failures do
-        result = described_class.render("heart", "light")
+      it "renders Devicon for Python files" do
+        result = described_class.render_file_extension("py")
 
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("<path")
-      end
-
-      it "renders thin weight", :aggregate_failures do
-        result = described_class.render("heart", "thin")
-
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("<path")
-      end
-
-      it "renders duotone weight", :aggregate_failures do
-        result = described_class.render("heart", "duotone")
-
-        expect(result).to include("docyard-icon-heart")
-        expect(result).to include("<path")
+        expect(result).to include("devicon-python-plain")
       end
     end
 
-    context "with single-letter icon" do
-      it "renders x icon", :aggregate_failures do
-        result = described_class.render("x")
+    context "with unknown file extension" do
+      it "returns empty string", :aggregate_failures do
+        result = described_class.render_file_extension("xyz")
 
-        expect(result).to include("docyard-icon-x")
-        expect(result).to include("<path")
+        expect(result).to eq("")
+      end
+    end
+  end
+
+  describe ".render_for_language" do
+    context "with known language" do
+      it "renders Devicon for bash" do
+        result = described_class.render_for_language("bash")
+
+        expect(result).to include("devicon-bash-plain")
+      end
+
+      it "renders Devicon for javascript" do
+        result = described_class.render_for_language("javascript")
+
+        expect(result).to include("devicon-javascript-plain")
+      end
+
+      it "renders Devicon for ruby" do
+        result = described_class.render_for_language("ruby")
+
+        expect(result).to include("devicon-ruby-plain")
       end
     end
 
-    context "with hyphenated icon name" do
-      it "renders arrow-right icon", :aggregate_failures do
-        result = described_class.render("arrow-right")
+    context "with unknown language" do
+      it "returns empty string" do
+        result = described_class.render_for_language("unknownlang")
 
-        expect(result).to include("docyard-icon-arrow-right")
-        expect(result).to include("<path")
-      end
-
-      it "renders rocket-launch icon", :aggregate_failures do
-        result = described_class.render("rocket-launch")
-
-        expect(result).to include("docyard-icon-rocket-launch")
-        expect(result).to include("<path")
+        expect(result).to eq("")
       end
     end
+  end
 
-    context "with invalid icon name" do
-      it "returns nil for unknown icon" do
-        result = described_class.render("nonexistent")
+  describe ".highlight_language" do
+    it "maps npm to bash" do
+      expect(described_class.highlight_language("npm")).to eq("bash")
+    end
 
-        expect(result).to be_nil
-      end
+    it "maps yarn to bash" do
+      expect(described_class.highlight_language("yarn")).to eq("bash")
+    end
 
-      it "returns nil for unknown weight" do
-        result = described_class.render("heart", "invalid-weight")
+    it "maps pnpm to bash" do
+      expect(described_class.highlight_language("pnpm")).to eq("bash")
+    end
 
-        expect(result).to be_nil
-      end
+    it "maps bun to bash" do
+      expect(described_class.highlight_language("bun")).to eq("bash")
+    end
+
+    it "maps pip to bash" do
+      expect(described_class.highlight_language("pip")).to eq("bash")
+    end
+
+    it "returns javascript unchanged" do
+      expect(described_class.highlight_language("javascript")).to eq("javascript")
+    end
+
+    it "returns ruby unchanged" do
+      expect(described_class.highlight_language("ruby")).to eq("ruby")
+    end
+
+    it "returns bash unchanged" do
+      expect(described_class.highlight_language("bash")).to eq("bash")
+    end
+
+    it "is case insensitive for NPM" do
+      expect(described_class.highlight_language("NPM")).to eq("bash")
+    end
+
+    it "is case insensitive for Yarn" do
+      expect(described_class.highlight_language("Yarn")).to eq("bash")
     end
   end
 end

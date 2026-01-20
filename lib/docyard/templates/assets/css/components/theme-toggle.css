@@ -39,7 +39,9 @@
 }
 
 .theme-toggle-sun .docyard-icon,
-.theme-toggle-moon .docyard-icon {
+.theme-toggle-moon .docyard-icon,
+.theme-toggle-sun i[class*="ph-"],
+.theme-toggle-moon i[class*="ph-"] {
   width: 1.125rem;
   height: 1.125rem;
 }

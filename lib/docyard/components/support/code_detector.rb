@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../rendering/language_mapping"
+require_relative "../../rendering/icons"
 
 module Docyard
   module Components
@@ -20,7 +20,7 @@ module Docyard
           language = extract_language
           return nil unless language
 
-          icon_for_language(language)
+          { language: language }
         end
 
         private
@@ -44,16 +44,6 @@ module Docyard
           return nil if lang_line.empty? || lang_line.include?(" ")
 
           lang_line.downcase
-        end
-
-        def icon_for_language(language)
-          if LanguageMapping.terminal_language?(language)
-            { icon: "terminal-window", source: "phosphor" }
-          elsif (extension = LanguageMapping.extension_for(language))
-            { icon: extension, source: "file-extension" }
-          else
-            { icon: "file", source: "phosphor" }
-          end
         end
       end
     end

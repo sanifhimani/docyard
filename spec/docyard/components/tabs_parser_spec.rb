@@ -76,11 +76,11 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:icon]).to eq("js")
-        expect(tabs[0][:icon_source]).to eq("file-extension")
+        expect(tabs[0][:icon]).to eq("javascript")
+        expect(tabs[0][:icon_source]).to eq("language")
       end
 
-      it "detects terminal icons for bash code", :aggregate_failures do
+      it "detects icons for bash code", :aggregate_failures do
         content = <<~CONTENT
           == Install
           ```bash
@@ -90,8 +90,8 @@ RSpec.describe Docyard::Components::TabsParser do
 
         tabs = described_class.parse(content)
 
-        expect(tabs[0][:icon]).to eq("terminal-window")
-        expect(tabs[0][:icon_source]).to eq("phosphor")
+        expect(tabs[0][:icon]).to eq("bash")
+        expect(tabs[0][:icon_source]).to eq("language")
       end
 
       it "detects manual icons from tab names", :aggregate_failures do
@@ -272,28 +272,22 @@ RSpec.describe Docyard::Components::TabsParser do
     end
 
     context "with all supported language icons" do
-      {
-        "JavaScript" => { lang: "javascript", icon: "js", source: "file-extension" },
-        "TypeScript" => { lang: "typescript", icon: "ts", source: "file-extension" },
-        "Python" => { lang: "python", icon: "py", source: "file-extension" },
-        "Ruby" => { lang: "ruby", icon: "rb", source: "file-extension" },
-        "Go" => { lang: "go", icon: "go", source: "file-extension" },
-        "Rust" => { lang: "rust", icon: "rs", source: "file-extension" },
-        "Bash" => { lang: "bash", icon: "terminal-window", source: "phosphor" },
-        "Shell" => { lang: "sh", icon: "terminal-window", source: "phosphor" },
-        "HTML" => { lang: "html", icon: "html", source: "file-extension" },
-        "CSS" => { lang: "css", icon: "css", source: "file-extension" },
-        "JSON" => { lang: "json", icon: "json", source: "file-extension" },
-        "YAML" => { lang: "yaml", icon: "yaml", source: "file-extension" },
-        "SQL" => { lang: "sql", icon: "sql", source: "file-extension" }
-      }.each do |name, config|
-        it "detects #{config[:icon]} icon for #{name}", :aggregate_failures do
-          content = "== #{name}\n```#{config[:lang]}\ncode\n```"
+      %w[javascript typescript python ruby go rust bash html css json yaml sql].each do |lang|
+        it "detects #{lang} icon", :aggregate_failures do
+          content = "== #{lang.capitalize}\n```#{lang}\ncode\n```"
           tabs = described_class.parse(content)
 
-          expect(tabs[0][:icon]).to eq(config[:icon])
-          expect(tabs[0][:icon_source]).to eq(config[:source])
+          expect(tabs[0][:icon]).to eq(lang)
+          expect(tabs[0][:icon_source]).to eq("language")
         end
+      end
+
+      it "returns no icon for sh (no devicon)", :aggregate_failures do
+        content = "== Sh\n```sh\ncode\n```"
+        tabs = described_class.parse(content)
+
+        expect(tabs[0][:icon]).to be_nil
+        expect(tabs[0][:icon_source]).to be_nil
       end
     end
 

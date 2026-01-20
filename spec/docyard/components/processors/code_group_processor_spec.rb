@@ -263,7 +263,7 @@ RSpec.describe Docyard::Components::Processors::CodeGroupProcessor do
       it "includes language icon in tab" do
         result = processor.preprocess(content)
 
-        expect(result).to include("docyard-icon")
+        expect(result).to include("ph-")
       end
     end
 
