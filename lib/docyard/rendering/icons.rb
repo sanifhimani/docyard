@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "icons/file_types"
-require_relative "renderer"
+require_relative "icons/devicons"
 
 module Docyard
   module Icons
@@ -15,19 +14,26 @@ module Docyard
       %(<i class="#{weight_class} ph-#{name}" aria-hidden="true"></i>)
     end
 
-    def self.render_file_extension(extension)
-      svg_content = FileTypes.svg(extension)
+    def self.render_for_language(language)
+      devicon_class = Devicons::MAP[language.to_s.downcase]
+      return %(<i class="#{devicon_class}" aria-hidden="true"></i>) if devicon_class
 
-      if svg_content
-        Renderer.new.render_partial(
-          "_icon_file_extension", {
-            extension: extension,
-            svg_content: svg_content
-          }
-        )
-      else
-        render("file")
-      end
+      ""
+    end
+
+    def self.render_file_extension(extension)
+      devicon_class = Devicons::MAP[extension.to_s.downcase]
+      return %(<i class="#{devicon_class}" aria-hidden="true"></i>) if devicon_class
+
+      ""
+    end
+
+    def self.highlight_language(language)
+      Devicons::HIGHLIGHT_ALIASES[language.to_s.downcase] || language
+    end
+
+    def self.devicon?(language)
+      Devicons::MAP.key?(language.to_s.downcase)
     end
   end
 end

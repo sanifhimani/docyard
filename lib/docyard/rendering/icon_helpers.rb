@@ -15,5 +15,9 @@ module Docyard
     def icon_file_extension(extension)
       Icons.render_file_extension(extension) || ""
     end
+
+    def icon_for_language(language)
+      Icons.render_for_language(language) || ""
+    end
   end
 end

@@ -12,7 +12,9 @@
         >
           <% if tab[:icon] %>
             <span class="docyard-tabs__icon">
-              <% if tab[:icon_source] == "file-extension" %>
+              <% if tab[:icon_source] == "language" %>
+                <%= icon_for_language(tab[:icon]) %>
+              <% elsif tab[:icon_source] == "file-extension" %>
                 <%= icon_file_extension(tab[:icon]) %>
               <% elsif tab[:icon_source] == "phosphor" %>
                 <%= icon(tab[:icon]) %>
