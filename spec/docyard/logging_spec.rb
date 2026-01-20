@@ -64,26 +64,48 @@ RSpec.describe Docyard::Logging do
   end
 
   describe "log format" do
-    it "includes timestamp with correct format" do
+    it "outputs INFO messages without prefix" do
       described_class.logger = nil
 
       expect do
         described_class.logger.info("Test message")
-      end.to output(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/).to_stdout
+      end.to output("Test message\n").to_stdout
     end
 
-    it "includes Docyard prefix, severity, and message", :aggregate_failures do
+    it "outputs WARN messages with severity prefix" do
+      described_class.logger = nil
+
+      expect do
+        described_class.logger.warn("Warning message")
+      end.to output("[WARN] Warning message\n").to_stdout
+    end
+
+    it "outputs ERROR messages with severity prefix" do
+      described_class.logger = nil
+
+      expect do
+        described_class.logger.error("Error message")
+      end.to output("[ERROR] Error message\n").to_stdout
+    end
+
+    it "outputs DEBUG messages with severity prefix" do
       output = StringIO.new
-      formatter = proc do |severity, datetime, _progname, msg|
-        "[#{datetime.strftime('%Y-%m-%d %H:%M:%S')}] [Docyard] [#{severity}] #{msg}\n"
+      described_class.logger = Logger.new(output)
+      described_class.logger.formatter = proc do |severity, _datetime, _progname, msg|
+        case severity
+        when "DEBUG"
+          "[DEBUG] #{msg}\n"
+        when "INFO"
+          "#{msg}\n"
+        else
+          "[#{severity}] #{msg}\n"
+        end
       end
-      described_class.logger = Logger.new(output).tap { |l| l.formatter = formatter }
+      described_class.logger.level = Logger::DEBUG
 
-      described_class.logger.info("Test message")
+      described_class.logger.debug("Debug message")
 
-      expect(output.string).to include("[Docyard]")
-      expect(output.string).to include("[INFO]")
-      expect(output.string).to include("Test message")
+      expect(output.string).to eq("[DEBUG] Debug message\n")
     end
   end
 end

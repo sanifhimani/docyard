@@ -50,7 +50,9 @@ RSpec.describe Docyard::Search::BuildIndexer do
       before { stub_pagefind_available(available: false) }
 
       it "logs warning about missing pagefind" do
-        expect { indexer.index }.to output(/Search index skipped/).to_stderr
+        output = capture_logger_output { indexer.index }
+
+        expect(output).to match(/Search index skipped/)
       end
 
       it "returns 0" do
@@ -81,7 +83,9 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "logs success message" do
-        expect { indexer.index }.to output(/Generated search index.*42 pages/).to_stdout
+        output = capture_logger_output { indexer.index }
+
+        expect(output).to match(/Generated search index.*42 pages/)
       end
     end
 
@@ -96,7 +100,9 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "logs warning with error message" do
-        expect { indexer.index }.to output(/Search indexing failed/).to_stderr
+        output = capture_logger_output { indexer.index }
+
+        expect(output).to match(/Search indexing failed/)
       end
     end
 

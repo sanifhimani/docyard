@@ -62,7 +62,9 @@ RSpec.describe Docyard::Build::SitemapGenerator do
     it "outputs sitemap generation message" do
       generator = described_class.new(config)
 
-      expect { generator.generate }.to output(/Generated sitemap\.xml/).to_stdout
+      output = capture_logger_output { generator.generate }
+
+      expect(output).to match(/Generated sitemap\.xml/)
     end
 
     context "with base configuration" do

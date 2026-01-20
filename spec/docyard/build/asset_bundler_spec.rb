@@ -140,7 +140,9 @@ RSpec.describe Docyard::Build::AssetBundler do
       it "outputs bundling progress" do
         bundler = described_class.new(config, verbose: true)
 
-        expect { bundler.bundle }.to output(/Bundling CSS/).to_stdout
+        output = capture_logger_output { bundler.bundle }
+
+        expect(output).to match(/Bundling CSS/)
       end
     end
 

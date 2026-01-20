@@ -144,12 +144,15 @@ RSpec.describe Docyard::Search::DevIndexer do
       end
 
       it "returns nil and logs error", :aggregate_failures do
-        expect { indexer.generate }.to output(/Search index generation failed/).to_stderr
+        output = capture_logger_output { indexer.generate }
+
+        expect(output).to match(/Search index generation failed/)
         expect(indexer.pagefind_path).to be_nil
       end
 
       it "cleans up the temp directory", :aggregate_failures do
-        expect { indexer.generate }.to output.to_stderr
+        capture_logger_output { indexer.generate }
+
         expect(indexer.temp_dir).to be_nil.or(satisfy { |dir| dir && !Dir.exist?(dir) })
       end
     end

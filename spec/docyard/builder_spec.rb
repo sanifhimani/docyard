@@ -63,7 +63,9 @@ RSpec.describe Docyard::Builder do
         Dir.chdir(temp_dir) do
           builder = described_class.new(clean: true, verbose: true)
 
-          expect { builder.build }.to output(/Generated:/).to_stdout
+          output = capture_logger_output { builder.build }
+
+          expect(output).to match(/Generated:/)
         end
       end
     end

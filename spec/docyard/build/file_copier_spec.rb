@@ -114,7 +114,9 @@ RSpec.describe Docyard::Build::FileCopier do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: true)
 
-          expect { copier.copy }.to output(/Copied/).to_stdout
+          output = capture_logger_output { copier.copy }
+
+          expect(output).to match(/Copied/)
         end
       end
     end
