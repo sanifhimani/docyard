@@ -23,7 +23,7 @@ module Docyard
 
       def generate
         build_sidebar_cache
-        Utils::GitInfo.prefetch_timestamps("docs") if show_last_updated?
+        Utils::GitInfo.prefetch_timestamps(docs_path) if show_last_updated?
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
@@ -57,21 +57,21 @@ module Docyard
       end
 
       def custom_landing_page?
-        File.file?("docs/index.html")
+        File.file?(File.join(docs_path, "index.html"))
       end
 
       def copy_custom_landing_page
         output_path = File.join(config.build.output, "index.html")
         safe_file_write(output_path) do
           FileUtils.mkdir_p(File.dirname(output_path))
-          FileUtils.cp("docs/index.html", output_path)
+          FileUtils.cp(File.join(docs_path, "index.html"), output_path)
         end
         log "[✓] Copied custom landing page (index.html)"
       end
 
       def collect_markdown_files
-        files = Dir.glob(File.join("docs", "**", "*.md"))
-        files.reject! { |f| f == "docs/index.md" } if custom_landing_page?
+        files = Dir.glob(File.join(docs_path, "**", "*.md"))
+        files.reject! { |f| f == File.join(docs_path, "index.md") } if custom_landing_page?
         files
       end
 
@@ -101,9 +101,9 @@ module Docyard
       end
 
       def generate_page(markdown_file_path, renderer)
-        relative_path = markdown_file_path.delete_prefix("docs/")
+        relative_path = markdown_file_path.delete_prefix("#{docs_path}/")
         output_path = Utils::PathUtils.markdown_to_html_output(relative_path, config.build.output)
-        current_path = Utils::PathUtils.markdown_file_to_url(markdown_file_path, "docs")
+        current_path = Utils::PathUtils.markdown_file_to_url(markdown_file_path, docs_path)
 
         html_content = render_markdown_file(markdown_file_path, current_path, renderer)
         html_content = apply_search_exclusion(html_content, current_path)
@@ -147,7 +147,7 @@ module Docyard
 
       def navigation_builder
         @navigation_builder ||= Navigation::PageNavigationBuilder.new(
-          docs_path: "docs",
+          docs_path: docs_path,
           config: config,
           sidebar_cache: sidebar_cache
         )
@@ -175,7 +175,7 @@ module Docyard
 
       def build_sidebar_cache
         @sidebar_cache = Sidebar::Cache.new(
-          docs_path: "docs",
+          docs_path: docs_path,
           config: config
         )
         @sidebar_cache.build
@@ -183,6 +183,10 @@ module Docyard
 
       def show_last_updated?
         config.repo.url && config.repo.last_updated != false
+      end
+
+      def docs_path
+        config.source
       end
 
       def log(message)
@@ -197,7 +201,8 @@ module Docyard
       end
 
       def load_error_page_content
-        File.exist?("docs/404.html") ? File.read("docs/404.html") : build_renderer.render_not_found
+        error_page = File.join(docs_path, "404.html")
+        File.exist?(error_page) ? File.read(error_page) : build_renderer.render_not_found
       end
     end
   end

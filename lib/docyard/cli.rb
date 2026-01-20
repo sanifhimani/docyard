@@ -48,9 +48,11 @@ module Docyard
                            desc: "Enable search indexing (slower startup)"
     def serve
       require_relative "server/dev_server"
+      config = Docyard::Config.load
       server = Docyard::DevServer.new(
         port: options[:port],
         host: options[:host],
+        docs_path: config.source,
         search: options[:search]
       )
       server.start
