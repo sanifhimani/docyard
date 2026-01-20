@@ -718,6 +718,13 @@ main.content {
 
 @media (max-width: 1280px) and (min-width: 1025px) {
   .doc-aside {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: visible;
+  }
+
+  .doc-aside .doc-footer-desktop {
     display: none;
   }
 
@@ -739,6 +746,13 @@ main.content {
 
 @media (max-width: 1024px) {
   .doc-aside {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: visible;
+  }
+
+  .doc-aside .doc-footer-desktop {
     display: none;
   }
 
