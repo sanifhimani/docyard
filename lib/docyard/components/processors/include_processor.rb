@@ -16,35 +16,34 @@ module Docyard
         def preprocess(content)
           @current_file = context[:current_file]
           @docs_root = context[:docs_root] || "docs"
-          @included_files = Set.new
 
           process_outside_code_blocks(content) do |segment|
-            process_includes(segment)
+            process_includes(segment, Set.new)
           end
         end
 
         private
 
-        def process_includes(content)
-          content.gsub(INCLUDE_PATTERN) { |_| process_include(Regexp.last_match) }
+        def process_includes(content, included_files)
+          content.gsub(INCLUDE_PATTERN) { |_| process_include(Regexp.last_match, included_files) }
         end
 
-        def process_include(match)
+        def process_include(match, included_files)
           filepath = match[1]
           full_path = resolve_path(filepath)
 
-          error = validate_include(filepath, full_path)
+          error = validate_include(filepath, full_path, included_files)
           return error if error
 
-          @included_files.add(full_path)
+          updated_included_files = included_files.dup.add(full_path)
           file_content = File.read(full_path)
 
-          process_includes(file_content.strip)
+          process_includes(file_content.strip, updated_included_files)
         end
 
-        def validate_include(filepath, full_path)
+        def validate_include(filepath, full_path, included_files)
           return include_error(filepath, "File not found") unless full_path && File.exist?(full_path)
-          return include_error(filepath, "Circular include detected") if @included_files.include?(full_path)
+          return include_error(filepath, "Circular include detected") if included_files.include?(full_path)
           return include_error(filepath, "Use code snippets for non-markdown files") unless markdown_file?(filepath)
 
           nil
@@ -78,6 +77,7 @@ module Docyard
         end
 
         def include_error(filepath, message)
+          Docyard.logger.warn("Include failed: #{filepath} - #{message}")
           "> [!WARNING]\n> Include error: #{filepath} - #{message}\n"
         end
       end
