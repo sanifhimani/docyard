@@ -31,7 +31,8 @@ module Docyard
 
     def render_file(file_path, sidebar_html: "", prev_next_html: "", breadcrumbs: nil, branding: {},
                     template_options: {}, current_path: "/")
-      markdown = Markdown.new(File.read(file_path), config: config, file_path: file_path)
+      raw_content = File.read(file_path)
+      markdown = Markdown.new(raw_content, config: config, file_path: file_path)
 
       render(
         content: strip_md_from_links(markdown.html),
@@ -42,7 +43,8 @@ module Docyard
         branding: branding,
         template_options: template_options,
         current_path: current_path,
-        file_path: file_path
+        file_path: file_path,
+        raw_markdown: raw_content
       )
     end
 
@@ -65,12 +67,13 @@ module Docyard
     end
 
     def render(content:, page_title: Constants::DEFAULT_SITE_TITLE, page_description: nil, page_og_image: nil,
-               navigation: {}, branding: {}, template_options: {}, current_path: "/", file_path: nil)
+               navigation: {}, branding: {}, template_options: {}, current_path: "/", file_path: nil,
+               raw_markdown: nil)
       layout = template_options[:template] || DEFAULT_LAYOUT
       layout_path = File.join(LAYOUTS_PATH, "#{layout}.html.erb")
       template = File.read(layout_path)
 
-      assign_content_variables(content, page_title, navigation)
+      assign_content_variables(content, page_title, navigation, raw_markdown)
       assign_branding_variables(branding, current_path)
       assign_og_variables(branding, page_description, page_og_image, current_path)
       assign_template_variables(template_options)
@@ -123,13 +126,14 @@ module Docyard
 
     private
 
-    def assign_content_variables(content, page_title, navigation)
+    def assign_content_variables(content, page_title, navigation, raw_markdown)
       @content = content
       @page_title = page_title
       @sidebar_html = navigation[:sidebar_html] || ""
       @prev_next_html = navigation[:prev_next_html] || ""
       @toc = navigation[:toc] || []
       @breadcrumbs = navigation[:breadcrumbs]
+      @raw_markdown = raw_markdown
     end
 
     def assign_template_variables(template_options)
