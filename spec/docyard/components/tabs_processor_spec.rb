@@ -219,7 +219,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include('class="docyard-tabs__icon"')
-        expect(result).to include('viewBox="0 0 256 256"')
+        expect(result).to include("ph-")
         expect(result).to match(%r{>\s*npm\s*</button>}m)
       end
 
@@ -255,7 +255,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include("star")
-        expect(result).to include('viewBox="0 0 256 256"')
+        expect(result).to include("ph-")
       end
     end
 
@@ -266,7 +266,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
 
         expect(result).to include('class="docyard-tabs__icon"')
         expect(result).to include("terminal-window")
-        expect(result).to include('viewBox="0 0 256 256"')
+        expect(result).to include("ph-")
       end
 
       it "detects terminal commands (sh)", :aggregate_failures do
@@ -336,7 +336,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include("terminal-window")
-        expect(result).to include('viewBox="0 0 256 256"')
+        expect(result).to include("ph-")
       end
 
       it "maps bash to terminal-window (Phosphor)", :aggregate_failures do
@@ -344,7 +344,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
         result = processor.preprocess(markdown)
 
         expect(result).to include("terminal-window")
-        expect(result).to include('viewBox="0 0 256 256"')
+        expect(result).to include("ph-")
       end
 
       it "maps html to .html extension", :aggregate_failures do
@@ -378,7 +378,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
 
         expect(result).to include('class="docyard-tabs__icon"')
         expect(result).to include("file")
-        expect(result).to include('viewBox="0 0 256 256"')
+        expect(result).to include("ph-")
       end
     end
 
@@ -456,7 +456,7 @@ RSpec.describe Docyard::Components::TabsProcessor do
 
           expect(result).to include('class="docyard-tabs__icon"'), "Expected icon for #{shell}"
           expect(result).to include("terminal-window"), "Expected terminal-window icon for #{shell}"
-          expect(result).to include('viewBox="0 0 256 256"'), "Expected Phosphor viewBox for #{shell}"
+          expect(result).to include("ph-"), "Expected Phosphor viewBox for #{shell}"
         end
       end
     end

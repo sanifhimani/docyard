@@ -81,29 +81,31 @@ RSpec.describe Docyard::Renderer do
     end
 
     it "renders a partial with locals", :aggregate_failures do
-      html = renderer.render_partial("_icon", name: "rocket-launch", icon_data: '<path d="test"/>')
+      html = renderer.render_partial("_icon_file_extension", extension: "rb", svg_content: "<svg>test</svg>")
 
       expect(html).to include("svg")
       expect(html).to include("docyard-icon")
-      expect(html).to include("rocket-launch")
+      expect(html).to include("file-rb")
     end
 
     it "accepts valid variable names" do
-      expect { renderer.render_partial("_icon", name: "test", icon_data: "<path/>") }.not_to raise_error
+      expect do
+        renderer.render_partial("_icon_file_extension", extension: "js", svg_content: "<svg/>")
+      end.not_to raise_error
     end
 
     it "rejects variable names starting with numbers" do
-      expect { renderer.render_partial("_icon", "123invalid": "value") }
+      expect { renderer.render_partial("_icon_file_extension", "123invalid": "value") }
         .to raise_error(ArgumentError, /Invalid variable name/)
     end
 
     it "rejects variable names with special characters" do
-      expect { renderer.render_partial("_icon", "name-with-dash": "value") }
+      expect { renderer.render_partial("_icon_file_extension", "name-with-dash": "value") }
         .to raise_error(ArgumentError, /Invalid variable name/)
     end
 
     it "rejects variable names with spaces" do
-      expect { renderer.render_partial("_icon", "name with space": "value") }
+      expect { renderer.render_partial("_icon_file_extension", "name with space": "value") }
         .to raise_error(ArgumentError, /Invalid variable name/)
     end
   end
