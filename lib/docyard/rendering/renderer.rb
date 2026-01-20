@@ -78,6 +78,7 @@ module Docyard
       assign_og_variables(branding, page_description, page_og_image, current_path)
       assign_template_variables(template_options)
       assign_git_info(branding, file_path)
+      assign_feedback_variables
 
       ERB.new(template).result(binding)
     end
@@ -168,6 +169,13 @@ module Docyard
 
       @edit_url = git_info.edit_url(file_path) if @show_edit_link
       @last_updated = git_info.last_updated(file_path) if @show_last_updated
+    end
+
+    def assign_feedback_variables
+      return unless config
+
+      @feedback_enabled = config.feedback.enabled
+      @feedback_question = config.feedback.question
     end
   end
 end

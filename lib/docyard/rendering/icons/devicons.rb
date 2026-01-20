@@ -4,7 +4,7 @@ module Docyard
   module Icons
     module Devicons
       MAP = {
-        "bash" => "devicon-bash-plain colored", "bun" => "devicon-bun-plain colored",
+        "bash" => "devicon-bash-plain", "bun" => "devicon-bun-plain colored",
         "c" => "devicon-c-plain colored", "cargo" => "devicon-rust-original colored",
         "clj" => "devicon-clojure-plain colored", "clojure" => "devicon-clojure-plain colored",
         "coffee" => "devicon-coffeescript-original colored", "coffeescript" => "devicon-coffeescript-original colored",
