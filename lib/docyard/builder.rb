@@ -68,6 +68,10 @@ module Docyard
       sitemap_gen = Build::SitemapGenerator.new(config)
       sitemap_gen.generate
 
+      require_relative "build/llms_txt_generator"
+      llms_gen = Build::LlmsTxtGenerator.new(config)
+      llms_gen.generate
+
       File.write(File.join(config.build.output, "robots.txt"), robots_txt_content)
       log "[+] Generated robots.txt"
     end
