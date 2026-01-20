@@ -29,6 +29,9 @@ module Docyard
         verbose: options[:verbose]
       )
       exit(1) unless builder.build
+    rescue ConfigError => e
+      Docyard.logger.error(e.message)
+      exit(1)
     end
 
     desc "preview", "Preview the built site locally"
@@ -51,6 +54,9 @@ module Docyard
         search: options[:search]
       )
       server.start
+    rescue ConfigError => e
+      Docyard.logger.error(e.message)
+      exit(1)
     end
   end
 end
