@@ -7,6 +7,9 @@ module Docyard
   class AssetHandler
     TEMPLATES_ASSETS_PATH = File.join(__dir__, "../templates", "assets")
     CACHE_MAX_AGE = 3600
+    DEFAULT_PUBLIC_DIR = "docs/public"
+
+    attr_reader :public_dir
 
     CONTENT_TYPES = {
       ".css" => "text/css; charset=utf-8",
@@ -27,6 +30,10 @@ module Docyard
       ".webm" => "video/webm"
     }.freeze
 
+    def initialize(public_dir: DEFAULT_PUBLIC_DIR)
+      @public_dir = public_dir
+    end
+
     def serve_docyard_assets(request_path)
       asset_path = Utils::PathUtils.decode_path(request_path.delete_prefix("/_docyard/"))
 
@@ -43,7 +50,7 @@ module Docyard
     def serve_public_file(request_path)
       asset_path = Utils::PathUtils.decode_path(request_path.delete_prefix("/"))
 
-      file_path = safe_asset_path(asset_path, Constants::PUBLIC_DIR)
+      file_path = safe_asset_path(asset_path, public_dir)
       return nil unless file_path && File.file?(file_path)
 
       serve_file(file_path)
