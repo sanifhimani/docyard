@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "../../rendering/icons"
-require_relative "../../rendering/language_mapping"
 require_relative "../../rendering/renderer"
 require_relative "../base_processor"
 require_relative "../support/code_block/icon_detector"

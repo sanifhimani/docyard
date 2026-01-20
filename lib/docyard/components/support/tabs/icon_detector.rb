@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../code_detector"
+require_relative "../../../rendering/icons"
 
 module Docyard
   module Components
@@ -41,10 +42,13 @@ module Docyard
             detected = CodeDetector.detect(tab_content)
             return nil unless detected
 
+            language = detected[:language]
+            return nil unless Icons.devicon?(language)
+
             {
               name: tab_name,
-              icon: detected[:icon],
-              icon_source: detected[:source]
+              icon: language,
+              icon_source: "language"
             }
           end
 
