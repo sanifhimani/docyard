@@ -124,6 +124,7 @@ module Docyard
         end
 
         def import_error(filepath, message)
+          Docyard.logger.warn("Code snippet import failed: #{filepath} - #{message}")
           "```\nError importing #{filepath}: #{message}\n```"
         end
       end

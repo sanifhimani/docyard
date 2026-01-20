@@ -95,13 +95,24 @@ module Docyard
       ERB.new(template).result(binding)
     end
 
+    VALID_IVAR_PATTERN = /\A[a-z_][a-z0-9_]*\z/i
+
     def render_partial(name, locals = {})
       partial_path = File.join(PARTIALS_PATH, "#{name}.html.erb")
       template = File.read(partial_path)
 
-      locals.each { |key, value| instance_variable_set("@#{key}", value) }
+      locals.each do |key, value|
+        validate_variable_name!(key)
+        instance_variable_set("@#{key}", value)
+      end
 
       ERB.new(template).result(binding)
+    end
+
+    def validate_variable_name!(name)
+      return if name.to_s.match?(VALID_IVAR_PATTERN)
+
+      raise ArgumentError, "Invalid variable name: #{name}"
     end
 
     def asset_path(path)

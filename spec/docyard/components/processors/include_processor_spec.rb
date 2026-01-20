@@ -102,6 +102,25 @@ RSpec.describe Docyard::Components::Processors::IncludeProcessor do
       end
     end
 
+    context "with deeply nested circular includes" do
+      before do
+        create_file("docs/a.md", "A start\n<!--@include: b.md-->\nA end")
+        create_file("docs/b.md", "B start\n<!--@include: c.md-->\nB end")
+        create_file("docs/c.md", "C start\n<!--@include: a.md-->\nC end")
+      end
+
+      it "detects circular includes through multiple levels", :aggregate_failures do
+        content = "<!--@include: a.md-->"
+        result = processor.preprocess(content)
+
+        expect(result).to include("A start")
+        expect(result).to include("B start")
+        expect(result).to include("C start")
+        expect(result).to include("[!WARNING]")
+        expect(result).to include("Circular include detected")
+      end
+    end
+
     context "with nested includes" do
       before do
         create_file("docs/outer.md", "Outer start\n\n<!--@include: inner.md-->\n\nOuter end")

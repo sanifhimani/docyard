@@ -19,6 +19,8 @@ module Docyard
         @header_ctas = header_ctas
       end
 
+      VALID_IVAR_PATTERN = /\A[a-z_][a-z0-9_]*\z/i
+
       def render(tree)
         return "" if tree.empty?
 
@@ -32,10 +34,19 @@ module Docyard
         template_path = File.join(PARTIALS_PATH, "_#{name}.html.erb")
         template = File.read(template_path)
 
-        locals.each { |key, value| instance_variable_set("@#{key}", value) }
+        locals.each do |key, value|
+          validate_variable_name!(key)
+          instance_variable_set("@#{key}", value)
+        end
 
         erb_binding = binding
         ERB.new(template).result(erb_binding)
+      end
+
+      def validate_variable_name!(name)
+        return if name.to_s.match?(VALID_IVAR_PATTERN)
+
+        raise ArgumentError, "Invalid variable name: #{name}"
       end
 
       def render_tree_with_sections(items)

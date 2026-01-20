@@ -15,6 +15,32 @@ module Docyard
         logger.level = Logger.const_get(level.to_s.upcase)
       end
 
+      def start_buffering
+        @buffered_warnings = []
+        @buffering = true
+      end
+
+      def stop_buffering
+        @buffering = false
+        warnings = @buffered_warnings || []
+        @buffered_warnings = []
+        warnings
+      end
+
+      def buffering?
+        @buffering == true
+      end
+
+      def buffer_warning(message)
+        @buffered_warnings ||= []
+        @buffered_warnings << message
+      end
+
+      def flush_warnings
+        warnings = stop_buffering
+        warnings.each { |msg| logger.warn(msg) }
+      end
+
       private
 
       def default_logger
@@ -26,14 +52,23 @@ module Docyard
 
       def log_formatter
         proc do |severity, _datetime, _progname, msg|
-          case severity
-          when "DEBUG"
-            "[DEBUG] #{msg}\n"
-          when "INFO"
-            "#{msg}\n"
+          if severity == "WARN" && buffering?
+            buffer_warning(msg)
+            nil
           else
-            "[#{severity}] #{msg}\n"
+            format_message(severity, msg)
           end
+        end
+      end
+
+      def format_message(severity, msg)
+        case severity
+        when "DEBUG"
+          "[DEBUG] #{msg}\n"
+        when "INFO"
+          "#{msg}\n"
+        else
+          "[#{severity}] #{msg}\n"
         end
       end
     end
