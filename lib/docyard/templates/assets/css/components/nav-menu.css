@@ -33,17 +33,23 @@
   background: var(--background);
   border-bottom: 1px solid var(--border);
   z-index: calc(var(--z-dropdown) + 1);
-  transform: translateY(-8px);
+  transform: scale(0.98) translateY(-8px);
+  transform-origin: top center;
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  transition:
+    transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.12s ease-out;
   box-shadow: var(--shadow-lg);
 }
 
 .nav-menu-dropdown.is-open {
-  transform: translateY(0);
+  transform: scale(1) translateY(0);
   opacity: 1;
   pointer-events: auto;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.15s ease-out;
 }
 
 .nav-menu-content {
