@@ -12,7 +12,7 @@ RSpec.describe Docyard::Config::KeyValidator do
       expect(result).to be_empty
     end
 
-    it "returns errors for unknown keys" do
+    it "returns errors for unknown keys", :aggregate_failures do
       hash = { "name" => "John", "emial" => "john@example.com" }
 
       result = described_class.validate(hash, valid_keys, context: "user")
@@ -43,7 +43,7 @@ RSpec.describe Docyard::Config::KeyValidator do
       expect(result).to be_empty
     end
 
-    it "handles symbol keys" do
+    it "handles symbol keys", :aggregate_failures do
       hash = { name: "John", emial: "john@example.com" }
 
       result = described_class.validate(hash, valid_keys, context: "user")
