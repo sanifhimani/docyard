@@ -6,7 +6,6 @@ module Docyard
 
     DOCYARD_ASSETS_PREFIX = "/_docyard/"
     PAGEFIND_PREFIX = "/_docyard/pagefind/"
-    PUBLIC_DIR = "docs/public"
 
     INDEX_FILE = "index"
     MARKDOWN_EXTENSION = ".md"

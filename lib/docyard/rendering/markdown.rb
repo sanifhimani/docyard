@@ -113,7 +113,7 @@ module Docyard
     def render_html
       @context[:config] = config&.data
       @context[:current_file] = @file_path
-      @context[:docs_root] = "docs"
+      @context[:docs_root] = config&.source || "docs"
 
       preprocessed_content = Components::Registry.run_preprocessors(content, @context)
 

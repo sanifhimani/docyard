@@ -21,7 +21,7 @@ module Docyard
       @router = Router.new(docs_path: docs_path)
       @renderer = Renderer.new(base_url: config&.build&.base || "/", config: config, dev_mode: @dev_mode,
                                sse_port: sse_port)
-      @asset_handler = AssetHandler.new
+      @asset_handler = AssetHandler.new(public_dir: config&.public_dir || "docs/public")
       @pagefind_handler = PagefindHandler.new(pagefind_path: pagefind_path, config: config)
     end
 

@@ -42,7 +42,7 @@ RSpec.describe Docyard::Utils::GitInfo do
 
     it "uses custom edit path" do
       info = described_class.new(repo_url: repo_url, branch: "main", edit_path: "documentation")
-      file_path = "/project/docs/page.md"
+      file_path = "/project/documentation/page.md"
       expected = "https://github.com/docyard/docyard/edit/main/documentation/page.md"
       expect(info.edit_url(file_path)).to eq(expected)
     end

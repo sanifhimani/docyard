@@ -35,11 +35,12 @@ module Docyard
         return add_type_error(field_name, "file path or URL (string)", value.class.name) unless value.is_a?(String)
         return if url?(value)
 
-        file_path = File.absolute_path?(value) ? value : File.join("docs/public", value)
+        public_dir = File.join(@config["source"] || "docs", "public")
+        file_path = File.absolute_path?(value) ? value : File.join(public_dir, value)
         return if File.exist?(file_path)
 
         add_error(field: field_name, error: "file not found", got: value,
-                  fix: "Place the file in docs/public/ directory (e.g., 'logo.svg' for docs/public/logo.svg)")
+                  fix: "Place the file in #{public_dir}/ directory (e.g., 'logo.svg' for #{public_dir}/logo.svg)")
       end
 
       def validate_no_slashes(value, field_name)

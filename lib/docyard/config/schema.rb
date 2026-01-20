@@ -4,7 +4,7 @@ module Docyard
   class Config
     module Schema
       TOP_LEVEL = %w[
-        title description url og_image twitter
+        title description url og_image twitter source
         branding socials tabs sidebar
         build search navigation announcement
         repo analytics

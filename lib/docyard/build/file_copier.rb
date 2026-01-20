@@ -26,7 +26,7 @@ module Docyard
       private
 
       def copy_public_files
-        public_dir = Constants::PUBLIC_DIR
+        public_dir = config.public_dir
         return 0 unless Dir.exist?(public_dir)
 
         files = find_files_in_dir(public_dir)
@@ -115,7 +115,7 @@ module Docyard
         asset_path = branding_asset_path(asset_key)
         return 0 if asset_path.nil? || asset_path.start_with?("http://", "https://")
 
-        full_path = File.join("docs", asset_path)
+        full_path = File.join(config.source, asset_path)
         return 0 unless File.exist?(full_path)
 
         dest_path = File.join(config.build.output, asset_path)

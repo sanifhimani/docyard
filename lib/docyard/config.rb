@@ -17,6 +17,7 @@ module Docyard
       "url" => nil,
       "og_image" => nil,
       "twitter" => nil,
+      "source" => "docs",
       "branding" => { "logo" => nil, "favicon" => nil, "credits" => true, "copyright" => nil },
       "socials" => {},
       "tabs" => [],
@@ -25,7 +26,7 @@ module Docyard
       "search" => { "enabled" => true, "placeholder" => "Search...", "exclude" => [] },
       "navigation" => { "cta" => [], "breadcrumbs" => true },
       "announcement" => nil,
-      "repo" => { "url" => nil, "branch" => "main", "edit_path" => "docs", "edit_link" => true,
+      "repo" => { "url" => nil, "branch" => "main", "edit_path" => nil, "edit_link" => true,
                   "last_updated" => true },
       "analytics" => { "google" => nil, "plausible" => nil, "fathom" => nil, "script" => nil }
     }.freeze
@@ -52,6 +53,8 @@ module Docyard
     def url = data["url"]
     def og_image = data["og_image"]
     def twitter = data["twitter"]
+    def source = data["source"]
+    def public_dir = File.join(source, "public")
     def socials = data["socials"]
     def tabs = data["tabs"]
     def sidebar = data["sidebar"]
