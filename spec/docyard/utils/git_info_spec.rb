@@ -57,6 +57,17 @@ RSpec.describe Docyard::Utils::GitInfo do
       expect(git_info.last_updated("/nonexistent/file.md")).to be_nil
     end
 
+    it "returns nil when not in a git repository" do
+      temp_file = Tempfile.new(["test", ".md"])
+      temp_file.write("# Test")
+      temp_file.rewind
+      allow(described_class).to receive(:git_repository?).and_return(false)
+
+      expect(git_info.last_updated(temp_file.path)).to be_nil
+    ensure
+      temp_file.unlink
+    end
+
     it "returns nil when git has no commits for file" do
       temp_file = Tempfile.new(["test", ".md"])
       temp_file.write("# Test")
@@ -133,8 +144,41 @@ RSpec.describe Docyard::Utils::GitInfo do
     end
   end
 
+  describe ".git_repository?" do
+    it "returns true when .git directory exists" do
+      allow(File).to receive(:directory?).with(".git").and_return(true)
+
+      expect(described_class.git_repository?).to be true
+    end
+
+    it "falls back to git rev-parse when .git directory does not exist" do
+      allow(File).to receive(:directory?).with(".git").and_return(false)
+      allow(described_class).to receive(:system).and_return(true)
+
+      expect(described_class.git_repository?).to be true
+    end
+
+    it "returns false when not in a git repository" do
+      allow(File).to receive(:directory?).with(".git").and_return(false)
+      allow(described_class).to receive(:system).and_return(false)
+
+      expect(described_class.git_repository?).to be false
+    end
+  end
+
   describe ".prefetch_timestamps" do
     after { described_class.clear_cache }
+
+    context "when not in a git repository" do
+      it "returns early without calling git" do
+        allow(described_class).to receive(:git_repository?).and_return(false)
+        allow(Open3).to receive(:capture3)
+
+        described_class.prefetch_timestamps("docs")
+
+        expect(Open3).not_to have_received(:capture3)
+      end
+    end
 
     it "populates the timestamp cache from git log", :aggregate_failures do
       success_status = instance_double(Process::Status, success?: true)

@@ -18,6 +18,8 @@ module Docyard
         attr_accessor :timestamp_cache
 
         def prefetch_timestamps(docs_path = "docs")
+          return unless git_repository?
+
           @timestamp_cache = fetch_all_timestamps(docs_path)
         end
 
@@ -29,6 +31,10 @@ module Docyard
           return nil unless @timestamp_cache
 
           @timestamp_cache[file_path]
+        end
+
+        def git_repository?
+          File.directory?(".git") || system("git", "rev-parse", "--git-dir", out: File::NULL, err: File::NULL)
         end
 
         private
@@ -79,6 +85,7 @@ module Docyard
 
       def last_updated(file_path)
         return nil unless file_path && File.exist?(file_path)
+        return nil unless self.class.git_repository?
 
         timestamp = git_last_commit_time(file_path)
         return nil unless timestamp
