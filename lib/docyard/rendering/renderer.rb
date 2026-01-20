@@ -85,7 +85,7 @@ module Docyard
 
     def render_server_error(error)
       @error_message = error.message
-      @backtrace = error.backtrace.join("\n")
+      @backtrace = error.backtrace&.join("\n") || "No backtrace available"
       render_error_template(500)
     end
 

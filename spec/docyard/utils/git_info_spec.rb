@@ -61,19 +61,22 @@ RSpec.describe Docyard::Utils::GitInfo do
       temp_file = Tempfile.new(["test", ".md"])
       temp_file.write("# Test")
       temp_file.rewind
-      allow(git_info).to receive(:`).and_return("")
+      failure_status = instance_double(Process::Status, success?: false)
+      allow(Open3).to receive(:capture3).and_return(["", "", failure_status])
       expect(git_info.last_updated(temp_file.path)).to be_nil
     ensure
       temp_file.unlink
     end
 
     context "with git commit data" do
+      let(:success_status) { instance_double(Process::Status, success?: true) }
+
       it "returns hash with time object" do
         temp_file = Tempfile.new(["test", ".md"])
         temp_file.write("# Test")
         temp_file.rewind
         timestamp = Time.new(2026, 1, 13, 14, 32, 0, "-05:00")
-        allow(git_info).to receive(:`).and_return(timestamp.iso8601)
+        allow(Open3).to receive(:capture3).and_return([timestamp.iso8601, "", success_status])
         result = git_info.last_updated(temp_file.path)
         expect(result[:time]).to be_a(Time)
       ensure
@@ -85,7 +88,7 @@ RSpec.describe Docyard::Utils::GitInfo do
         temp_file.write("# Test")
         temp_file.rewind
         timestamp = Time.new(2026, 1, 13, 14, 32, 0, "-05:00")
-        allow(git_info).to receive(:`).and_return(timestamp.iso8601)
+        allow(Open3).to receive(:capture3).and_return([timestamp.iso8601, "", success_status])
         result = git_info.last_updated(temp_file.path)
         expect(result[:iso]).to match(/^\d{4}-\d{2}-\d{2}T/)
       ensure
@@ -97,7 +100,7 @@ RSpec.describe Docyard::Utils::GitInfo do
         temp_file.write("# Test")
         temp_file.rewind
         timestamp = Time.new(2026, 1, 13, 14, 32, 0, "-05:00")
-        allow(git_info).to receive(:`).and_return(timestamp.iso8601)
+        allow(Open3).to receive(:capture3).and_return([timestamp.iso8601, "", success_status])
         result = git_info.last_updated(temp_file.path)
         expect(result[:formatted]).to include("January 13, 2026")
       ensure
@@ -109,7 +112,7 @@ RSpec.describe Docyard::Utils::GitInfo do
         temp_file.write("# Test")
         temp_file.rewind
         timestamp = Time.new(2026, 1, 13, 14, 32, 0, "-05:00")
-        allow(git_info).to receive(:`).and_return(timestamp.iso8601)
+        allow(Open3).to receive(:capture3).and_return([timestamp.iso8601, "", success_status])
         result = git_info.last_updated(temp_file.path)
         expect(result[:formatted_short]).to eq("Jan 13, 2026")
       ensure
@@ -121,7 +124,7 @@ RSpec.describe Docyard::Utils::GitInfo do
         temp_file.write("# Test")
         temp_file.rewind
         timestamp = Time.new(2026, 1, 13, 14, 32, 0, "-05:00")
-        allow(git_info).to receive(:`).and_return(timestamp.iso8601)
+        allow(Open3).to receive(:capture3).and_return([timestamp.iso8601, "", success_status])
         result = git_info.last_updated(temp_file.path)
         expect(result[:relative]).to be_a(String)
       ensure

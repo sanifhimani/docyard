@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "open3"
+
 module Docyard
   module Utils
     class GitInfo
@@ -55,10 +57,11 @@ module Docyard
       end
 
       def git_last_commit_time(file_path)
-        output = `git log -1 --format=%cI -- "#{file_path}" 2>/dev/null`.strip
-        return nil if output.empty?
+        output, _, status = Open3.capture3("git", "log", "-1", "--format=%cI", "--", file_path)
+        return nil unless status.success?
+        return nil if output.strip.empty?
 
-        Time.parse(output)
+        Time.parse(output.strip)
       rescue ArgumentError
         nil
       end

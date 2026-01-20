@@ -104,8 +104,15 @@ module Docyard
         %w[logo favicon].sum { |asset_key| copy_single_branding_asset(asset_key) }
       end
 
+      def branding_asset_path(asset_key)
+        case asset_key
+        when "logo" then config.branding.logo
+        when "favicon" then config.branding.favicon
+        end
+      end
+
       def copy_single_branding_asset(asset_key)
-        asset_path = config.branding.send(asset_key)
+        asset_path = branding_asset_path(asset_key)
         return 0 if asset_path.nil? || asset_path.start_with?("http://", "https://")
 
         full_path = File.join("docs", asset_path)
