@@ -147,12 +147,23 @@ module Docyard
         end
 
         def build_wrapper_style(attrs)
-          return "" unless attrs["width"] || attrs["height"]
+          width = validate_dimension(attrs["width"])
+          height = validate_dimension(attrs["height"])
+          return "" unless width || height
 
           styles = []
-          styles << "max-width: #{escape_attr(attrs['width'])}px" if attrs["width"]
-          styles << "height: #{escape_attr(attrs['height'])}px" if attrs["height"]
+          styles << "max-width: #{width}px" if width
+          styles << "height: #{height}px" if height
           " style=\"#{styles.join('; ')}\""
+        end
+
+        def validate_dimension(value)
+          return nil if value.nil? || value.to_s.empty?
+
+          int_value = value.to_s.to_i
+          return nil unless int_value.positive? && int_value <= 10_000
+
+          int_value
         end
 
         def build_iframe_attrs(url, attrs, provider)
