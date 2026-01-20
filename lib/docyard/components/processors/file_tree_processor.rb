@@ -2,7 +2,6 @@
 
 require_relative "../base_processor"
 require_relative "../support/markdown_code_block_helper"
-require_relative "../../rendering/icons"
 
 module Docyard
   module Components
@@ -135,7 +134,7 @@ module Docyard
 
         def icon_for(type)
           icon_name = type == :folder ? "folder-open" : "file-text"
-          Icons.render(icon_name)
+          %(<i class="ph ph-#{icon_name}" aria-hidden="true"></i>)
         end
 
         def escape_html(text)
