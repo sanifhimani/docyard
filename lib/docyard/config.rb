@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "yaml"
+require_relative "config/schema"
 require_relative "config/validator"
 require_relative "config/constants"
 require_relative "config/hash_utils"
@@ -101,9 +102,9 @@ module Docyard
     end
 
     def method_missing(method, *args)
-      return @data[method.to_s] if args.empty?
+      return super unless args.empty?
 
-      super
+      @data[method.to_s]
     end
 
     def respond_to_missing?(method, include_private = false)
