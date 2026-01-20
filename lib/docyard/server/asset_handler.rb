@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require "digest"
+
 module Docyard
   class AssetHandler
     TEMPLATES_ASSETS_PATH = File.join(__dir__, "../templates", "assets")
+    CACHE_MAX_AGE = 3600
 
     CONTENT_TYPES = {
       ".css" => "text/css; charset=utf-8",
@@ -56,14 +59,18 @@ module Docyard
 
     def serve_file(file_path)
       content = File.read(file_path)
-      content_type = detect_content_type(file_path)
+      headers = build_cache_headers(content, File.mtime(file_path))
+      headers["Content-Type"] = detect_content_type(file_path)
 
-      [200, { "Content-Type" => content_type }, [content]]
+      [200, headers, [content]]
     end
 
     def serve_components_css
       content = concatenate_component_css
-      [200, { "Content-Type" => "text/css; charset=utf-8" }, [content]]
+      headers = build_cache_headers(content)
+      headers["Content-Type"] = "text/css; charset=utf-8"
+
+      [200, headers, [content]]
     end
 
     def concatenate_component_css
@@ -76,7 +83,10 @@ module Docyard
 
     def serve_components_js
       content = concatenate_component_js
-      [200, { "Content-Type" => "application/javascript; charset=utf-8" }, [content]]
+      headers = build_cache_headers(content)
+      headers["Content-Type"] = "application/javascript; charset=utf-8"
+
+      [200, headers, [content]]
     end
 
     def concatenate_component_js
@@ -90,6 +100,15 @@ module Docyard
     def detect_content_type(file_path)
       extension = File.extname(file_path)
       CONTENT_TYPES.fetch(extension, "application/octet-stream")
+    end
+
+    def build_cache_headers(content, last_modified = nil)
+      headers = {
+        "Cache-Control" => "public, max-age=#{CACHE_MAX_AGE}",
+        "ETag" => %("#{Digest::MD5.hexdigest(content)}")
+      }
+      headers["Last-Modified"] = last_modified.httpdate if last_modified
+      headers
     end
 
     def forbidden_response
