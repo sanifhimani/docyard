@@ -74,13 +74,30 @@ body.has-announcement:not(.has-tabs) .layout {
   padding-top: calc(var(--header-height) + var(--announcement-height));
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1280px) and (min-width: 1025px) {
   body.has-announcement .layout {
     padding-top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height) + 3rem);
   }
 
   body.has-announcement:not(.has-tabs) .layout {
     padding-top: calc(var(--header-height) + var(--announcement-height) + 3rem);
+  }
+}
+
+/* Mobile: tab bar is hidden, so don't include tab-bar-height */
+@media (max-width: 1024px) {
+  body.has-announcement .secondary-header {
+    top: calc(var(--header-height) + var(--announcement-height));
+  }
+
+  body.has-announcement .layout {
+    padding-top: calc(var(--header-height) + var(--announcement-height) + 3rem);
+  }
+
+  body.has-announcement .sidebar {
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
   }
 }
 
