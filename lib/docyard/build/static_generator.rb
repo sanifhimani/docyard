@@ -3,8 +3,7 @@
 require "parallel"
 require "tty-progressbar"
 require_relative "../rendering/template_resolver"
-require_relative "../navigation/prev_next_builder"
-require_relative "../navigation/breadcrumb_builder"
+require_relative "../navigation/page_navigation_builder"
 require_relative "../navigation/sidebar/cache"
 require_relative "../utils/path_utils"
 require_relative "../utils/git_info"
@@ -132,14 +131,20 @@ module Docyard
       end
 
       def build_navigation_html(template_resolver, current_path, markdown, header_ctas)
-        return { sidebar_html: "", prev_next_html: "", breadcrumbs: nil } unless template_resolver.show_sidebar?
+        navigation_builder.build(
+          current_path: current_path,
+          markdown: markdown,
+          header_ctas: header_ctas,
+          show_sidebar: template_resolver.show_sidebar?
+        )
+      end
 
-        sidebar_builder = build_sidebar_instance(current_path, header_ctas)
-        {
-          sidebar_html: sidebar_builder.to_html,
-          prev_next_html: build_prev_next(sidebar_builder, current_path, markdown),
-          breadcrumbs: build_breadcrumbs(sidebar_builder.tree, current_path)
-        }
+      def navigation_builder
+        @navigation_builder ||= Navigation::PageNavigationBuilder.new(
+          docs_path: "docs",
+          config: config,
+          sidebar_cache: sidebar_cache
+        )
       end
 
       def write_output(output_path, html_content)
@@ -154,31 +159,6 @@ module Docyard
           config: config
         )
         @sidebar_cache.build
-      end
-
-      def build_sidebar_instance(current_path, header_ctas = [])
-        SidebarBuilder.new(
-          docs_path: "docs",
-          current_path: current_path,
-          config: config,
-          header_ctas: header_ctas,
-          sidebar_cache: sidebar_cache
-        )
-      end
-
-      def build_prev_next(sidebar_builder, current_path, markdown)
-        PrevNextBuilder.new(
-          sidebar_tree: sidebar_builder.tree,
-          current_path: current_path,
-          frontmatter: markdown.frontmatter,
-          config: {}
-        ).to_html
-      end
-
-      def build_breadcrumbs(sidebar_tree, current_path)
-        return nil if config.navigation.breadcrumbs == false
-
-        BreadcrumbBuilder.new(sidebar_tree: sidebar_tree, current_path: current_path)
       end
 
       def log(message)
