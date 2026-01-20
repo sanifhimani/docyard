@@ -1,0 +1,21 @@
+<% if @raw_markdown || @show_edit_link || @show_last_updated %>
+<div class="page-actions">
+  <% if @raw_markdown %>
+  <button type="button" class="page-actions__copy-btn" data-copy-page>
+    <%= icon(:copy) %>
+    <span class="page-actions__copy-text">Copy page</span>
+  </button>
+  <% end %>
+  <% if @show_edit_link && @edit_url %>
+  <a href="<%= @edit_url %>" class="page-actions__edit-link" target="_blank" rel="noopener noreferrer">
+    <%= icon(:pencil_simple_line) %>
+    Edit this page
+  </a>
+  <% end %>
+  <% if @show_last_updated && @last_updated %>
+  <div class="page-actions__last-updated">
+    Last updated <time datetime="<%= @last_updated[:iso] %>" title="<%= @last_updated[:formatted] %>"><%= @last_updated[:relative] %></time>
+  </div>
+  <% end %>
+</div>
+<% end %>

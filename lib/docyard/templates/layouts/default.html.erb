@@ -30,8 +30,8 @@
         <%= render_partial('_breadcrumbs') %>
         <%= @content %>
 
-        <div class="git-info-mobile">
-          <%= render_partial('_git_info') %>
+        <div class="page-actions-mobile">
+          <%= render_partial('_page_actions') %>
         </div>
 
         <%= @prev_next_html %>
@@ -45,12 +45,15 @@
     <aside class="doc-aside">
       <%= render_partial('_table_of_contents') %>
       <div class="doc-footer-desktop">
-        <%= render_partial('_git_info') %>
+        <%= render_partial('_page_actions') %>
         <%= render_partial('_doc_footer') %>
       </div>
     </aside>
   </div>
 
+  <% if @raw_markdown %>
+  <script id="page-markdown" type="application/json"><%= @raw_markdown.to_json %></script>
+  <% end %>
   <%= render_partial('_scripts') %>
 </body>
 </html>

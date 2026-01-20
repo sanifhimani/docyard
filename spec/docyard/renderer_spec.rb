@@ -432,7 +432,8 @@ RSpec.describe Docyard::Renderer do
 
         expect(html).to include('href="page"')
         expect(html).to include('href="guide/setup"')
-        expect(html).not_to include(".md")
+        expect(html).not_to include('href="page.md"')
+        expect(html).not_to include('href="guide/setup.md"')
       end
     end
   end
