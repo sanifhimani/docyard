@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../rendering/icons"
 require_relative "../base_processor"
 
 module Docyard
@@ -10,6 +9,7 @@ module Docyard
         self.priority = 20
 
         ICON_PATTERN = /:([a-z][a-z0-9-]*):(?:([a-z]+):)?/i
+        VALID_WEIGHTS = %w[regular bold fill light thin duotone].freeze
 
         def postprocess(html)
           segments = split_preserving_code_blocks(html)
@@ -44,8 +44,14 @@ module Docyard
           content.gsub(ICON_PATTERN) do
             icon_name = Regexp.last_match(1)
             weight = Regexp.last_match(2) || "regular"
-            Icons.render(icon_name, weight) || Regexp.last_match(0)
+            render_icon(icon_name, weight)
           end
+        end
+
+        def render_icon(name, weight)
+          weight = "regular" unless VALID_WEIGHTS.include?(weight)
+          weight_class = weight == "regular" ? "ph" : "ph-#{weight}"
+          %(<i class="#{weight_class} ph-#{name}" aria-hidden="true"></i>)
         end
       end
     end

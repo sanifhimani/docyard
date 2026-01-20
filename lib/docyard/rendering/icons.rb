@@ -1,25 +1,18 @@
 # frozen_string_literal: true
 
-require_relative "icons/phosphor"
 require_relative "icons/file_types"
 require_relative "renderer"
 
 module Docyard
   module Icons
-    LIBRARIES = {
-      phosphor: PHOSPHOR
-    }.freeze
+    VALID_WEIGHTS = %w[regular bold fill light thin duotone].freeze
 
     def self.render(name, weight = "regular")
-      icon_data = LIBRARIES.dig(:phosphor, weight, name)
-      return nil unless icon_data
-
-      Renderer.new.render_partial(
-        "_icon", {
-          name: name,
-          icon_data: icon_data
-        }
-      )
+      name = name.to_s.tr("_", "-")
+      weight = weight.to_s
+      weight = "regular" unless VALID_WEIGHTS.include?(weight)
+      weight_class = weight == "regular" ? "ph" : "ph-#{weight}"
+      %(<i class="#{weight_class} ph-#{name}" aria-hidden="true"></i>)
     end
 
     def self.render_file_extension(extension)
