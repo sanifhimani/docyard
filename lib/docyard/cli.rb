@@ -48,7 +48,7 @@ module Docyard
                            desc: "Enable search indexing (slower startup)"
     def serve
       require_relative "server/dev_server"
-      server = Docyard::Server.new(
+      server = Docyard::DevServer.new(
         port: options[:port],
         host: options[:host],
         search: options[:search]

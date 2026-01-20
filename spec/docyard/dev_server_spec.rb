@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Docyard::Server do
+RSpec.describe Docyard::DevServer do
   include_context "with temp directory"
 
   describe "#initialize" do

@@ -11,7 +11,7 @@ require_relative "../config"
 require_relative "../navigation/sidebar/cache"
 
 module Docyard
-  class Server
+  class DevServer
     DEFAULT_PORT = 4200
     DEFAULT_HOST = "localhost"
 
