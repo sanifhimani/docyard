@@ -25,9 +25,15 @@ module Docyard
       end
 
       def log_formatter
-        proc do |severity, datetime, _progname, msg|
-          timestamp = datetime.strftime("%Y-%m-%d %H:%M:%S")
-          "[#{timestamp}] [Docyard] [#{severity}] #{msg}\n"
+        proc do |severity, _datetime, _progname, msg|
+          case severity
+          when "DEBUG"
+            "[DEBUG] #{msg}\n"
+          when "INFO"
+            "#{msg}\n"
+          else
+            "[#{severity}] #{msg}\n"
+          end
         end
       end
     end
