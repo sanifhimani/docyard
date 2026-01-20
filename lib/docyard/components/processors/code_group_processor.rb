@@ -3,6 +3,7 @@
 require_relative "../base_processor"
 require_relative "../support/code_block/feature_extractor"
 require_relative "../support/code_block/line_wrapper"
+require_relative "../support/code_block/line_number_resolver"
 require_relative "../support/code_group/html_builder"
 require_relative "../support/markdown_code_block_helper"
 require_relative "../../rendering/icons"
@@ -26,6 +27,7 @@ module Docyard
 
         CodeBlockFeatureExtractor = Support::CodeBlock::FeatureExtractor
         CodeBlockLineWrapper = Support::CodeBlock::LineWrapper
+        LineNumbers = Support::CodeBlock::LineNumberResolver
         CodeGroupHtmlBuilder = Support::CodeGroup::HtmlBuilder
 
         def preprocess(content)
@@ -136,7 +138,7 @@ module Docyard
             focus_lines: block_data[:focus_lines] || {},
             error_lines: block_data[:error_lines] || {},
             warning_lines: block_data[:warning_lines] || {},
-            start_line: extract_start_line(block_data[:option])
+            start_line: LineNumbers.start_line(block_data[:option])
           }
         end
 
@@ -145,13 +147,13 @@ module Docyard
         end
 
         def base_locals(processed_html, code_text, block_data)
-          show_ln = line_numbers_enabled?(block_data[:option])
-          start = extract_start_line(block_data[:option])
+          show_ln = LineNumbers.enabled?(block_data[:option])
+          start = LineNumbers.start_line(block_data[:option])
 
           {
             code_block_html: processed_html, code_text: escape_html_attribute(code_text),
             copy_icon: Icons.render("copy", "regular") || "", show_line_numbers: show_ln,
-            line_numbers: show_ln ? generate_line_numbers(code_text, start) : [], start_line: start
+            line_numbers: show_ln ? LineNumbers.generate_numbers(code_text, start) : [], start_line: start
           }
         end
 
@@ -165,24 +167,6 @@ module Docyard
 
         def title_locals
           { title: nil, icon: nil, icon_source: nil }
-        end
-
-        def line_numbers_enabled?(option)
-          return false if option == ":no-line-numbers"
-          return true if option&.start_with?(":line-numbers")
-
-          false
-        end
-
-        def extract_start_line(option)
-          return 1 unless option&.include?("=")
-
-          option.split("=").last.to_i
-        end
-
-        def generate_line_numbers(code_text, start_line)
-          count = [code_text.lines.count, 1].max
-          (start_line...(start_line + count)).to_a
         end
 
         def extract_code_text(html)

@@ -3,6 +3,7 @@
 require_relative "../code_block/feature_extractor"
 require_relative "../code_block/icon_detector"
 require_relative "../code_block/line_wrapper"
+require_relative "../code_block/line_number_resolver"
 require_relative "icon_detector"
 require_relative "../../../rendering/icons"
 require_relative "../../../rendering/renderer"
@@ -21,6 +22,7 @@ module Docyard
           CodeBlockFeatureExtractor = CodeBlock::FeatureExtractor
           CodeBlockIconDetector = CodeBlock::IconDetector
           CodeBlockLineWrapper = CodeBlock::LineWrapper
+          LineNumbers = CodeBlock::LineNumberResolver
 
           def self.parse(content)
             new(content).parse
@@ -120,15 +122,15 @@ module Docyard
               focus_lines: block_data[:focus_lines] || {},
               error_lines: block_data[:error_lines] || {},
               warning_lines: block_data[:warning_lines] || {},
-              start_line: extract_start_line(block_data[:option])
+              start_line: LineNumbers.start_line(block_data[:option])
             }
             CodeBlockLineWrapper.wrap_code_block(html, wrapper_data)
           end
 
           def build_full_locals(processed_html, code_text, block_data)
             title_data = CodeBlockIconDetector.detect(block_data[:title], block_data[:lang])
-            show_line_numbers = line_numbers_enabled?(block_data[:option])
-            start_line = extract_start_line(block_data[:option])
+            show_line_numbers = LineNumbers.enabled?(block_data[:option])
+            start_line = LineNumbers.start_line(block_data[:option])
 
             base_locals(processed_html, code_text, show_line_numbers, start_line)
               .merge(feature_locals(block_data))
@@ -141,7 +143,7 @@ module Docyard
               code_text: escape_html_attribute(code_text),
               copy_icon: Icons.render("copy", "regular") || "",
               show_line_numbers: show_line_numbers,
-              line_numbers: show_line_numbers ? generate_line_numbers(code_text, start_line) : [],
+              line_numbers: show_line_numbers ? LineNumbers.generate_numbers(code_text, start_line) : [],
               start_line: start_line
             }
           end
@@ -162,25 +164,6 @@ module Docyard
               icon: title_data[:icon],
               icon_source: title_data[:icon_source]
             }
-          end
-
-          def line_numbers_enabled?(block_option)
-            return false if block_option == ":no-line-numbers"
-            return true if block_option&.start_with?(":line-numbers")
-
-            false
-          end
-
-          def extract_start_line(block_option)
-            return 1 unless block_option&.include?("=")
-
-            block_option.split("=").last.to_i
-          end
-
-          def generate_line_numbers(code_text, start_line)
-            line_count = code_text.lines.count
-            line_count = 1 if line_count.zero?
-            (start_line...(start_line + line_count)).to_a
           end
 
           def extract_code_text(html)
