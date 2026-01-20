@@ -1,14 +1,45 @@
 # frozen_string_literal: true
 
+require "uri"
+
 module Docyard
   module Utils
     module PathUtils
       module_function
 
       def sanitize_url_path(request_path)
-        clean = request_path.to_s.delete_prefix("/").delete_suffix("/")
+        decoded = decode_path(request_path)
+        clean = decoded.delete_prefix("/").delete_suffix("/")
         clean = "index" if clean.empty?
         clean.delete_suffix(".md")
+      end
+
+      def safe_path?(requested_path, base_dir)
+        return false if requested_path.nil? || base_dir.nil?
+
+        expanded_base = File.expand_path(base_dir)
+        expanded_path = File.expand_path(requested_path, base_dir)
+        expanded_path.start_with?("#{expanded_base}/") || expanded_path == expanded_base
+      end
+
+      def resolve_safe_path(relative_path, base_dir)
+        return nil if relative_path.nil? || base_dir.nil?
+
+        decoded = decode_path(relative_path)
+        full_path = File.join(base_dir, decoded)
+        expanded = File.expand_path(full_path)
+        expanded_base = File.expand_path(base_dir)
+
+        return nil unless expanded.start_with?("#{expanded_base}/")
+
+        expanded
+      end
+
+      def decode_path(path)
+        decoded = URI.decode_www_form_component(path.to_s)
+        decoded.gsub(/\\+/, "/")
+      rescue ArgumentError
+        path.to_s
       end
 
       def markdown_file_to_url(file_path, docs_path)
