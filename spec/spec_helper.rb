@@ -47,4 +47,28 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.before do
+    Docyard::Logging.logger = nil
+  end
+end
+
+module LoggerTestHelpers
+  TEST_LOG_FORMATTER = proc do |severity, _datetime, _progname, msg|
+    severity == "INFO" ? "#{msg}\n" : "[#{severity}] #{msg}\n"
+  end
+
+  def capture_logger_output
+    output = StringIO.new
+    original_logger = Docyard::Logging.logger
+    Docyard::Logging.logger = Logger.new(output).tap { |l| l.formatter = TEST_LOG_FORMATTER }
+    yield
+    output.string
+  ensure
+    Docyard::Logging.logger = original_logger
+  end
+end
+
+RSpec.configure do |config|
+  config.include LoggerTestHelpers
 end

@@ -17,7 +17,7 @@ module Docyard
       end
 
       def bundle
-        puts "\nBundling assets..."
+        Docyard.logger.info("\nBundling assets...")
 
         css_hash = bundle_css
         js_hash = bundle_js
@@ -147,7 +147,7 @@ module Docyard
       end
 
       def log(message)
-        puts message
+        Docyard.logger.info(message)
       end
     end
   end

@@ -104,11 +104,11 @@ module Docyard
     end
 
     def log(message)
-      puts message
+      Docyard.logger.info(message)
     end
 
     def error(message)
-      warn "[ERROR] #{message}"
+      Docyard.logger.error(message)
     end
   end
 end

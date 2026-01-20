@@ -13,7 +13,7 @@ module Docyard
       end
 
       def copy
-        puts "\nCopying static assets..."
+        Docyard.logger.info("\nCopying static assets...")
 
         count = 0
         count += copy_public_files
@@ -127,7 +127,7 @@ module Docyard
       end
 
       def log(message)
-        puts message
+        Docyard.logger.info(message)
       end
     end
   end

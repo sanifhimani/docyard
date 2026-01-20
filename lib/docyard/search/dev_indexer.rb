@@ -35,7 +35,7 @@ module Docyard
         log_success(page_count)
         pagefind_path
       rescue StandardError => e
-        warn "[!] Search index generation failed: #{e.message}"
+        Docyard.logger.warn("Search index generation failed: #{e.message}")
         cleanup
         nil
       end
@@ -50,7 +50,7 @@ module Docyard
 
       def pagefind_available?
         result = super
-        warn "[!] Search disabled: Pagefind not found (npm install -g pagefind)" unless result
+        Docyard.logger.warn("Search disabled: Pagefind not found (npm install -g pagefind)") unless result
         result
       end
 
@@ -153,8 +153,8 @@ module Docyard
       end
 
       def log_success(page_count)
-        puts "* Search index generated (#{page_count} pages indexed)"
-        puts "* Temp directory: #{temp_dir}" if ENV["DOCYARD_DEBUG"]
+        Docyard.logger.info("* Search index generated (#{page_count} pages indexed)")
+        Docyard.logger.debug("* Temp directory: #{temp_dir}")
       end
     end
   end

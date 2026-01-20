@@ -169,7 +169,9 @@ RSpec.describe Docyard::Build::StaticGenerator do
 
           generator = described_class.new(config, verbose: true)
 
-          expect { generator.generate }.to output(/Generated:/).to_stdout
+          output = capture_logger_output { generator.generate }
+
+          expect(output).to match(/Generated:/)
         end
       end
     end
