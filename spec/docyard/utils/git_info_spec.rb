@@ -133,6 +133,76 @@ RSpec.describe Docyard::Utils::GitInfo do
     end
   end
 
+  describe ".prefetch_timestamps" do
+    after { described_class.clear_cache }
+
+    it "populates the timestamp cache from git log", :aggregate_failures do
+      success_status = instance_double(Process::Status, success?: true)
+      git_output = "2026-01-15T10:00:00-05:00\n\ndocs/guide.md\ndocs/index.md\n"
+      allow(Open3).to receive(:capture3)
+        .with("git", "log", "--pretty=format:%cI", "--name-only", "--", "docs/")
+        .and_return([git_output, "", success_status])
+
+      described_class.prefetch_timestamps("docs")
+
+      expect(described_class.cached_timestamp("docs/guide.md")).to be_a(Time)
+      expect(described_class.cached_timestamp("docs/index.md")).to be_a(Time)
+    end
+
+    it "keeps first (most recent) timestamp for each file" do
+      success_status = instance_double(Process::Status, success?: true)
+      git_output = "2026-01-15T10:00:00-05:00\n\ndocs/guide.md\n\n2026-01-10T09:00:00-05:00\n\ndocs/guide.md\n"
+      allow(Open3).to receive(:capture3)
+        .with("git", "log", "--pretty=format:%cI", "--name-only", "--", "docs/")
+        .and_return([git_output, "", success_status])
+
+      described_class.prefetch_timestamps("docs")
+
+      expect(described_class.cached_timestamp("docs/guide.md").day).to eq(15)
+    end
+
+    it "returns empty hash when git command fails" do
+      failure_status = instance_double(Process::Status, success?: false)
+      allow(Open3).to receive(:capture3).and_return(["", "error", failure_status])
+
+      described_class.prefetch_timestamps("docs")
+
+      expect(described_class.cached_timestamp("docs/guide.md")).to be_nil
+    end
+  end
+
+  describe ".clear_cache" do
+    it "removes all cached timestamps" do
+      success_status = instance_double(Process::Status, success?: true)
+      git_output = "2026-01-15T10:00:00-05:00\n\ndocs/guide.md\n"
+      allow(Open3).to receive(:capture3).and_return([git_output, "", success_status])
+
+      described_class.prefetch_timestamps("docs")
+      described_class.clear_cache
+
+      expect(described_class.cached_timestamp("docs/guide.md")).to be_nil
+    end
+  end
+
+  describe "#last_updated with cache" do
+    after { described_class.clear_cache }
+
+    it "uses cached timestamp when available" do
+      temp_file = Tempfile.new(["guide", ".md"])
+      temp_file.write("# Guide")
+      temp_file.close
+
+      timestamp = Time.new(2026, 1, 15, 10, 0, 0, "-05:00")
+      described_class.instance_variable_set(:@timestamp_cache, { temp_file.path => timestamp })
+
+      result = git_info.last_updated(temp_file.path)
+      expect(result[:time]).to eq(timestamp)
+    ensure
+      temp_file&.unlink
+      described_class.clear_cache
+    end
+  end
+
   describe "relative time formatting" do
     let(:git_info_instance) { described_class.new(repo_url: repo_url) }
 

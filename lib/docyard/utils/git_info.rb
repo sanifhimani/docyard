@@ -14,6 +14,51 @@ module Docyard
         [31_536_000, "year"]
       ].freeze
 
+      class << self
+        attr_accessor :timestamp_cache
+
+        def prefetch_timestamps(docs_path = "docs")
+          @timestamp_cache = fetch_all_timestamps(docs_path)
+        end
+
+        def clear_cache
+          @timestamp_cache = nil
+        end
+
+        def cached_timestamp(file_path)
+          return nil unless @timestamp_cache
+
+          @timestamp_cache[file_path]
+        end
+
+        private
+
+        def fetch_all_timestamps(docs_path)
+          output, _, status = Open3.capture3("git", "log", "--pretty=format:%cI", "--name-only", "--", "#{docs_path}/")
+          return {} unless status.success?
+
+          parse_git_log_output(output)
+        end
+
+        def parse_git_log_output(output)
+          timestamps = {}
+          current_timestamp = nil
+
+          output.each_line do |line|
+            line = line.strip
+            next if line.empty?
+
+            if line.match?(/^\d{4}-\d{2}-\d{2}T/)
+              current_timestamp = Time.parse(line)
+            elsif current_timestamp && !timestamps.key?(line)
+              timestamps[line] = current_timestamp
+            end
+          end
+
+          timestamps
+        end
+      end
+
       attr_reader :repo_url, :branch, :edit_path
 
       def initialize(repo_url:, branch: "main", edit_path: "docs")
@@ -57,6 +102,13 @@ module Docyard
       end
 
       def git_last_commit_time(file_path)
+        cached = self.class.cached_timestamp(file_path)
+        return cached if cached
+
+        fetch_single_timestamp(file_path)
+      end
+
+      def fetch_single_timestamp(file_path)
         output, _, status = Open3.capture3("git", "log", "-1", "--format=%cI", "--", file_path)
         return nil unless status.success?
         return nil if output.strip.empty?
