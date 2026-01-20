@@ -51,7 +51,8 @@
   transition: transform 0.1s cubic-bezier(0.4, 0, 1, 1), background-color 0.1s ease;
 }
 
-.docyard-filetree__entry .docyard-icon {
+.docyard-filetree__entry .docyard-icon,
+.docyard-filetree__entry i[class*="ph-"] {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -66,12 +67,12 @@
   height: 100%;
 }
 
-.docyard-filetree__entry .docyard-icon-folder-open,
-.docyard-filetree__entry .docyard-icon-folder {
+.docyard-filetree__entry .ph-folder-open,
+.docyard-filetree__entry .ph-folder {
   color: var(--muted-foreground);
 }
 
-.docyard-filetree__entry .docyard-icon-file-text {
+.docyard-filetree__entry .ph-file-text {
   color: var(--muted-foreground);
   opacity: 0.6;
 }

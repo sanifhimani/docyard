@@ -56,26 +56,31 @@
   justify-content: flex-end;
 }
 
-.pager-label .docyard-icon {
+.pager-label .docyard-icon,
+.pager-label i[class*="ph-"] {
   display: inline-flex;
   opacity: 0.5;
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.pager-label .docyard-icon svg {
+.pager-label .docyard-icon svg,
+.pager-label i[class*="ph-"] {
   width: 1rem;
   height: 1rem;
 }
 
-.pager-link:hover .pager-label .docyard-icon {
+.pager-link:hover .pager-label .docyard-icon,
+.pager-link:hover .pager-label i[class*="ph-"] {
   opacity: 1;
 }
 
-.pager-link.prev:hover .pager-label .docyard-icon {
+.pager-link.prev:hover .pager-label .docyard-icon,
+.pager-link.prev:hover .pager-label i[class*="ph-"] {
   transform: translateX(-4px);
 }
 
-.pager-link.next:hover .pager-label .docyard-icon {
+.pager-link.next:hover .pager-label .docyard-icon,
+.pager-link.next:hover .pager-label i[class*="ph-"] {
   transform: translateX(4px);
 }
 
@@ -98,7 +103,8 @@
     padding: var(--spacing-3) var(--spacing-4);
   }
 
-  .pager-label .docyard-icon {
+  .pager-label .docyard-icon,
+  .pager-label i[class*="ph-"] {
     opacity: 0.5;
   }
 
@@ -110,7 +116,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pager-link,
-  .pager-label .docyard-icon {
+  .pager-label .docyard-icon,
+  .pager-label i[class*="ph-"] {
     transition: none;
   }
 }

@@ -248,7 +248,8 @@
   opacity: 0.4;
 }
 
-.search-empty-icon .docyard-icon {
+.search-empty-icon .docyard-icon,
+.search-empty-icon i[class*="ph-"] {
   width: 4rem;
   height: 4rem;
 }
@@ -516,7 +517,8 @@
     display: none;
   }
 
-  .search-trigger-icon .docyard-icon {
+  .search-trigger-icon .docyard-icon,
+  .search-trigger-icon i[class*="ph-"] {
     width: 1.25rem;
     height: 1.25rem;
   }

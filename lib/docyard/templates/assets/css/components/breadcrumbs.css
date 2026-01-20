@@ -40,7 +40,8 @@
   box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
 }
 
-.breadcrumb-toggle .docyard-icon {
+.breadcrumb-toggle .docyard-icon,
+.breadcrumb-toggle i[class*="ph-"] {
   width: 18px;
   height: 18px;
 }

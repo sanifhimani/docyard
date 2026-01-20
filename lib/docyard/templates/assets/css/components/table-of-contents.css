@@ -107,12 +107,19 @@
     box-shadow: 0 0 0 var(--ring-width) oklch(from var(--ring) l c h / 50%);
   }
 
-  .secondary-header-toc-toggle svg {
+  .secondary-header-toc-toggle .docyard-icon {
     transform: rotate(-90deg);
     transition: transform var(--transition-base);
   }
 
-  .secondary-header-toc-toggle[aria-expanded="true"] svg {
+  .secondary-header-toc-toggle i[class*="ph-"] {
+    display: inline-block;
+    transform: rotate(-90deg);
+    transition: transform var(--transition-base);
+  }
+
+  .secondary-header-toc-toggle[aria-expanded="true"] .docyard-icon,
+  .secondary-header-toc-toggle[aria-expanded="true"] i[class*="ph-"] {
     transform: rotate(0deg);
   }
 }
@@ -314,7 +321,8 @@
     transition: none;
   }
 
-  .secondary-header-toc-toggle svg {
+  .secondary-header-toc-toggle .docyard-icon,
+  .secondary-header-toc-toggle i[class*="ph-"] {
     transition: none;
   }
 }

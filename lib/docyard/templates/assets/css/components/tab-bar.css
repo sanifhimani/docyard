@@ -62,7 +62,8 @@
   opacity: 0.7;
 }
 
-.tab-icon .docyard-icon {
+.tab-icon .docyard-icon,
+.tab-icon i[class*="ph-"] {
   width: 16px;
   height: 16px;
 }

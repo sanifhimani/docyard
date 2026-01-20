@@ -57,7 +57,8 @@
   flex-shrink: 0;
 }
 
-.docyard-code-block__icon .docyard-icon {
+.docyard-code-block__icon .docyard-icon,
+.docyard-code-block__icon i[class*="ph-"] {
   width: 1rem;
   height: 1rem;
   display: inline-flex;
@@ -468,7 +469,8 @@
     gap: var(--spacing-2);
   }
 
-  .docyard-code-block__icon .docyard-icon {
+  .docyard-code-block__icon .docyard-icon,
+  .docyard-code-block__icon i[class*="ph-"] {
     width: 0.875rem;
     height: 0.875rem;
   }
