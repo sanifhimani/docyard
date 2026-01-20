@@ -7,6 +7,7 @@ require_relative "../navigation/prev_next_builder"
 require_relative "../navigation/breadcrumb_builder"
 require_relative "../navigation/sidebar/cache"
 require_relative "../utils/path_utils"
+require_relative "../utils/git_info"
 
 module Docyard
   module Build
@@ -23,6 +24,7 @@ module Docyard
 
       def generate
         build_sidebar_cache
+        Utils::GitInfo.prefetch_timestamps("docs") if config.branding.show_last_updated
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
@@ -32,6 +34,8 @@ module Docyard
         generate_error_page
 
         markdown_files.size
+      ensure
+        Utils::GitInfo.clear_cache
       end
 
       private
@@ -119,7 +123,7 @@ module Docyard
       def render_markdown_file(markdown_file_path, current_path, renderer)
         markdown = Markdown.new(File.read(markdown_file_path))
         template_resolver = TemplateResolver.new(markdown.frontmatter, config.data)
-        branding = branding_options
+        branding = BrandingResolver.new(config).resolve
 
         navigation = build_navigation_html(template_resolver, current_path, markdown, branding[:header_ctas])
         renderer.render_file(markdown_file_path, **navigation, branding: branding,
@@ -175,10 +179,6 @@ module Docyard
         return nil if config.navigation.breadcrumbs == false
 
         BreadcrumbBuilder.new(sidebar_tree: sidebar_tree, current_path: current_path)
-      end
-
-      def branding_options
-        BrandingResolver.new(config).resolve
       end
 
       def log(message)
