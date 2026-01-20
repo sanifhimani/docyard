@@ -55,4 +55,6 @@ module Docyard
       super("Asset not found: #{asset_path}")
     end
   end
+
+  class BuildError < Error; end
 end

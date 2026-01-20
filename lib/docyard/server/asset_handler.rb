@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "digest"
+require_relative "../utils/path_utils"
 
 module Docyard
   class AssetHandler
@@ -27,34 +28,31 @@ module Docyard
     }.freeze
 
     def serve_docyard_assets(request_path)
-      asset_path = request_path.delete_prefix("/_docyard/")
-
-      return forbidden_response if directory_traversal?(asset_path)
+      asset_path = Utils::PathUtils.decode_path(request_path.delete_prefix("/_docyard/"))
 
       return serve_components_css if asset_path == "css/components.css"
       return serve_components_js if asset_path == "js/components.js"
 
-      file_path = File.join(TEMPLATES_ASSETS_PATH, asset_path)
+      file_path = safe_asset_path(asset_path, TEMPLATES_ASSETS_PATH)
+      return forbidden_response unless file_path
       return not_found_response unless File.file?(file_path)
 
       serve_file(file_path)
     end
 
     def serve_public_file(request_path)
-      asset_path = request_path.delete_prefix("/")
+      asset_path = Utils::PathUtils.decode_path(request_path.delete_prefix("/"))
 
-      return nil if directory_traversal?(asset_path)
-
-      file_path = File.join(Constants::PUBLIC_DIR, asset_path)
-      return nil unless File.file?(file_path)
+      file_path = safe_asset_path(asset_path, Constants::PUBLIC_DIR)
+      return nil unless file_path && File.file?(file_path)
 
       serve_file(file_path)
     end
 
     private
 
-    def directory_traversal?(path)
-      path.include?("..")
+    def safe_asset_path(relative_path, base_dir)
+      Utils::PathUtils.resolve_safe_path(relative_path, base_dir)
     end
 
     def serve_file(file_path)
