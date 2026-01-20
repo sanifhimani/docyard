@@ -33,10 +33,10 @@ module Docyard
         content = YAML.load_file(config_file_path)
         normalize_config(content)
       rescue Psych::SyntaxError => e
-        warn "Warning: Invalid YAML in #{config_file_path}: #{e.message}"
+        Docyard.logger.warn("Invalid YAML in #{config_file_path}: #{e.message}")
         nil
       rescue StandardError => e
-        warn "Warning: Error reading #{config_file_path}: #{e.message}"
+        Docyard.logger.warn("Error reading #{config_file_path}: #{e.message}")
         nil
       end
 
