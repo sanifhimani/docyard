@@ -5,6 +5,7 @@ require "tmpdir"
 require "open3"
 require "parallel"
 require "tty-progressbar"
+require_relative "../utils/path_utils"
 
 module Docyard
   module Search
@@ -120,15 +121,7 @@ module Docyard
       end
 
       def file_to_url_path(file_path)
-        relative_path = file_path.delete_prefix("#{docs_path}/")
-        base_name = File.basename(relative_path, ".md")
-        dir_name = File.dirname(relative_path)
-
-        if base_name == "index"
-          dir_name == "." ? "/" : "/#{dir_name}"
-        else
-          dir_name == "." ? "/#{base_name}" : "/#{dir_name}/#{base_name}"
-        end
+        Utils::PathUtils.markdown_file_to_url(file_path, docs_path)
       end
 
       def generate_html_file(markdown_file, renderer)
@@ -142,14 +135,7 @@ module Docyard
       end
 
       def determine_output_path(relative_path)
-        base_name = File.basename(relative_path, ".md")
-        dir_name = File.dirname(relative_path)
-
-        if base_name == "index"
-          File.join(temp_dir, dir_name, "index.html")
-        else
-          File.join(temp_dir, dir_name, base_name, "index.html")
-        end
+        Utils::PathUtils.markdown_to_html_output(relative_path, temp_dir)
       end
 
       def run_pagefind

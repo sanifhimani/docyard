@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../utils/path_utils"
+
 module Docyard
   module Routing
     class FallbackResolver
@@ -29,9 +31,7 @@ module Docyard
       end
 
       def sanitize_path(request_path)
-        clean = request_path.to_s.delete_prefix("/").delete_suffix("/")
-        clean = "index" if clean.empty?
-        clean.delete_suffix(".md")
+        Utils::PathUtils.sanitize_url_path(request_path)
       end
 
       def find_first_item_in_section(request_path)
