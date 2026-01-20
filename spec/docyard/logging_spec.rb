@@ -63,6 +63,102 @@ RSpec.describe Docyard::Logging do
     end
   end
 
+  describe "warning buffering" do
+    after do
+      described_class.stop_buffering
+    end
+
+    describe ".start_buffering" do
+      it "enables buffering mode" do
+        described_class.start_buffering
+
+        expect(described_class.buffering?).to be true
+      end
+    end
+
+    describe ".stop_buffering" do
+      it "disables buffering mode and returns buffered warnings", :aggregate_failures do
+        described_class.start_buffering
+        described_class.buffer_warning("Warning 1")
+        described_class.buffer_warning("Warning 2")
+
+        warnings = described_class.stop_buffering
+
+        expect(described_class.buffering?).to be false
+        expect(warnings).to eq(["Warning 1", "Warning 2"])
+      end
+
+      it "clears the buffer" do
+        described_class.start_buffering
+        described_class.buffer_warning("Warning")
+        described_class.stop_buffering
+
+        expect(described_class.stop_buffering).to eq([])
+      end
+    end
+
+    describe "warning buffering during logging" do
+      it "buffers warnings instead of outputting them when buffering is enabled", :aggregate_failures do
+        described_class.logger = nil
+        described_class.start_buffering
+
+        output = capture_stdout { described_class.logger.warn("Buffered warning") }
+
+        expect(output).to eq("")
+        expect(described_class.stop_buffering).to eq(["Buffered warning"])
+      end
+
+      it "outputs warnings normally when buffering is disabled" do
+        described_class.logger = nil
+
+        expect do
+          described_class.logger.warn("Normal warning")
+        end.to output("[WARN] Normal warning\n").to_stdout
+      end
+
+      it "does not buffer info messages" do
+        described_class.logger = nil
+        described_class.start_buffering
+
+        expect do
+          described_class.logger.info("Info message")
+        end.to output("Info message\n").to_stdout
+      end
+    end
+
+    describe ".flush_warnings" do
+      it "outputs all buffered warnings" do
+        output = StringIO.new
+        described_class.logger = Logger.new(output)
+        described_class.logger.formatter = described_class.send(:log_formatter)
+
+        described_class.start_buffering
+        described_class.logger.warn("Warning 1")
+        described_class.logger.warn("Warning 2")
+        described_class.flush_warnings
+
+        expect(output.string).to eq("[WARN] Warning 1\n[WARN] Warning 2\n")
+      end
+
+      it "clears the buffer after flushing" do
+        described_class.start_buffering
+        described_class.buffer_warning("Warning")
+        described_class.flush_warnings
+
+        expect(described_class.stop_buffering).to eq([])
+      end
+    end
+
+    def capture_stdout
+      original_stdout = $stdout
+      $stdout = StringIO.new
+      yield
+      $stdout.string
+    ensure
+      $stdout = original_stdout
+    end
+  end
+
   describe "log format" do
     it "outputs INFO messages without prefix" do
       described_class.logger = nil

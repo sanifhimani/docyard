@@ -66,11 +66,13 @@ module Docyard
         )
         mutex = Mutex.new
 
+        Logging.start_buffering
         if markdown_files.size >= PARALLEL_THRESHOLD
           generate_files_in_parallel(markdown_files, progress, mutex)
         else
           generate_files_sequentially(markdown_files, progress)
         end
+        Logging.flush_warnings
       end
 
       def generate_files_in_parallel(markdown_files, progress, mutex)
