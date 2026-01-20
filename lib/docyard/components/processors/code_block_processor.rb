@@ -6,6 +6,7 @@ require_relative "../../rendering/renderer"
 require_relative "../base_processor"
 require_relative "../support/code_block/icon_detector"
 require_relative "../support/code_block/line_wrapper"
+require_relative "../support/code_block/line_number_resolver"
 require_relative "../support/tabs/range_finder"
 
 module Docyard
@@ -18,6 +19,7 @@ module Docyard
         self.priority = 20
 
         CodeBlockIconDetector = Support::CodeBlock::IconDetector
+        LineNumbers = Support::CodeBlock::LineNumberResolver
         TabsRangeFinder = Support::Tabs::RangeFinder
 
         def postprocess(html)
@@ -80,8 +82,8 @@ module Docyard
         def extract_block_data(inner_html)
           opts = current_block_options
           code_text = extract_code_text(inner_html)
-          start_line = extract_start_line(opts[:option])
-          show_line_numbers = determine_line_numbers(opts[:option])
+          start_line = LineNumbers.start_line(opts[:option])
+          show_line_numbers = LineNumbers.enabled?(opts[:option], global_default: @global_line_numbers)
           title_data = CodeBlockIconDetector.detect(opts[:title], opts[:lang])
 
           build_block_data(code_text, opts, show_line_numbers, start_line, title_data)
@@ -106,7 +108,7 @@ module Docyard
             error_lines: @error_lines[@block_index] || {},
             warning_lines: @warning_lines[@block_index] || {},
             show_line_numbers: show_line_numbers,
-            line_numbers: show_line_numbers ? generate_line_numbers(code_text, start_line) : [],
+            line_numbers: show_line_numbers ? LineNumbers.generate_numbers(code_text, start_line) : [],
             start_line: start_line,
             title: title_data[:title],
             icon: title_data[:icon],
@@ -121,25 +123,6 @@ module Docyard
           return original_html unless needs_wrapping
 
           wrap_code_block(original_html, block_data)
-        end
-
-        def determine_line_numbers(block_option)
-          return false if block_option == ":no-line-numbers"
-          return true if block_option&.start_with?(":line-numbers")
-
-          @global_line_numbers
-        end
-
-        def extract_start_line(block_option)
-          return 1 unless block_option&.include?("=")
-
-          block_option.split("=").last.to_i
-        end
-
-        def generate_line_numbers(code_text, start_line)
-          line_count = code_text.lines.count
-          line_count = 1 if line_count.zero?
-          (start_line...(start_line + line_count)).to_a
         end
 
         def inside_tabs?(position)
