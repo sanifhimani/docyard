@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Docyard::Config::HashUtils do
+RSpec.describe Docyard::Utils::HashUtils do
   describe ".deep_merge" do
     it "merges top-level keys" do
       hash1 = { a: 1, b: 2 }
