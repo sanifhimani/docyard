@@ -282,6 +282,31 @@
   }
 }
 
+/* Adjust TOC dropdown position when announcement banner is visible */
+@media (max-width: 1280px) and (min-width: 1025px) {
+  body.has-announcement .docyard-toc__nav {
+    top: calc(var(--header-height) + var(--announcement-height) + 3rem + var(--spacing-2));
+    max-height: calc(100vh - var(--header-height) - var(--announcement-height) - 3rem - var(--spacing-8));
+  }
+
+  body.has-announcement.has-tabs .docyard-toc__nav {
+    top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height) + 3rem + var(--spacing-2));
+    max-height: calc(100vh - var(--header-height) - var(--tab-bar-height) - var(--announcement-height) - 3rem - var(--spacing-8));
+  }
+}
+
+@media (max-width: 1024px) {
+  body.has-announcement .docyard-toc__nav {
+    top: calc(var(--header-height) + var(--announcement-height) + 3rem - 2px);
+    max-height: calc(100vh - var(--header-height) - var(--announcement-height) - 3rem - var(--spacing-2));
+  }
+
+  body.has-announcement .secondary-header.shift-up ~ .layout .docyard-toc__nav {
+    top: calc(var(--announcement-height) + 3rem - 2px);
+    max-height: calc(100vh - var(--announcement-height) - 3rem - var(--spacing-2));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .docyard-toc__link,
   .docyard-toc__indicator,

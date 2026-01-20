@@ -231,6 +231,15 @@
   }
 }
 
+/* Adjust dropdown position when announcement banner is visible */
+body.has-announcement .nav-menu-overlay {
+  top: calc(var(--header-height) + var(--announcement-height));
+}
+
+body.has-announcement .nav-menu-dropdown {
+  top: calc(var(--header-height) + var(--announcement-height));
+}
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .nav-menu-overlay,
