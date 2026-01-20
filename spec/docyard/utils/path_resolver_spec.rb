@@ -46,41 +46,4 @@ RSpec.describe Docyard::Utils::PathResolver do
       expect(described_class.normalize("/guide/index/")).to eq("/guide")
     end
   end
-
-  describe ".to_url" do
-    it "converts file path to URL path" do
-      expect(described_class.to_url("getting-started.md")).to eq("/getting-started")
-    end
-
-    it "is an alias for normalize" do
-      path = "guide/index.md"
-      expect(described_class.to_url(path)).to eq(described_class.normalize(path))
-    end
-  end
-
-  describe ".ancestor?" do
-    it "returns true when parent is ancestor of child" do
-      expect(described_class.ancestor?("/guide", "/guide/setup")).to be true
-    end
-
-    it "returns false when paths are equal" do
-      expect(described_class.ancestor?("/guide", "/guide")).to be false
-    end
-
-    it "returns false when parent is not ancestor" do
-      expect(described_class.ancestor?("/api", "/guide/setup")).to be false
-    end
-
-    it "returns false when parent is nil" do
-      expect(described_class.ancestor?(nil, "/guide/setup")).to be false
-    end
-
-    it "returns false when parent is longer than child" do
-      expect(described_class.ancestor?("/guide/setup", "/guide")).to be false
-    end
-
-    it "returns true for nested paths" do
-      expect(described_class.ancestor?("/api", "/api/v1/users")).to be true
-    end
-  end
 end

@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require "yaml"
+require_relative "config/section"
+require_relative "config/schema"
 require_relative "config/validator"
-require_relative "config/constants"
-require_relative "config/hash_utils"
+require_relative "constants"
+require_relative "utils/hash_utils"
 
 module Docyard
   class Config
@@ -58,26 +60,26 @@ module Docyard
     def sidebar_auto? = sidebar == "auto"
     def sidebar_distributed? = sidebar == "distributed"
 
-    def branding = @branding ||= ConfigSection.new(data["branding"])
-    def build = @build ||= ConfigSection.new(data["build"])
-    def search = @search ||= ConfigSection.new(data["search"])
-    def navigation = @navigation ||= ConfigSection.new(data["navigation"])
-    def repo = @repo ||= ConfigSection.new(data["repo"])
-    def analytics = @analytics ||= ConfigSection.new(data["analytics"])
+    def branding = @branding ||= Section.new(data["branding"])
+    def build = @build ||= Section.new(data["build"])
+    def search = @search ||= Section.new(data["search"])
+    def navigation = @navigation ||= Section.new(data["navigation"])
+    def repo = @repo ||= Section.new(data["repo"])
+    def analytics = @analytics ||= Section.new(data["analytics"])
 
     def announcement
-      @announcement ||= data["announcement"] ? ConfigSection.new(data["announcement"]) : nil
+      @announcement ||= data["announcement"] ? Section.new(data["announcement"]) : nil
     end
 
     private
 
     def load_config_data
-      file_exists? ? load_and_merge_config : HashUtils.deep_dup(DEFAULT_CONFIG)
+      file_exists? ? load_and_merge_config : Utils::HashUtils.deep_dup(DEFAULT_CONFIG)
     end
 
     def load_and_merge_config
       yaml_content = YAML.load_file(file_path)
-      HashUtils.deep_merge(HashUtils.deep_dup(DEFAULT_CONFIG), yaml_content || {})
+      Utils::HashUtils.deep_merge(Utils::HashUtils.deep_dup(DEFAULT_CONFIG), yaml_content || {})
     rescue Psych::SyntaxError => e
       raise ConfigError, build_yaml_error_message(e)
     rescue StandardError => e
@@ -94,22 +96,4 @@ module Docyard
       Validator.new(data).validate!
     end
   end
-
-  class ConfigSection
-    def initialize(data)
-      @data = data || {}
-    end
-
-    def method_missing(method, *args)
-      return @data[method.to_s] if args.empty?
-
-      super
-    end
-
-    def respond_to_missing?(method, include_private = false)
-      @data.key?(method.to_s) || super
-    end
-  end
-
-  class ConfigError < StandardError; end
 end

@@ -9,8 +9,7 @@ RSpec.describe Docyard::Builder do
     create_doc("index.md", "# Home\n\nWelcome!")
     create_doc("guide.md", "# Guide\n\nContent")
     create_config(<<~YAML)
-      site:
-        title: "Test Docs"
+      title: "Test Docs"
       build:
         output: "dist"
         base: "/"

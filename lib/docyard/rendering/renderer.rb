@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "erb"
-require_relative "../config/constants"
+require_relative "../constants"
 require_relative "../utils/git_info"
 require_relative "icon_helpers"
 require_relative "og_helpers"

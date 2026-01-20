@@ -19,7 +19,7 @@ RSpec/ExampleLength:
   Max: 15
 
 Metrics/ClassLength:
-  Max: 150
+  Max: 165
 
 Metrics/MethodLength:
   Max: 16

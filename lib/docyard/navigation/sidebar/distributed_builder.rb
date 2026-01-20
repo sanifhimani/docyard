@@ -141,7 +141,5 @@ module Docyard
         MSG
       end
     end
-
-    class SidebarConfigError < StandardError; end
   end
 end

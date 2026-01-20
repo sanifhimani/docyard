@@ -23,7 +23,7 @@ module Docyard
 
       def generate
         build_sidebar_cache
-        Utils::GitInfo.prefetch_timestamps("docs") if config.branding.show_last_updated
+        Utils::GitInfo.prefetch_timestamps("docs") if show_last_updated?
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
@@ -159,6 +159,10 @@ module Docyard
           config: config
         )
         @sidebar_cache.build
+      end
+
+      def show_last_updated?
+        config.repo.url && config.repo.last_updated != false
       end
 
       def log(message)

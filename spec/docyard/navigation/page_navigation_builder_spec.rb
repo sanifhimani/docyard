@@ -83,8 +83,8 @@ RSpec.describe Docyard::Navigation::PageNavigationBuilder do
 
       let(:config) do
         create_config(<<~YAML)
-          branding:
-            header_ctas:
+          navigation:
+            cta:
               - text: GitHub
                 href: https://github.com
         YAML

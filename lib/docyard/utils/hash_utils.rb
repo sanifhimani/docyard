@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Docyard
-  class Config
+  module Utils
     module HashUtils
       module_function
 

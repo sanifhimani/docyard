@@ -11,8 +11,8 @@ RSpec.describe Docyard::PreviewServer do
 
       File.write("docyard.yml", <<~YAML)
         build:
-          output_dir: "dist"
-          base_url: "/"
+          output: "dist"
+          base: "/"
       YAML
     end
   end

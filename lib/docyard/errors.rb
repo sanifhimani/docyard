@@ -3,6 +3,10 @@
 module Docyard
   class Error < StandardError; end
 
+  class ConfigError < Error; end
+
+  class SidebarConfigError < Error; end
+
   class FileNotFoundError < Error
     attr_reader :path
 

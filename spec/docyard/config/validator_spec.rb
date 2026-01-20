@@ -355,4 +355,62 @@ RSpec.describe Docyard::Config::Validator do
       end
     end
   end
+
+  describe "unknown top-level keys" do
+    it "raises error for unknown keys with 'did you mean' suggestion" do
+      config = valid_config("sidebarr" => "distributed")
+      validator = described_class.new(config)
+
+      expect { validator.validate! }
+        .to raise_error(Docyard::ConfigError, /unknown key 'sidebarr'.*Did you mean 'sidebar'/m)
+    end
+
+    it "raises error for unknown keys without suggestion if no close match" do
+      config = valid_config("xyzabc123" => "value")
+      validator = described_class.new(config)
+
+      expect { validator.validate! }
+        .to raise_error(Docyard::ConfigError, /unknown key 'xyzabc123'/)
+    end
+
+    it "does not raise for valid keys" do
+      validator = described_class.new(valid_config)
+
+      expect { validator.validate! }.not_to raise_error
+    end
+  end
+
+  describe "unknown nested keys" do
+    it "raises error for unknown branding keys" do
+      config = valid_config("branding" => { "logoo" => "test.svg", "credits" => true })
+      validator = described_class.new(config)
+
+      expect { validator.validate! }
+        .to raise_error(Docyard::ConfigError, /branding: unknown key 'logoo'.*Did you mean 'logo'/m)
+    end
+
+    it "raises error for unknown build keys" do
+      config = valid_config("build" => { "outputt" => "dist", "base" => "/" })
+      validator = described_class.new(config)
+
+      expect { validator.validate! }
+        .to raise_error(Docyard::ConfigError, /build: unknown key 'outputt'.*Did you mean 'output'/m)
+    end
+
+    it "raises error for unknown tab item keys" do
+      config = valid_config("tabs" => [{ "textt" => "Guide", "href" => "/guide" }])
+      validator = described_class.new(config)
+
+      expect { validator.validate! }
+        .to raise_error(Docyard::ConfigError, /tabs\[0\]: unknown key 'textt'.*Did you mean 'text'/m)
+    end
+
+    it "raises error for unknown CTA item keys" do
+      config = valid_config("navigation" => { "cta" => [{ "text" => "CTA", "hreff" => "/" }] })
+      validator = described_class.new(config)
+
+      expect { validator.validate! }
+        .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]: unknown key 'hreff'.*Did you mean 'href'/m)
+    end
+  end
 end

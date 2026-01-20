@@ -29,6 +29,9 @@ module Docyard
         verbose: options[:verbose]
       )
       exit(1) unless builder.build
+    rescue ConfigError => e
+      Docyard.logger.error(e.message)
+      exit(1)
     end
 
     desc "preview", "Preview the built site locally"
@@ -45,12 +48,15 @@ module Docyard
                            desc: "Enable search indexing (slower startup)"
     def serve
       require_relative "server/dev_server"
-      server = Docyard::Server.new(
+      server = Docyard::DevServer.new(
         port: options[:port],
         host: options[:host],
         search: options[:search]
       )
       server.start
+    rescue ConfigError => e
+      Docyard.logger.error(e.message)
+      exit(1)
     end
   end
 end

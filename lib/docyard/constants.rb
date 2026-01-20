@@ -3,19 +3,13 @@
 module Docyard
   module Constants
     CONTENT_TYPE_HTML = "text/html; charset=utf-8"
-    CONTENT_TYPE_JSON = "application/json; charset=utf-8"
-    CONTENT_TYPE_CSS = "text/css; charset=utf-8"
-    CONTENT_TYPE_JS = "application/javascript; charset=utf-8"
 
     DOCYARD_ASSETS_PREFIX = "/_docyard/"
     PAGEFIND_PREFIX = "/_docyard/pagefind/"
     PUBLIC_DIR = "docs/public"
 
     INDEX_FILE = "index"
-    INDEX_TITLE = "Home"
-
     MARKDOWN_EXTENSION = ".md"
-    HTML_EXTENSION = ".html"
 
     STATUS_OK = 200
     STATUS_REDIRECT = 302
