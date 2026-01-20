@@ -47,11 +47,13 @@ module Docyard
         )
         mutex = Mutex.new
 
+        Logging.start_buffering
         if markdown_files.size >= PARALLEL_THRESHOLD
           generate_pages_in_parallel(markdown_files, progress, mutex)
         else
           generate_pages_sequentially(markdown_files, progress)
         end
+        Logging.flush_warnings
       end
 
       def custom_landing_page?
@@ -77,6 +79,8 @@ module Docyard
         Parallel.each(markdown_files, in_threads: Parallel.processor_count) do |file_path|
           generate_page(file_path, thread_local_renderer)
           mutex.synchronize { progress.advance }
+        ensure
+          Thread.current[:docyard_build_renderer] = nil
         end
       end
 
