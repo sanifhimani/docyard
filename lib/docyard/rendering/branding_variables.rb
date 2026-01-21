@@ -19,6 +19,7 @@ module Docyard
       @logo_dark = branding[:logo_dark]
       @favicon = branding[:favicon] || Constants::DEFAULT_FAVICON_PATH
       @has_custom_logo = branding[:has_custom_logo] || false
+      @primary_color = branding[:primary_color]
     end
 
     def assign_search_options(branding)

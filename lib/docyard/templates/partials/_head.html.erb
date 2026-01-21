@@ -72,4 +72,26 @@
 
 <link rel="stylesheet" href="/_docyard/css/main.css">
 
+<% if @primary_color && (@primary_color[:light] || @primary_color[:dark]) %>
+<style>
+<% light_color = @primary_color[:light] %>
+<% dark_color = @primary_color[:dark] || light_color %>
+<% if light_color %>
+:root {
+  --primary: <%= light_color %>;
+  --sidebar-primary: <%= light_color %>;
+}
+.dark {
+  --primary: <%= dark_color %>;
+  --sidebar-primary: <%= dark_color %>;
+}
+<% elsif dark_color %>
+.dark {
+  --primary: <%= dark_color %>;
+  --sidebar-primary: <%= dark_color %>;
+}
+<% end %>
+</style>
+<% end %>
+
 <%= render_partial('_analytics') %>

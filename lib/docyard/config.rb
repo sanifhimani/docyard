@@ -18,7 +18,7 @@ module Docyard
       "og_image" => nil,
       "twitter" => nil,
       "source" => "docs",
-      "branding" => { "logo" => nil, "favicon" => nil, "credits" => true, "copyright" => nil },
+      "branding" => { "logo" => nil, "favicon" => nil, "credits" => true, "copyright" => nil, "color" => nil },
       "socials" => {},
       "tabs" => [],
       "sidebar" => "config",

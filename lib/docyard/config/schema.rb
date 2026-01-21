@@ -11,7 +11,7 @@ module Docyard
       ].freeze
 
       SECTIONS = {
-        "branding" => %w[logo favicon credits copyright],
+        "branding" => %w[logo favicon credits copyright color],
         "build" => %w[output base],
         "search" => %w[enabled placeholder exclude],
         "navigation" => %w[cta breadcrumbs],

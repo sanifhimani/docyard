@@ -440,6 +440,55 @@ RSpec.describe Docyard::Renderer do
     end
   end
 
+  describe "branding color" do
+    context "when primary_color is nil" do
+      it "does not inject custom color styles" do
+        html = renderer.render(content: "<p>Content</p>", branding: { primary_color: nil })
+
+        expect(html).not_to include("--primary:")
+      end
+    end
+
+    context "when primary_color has light value only" do
+      it "applies same color to both light and dark modes", :aggregate_failures do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { primary_color: { light: "#3b82f6" } }
+        )
+
+        expect(html).to include(":root")
+        expect(html).to include(".dark")
+        expect(html.scan("--primary: #3b82f6").length).to eq(2)
+        expect(html.scan("--sidebar-primary: #3b82f6").length).to eq(2)
+      end
+    end
+
+    context "when primary_color has both light and dark values" do
+      it "uses separate colors for each mode", :aggregate_failures do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { primary_color: { light: "#3b82f6", dark: "#60a5fa" } }
+        )
+
+        expect(html).to include("--primary: #3b82f6")
+        expect(html).to include("--primary: #60a5fa")
+      end
+    end
+
+    context "when primary_color has only dark value" do
+      it "applies dark color to dark mode only", :aggregate_failures do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          branding: { primary_color: { dark: "#60a5fa" } }
+        )
+
+        expect(html).to include(".dark")
+        expect(html).to include("--primary: #60a5fa")
+        expect(html).not_to match(/:root\s*\{[^}]*--primary:/)
+      end
+    end
+  end
+
   describe "#render_custom_visual" do
     let(:temp_dir) { Dir.mktmpdir }
     let(:config) { instance_double(Docyard::Config, source: temp_dir) }

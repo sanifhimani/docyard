@@ -1052,5 +1052,138 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:has_analytics]).to be true
       end
     end
+
+    context "with default branding color" do
+      it "returns nil primary_color by default" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to be_nil
+      end
+    end
+
+    context "when branding color is a string" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color: "#3b82f6"
+        YAML
+      end
+
+      it "normalizes to hash with light key" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to eq({ light: "#3b82f6" })
+      end
+    end
+
+    context "when branding color is a hash with light and dark" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color:
+              light: "#3b82f6"
+              dark: "#60a5fa"
+        YAML
+      end
+
+      it "returns both light and dark values", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:primary_color][:light]).to eq("#3b82f6")
+        expect(result[:primary_color][:dark]).to eq("#60a5fa")
+      end
+    end
+
+    context "when branding color hash has only light" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color:
+              light: "#3b82f6"
+        YAML
+      end
+
+      it "returns only light value" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to eq({ light: "#3b82f6" })
+      end
+    end
+
+    context "when branding color hash has only dark" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color:
+              dark: "#60a5fa"
+        YAML
+      end
+
+      it "returns only dark value" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to eq({ dark: "#60a5fa" })
+      end
+    end
+
+    context "when branding color is an empty string" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color: ""
+        YAML
+      end
+
+      it "returns nil" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to be_nil
+      end
+    end
+
+    context "when branding color is a whitespace string" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color: "   "
+        YAML
+      end
+
+      it "returns nil" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to be_nil
+      end
+    end
+
+    context "when branding color hash is empty" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color: {}
+        YAML
+      end
+
+      it "returns nil" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to be_nil
+      end
+    end
+
+    context "when branding color supports various CSS formats" do
+      before do
+        create_config(<<~YAML)
+          branding:
+            color: "oklch(0.61 0.11 222)"
+        YAML
+      end
+
+      it "accepts oklch color format" do
+        result = resolver.resolve
+
+        expect(result[:primary_color]).to eq({ light: "oklch(0.61 0.11 222)" })
+      end
+    end
   end
 end
