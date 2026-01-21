@@ -248,10 +248,11 @@ RSpec.describe Docyard::Initializer do
       expect(content).to include("components:")
     end
 
-    it "creates index.md with hero section", :aggregate_failures do
+    it "creates index.md with landing page config", :aggregate_failures do
       content = File.read("docs/index.md")
-      expect(content).to include("template: splash")
+      expect(content).to include("landing:")
       expect(content).to include("hero:")
+      expect(content).to include("features:")
     end
 
     it "creates getting-started.md with steps" do
