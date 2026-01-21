@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  release:
+    name: Release to RubyGems
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(ruby -r ./lib/docyard/version.rb -e 'puts Docyard::VERSION')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Release to RubyGems
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+        run: bundle exec rake release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          generate_release_notes: true
