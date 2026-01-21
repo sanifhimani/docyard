@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature Request
+    url: https://github.com/sanifhimani/docyard/discussions/new?category=feature-requests
+    about: Suggest a new feature or improvement
+  - name: Documentation Suggestion
+    url: https://github.com/sanifhimani/docyard/discussions/new?category=docs-suggestions
+    about: Suggest documentation improvements
+  - name: Questions
+    url: https://github.com/sanifhimani/docyard/discussions/new?category=q-a
+    about: Ask questions and get help

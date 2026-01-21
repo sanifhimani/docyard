@@ -1,0 +1,49 @@
+name: Documentation Issue
+description: Report a problem with the documentation
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the Docyard documentation!
+
+        Have a suggestion for new docs? [Start a discussion](https://github.com/sanifhimani/docyard/discussions/new?category=docs-suggestions) instead.
+
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      description: Which documentation page has the issue?
+      placeholder: "https://docyard.org/..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the issue
+      description: What's wrong with the documentation?
+      placeholder: Is something unclear, incorrect, or missing?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: If it's a display issue, which browser are you using?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: participation
+    attributes:
+      label: Participation
+      options:
+        - label: I'm willing to submit a pull request for this issue
