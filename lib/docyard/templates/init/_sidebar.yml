@@ -1,0 +1,36 @@
+# =============================================================================
+# Sidebar Navigation
+# =============================================================================
+# This file controls the sidebar navigation for your documentation.
+#
+# Basic syntax:
+#   - page-name              # Links to docs/page-name.md
+#   - page-name: { text: "Custom Title", icon: rocket-launch }
+#
+# Sections with nested pages:
+#   - section-name:
+#       text: "Section Title"
+#       icon: folder
+#       items:
+#         - page-one
+#         - page-two
+#
+# External links:
+#   - link: "https://github.com/your-org"
+#     text: "GitHub"
+#     icon: github
+#
+# Available icons: https://phosphoricons.com (use kebab-case names)
+# =============================================================================
+
+- index:
+    text: Welcome
+    icon: house
+
+- getting-started:
+    text: Getting Started
+    icon: rocket-launch
+
+- components:
+    text: Components
+    icon: package
