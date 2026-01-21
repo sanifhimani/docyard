@@ -1,0 +1,54 @@
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature for Docyard!
+
+        Found a bug instead? [Open an issue](https://github.com/sanifhimani/docyard/issues/new/choose).
+
+  - type: input
+    id: version
+    attributes:
+      label: Docyard version
+      description: What version of Docyard are you using?
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature summary
+      description: A brief description of the feature you'd like.
+      placeholder: What do you want Docyard to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why is this needed?
+      description: Explain why this feature would be valuable.
+      placeholder: What problem does this solve? What's your use case?
+    validations:
+      required: true
+
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: Have you seen this feature in other tools?
+      placeholder: |
+        - Tool X does this by...
+        - Tool Y has a similar feature that...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: participation
+    attributes:
+      label: Participation
+      options:
+        - label: I'm willing to submit a pull request for this feature

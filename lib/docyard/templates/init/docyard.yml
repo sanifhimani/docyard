@@ -1,0 +1,29 @@
+# Docyard Configuration
+# Full documentation: https://docyard.org/configuration
+
+title: "{{PROJECT_NAME}}"
+description: "Documentation for {{PROJECT_NAME}}"
+
+# Your production URL (for SEO and sitemaps)
+# url: "https://docs.example.com"
+
+# Social links (shown in footer)
+# socials:
+#   github: "https://github.com/your-org/your-repo"
+#   twitter: "https://twitter.com/your-handle"
+
+# Repository settings (enables "Edit this page" links)
+# repo:
+#   url: "https://github.com/your-org/your-repo"
+#   branch: "main"
+#   edit_link: true
+
+# Search (enabled by default)
+search:
+  enabled: true
+  placeholder: "Search..."
+
+# Build output
+build:
+  output: "dist"
+  base: "/"

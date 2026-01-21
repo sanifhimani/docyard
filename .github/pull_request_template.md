@@ -1,14 +1,13 @@
 ## Description
 
-<!-- What does this PR do? -->
+<!-- What does this PR change? -->
 
-## Changes
+## Related Issues
 
--
--
+<!-- Link any related issues: fixes #123 -->
 
 ## Checklist
 
-- [ ] Tests added/updated
-- [ ] CHANGELOG.md updated
-- [ ] README.md updated (if needed)
+- [ ] Tests pass (`bundle exec rspec`)
+- [ ] Linter passes (`bundle exec rubocop`)
+- [ ] Documentation updated (if applicable)

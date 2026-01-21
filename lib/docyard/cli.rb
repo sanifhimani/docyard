@@ -13,9 +13,11 @@ module Docyard
       puts "docyard #{Docyard::VERSION}"
     end
 
-    desc "init", "Initialize a new docyard project"
-    def init
-      initializer = Docyard::Initializer.new
+    desc "init [PROJECT_NAME]", "Initialize a new docyard project"
+    method_option :force, type: :boolean, default: false, aliases: "-f",
+                          desc: "Overwrite existing files"
+    def init(project_name = nil)
+      initializer = Docyard::Initializer.new(project_name, force: options[:force])
       exit(1) unless initializer.run
     end
 
