@@ -390,6 +390,76 @@ RSpec.describe Docyard::TemplateResolver do
     end
   end
 
+  describe "custom_visual in hero" do
+    it "returns nil when custom_visual is not specified" do
+      frontmatter = {
+        "landing" => {
+          "hero" => { "title" => "Test" }
+        }
+      }
+
+      resolver = described_class.new(frontmatter)
+      config = resolver.hero_config
+
+      expect(config[:custom_visual]).to be_nil
+    end
+
+    it "supports string shorthand with default side placement", :aggregate_failures do
+      frontmatter = {
+        "landing" => {
+          "hero" => {
+            "title" => "Test",
+            "custom_visual" => "hero.html"
+          }
+        }
+      }
+
+      resolver = described_class.new(frontmatter)
+      config = resolver.hero_config
+
+      expect(config[:custom_visual][:html]).to eq("hero.html")
+      expect(config[:custom_visual][:placement]).to eq("side")
+    end
+
+    it "supports hash with html and placement", :aggregate_failures do
+      frontmatter = {
+        "landing" => {
+          "hero" => {
+            "title" => "Test",
+            "custom_visual" => {
+              "html" => "showcase.html",
+              "placement" => "bottom"
+            }
+          }
+        }
+      }
+
+      resolver = described_class.new(frontmatter)
+      config = resolver.hero_config
+
+      expect(config[:custom_visual][:html]).to eq("showcase.html")
+      expect(config[:custom_visual][:placement]).to eq("bottom")
+    end
+
+    it "uses default side placement when not specified in hash" do
+      frontmatter = {
+        "landing" => {
+          "hero" => {
+            "title" => "Test",
+            "custom_visual" => {
+              "html" => "visual.html"
+            }
+          }
+        }
+      }
+
+      resolver = described_class.new(frontmatter)
+      config = resolver.hero_config
+
+      expect(config[:custom_visual][:placement]).to eq("side")
+    end
+  end
+
   describe "theme-aware hero images" do
     it "supports light/dark image variants", :aggregate_failures do
       frontmatter = {

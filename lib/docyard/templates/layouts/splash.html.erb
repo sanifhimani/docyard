@@ -30,7 +30,10 @@
   <main id="main-content" class="splash-content">
     <% if @hero %>
     <%
-      hero_class = @hero[:image] ? 'hero hero--with-image' : 'hero hero--centered'
+      has_side_visual = @hero[:image] || (@hero[:custom_visual] && @hero[:custom_visual][:placement] == 'side')
+      has_bottom_visual = @hero[:custom_visual] && @hero[:custom_visual][:placement] == 'bottom'
+      hero_class = has_side_visual ? 'hero hero--with-image' : 'hero hero--centered'
+      hero_class += ' hero--with-bottom-visual' if has_bottom_visual
       bg_style = @hero[:background] || 'grid'
     %>
     <section class="<%= hero_class %>">
@@ -100,8 +103,18 @@
         <% end %>
       </div>
       <% end %>
+      <% if @hero[:custom_visual] && @hero[:custom_visual][:placement] == 'side' %>
+      <div class="hero-custom-visual hero-custom-visual--side">
+        <%= render_custom_visual(@hero[:custom_visual][:html]) %>
+      </div>
+      <% end %>
 
     </section>
+    <% if @hero[:custom_visual] && @hero[:custom_visual][:placement] == 'bottom' %>
+    <div class="hero-custom-visual hero-custom-visual--bottom">
+      <%= render_custom_visual(@hero[:custom_visual][:html]) %>
+    </div>
+    <% end %>
     <% end %>
 
     <% if @features&.any? %>

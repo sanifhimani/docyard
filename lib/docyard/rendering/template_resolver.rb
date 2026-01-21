@@ -117,6 +117,7 @@ module Docyard
         tagline: hero["tagline"],
         gradient: hero.fetch("gradient", true),
         image: symbolize_image(hero["image"]),
+        custom_visual: symbolize_custom_visual(hero["custom_visual"]),
         actions: symbolize_actions(hero["actions"])
       }.compact
     end
@@ -135,6 +136,19 @@ module Docyard
           src: image["src"],
           alt: image["alt"]
         }.compact
+      end
+    end
+
+    def symbolize_custom_visual(custom_visual)
+      return nil if custom_visual.nil?
+
+      if custom_visual.is_a?(String)
+        { html: custom_visual, placement: "side" }
+      elsif custom_visual.is_a?(Hash)
+        {
+          html: custom_visual["html"],
+          placement: custom_visual["placement"] || "side"
+        }
       end
     end
 

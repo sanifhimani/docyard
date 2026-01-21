@@ -113,6 +113,17 @@ module Docyard
       ERB.new(template).result(binding)
     end
 
+    def render_custom_visual(file_path)
+      return "" if file_path.nil? || file_path.empty?
+
+      source_dir = config&.source || "docs"
+      full_path = File.join(source_dir, file_path)
+
+      return "" unless File.exist?(full_path)
+
+      File.read(full_path)
+    end
+
     def validate_variable_name!(name)
       return if name.to_s.match?(VALID_IVAR_PATTERN)
 
