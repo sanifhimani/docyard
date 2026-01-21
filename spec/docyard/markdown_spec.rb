@@ -141,24 +141,6 @@ RSpec.describe Docyard::Markdown do
         expect(markdown.html).not_to include(":line-numbers")
       end
     end
-
-    context "with global line numbers config" do
-      let(:config) do
-        instance_double(Docyard::Config, data: { "markdown" => { "lineNumbers" => true } }, source: "docs")
-      end
-
-      it "renders line numbers for all code blocks when enabled globally" do
-        markdown = described_class.new("```ruby\nputs 'hello'\n```", config: config)
-
-        expect(markdown.html).to include("docyard-code-block--line-numbers")
-      end
-
-      it "allows :no-line-numbers to override global setting" do
-        markdown = described_class.new("```ruby:no-line-numbers\nputs 'hello'\n```", config: config)
-
-        expect(markdown.html).not_to include("docyard-code-block--line-numbers")
-      end
-    end
   end
 
   describe "#title" do

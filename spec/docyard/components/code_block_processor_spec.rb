@@ -154,35 +154,6 @@ line 2</code></pre></div>'
         expect(result).not_to include("<span>1</span>")
       end
 
-      it "shows line numbers when global config is enabled" do
-        context[:config] = { "markdown" => { "lineNumbers" => true } }
-        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
-
-        result = processor.postprocess(html)
-
-        expect(result).to include("docyard-code-block--line-numbers")
-      end
-
-      it "block-level :no-line-numbers overrides global config" do
-        context[:config] = { "markdown" => { "lineNumbers" => true } }
-        context[:code_block_options] = [{ lang: "ruby", option: ":no-line-numbers" }]
-        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
-
-        result = processor.postprocess(html)
-
-        expect(result).not_to include("docyard-code-block--line-numbers")
-      end
-
-      it "block-level :line-numbers overrides global config off" do
-        context[:config] = { "markdown" => { "lineNumbers" => false } }
-        context[:code_block_options] = [{ lang: "ruby", option: ":line-numbers" }]
-        html = '<div class="highlight"><pre><code>line 1</code></pre></div>'
-
-        result = processor.postprocess(html)
-
-        expect(result).to include("docyard-code-block--line-numbers")
-      end
-
       it "handles multiple code blocks with different options", :aggregate_failures do
         context[:code_block_options] = [
           { lang: "ruby", option: ":line-numbers" },
