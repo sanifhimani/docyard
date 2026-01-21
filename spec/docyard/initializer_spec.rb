@@ -4,18 +4,19 @@ require "tmpdir"
 require "fileutils"
 
 RSpec.describe Docyard::Initializer do
-  let(:temp_dir) { Dir.mktmpdir }
-  let(:original_dir) { Dir.pwd }
-
-  before do
+  around do |example|
+    temp_dir = Dir.mktmpdir
+    original_dir = Dir.pwd
     Dir.chdir(temp_dir)
-    allow($stdout).to receive(:puts)
-    allow($stdout).to receive(:print)
-  end
-
-  after do
+    example.run
+  ensure
     Dir.chdir(original_dir)
     FileUtils.rm_rf(temp_dir)
+  end
+
+  before do
+    allow($stdout).to receive(:puts)
+    allow($stdout).to receive(:print)
   end
 
   describe "#initialize" do
