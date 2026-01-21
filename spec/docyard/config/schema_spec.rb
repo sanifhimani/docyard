@@ -11,7 +11,7 @@ RSpec.describe Docyard::Config::Schema do
 
   describe "SECTIONS" do
     it "defines valid keys for branding section" do
-      expect(described_class::SECTIONS["branding"]).to eq(%w[logo favicon credits copyright])
+      expect(described_class::SECTIONS["branding"]).to eq(%w[logo favicon credits copyright color])
     end
 
     it "defines valid keys for build section" do

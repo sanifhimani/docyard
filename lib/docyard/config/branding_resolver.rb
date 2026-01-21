@@ -36,7 +36,8 @@ module Docyard
     def config_branding_options
       [
         site_options, logo_options, search_options, credits_options, social_options,
-        navigation_options, tabs_options, announcement_options, repo_options, analytics_options
+        navigation_options, tabs_options, announcement_options, repo_options, analytics_options,
+        color_options
       ].reduce({}, :merge)
     end
 
@@ -178,6 +179,25 @@ module Docyard
         show_edit_link: has_repo_url && repo.edit_link != false,
         show_last_updated: has_repo_url && repo.last_updated != false
       }
+    end
+
+    def color_options
+      color = config.branding.color
+      { primary_color: normalize_color(color) }
+    end
+
+    def normalize_color(color)
+      return nil if color.nil?
+
+      if color.is_a?(Hash)
+        light = color["light"]
+        dark = color["dark"]
+        return nil if light.nil? && dark.nil?
+
+        { light: light, dark: dark }.compact
+      elsif color.is_a?(String) && !color.strip.empty?
+        { light: color.strip }
+      end
     end
   end
 end

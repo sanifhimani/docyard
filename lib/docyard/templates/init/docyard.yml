@@ -7,6 +7,13 @@ description: "Documentation for {{PROJECT_NAME}}"
 # Your production URL (for SEO and sitemaps)
 # url: "https://docs.example.com"
 
+# Branding customization
+# branding:
+#   color: "#3b82f6"              # Primary color (or use light/dark below)
+#   # color:
+#   #   light: "#3b82f6"
+#   #   dark: "#60a5fa"
+
 # Social links (shown in footer)
 # socials:
 #   github: "https://github.com/your-org/your-repo"
