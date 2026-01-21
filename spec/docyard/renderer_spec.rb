@@ -440,6 +440,40 @@ RSpec.describe Docyard::Renderer do
     end
   end
 
+  describe "#render_custom_visual" do
+    let(:temp_dir) { Dir.mktmpdir }
+    let(:config) { instance_double(Docyard::Config, source: temp_dir) }
+    let(:renderer_with_config) { described_class.new(config: config) }
+
+    after { FileUtils.remove_entry(temp_dir) }
+
+    it "returns empty string when file_path is nil" do
+      expect(renderer_with_config.render_custom_visual(nil)).to eq("")
+    end
+
+    it "returns empty string when file_path is empty" do
+      expect(renderer_with_config.render_custom_visual("")).to eq("")
+    end
+
+    it "returns empty string when file does not exist" do
+      expect(renderer_with_config.render_custom_visual("nonexistent.html")).to eq("")
+    end
+
+    it "returns file contents when file exists" do
+      File.write(File.join(temp_dir, "hero.html"), "<div>Custom Visual</div>")
+
+      result = renderer_with_config.render_custom_visual("hero.html")
+
+      expect(result).to eq("<div>Custom Visual</div>")
+    end
+
+    it "uses docs as default source directory when config is nil" do
+      renderer_no_config = described_class.new
+
+      expect(renderer_no_config.render_custom_visual("missing.html")).to eq("")
+    end
+  end
+
   describe "#render_for_search" do
     let(:temp_file) { Tempfile.new(["test", ".md"]) }
 
