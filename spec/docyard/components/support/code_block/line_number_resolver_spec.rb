@@ -21,19 +21,6 @@ RSpec.describe Docyard::Components::Support::CodeBlock::LineNumberResolver do
     it "returns false by default for empty option" do
       expect(described_class.enabled?("")).to be false
     end
-
-    it "returns global_default when option does not specify line numbers", :aggregate_failures do
-      expect(described_class.enabled?(nil, global_default: true)).to be true
-      expect(described_class.enabled?("", global_default: true)).to be true
-    end
-
-    it "overrides global_default when option specifies :no-line-numbers" do
-      expect(described_class.enabled?(":no-line-numbers", global_default: true)).to be false
-    end
-
-    it "overrides global_default when option specifies :line-numbers" do
-      expect(described_class.enabled?(":line-numbers", global_default: false)).to be true
-    end
   end
 
   describe ".start_line" do

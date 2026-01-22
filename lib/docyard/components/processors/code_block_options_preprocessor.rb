@@ -12,6 +12,7 @@ module Docyard
         CODE_FENCE_REGEX = /^```(\w+)(?:\s*\[([^\]]+)\])?(:\S+)?(?:\s*\{([^}\n]+)\})?/
         TABS_BLOCK_REGEX = /^:::[ \t]*tabs[ \t]*\n.*?^:::[ \t]*$/m
         CODE_GROUP_BLOCK_REGEX = /^:::[ \t]*code-group[ \t]*\n.*?^:::[ \t]*$/m
+        EXCLUDED_LANGUAGES = %w[filetree].freeze
 
         def preprocess(content)
           context[:code_block_options] ||= []
@@ -42,9 +43,15 @@ module Docyard
           return match[0] if inside_special_block?(position)
 
           original_lang = match[1]
+          return match[0] if excluded_language?(original_lang)
+
           store_code_block_options(match)
           highlight_lang = Icons.highlight_language(original_lang)
           "```#{highlight_lang}"
+        end
+
+        def excluded_language?(lang)
+          EXCLUDED_LANGUAGES.include?(lang&.downcase)
         end
 
         def inside_special_block?(position)

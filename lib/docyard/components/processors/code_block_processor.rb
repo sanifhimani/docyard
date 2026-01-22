@@ -37,7 +37,6 @@ module Docyard
           @focus_lines = context[:code_block_focus_lines] || []
           @error_lines = context[:code_block_error_lines] || []
           @warning_lines = context[:code_block_warning_lines] || []
-          @global_line_numbers = context.dig(:config, "markdown", "lineNumbers") || false
           @tabs_ranges = TabsRangeFinder.find_ranges(html)
         end
 
@@ -82,7 +81,7 @@ module Docyard
           opts = current_block_options
           code_text = extract_code_text(inner_html)
           start_line = LineNumbers.start_line(opts[:option])
-          show_line_numbers = LineNumbers.enabled?(opts[:option], global_default: @global_line_numbers)
+          show_line_numbers = LineNumbers.enabled?(opts[:option])
           title_data = CodeBlockIconDetector.detect(opts[:title], opts[:lang])
 
           build_block_data(code_text, opts, show_line_numbers, start_line, title_data)

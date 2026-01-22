@@ -1,0 +1,19 @@
+title: "Docyard"
+description: "Beautiful documentation sites from Markdown"
+url: "https://docyard.org"
+
+socials:
+  github: "https://github.com/sanifhimani/docyard"
+
+repo:
+  url: "https://github.com/sanifhimani/docyard"
+  branch: "main"
+  edit_link: true
+
+search:
+  enabled: true
+  placeholder: "Search docs..."
+
+build:
+  output: "dist"
+  base: "/"

@@ -112,7 +112,7 @@ module Docyard
         end
 
         def render_callout_html(type, title, content_html, icon_name)
-          icon_svg = Icons.render(icon_name, "duotone") || ""
+          icon_svg = Icons.render(icon_name, "regular") || ""
           renderer = Renderer.new
 
           renderer.render_partial(

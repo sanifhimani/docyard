@@ -1,0 +1,67 @@
+- getting-started:
+    text: Get Started
+    icon: rocket-launch
+    items:
+      - index:
+          text: Introduction
+      - quickstart
+      - project-structure
+
+- write-content:
+    text: Write Content
+    icon: pencil-simple-line
+    items:
+      - markdown
+      - images-and-videos:
+          text: Images & Videos
+      - includes
+      - components:
+          text: Components
+          icon: lego
+          index: true
+          items:
+            - callouts
+            - tabs
+            - code-blocks
+            - code-groups
+            - steps
+            - cards
+            - accordions
+            - badges
+            - icons
+            - tooltips
+            - file-tree
+
+- customize:
+    text: Customize
+    icon: palette
+    items:
+      - branding
+      - sidebar
+      - landing-pages:
+          text: Landing Pages
+      - navigation
+      - search
+      - announcement
+      - error-pages:
+          text: Error Pages
+
+- deploy:
+    text: Deploy
+    icon: cloud-arrow-up
+    items:
+      - building
+      - github-pages:
+          text: GitHub Pages
+      - vercel-and-netlify:
+          text: Vercel & Netlify
+
+- reference:
+    text: Reference
+    icon: book-open
+    items:
+      - cli:
+          text: CLI
+      - configuration
+      - frontmatter
+      - troubleshooting

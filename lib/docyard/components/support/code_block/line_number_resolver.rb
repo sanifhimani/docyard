@@ -7,11 +7,10 @@ module Docyard
         module LineNumberResolver
           module_function
 
-          def enabled?(option, global_default: false)
+          def enabled?(option)
             return false if option == ":no-line-numbers"
-            return true if option&.start_with?(":line-numbers")
 
-            global_default
+            option&.start_with?(":line-numbers") || false
           end
 
           def start_line(option)

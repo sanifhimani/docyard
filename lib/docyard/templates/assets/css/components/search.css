@@ -248,15 +248,8 @@
   opacity: 0.4;
 }
 
-.search-empty-icon .docyard-icon,
-.search-empty-icon i[class*="ph-"] {
-  width: 4rem;
-  height: 4rem;
-}
-
-.search-empty-icon .docyard-icon svg {
-  width: 100%;
-  height: 100%;
+.search-empty-icon {
+  font-size: var(--text-3xl);
 }
 
 .search-empty-title {
@@ -492,7 +485,7 @@
 
 @media (max-width: 1024px) {
 
-  
+
   .search-trigger {
     min-width: auto;
     width: 2.25rem;

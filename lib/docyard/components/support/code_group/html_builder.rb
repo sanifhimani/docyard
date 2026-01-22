@@ -52,7 +52,7 @@ module Docyard
                 class="docyard-code-group__tab"
                 tabindex="#{tabindex}"
                 data-label="#{escape_html(block[:label])}"
-              >#{icon_html}#{escape_html(block[:label])}</button>
+              >#{icon_html}<span class="docyard-code-group__tab-label">#{escape_html(block[:label])}</span></button>
             HTML
           end
 

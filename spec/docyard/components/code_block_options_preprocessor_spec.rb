@@ -210,5 +210,31 @@ RSpec.describe Docyard::Components::CodeBlockOptionsPreprocessor do
                                                       highlights: [] }])
       end
     end
+
+    context "with excluded languages" do
+      it "does not process filetree blocks" do
+        content = "```filetree\nroot/\n  file.txt\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([])
+      end
+
+      it "preserves filetree fence unchanged" do
+        content = "```filetree\nroot/\n  file.txt\n```"
+
+        result = processor.preprocess(content)
+
+        expect(result).to include("```filetree")
+      end
+
+      it "is case-insensitive for filetree" do
+        content = "```FILETREE\nroot/\n```"
+
+        processor.preprocess(content)
+
+        expect(context[:code_block_options]).to eq([])
+      end
+    end
   end
 end

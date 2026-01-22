@@ -9,6 +9,7 @@
           id="tab-<%= @group_id %>-<%= index %>"
           class="docyard-tabs__tab"
           tabindex="<%= index == 0 ? '0' : '-1' %>"
+          data-tab-name="<%= tab[:name].downcase %>"
         >
           <% if tab[:icon] %>
             <span class="docyard-tabs__icon">

@@ -19,6 +19,8 @@ require_relative "../components/processors/include_processor"
 require_relative "../components/processors/code_block_options_preprocessor"
 require_relative "../components/processors/code_block_diff_preprocessor"
 require_relative "../components/processors/code_block_focus_preprocessor"
+require_relative "../components/processors/code_block_extended_fence_preprocessor"
+require_relative "../components/processors/code_block_extended_fence_postprocessor"
 require_relative "../components/processors/table_wrapper_processor"
 require_relative "../components/processors/heading_anchor_processor"
 require_relative "../components/processors/custom_anchor_processor"
@@ -65,30 +67,6 @@ module Docyard
 
     def og_image
       frontmatter["og_image"]
-    end
-
-    def sidebar_icon
-      frontmatter.dig("sidebar", "icon")
-    end
-
-    def sidebar_text
-      frontmatter.dig("sidebar", "text")
-    end
-
-    def sidebar_collapsed
-      frontmatter.dig("sidebar", "collapsed")
-    end
-
-    def sidebar_order
-      frontmatter.dig("sidebar", "order")
-    end
-
-    def sidebar_badge
-      frontmatter.dig("sidebar", "badge")
-    end
-
-    def sidebar_badge_type
-      frontmatter.dig("sidebar", "badge_type")
     end
 
     def toc
