@@ -380,6 +380,75 @@ RSpec.describe Docyard::Config::Validator do
     end
   end
 
+  describe "feedback section" do
+    context "when feedback is enabled without analytics" do
+      it "raises ConfigError" do
+        config = valid_config("feedback" => { "enabled" => true })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }
+          .to raise_error(Docyard::ConfigError, /feedback\.enabled.*requires analytics/m)
+      end
+    end
+
+    context "when feedback is enabled with google analytics" do
+      it "does not raise" do
+        config = valid_config(
+          "feedback" => { "enabled" => true },
+          "analytics" => { "google" => "G-123456" }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+    end
+
+    context "when feedback is enabled with plausible analytics" do
+      it "does not raise" do
+        config = valid_config(
+          "feedback" => { "enabled" => true },
+          "analytics" => { "plausible" => "example.com" }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+    end
+
+    context "when feedback is enabled with fathom analytics" do
+      it "does not raise" do
+        config = valid_config(
+          "feedback" => { "enabled" => true },
+          "analytics" => { "fathom" => "FATHOMID" }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+    end
+
+    context "when feedback is enabled with custom script analytics" do
+      it "does not raise" do
+        config = valid_config(
+          "feedback" => { "enabled" => true },
+          "analytics" => { "script" => "<script>custom</script>" }
+        )
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+    end
+
+    context "when feedback is disabled" do
+      it "does not require analytics" do
+        config = valid_config("feedback" => { "enabled" => false })
+        validator = described_class.new(config)
+
+        expect { validator.validate! }.not_to raise_error
+      end
+    end
+  end
+
   describe "unknown nested keys" do
     it "raises error for unknown branding keys" do
       config = valid_config("branding" => { "logoo" => "test.svg", "credits" => true })
