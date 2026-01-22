@@ -1,5 +1,5 @@
 # Docyard Configuration
-# Full documentation: https://docyard.org/configuration
+# Full documentation: https://docyard.dev/configuration
 
 title: "{{PROJECT_NAME}}"
 description: "Documentation for {{PROJECT_NAME}}"

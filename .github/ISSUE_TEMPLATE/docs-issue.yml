@@ -14,7 +14,7 @@ body:
     attributes:
       label: Page URL
       description: Which documentation page has the issue?
-      placeholder: "https://docyard.org/..."
+      placeholder: "https://docyard.dev/..."
     validations:
       required: true
 

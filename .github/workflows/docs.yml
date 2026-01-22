@@ -35,7 +35,7 @@ jobs:
         working-directory: .
 
       - name: Add CNAME
-        run: echo "docyard.org" > dist/CNAME
+        run: echo "docyard.dev" > dist/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
