@@ -84,7 +84,7 @@ socials:
 
 ### Custom Links
 
-Add links with custom icons:
+Add links with custom icons using any [Phosphor icon](https://phosphoricons.com) name:
 
 ```yaml [docyard.yml]
 socials:
@@ -94,6 +94,15 @@ socials:
       href: /feed.xml
     - icon: envelope
       href: mailto:hello@example.com
+```
+
+You can also use inline SVG for custom icons:
+
+```yaml [docyard.yml]
+socials:
+  custom:
+    - icon: '<svg viewBox="0 0 24 24">...</svg>'
+      href: https://example.com
 ```
 
 ---

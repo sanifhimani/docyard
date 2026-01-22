@@ -537,6 +537,74 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
+    context "when custom social links are configured" do
+      before do
+        create_config(<<~YAML)
+          socials:
+            github: https://github.com/docyard/docyard
+            custom:
+              - icon: globe
+                href: https://docyard.dev
+              - icon: rss
+                href: https://docyard.dev/feed
+        YAML
+      end
+
+      it "includes both builtin and custom social links", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:social].length).to eq(3)
+      end
+
+      it "normalizes custom social links with platform set to custom", :aggregate_failures do
+        result = resolver.resolve
+        custom_links = result[:social].select { |s| s[:platform] == "custom" }
+
+        expect(custom_links.length).to eq(2)
+        expect(custom_links[0][:url]).to eq("https://docyard.dev")
+        expect(custom_links[0][:icon]).to eq("globe")
+        expect(custom_links[1][:url]).to eq("https://docyard.dev/feed")
+        expect(custom_links[1][:icon]).to eq("rss")
+      end
+    end
+
+    context "when custom social has invalid items" do
+      before do
+        create_config(<<~YAML)
+          socials:
+            custom:
+              - icon: globe
+                href: https://docyard.dev
+              - icon: missing-href
+              - href: https://missing-icon.com
+        YAML
+      end
+
+      it "filters out invalid custom social items", :aggregate_failures do
+        result = resolver.resolve
+
+        expect(result[:social].length).to eq(1)
+        expect(result[:social][0][:icon]).to eq("globe")
+      end
+    end
+
+    context "when custom social uses SVG icon" do
+      before do
+        create_config(<<~YAML)
+          socials:
+            custom:
+              - icon: '<svg viewBox="0 0 24 24"><path d="M12 2L2 7"/></svg>'
+                href: https://docyard.dev
+        YAML
+      end
+
+      it "preserves the SVG icon string" do
+        result = resolver.resolve
+
+        expect(result[:social][0][:icon]).to eq('<svg viewBox="0 0 24 24"><path d="M12 2L2 7"/></svg>')
+      end
+    end
+
     context "with default navigation CTAs" do
       it "returns empty header_ctas array by default" do
         result = resolver.resolve

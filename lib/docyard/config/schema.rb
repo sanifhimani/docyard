@@ -32,6 +32,8 @@ module Docyard
       SIDEBAR_EXTERNAL_LINK = %w[link text icon target].freeze
 
       SOCIALS_BUILTIN = %w[github twitter discord slack linkedin youtube bluesky custom].freeze
+
+      CUSTOM_SOCIAL = %w[icon href].freeze
     end
   end
 end
