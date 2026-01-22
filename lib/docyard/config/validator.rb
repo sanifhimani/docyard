@@ -26,6 +26,7 @@ module Docyard
         validate_search_section
         validate_navigation_section
         validate_announcement_section
+        validate_feedback_section
 
         raise_key_errors if @key_errors.any?
         raise ConfigError, format_errors if @errors.any?
@@ -200,6 +201,24 @@ module Docyard
         return unless announcement.is_a?(Hash)
 
         validate_string(announcement["text"], "announcement.text") if announcement.key?("text")
+      end
+
+      def validate_feedback_section
+        feedback = @config["feedback"]
+        return unless feedback.is_a?(Hash) && feedback["enabled"] == true
+
+        analytics = @config["analytics"]
+        has_analytics = analytics.is_a?(Hash) &&
+                        (analytics["google"] || analytics["plausible"] || analytics["fathom"] || analytics["script"])
+
+        return if has_analytics
+
+        add_error(
+          field: "feedback.enabled",
+          error: "requires analytics to be configured",
+          got: "feedback enabled without analytics",
+          fix: "Configure analytics (google, plausible, fathom, or script) to collect feedback responses"
+        )
       end
 
       def format_errors
