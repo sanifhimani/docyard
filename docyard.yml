@@ -1,6 +1,6 @@
 title: "Docyard"
 description: "Beautiful documentation sites from Markdown"
-url: "https://docyard.org"
+url: "https://docyard.dev"
 
 socials:
   github: "https://github.com/sanifhimani/docyard"
@@ -13,6 +13,12 @@ repo:
 search:
   enabled: true
   placeholder: "Search docs..."
+
+analytics:
+  google: "G-04TDFVCQVW"
+
+feedback:
+  enabled: true
 
 build:
   output: "dist"

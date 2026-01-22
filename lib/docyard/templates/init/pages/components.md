@@ -143,4 +143,4 @@ src/
 
 ## More Components
 
-Docyard supports many more components. Visit the [documentation](https://docyard.org) for the complete list.
+Docyard supports many more components. Visit the [documentation](https://docyard.dev) for the complete list.

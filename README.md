@@ -18,7 +18,7 @@ Open http://localhost:4200 and start writing.
 
 ## Documentation
 
-Visit [docyard.org](https://docyard.org) for the full documentation.
+Visit [docyard.dev](https://docyard.dev) for the full documentation.
 
 ## Contributing
 
