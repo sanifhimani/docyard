@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-01-22
+
+### Added
+- **Custom Social Links** - Add custom social icons with Phosphor icons or inline SVG via `socials.custom` config (#119)
+- **Branding Colors** - Customize primary color theme with `branding.color` supporting light/dark variants (#115)
+- **Custom Hero Visuals** - Use custom images/components in landing page hero sections (#114)
+- **Feedback Widget** - Collect user feedback on documentation pages (#107)
+- **Phosphor Icons CDN** - Load icons from CDN for smaller bundle size (#106)
+- **LLMs.txt Generation** - Auto-generate llms.txt files for AI indexing (#105)
+- **Copy Page Button** - One-click copy entire page content for LLM context (#104)
+- **Configurable Docs Path** - Customize source directory with `source` config option (#101)
+- **Parallel Builds** - Multi-threaded site generation for faster builds (#89)
+- **Analytics Integration** - Support for Google Analytics, Plausible, Fathom, and custom scripts (#77)
+- **Git Integration** - "Edit on GitHub" links and "Last updated" timestamps from git history (#76)
+- **Open Graph Meta Tags** - Auto-generated social sharing metadata (#75)
+- **Custom Error Pages** - Styled 404 and error pages (#78)
+- **GitHub Pages Workflow** - CI workflow for automated deployments (#117)
+
+### Changed
+- **Domain Migration** - Project domain changed from docyard.org to docyard.dev (#118)
+- **Init Command Revamp** - Improved scaffolding with better defaults (#109)
+- **Puma Web Server** - Migrated to Puma for better performance (#84)
+- **Search Optimization** - Improved search indexing and relevance (#86)
+- **Sidebar Caching** - Faster rebuilds with sidebar state caching (#85)
+
+### Fixed
+- Video embed dimension validation (#103)
+- Mobile navigation issues (#102)
+- Banner layout padding on tablet/mobile (#88)
+- TOC dropdown behavior (#87)
+- Flash of unstyled content (FOUC) prevention (#79)
+- Security and error handling improvements (#99, #100)
+
+### Performance
+- Parallel build support for multi-core systems (#89)
+- Batch git operations for faster metadata lookup (#91)
+- Dev server cache headers (#92)
+- Passive event listeners for smoother scrolling (#93)
+- Analytics domain preconnect hints (#83)
+- CSS will-change hints for animations (#82)
+- Font display swap for faster text rendering (#81)
+- Deferred script loading (#80)
+
 ## [0.9.0] - 2026-01-15
 
 ### Added
