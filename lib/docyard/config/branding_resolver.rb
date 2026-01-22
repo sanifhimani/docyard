@@ -78,22 +78,28 @@ module Docyard
     end
 
     def social_options
-      socials = config.socials || {}
-      {
-        social: normalize_social_links(socials)
-      }
+      { social: normalize_social_links(config.socials || {}) }
     end
 
     def normalize_social_links(socials)
       return [] unless socials.is_a?(Hash) && socials.any?
 
-      socials.filter_map { |platform, url| build_social_link(platform.to_s, url) }
+      socials.except("custom").filter_map { |platform, url| build_social_link(platform.to_s, url) } +
+        build_custom_social_links(socials["custom"])
     end
 
     def build_social_link(platform, url)
-      return if platform == "custom" || !valid_url?(url)
+      { platform: platform, url: url, icon: Constants::SOCIAL_ICON_MAP[platform] || platform } if valid_url?(url)
+    end
 
-      { platform: platform, url: url, icon: Constants::SOCIAL_ICON_MAP[platform] || platform }
+    def build_custom_social_links(custom)
+      return [] unless custom.is_a?(Array)
+
+      custom.filter_map do |item|
+        next unless item.is_a?(Hash) && item["icon"] && valid_url?(item["href"])
+
+        { platform: "custom", url: item["href"], icon: item["icon"] }
+      end
     end
 
     def valid_url?(url)
