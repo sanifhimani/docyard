@@ -15,12 +15,13 @@ RSpec.describe Docyard::Renderer do
     FileUtils.rm_rf(temp_dir)
   end
 
-  def create_config(feedback_config = {})
+  def create_config(feedback_config = {}, analytics_config = nil)
     config_content = {
       "title" => "Test Docs",
       "source" => "docs"
     }
     config_content["feedback"] = feedback_config if feedback_config.any?
+    config_content["analytics"] = analytics_config || { "google" => "G-TESTID" } if feedback_config["enabled"] == true
 
     File.write(File.join(temp_dir, "docyard.yml"), config_content.to_yaml)
     Dir.chdir(temp_dir) { Docyard::Config.new }
