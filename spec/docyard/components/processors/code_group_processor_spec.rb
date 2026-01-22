@@ -34,8 +34,8 @@ RSpec.describe Docyard::Components::Processors::CodeGroupProcessor do
 
         expect(result).to include('data-label="npm"')
         expect(result).to include('data-label="yarn"')
-        expect(result).to include("npm</button>")
-        expect(result).to include("yarn</button>")
+        expect(result).to include("npm</span></button>")
+        expect(result).to include("yarn</span></button>")
       end
 
       it "renders code blocks with syntax highlighting" do

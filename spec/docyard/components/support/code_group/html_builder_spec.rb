@@ -60,6 +60,17 @@ RSpec.describe Docyard::Components::Support::CodeGroup::HtmlBuilder do
       end
     end
 
+    context "with tab label structure" do
+      let(:blocks) do
+        [{ label: "JavaScript", lang: "js", content: "<pre>code</pre>", code_text: "" }]
+      end
+      let(:html) { described_class.new(blocks, group_id).build }
+
+      it "wraps label in span with class" do
+        expect(html).to include('<span class="docyard-code-group__tab-label">JavaScript</span>')
+      end
+    end
+
     context "with special characters in labels" do
       let(:blocks) do
         [{ label: "C++ <Templates>", lang: "cpp", content: "<pre>code</pre>", code_text: "" }]
