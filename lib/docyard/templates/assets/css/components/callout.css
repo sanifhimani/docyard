@@ -99,9 +99,28 @@
 }
 
 .docyard-callout__body :not(pre)>code {
-  background-color: oklch(from var(--input) l c h / 30%);
   padding: 0.125rem 0.375rem;
   border-radius: var(--radius-sm);
+}
+
+.docyard-callout--note .docyard-callout__body :not(pre)>code {
+  background-color: oklch(from var(--callout-note-border) l c h / 15%);
+}
+
+.docyard-callout--tip .docyard-callout__body :not(pre)>code {
+  background-color: oklch(from var(--callout-tip-border) l c h / 15%);
+}
+
+.docyard-callout--important .docyard-callout__body :not(pre)>code {
+  background-color: oklch(from var(--callout-important-border) l c h / 15%);
+}
+
+.docyard-callout--warning .docyard-callout__body :not(pre)>code {
+  background-color: oklch(from var(--callout-warning-border) l c h / 15%);
+}
+
+.docyard-callout--danger .docyard-callout__body :not(pre)>code {
+  background-color: oklch(from var(--callout-danger-border) l c h / 15%);
 }
 
 .docyard-callout--note {

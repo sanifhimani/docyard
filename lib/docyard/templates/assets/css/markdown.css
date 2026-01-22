@@ -21,6 +21,26 @@
   font-variant-ligatures: none;
 }
 
+.content .docyard-callout--note code:not(.highlight code) {
+  background-color: oklch(from var(--callout-note-border) l c h / 15%);
+}
+
+.content .docyard-callout--tip code:not(.highlight code) {
+  background-color: oklch(from var(--callout-tip-border) l c h / 15%);
+}
+
+.content .docyard-callout--important code:not(.highlight code) {
+  background-color: oklch(from var(--callout-important-border) l c h / 15%);
+}
+
+.content .docyard-callout--warning code:not(.highlight code) {
+  background-color: oklch(from var(--callout-warning-border) l c h / 15%);
+}
+
+.content .docyard-callout--danger code:not(.highlight code) {
+  background-color: oklch(from var(--callout-danger-border) l c h / 15%);
+}
+
 .content ul,
 .content ol {
   margin: var(--spacing-5) 0;
