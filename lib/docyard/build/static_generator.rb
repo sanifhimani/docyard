@@ -155,7 +155,8 @@ module Docyard
         @navigation_builder ||= Navigation::PageNavigationBuilder.new(
           docs_path: docs_path,
           config: config,
-          sidebar_cache: sidebar_cache
+          sidebar_cache: sidebar_cache,
+          base_url: config.build.base
         )
       end
 

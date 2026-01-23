@@ -7,10 +7,11 @@ require_relative "breadcrumb_builder"
 module Docyard
   module Navigation
     class PageNavigationBuilder
-      def initialize(docs_path:, config:, sidebar_cache: nil)
+      def initialize(docs_path:, config:, sidebar_cache: nil, base_url: "/")
         @docs_path = docs_path
         @config = config
         @sidebar_cache = sidebar_cache
+        @base_url = base_url
       end
 
       def build(current_path:, markdown:, header_ctas: [], show_sidebar: true)
@@ -26,7 +27,7 @@ module Docyard
 
       private
 
-      attr_reader :docs_path, :config, :sidebar_cache
+      attr_reader :docs_path, :config, :sidebar_cache, :base_url
 
       def empty_navigation
         { sidebar_html: "", prev_next_html: "", breadcrumbs: nil }
@@ -47,7 +48,8 @@ module Docyard
           sidebar_tree: sidebar_builder.tree,
           current_path: current_path,
           frontmatter: markdown.frontmatter,
-          config: {}
+          config: {},
+          base_url: base_url
         ).to_html
       end
 

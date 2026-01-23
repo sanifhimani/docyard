@@ -35,7 +35,7 @@ module Docyard
       markdown = Markdown.new(raw_content, config: config, file_path: file_path)
 
       render(
-        content: strip_md_from_links(markdown.html),
+        content: process_content_links(markdown.html),
         page_title: markdown.title || Constants::DEFAULT_SITE_TITLE,
         page_description: markdown.description,
         page_og_image: markdown.og_image,
@@ -51,7 +51,7 @@ module Docyard
     def render_for_search(file_path)
       markdown = Markdown.new(File.read(file_path), config: config, file_path: file_path)
       title = markdown.title || Constants::DEFAULT_SITE_TITLE
-      content = strip_md_from_links(markdown.html)
+      content = process_content_links(markdown.html)
 
       <<~HTML
         <!DOCTYPE html>
@@ -170,8 +170,23 @@ module Docyard
       @footer_links = footer[:links]
     end
 
+    def process_content_links(html)
+      rewrite_internal_links(strip_md_from_links(html))
+    end
+
     def strip_md_from_links(html)
       html.gsub(/href="([^"]+)\.md"/, 'href="\1"')
+    end
+
+    def rewrite_internal_links(html)
+      return html if base_url == "/"
+
+      html.gsub(%r{href="(/(?!/)[^"]*)"}) do |_match|
+        path = ::Regexp.last_match(1)
+        next %(href="#{path}") if path.start_with?(base_url)
+
+        %(href="#{base_url.chomp('/')}#{path}")
+      end
     end
 
     def assign_git_info(branding, file_path)

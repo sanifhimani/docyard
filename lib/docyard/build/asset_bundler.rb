@@ -142,7 +142,8 @@ module Docyard
       def replace_content_image_paths(content, base_url)
         return content if base_url == "/"
 
-        content.gsub(%r{(<img[^>]*\ssrc=")/(?!_docyard/)([^"]*")}) do
+        base_path_pattern = Regexp.escape(base_url.delete_prefix("/"))
+        content.gsub(%r{(<img[^>]*\ssrc=")/(?!_docyard/|#{base_path_pattern})([^"]*")}) do
           "#{Regexp.last_match(1)}#{base_url}#{Regexp.last_match(2)}"
         end
       end

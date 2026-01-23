@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-01-23
+
+### Fixed
+- "Last updated" timestamps now show correct dates when deploying via CI (#129)
+
+### Documentation
+- Added git history requirements for accurate timestamps on GitHub Actions, Vercel, and Netlify
+
 ## [1.0.1] - 2026-01-22
 
 ### Added
@@ -216,7 +224,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/sanifhimani/docyard/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/sanifhimani/docyard/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/sanifhimani/docyard/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/sanifhimani/docyard/compare/v0.8.0...v0.9.0

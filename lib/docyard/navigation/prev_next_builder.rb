@@ -5,13 +5,14 @@ require_relative "../utils/path_resolver"
 
 module Docyard
   class PrevNextBuilder
-    attr_reader :sidebar_tree, :current_path, :frontmatter, :config
+    attr_reader :sidebar_tree, :current_path, :frontmatter, :config, :base_url
 
-    def initialize(sidebar_tree:, current_path:, frontmatter: {}, config: {})
+    def initialize(sidebar_tree:, current_path:, frontmatter: {}, config: {}, base_url: "/")
       @sidebar_tree = sidebar_tree
       @current_path = Utils::PathResolver.normalize(current_path)
       @frontmatter = frontmatter
       @config = config
+      @base_url = base_url
     end
 
     def prev_next_links
@@ -27,7 +28,7 @@ module Docyard
       links = prev_next_links
       return "" if links.nil? || (links[:prev].nil? && links[:next].nil?)
 
-      Renderer.new.render_partial(
+      Renderer.new(base_url: base_url).render_partial(
         "_prev_next", {
           prev: links[:prev],
           next: links[:next],

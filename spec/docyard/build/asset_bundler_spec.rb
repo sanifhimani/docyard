@@ -171,6 +171,25 @@ RSpec.describe Docyard::Build::AssetBundler do
         expect(html_content).to include('src="/my-docs/images/photo.jpg"')
         expect(html_content).not_to include('src="/images/photo.jpg"')
       end
+
+      it "does not double-prefix image paths that already have base URL", :aggregate_failures do
+        File.write(File.join(output_dir, "page.html"), <<~HTML)
+          <!DOCTYPE html>
+          <html>
+          <body>
+            <img src="/my-docs/logo.svg" alt="Logo">
+          </body>
+          </html>
+        HTML
+
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        html_content = File.read(File.join(output_dir, "page.html"))
+
+        expect(html_content).to include('src="/my-docs/logo.svg"')
+        expect(html_content).not_to include('src="/my-docs/my-docs/logo.svg"')
+      end
     end
 
     context "with root base" do

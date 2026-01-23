@@ -305,5 +305,41 @@ RSpec.describe Docyard::PrevNextBuilder do
         expect(html).to include("Forward →")
       end
     end
+
+    context "with base URL" do
+      let(:builder) do
+        described_class.new(
+          sidebar_tree: sidebar_tree,
+          current_path: "/first",
+          frontmatter: {},
+          config: config,
+          base_url: "/my-docs/"
+        )
+      end
+
+      it "prepends base URL to navigation links" do
+        html = builder.to_html
+
+        expect(html).to include('href="/my-docs/second"')
+      end
+    end
+
+    context "with root base URL" do
+      let(:builder) do
+        described_class.new(
+          sidebar_tree: sidebar_tree,
+          current_path: "/first",
+          frontmatter: {},
+          config: config,
+          base_url: "/"
+        )
+      end
+
+      it "does not modify links" do
+        html = builder.to_html
+
+        expect(html).to include('href="/second"')
+      end
+    end
   end
 end
