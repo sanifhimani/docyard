@@ -7,7 +7,7 @@
   <style>
     @font-face {
       font-family: 'Inter';
-      src: url('/_docyard/fonts/Inter-Variable.ttf') format('truetype');
+      src: url('<%= base_url %>_docyard/fonts/Inter-Variable.ttf') format('truetype');
       font-weight: 100 900;
       font-style: normal;
     }
@@ -116,7 +116,7 @@
     <p class="error-code">404</p>
     <h1 class="error-title">Page not found</h1>
     <p class="error-message">This page doesn't exist or has been moved.</p>
-    <a href="/" class="btn">
+    <a href="<%= base_url %>" class="btn">
       <%= icon(:house_line) %>
       Back to home
     </a>

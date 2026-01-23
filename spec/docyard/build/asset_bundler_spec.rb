@@ -118,6 +118,59 @@ RSpec.describe Docyard::Build::AssetBundler do
         expect(html_content).to match(%r{href="/my-docs/_docyard/bundle\.[a-f0-9]{8}\.css"})
         expect(html_content).to match(%r{src="/my-docs/_docyard/bundle\.[a-f0-9]{8}\.js"})
       end
+
+      it "uses base in CSS font-face URLs", :aggregate_failures do
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        css_file = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.css")).first
+        css_content = File.read(css_file)
+
+        expect(css_content).to include("/my-docs/_docyard/fonts/")
+        expect(css_content).not_to match(%r{url\(['"]?/_docyard/fonts/})
+      end
+
+      it "uses base in JS pagefind import path", :aggregate_failures do
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        js_file = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.js")).first
+        js_content = File.read(js_file)
+
+        expect(js_content).to include('"/my-docs/_docyard/pagefind/')
+        expect(js_content).not_to include('"/_docyard/pagefind/')
+      end
+
+      it "uses base in JS pagefind baseUrl option", :aggregate_failures do
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        js_file = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.js")).first
+        js_content = File.read(js_file)
+
+        expect(js_content).to include('baseUrl:"/my-docs/"')
+        expect(js_content).not_to include('baseUrl:"/"')
+      end
+
+      it "uses base in content image paths", :aggregate_failures do
+        File.write(File.join(output_dir, "page.html"), <<~HTML)
+          <!DOCTYPE html>
+          <html>
+          <body>
+            <img src="/images/photo.jpg" alt="Photo">
+            <link rel="stylesheet" href="/_docyard/css/main.css">
+          </body>
+          </html>
+        HTML
+
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        html_content = File.read(File.join(output_dir, "page.html"))
+
+        expect(html_content).to include('src="/my-docs/images/photo.jpg"')
+        expect(html_content).not_to include('src="/images/photo.jpg"')
+      end
     end
 
     context "with root base" do
