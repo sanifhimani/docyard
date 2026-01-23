@@ -36,6 +36,18 @@ For more control, add a `vercel.json`:
 }
 ```
 
+### Git History
+
+:::important
+For accurate "Last updated" timestamps, enable deep cloning by adding this environment variable in your Vercel project settings:
+
+| Variable | Value |
+|----------|-------|
+| `VERCEL_DEEP_CLONE` | `true` |
+
+Without this, all pages will show the deployment time instead of their actual modification date.
+:::
+
 ### Custom Domain
 
 1. Go to **Settings** > **Domains**
@@ -78,6 +90,20 @@ For more control, add a `netlify.toml`:
   to = "/404.html"
   status = 404
 ```
+
+### Git History
+
+:::important
+For accurate "Last updated" timestamps, Netlify needs full git history. Update your build command:
+
+```toml [netlify.toml]
+[build]
+  command = "git fetch --unshallow || true && gem install docyard && docyard build"
+  publish = "dist"
+```
+
+The `|| true` ensures the build continues even if the repo is already complete (e.g., during local testing).
+:::
 
 ### Custom Domain
 
