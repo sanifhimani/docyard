@@ -117,6 +117,30 @@ RSpec.describe Docyard::Renderer do
       expect(html).to include("404")
       expect(html).to include("Page Not Found")
     end
+
+    it "uses custom branding color when provided", :aggregate_failures do
+      branding = { primary_color: { light: "#ff0000", dark: "#cc0000" } }
+      html = renderer.render_not_found(branding: branding)
+
+      expect(html).to include("--primary: #ff0000")
+      expect(html).to include("--primary: #cc0000")
+    end
+
+    it "uses default colors when no branding provided" do
+      html = renderer.render_not_found
+
+      expect(html).to include("--primary: oklch(0.61 0.11 222)")
+    end
+  end
+
+  describe "#render_server_error" do
+    it "uses custom branding color when provided", :aggregate_failures do
+      error = StandardError.new("test error")
+      branding = { primary_color: { light: "#00ff00" } }
+      html = renderer.render_server_error(error, branding: branding)
+
+      expect(html).to include("--primary: #00ff00")
+    end
   end
 
   describe "announcement banner" do

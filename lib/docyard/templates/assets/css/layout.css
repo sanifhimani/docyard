@@ -179,6 +179,15 @@ html:has(.has-tabs) {
   display: none;
 }
 
+.layout {
+  display: flex;
+  min-height: calc(100vh - var(--header-height));
+  padding-top: var(--header-height);
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  position: relative;
+}
 
 .secondary-header {
   display: none;
@@ -193,8 +202,8 @@ html:has(.has-tabs) {
     top: var(--header-height);
     left: calc(max(0px, (100vw - var(--layout-max-width)) / 2) + var(--sidebar-width));
     right: max(0px, calc((100vw - var(--layout-max-width)) / 2));
-    height: 3rem;
-    min-height: 3rem;
+    height: var(--secondary-header-height);
+    min-height: var(--secondary-header-height);
     background: var(--background);
     border-bottom: 1px solid var(--border);
     padding: 0 var(--spacing-6);
@@ -213,7 +222,7 @@ html:has(.has-tabs) {
   }
 
   .layout {
-    padding-top: calc(var(--header-height) + 3rem);
+    padding-top: calc(var(--header-height) + var(--secondary-header-height));
   }
 }
 
@@ -226,8 +235,8 @@ html:has(.has-tabs) {
     top: var(--header-height);
     left: 0;
     right: 0;
-    height: 3rem;
-    min-height: 3rem;
+    height: var(--secondary-header-height);
+    min-height: var(--secondary-header-height);
     background: var(--background);
     border-bottom: 1px solid var(--border);
     padding: 0 var(--spacing-6);
@@ -276,16 +285,6 @@ html:has(.has-tabs) {
   .secondary-header-menu .icon {
     flex-shrink: 0;
   }
-}
-
-.layout {
-  display: flex;
-  min-height: calc(100vh - var(--header-height));
-  padding-top: var(--header-height);
-  width: 100%;
-  max-width: var(--layout-max-width);
-  margin: 0 auto;
-  position: relative;
 }
 
 .sidebar {
@@ -424,7 +423,7 @@ main.content {
   }
 
   .layout {
-    padding-top: calc(var(--header-height) + 3rem);
+    padding-top: calc(var(--header-height) + var(--secondary-header-height));
     flex-direction: column;
   }
 

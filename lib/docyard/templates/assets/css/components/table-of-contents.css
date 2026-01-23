@@ -257,30 +257,30 @@
 
 @media (max-width: 1280px) and (min-width: 1025px) {
   .docyard-toc__nav {
-    top: calc(var(--header-height) + 3rem + var(--spacing-2));
+    top: calc(var(--header-height) + var(--secondary-header-height) + var(--spacing-2));
     right: var(--spacing-6);
     width: 280px;
-    max-height: calc(100vh - var(--header-height) - 3rem - var(--spacing-8));
+    max-height: calc(100vh - var(--header-height) - var(--secondary-header-height) - var(--spacing-8));
   }
 
   .has-tabs .docyard-toc__nav {
-    top: calc(var(--header-height) + var(--tab-bar-height) + 3rem + var(--spacing-2));
-    max-height: calc(100vh - var(--header-height) - var(--tab-bar-height) - 3rem - var(--spacing-8));
+    top: calc(var(--header-height) + var(--tab-bar-height) + var(--secondary-header-height) + var(--spacing-2));
+    max-height: calc(100vh - var(--header-height) - var(--tab-bar-height) - var(--secondary-header-height) - var(--spacing-8));
   }
 }
 
 @media (max-width: 1024px) {
   .docyard-toc__nav {
-    top: calc(var(--header-height) + 3rem - 2px);
+    top: calc(var(--header-height) + var(--secondary-header-height) - 2px);
     left: var(--spacing-4);
     right: var(--spacing-4);
-    max-height: calc(100vh - var(--header-height) - 3rem - var(--spacing-2));
+    max-height: calc(100vh - var(--header-height) - var(--secondary-header-height) - var(--spacing-2));
     transform-origin: top center;
   }
 
   .secondary-header.shift-up ~ .layout .docyard-toc__nav {
-    top: calc(3rem - 2px);
-    max-height: calc(100vh - 3rem - var(--spacing-2));
+    top: calc(var(--secondary-header-height) - 2px);
+    max-height: calc(100vh - var(--secondary-header-height) - var(--spacing-2));
   }
 
   .docyard-toc__list .docyard-toc__list {
@@ -292,25 +292,25 @@
 /* Adjust TOC dropdown position when announcement banner is visible */
 @media (max-width: 1280px) and (min-width: 1025px) {
   body.has-announcement .docyard-toc__nav {
-    top: calc(var(--header-height) + var(--announcement-height) + 3rem + var(--spacing-2));
-    max-height: calc(100vh - var(--header-height) - var(--announcement-height) - 3rem - var(--spacing-8));
+    top: calc(var(--header-height) + var(--announcement-height) + var(--secondary-header-height) + var(--spacing-2));
+    max-height: calc(100vh - var(--header-height) - var(--announcement-height) - var(--secondary-header-height) - var(--spacing-8));
   }
 
   body.has-announcement.has-tabs .docyard-toc__nav {
-    top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height) + 3rem + var(--spacing-2));
-    max-height: calc(100vh - var(--header-height) - var(--tab-bar-height) - var(--announcement-height) - 3rem - var(--spacing-8));
+    top: calc(var(--header-height) + var(--tab-bar-height) + var(--announcement-height) + var(--secondary-header-height) + var(--spacing-2));
+    max-height: calc(100vh - var(--header-height) - var(--tab-bar-height) - var(--announcement-height) - var(--secondary-header-height) - var(--spacing-8));
   }
 }
 
 @media (max-width: 1024px) {
   body.has-announcement .docyard-toc__nav {
-    top: calc(var(--header-height) + var(--announcement-height) + 3rem - 2px);
-    max-height: calc(100vh - var(--header-height) - var(--announcement-height) - 3rem - var(--spacing-2));
+    top: calc(var(--header-height) + var(--announcement-height) + var(--secondary-header-height) - 2px);
+    max-height: calc(100vh - var(--header-height) - var(--announcement-height) - var(--secondary-header-height) - var(--spacing-2));
   }
 
   body.has-announcement .secondary-header.shift-up ~ .layout .docyard-toc__nav {
-    top: calc(var(--announcement-height) + 3rem - 2px);
-    max-height: calc(100vh - var(--announcement-height) - 3rem - var(--spacing-2));
+    top: calc(var(--announcement-height) + var(--secondary-header-height) - 2px);
+    max-height: calc(100vh - var(--announcement-height) - var(--secondary-header-height) - var(--spacing-2));
   }
 }
 

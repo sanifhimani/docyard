@@ -202,7 +202,10 @@ module Docyard
 
       def load_error_page_content
         error_page = File.join(docs_path, "404.html")
-        File.exist?(error_page) ? File.read(error_page) : build_renderer.render_not_found
+        return File.read(error_page) if File.exist?(error_page)
+
+        branding = BrandingResolver.new(config).resolve
+        build_renderer.render_not_found(branding: branding)
       end
     end
   end

@@ -124,7 +124,7 @@ module Docyard
     end
 
     def render_not_found_page
-      html = renderer.render_not_found
+      html = renderer.render_not_found(branding: branding_options)
       [Constants::STATUS_NOT_FOUND, { "Content-Type" => Constants::CONTENT_TYPE_HTML }, [html]]
     end
 
@@ -147,7 +147,7 @@ module Docyard
       Docyard.logger.error("Request error: #{error.message} [#{request_context}]")
       Docyard.logger.debug(error.backtrace.join("\n"))
       [Constants::STATUS_INTERNAL_ERROR, { "Content-Type" => Constants::CONTENT_TYPE_HTML },
-       [renderer.render_server_error(error)]]
+       [renderer.render_server_error(error, branding: branding_options)]]
     end
 
     def build_request_context(env)
