@@ -8,15 +8,18 @@ Gem::Specification.new do |spec|
   spec.authors = ["Sanif Himani"]
   spec.email = ["sanifhimani92@gmail.com"]
 
-  spec.summary = "Documentation generator for Ruby"
-  spec.description = "Beautiful, zero-config documentation sites. Built with Ruby."
-  spec.homepage = "https://github.com/sanifhimani/docyard"
+  spec.summary = "Generate beautiful documentation sites from Markdown"
+  spec.description = spec.summary
+  spec.homepage = "https://docyard.dev"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/sanifhimani/docyard"
+  spec.metadata["changelog_uri"] = "https://github.com/sanifhimani/docyard/blob/main/CHANGELOG.md"
+  spec.metadata["documentation_uri"] = "https://docyard.dev"
+  spec.metadata["bug_tracker_uri"] = "https://github.com/sanifhimani/docyard/issues"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files should be added to the gem when it is released.
