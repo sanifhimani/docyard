@@ -7,7 +7,7 @@
   <style>
     @font-face {
       font-family: 'Inter';
-      src: url('/_docyard/fonts/Inter-Variable.ttf') format('truetype');
+      src: url('<%= base_url %>_docyard/fonts/Inter-Variable.ttf') format('truetype');
       font-weight: 100 900;
       font-style: normal;
     }
@@ -166,7 +166,7 @@
     <p class="error-code">500</p>
     <h1 class="error-title">Something went wrong</h1>
     <p class="error-message">We encountered an unexpected error. Please try again.</p>
-    <a href="/" class="btn">
+    <a href="<%= base_url %>" class="btn">
       <%= icon(:house_line) %>
       Back to home
     </a>

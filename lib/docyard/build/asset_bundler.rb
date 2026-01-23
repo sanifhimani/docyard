@@ -37,6 +37,7 @@ module Docyard
         minified = CSSminify.compress(css_content)
         minified = fix_calc_whitespace(minified)
         minified = fix_css_math_functions(minified)
+        minified = replace_css_asset_urls(minified)
         hash = generate_hash(minified)
 
         write_bundled_asset(minified, hash, "css")
@@ -56,6 +57,11 @@ module Docyard
 
       def fix_css_math_functions(css)
         css.gsub(/\bmax\(0,/, "max(0px,").gsub(/\bmin\(0,/, "min(0px,)")
+      end
+
+      def replace_css_asset_urls(css)
+        base_url = normalize_base_url(config.build.base)
+        css.gsub(%r{/_docyard/fonts/}, "#{base_url}_docyard/fonts/")
       end
 
       def resolve_css_imports(css_content)
@@ -86,12 +92,19 @@ module Docyard
         components_js = concatenate_component_js
         js_content = [theme_js, components_js].join("\n")
         minified = Terser.compile(js_content)
+        minified = replace_js_asset_urls(minified)
         hash = generate_hash(minified)
 
         write_bundled_asset(minified, hash, "js")
         log_compression_stats(js_content, minified, "JS")
 
         hash
+      end
+
+      def replace_js_asset_urls(js_content)
+        base_url = normalize_base_url(config.build.base)
+        js_content.gsub(%r{"/_docyard/pagefind/}, "\"#{base_url}_docyard/pagefind/")
+          .gsub(%r{baseUrl:\s*["']/["']}, "baseUrl:\"#{base_url}\"")
       end
 
       def concatenate_component_js
@@ -123,6 +136,15 @@ module Docyard
           .gsub(%r{/_docyard/js/theme\.js}, "#{base_url}_docyard/bundle.#{js_hash}.js")
           .gsub(%r{/_docyard/js/components\.js}, "")
           .gsub(%r{<script src="/_docyard/js/reload\.js"></script>}, "")
+          .then { |html| replace_content_image_paths(html, base_url) }
+      end
+
+      def replace_content_image_paths(content, base_url)
+        return content if base_url == "/"
+
+        content.gsub(%r{(<img[^>]*\ssrc=")/(?!_docyard/)([^"]*")}) do
+          "#{Regexp.last_match(1)}#{base_url}#{Regexp.last_match(2)}"
+        end
       end
 
       def write_bundled_asset(content, hash, extension)
