@@ -76,9 +76,10 @@ module Docyard
     def search_in_ancestors(node, path, title, href)
       return unless node[:children]&.any?
 
-      effective_href = href == "/" ? derive_section_path(node) : href
-      return unless path_is_ancestor?(effective_href)
+      section_path = derive_section_path(node, href)
+      return unless path_is_ancestor?(section_path)
 
+      effective_href = resolve_section_href(node, href, section_path)
       result = find_breadcrumb_path(
         node[:children],
         path + [Item.new(title: title, href: effective_href, current: false)]
@@ -86,14 +87,52 @@ module Docyard
       result.any? ? result : nil
     end
 
-    def derive_section_path(node)
-      first_child = node[:children]&.first
+    def derive_section_path(node, href)
+      return href if section_has_index?(href)
+
+      derive_section_path_from_children(node[:children])
+    end
+
+    def derive_section_path_from_children(children)
+      first_child = children&.first
       return nil unless first_child
 
       child_path = first_child[:path]
-      return nil if child_path.nil? || child_path.empty?
+      return nil unless navigable_path?(child_path)
 
-      File.dirname(child_path)
+      parent_dir = File.dirname(child_path)
+      root_parent?(parent_dir) ? child_path : parent_dir
+    end
+
+    def root_parent?(parent_dir)
+      parent_dir == "/" || parent_dir.empty?
+    end
+
+    def resolve_section_href(node, href, section_path)
+      return href if section_has_index?(href)
+
+      find_first_navigable_child(node[:children]) || section_path
+    end
+
+    def section_has_index?(path)
+      path && !path.empty? && path != "/"
+    end
+
+    def find_first_navigable_child(children)
+      return nil unless children&.any?
+
+      children.each do |child|
+        return child[:path] if navigable_path?(child[:path])
+
+        nested = find_first_navigable_child(child[:children])
+        return nested if nested
+      end
+
+      nil
+    end
+
+    def navigable_path?(path)
+      path && !path.empty? && path != "/"
     end
 
     def search_in_children(node, path)

@@ -266,13 +266,13 @@ RSpec.describe Docyard::BreadcrumbBuilder do
       ]
     end
 
-    it "derives section path from first child", :aggregate_failures do
+    it "links section to first navigable child", :aggregate_failures do
       builder = described_class.new(sidebar_tree: sidebar_tree, current_path: "/getting-started/installation")
       items = builder.items
 
       expect(items.length).to eq(2)
       expect(items.first.title).to eq("Getting Started")
-      expect(items.first.href).to eq("/getting-started")
+      expect(items.first.href).to eq("/getting-started/overview")
     end
 
     it "handles section with empty path string", :aggregate_failures do
@@ -290,7 +290,105 @@ RSpec.describe Docyard::BreadcrumbBuilder do
       items = builder.items
 
       expect(items.length).to eq(2)
-      expect(items.first.href).to eq("/docs")
+      expect(items.first.href).to eq("/docs/intro")
+    end
+  end
+
+  describe "section with index page" do
+    let(:sidebar_tree) do
+      [
+        {
+          title: "Components",
+          path: "/components",
+          type: :folder,
+          children: [
+            { title: "Buttons", path: "/components/buttons", type: :file, children: [] },
+            { title: "Forms", path: "/components/forms", type: :file, children: [] }
+          ]
+        }
+      ]
+    end
+
+    it "uses section path when index exists", :aggregate_failures do
+      builder = described_class.new(sidebar_tree: sidebar_tree, current_path: "/components/forms")
+      items = builder.items
+
+      expect(items.length).to eq(2)
+      expect(items.first.title).to eq("Components")
+      expect(items.first.href).to eq("/components")
+    end
+  end
+
+  describe "nested sections without index" do
+    let(:sidebar_tree) do
+      [
+        {
+          title: "Write Content",
+          path: "/write-content",
+          type: :folder,
+          children: [
+            {
+              title: "Components",
+              path: nil,
+              type: :folder,
+              children: [
+                { title: "Code Blocks", path: "/write-content/components/code-blocks", type: :file, children: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    end
+
+    it "links nested section without index to first child", :aggregate_failures do
+      builder = described_class.new(sidebar_tree: sidebar_tree, current_path: "/write-content/components/code-blocks")
+      items = builder.items
+
+      expect(items.length).to eq(3)
+      expect(items[0].title).to eq("Write Content")
+      expect(items[0].href).to eq("/write-content")
+      expect(items[1].title).to eq("Components")
+      expect(items[1].href).to eq("/write-content/components/code-blocks")
+      expect(items[2].title).to eq("Code Blocks")
+      expect(items[2].current).to be true
+    end
+  end
+
+  describe "section with first child as index page" do
+    let(:sidebar_tree) do
+      [
+        {
+          title: "Get Started",
+          path: nil,
+          type: :folder,
+          children: [
+            { title: "Introduction", path: "/getting-started", type: :file, children: [] },
+            { title: "Quickstart", path: "/getting-started/quickstart", type: :file, children: [] }
+          ]
+        }
+      ]
+    end
+
+    it "shows section in breadcrumbs when first child is index page", :aggregate_failures do
+      builder = described_class.new(sidebar_tree: sidebar_tree, current_path: "/getting-started/quickstart")
+      items = builder.items
+
+      expect(items.length).to eq(2)
+      expect(items[0].title).to eq("Get Started")
+      expect(items[0].href).to eq("/getting-started")
+      expect(items[1].title).to eq("Quickstart")
+      expect(items[1].current).to be true
+    end
+
+    it "shows section and index page when viewing index", :aggregate_failures do
+      builder = described_class.new(sidebar_tree: sidebar_tree, current_path: "/getting-started")
+      items = builder.items
+
+      expect(items.length).to eq(2)
+      expect(items[0].title).to eq("Get Started")
+      expect(items[0].href).to eq("/getting-started")
+      expect(items[1].title).to eq("Introduction")
+      expect(items[1].current).to be true
     end
   end
 end
