@@ -95,6 +95,11 @@ module Docyard
       render_error_template(500)
     end
 
+    def render_redirect(target_url)
+      @target_url = target_url
+      render_error_template(:redirect)
+    end
+
     def render_error_template(status)
       error_template_path = File.join(ERRORS_PATH, "#{status}.html.erb")
       template = File.read(error_template_path)
