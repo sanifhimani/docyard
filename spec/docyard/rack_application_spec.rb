@@ -226,6 +226,28 @@ RSpec.describe Docyard::RackApplication do
       end
     end
 
+    context "with build.base configuration" do
+      it "ignores build.base and uses root path in dev server", :aggregate_failures do
+        Dir.mktmpdir do |temp_dir|
+          File.write(File.join(temp_dir, "docyard.yml"), <<~YAML)
+            build:
+              base: /docs/
+          YAML
+          File.write(File.join(temp_dir, "index.md"), "---\ntitle: Home\n---\n# Home")
+
+          config = Docyard::Config.load(temp_dir)
+          temp_app = described_class.new(docs_path: temp_dir, config: config)
+          env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+          status, _headers, body = temp_app.call(env)
+
+          expect(status).to eq(200)
+          expect(body.first).to include('href="/"')
+          expect(body.first).not_to include('href="/docs/"')
+        end
+      end
+    end
+
     context "with custom HTML landing page" do
       it "serves index.html directly when it exists at root", :aggregate_failures do
         Dir.mktmpdir do |temp_dir|
