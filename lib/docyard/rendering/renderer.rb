@@ -83,13 +83,15 @@ module Docyard
       ERB.new(template).result(binding)
     end
 
-    def render_not_found
+    def render_not_found(branding: nil)
+      @primary_color = branding&.dig(:primary_color)
       render_error_template(404)
     end
 
-    def render_server_error(error)
+    def render_server_error(error, branding: nil)
       @error_message = error.message
       @backtrace = error.backtrace&.join("\n") || "No backtrace available"
+      @primary_color = branding&.dig(:primary_color)
       render_error_template(500)
     end
 

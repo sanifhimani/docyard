@@ -31,6 +31,17 @@
       --primary-foreground: oklch(0.30 0.05 230);
     }
 
+    <% if @primary_color && (@primary_color[:light] || @primary_color[:dark]) %>
+    <% light_color = @primary_color[:light] %>
+    <% dark_color = @primary_color[:dark] || light_color %>
+    <% if light_color %>
+    :root { --primary: <%= light_color %>; }
+    .dark { --primary: <%= dark_color %>; }
+    <% elsif dark_color %>
+    .dark { --primary: <%= dark_color %>; }
+    <% end %>
+    <% end %>
+
     * {
       margin: 0;
       padding: 0;
