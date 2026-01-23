@@ -28,6 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -101,6 +103,16 @@ For project sites at `username.github.io/repo-name/`:
 build:
   base: https://username.github.io/repo-name
 ```
+
+---
+
+## Git History
+
+:::important
+The `fetch-depth: 0` option in the workflow above is required for accurate "Last updated" timestamps. Without full git history, all pages will show the deployment time instead of their actual modification date.
+:::
+
+If you don't need "Last updated" timestamps, you can omit this option for faster checkouts.
 
 ---
 
