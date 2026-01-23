@@ -394,6 +394,77 @@ RSpec.describe Docyard::Build::StaticGenerator do
       end
     end
 
+    context "with root fallback redirect when no index exists" do
+      before do
+        config.data["sidebar"] = "auto"
+        FileUtils.mkdir_p(File.join(docs_dir, "getting-started"))
+        File.write(File.join(docs_dir, "getting-started", "intro.md"), "# Intro")
+        File.write(File.join(docs_dir, "getting-started", "setup.md"), "# Setup")
+      end
+
+      it "generates redirect to first navigable page", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          expect(File.exist?(File.join(output_dir, "index.html"))).to be true
+
+          redirect_html = File.read(File.join(output_dir, "index.html"))
+          expect(redirect_html).to include('http-equiv="refresh"')
+          expect(redirect_html).to include("/getting-started/intro")
+        end
+      end
+
+      it "includes base URL in redirect target", :aggregate_failures do
+        config.data["build"]["base"] = "/docs/"
+
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          redirect_html = File.read(File.join(output_dir, "index.html"))
+          expect(redirect_html).to include("/docs/getting-started/intro")
+        end
+      end
+    end
+
+    context "with root fallback redirect when index.md exists" do
+      before do
+        config.data["sidebar"] = "auto"
+        File.write(File.join(docs_dir, "index.md"), "# Home")
+        File.write(File.join(docs_dir, "guide.md"), "# Guide")
+      end
+
+      it "does not generate redirect page", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+          expect(index_html).not_to include('http-equiv="refresh"')
+          expect(index_html).to include("Home")
+        end
+      end
+    end
+
+    context "with root fallback redirect when index.html exists" do
+      before do
+        config.data["sidebar"] = "auto"
+        File.write(File.join(docs_dir, "index.html"), "<html><body>Custom</body></html>")
+        File.write(File.join(docs_dir, "guide.md"), "# Guide")
+      end
+
+      it "does not generate redirect page" do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: false)
+          generator.generate
+
+          index_html = File.read(File.join(output_dir, "index.html"))
+          expect(index_html).to eq("<html><body>Custom</body></html>")
+        end
+      end
+    end
+
     context "with markdown content features" do
       before do
         File.write(File.join(docs_dir, "index.md"),

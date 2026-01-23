@@ -7,10 +7,15 @@ require_relative "../navigation/page_navigation_builder"
 require_relative "../navigation/sidebar/cache"
 require_relative "../utils/path_utils"
 require_relative "../utils/git_info"
+require_relative "root_fallback_generator"
+require_relative "error_page_generator"
+require_relative "file_writer"
 
 module Docyard
   module Build
     class StaticGenerator
+      include FileWriter
+
       PARALLEL_THRESHOLD = 10
 
       attr_reader :config, :verbose, :sidebar_cache
@@ -31,6 +36,7 @@ module Docyard
 
         generate_all_pages(markdown_files)
         generate_error_page
+        generate_root_fallback_if_needed
 
         markdown_files.size
       ensure
@@ -161,18 +167,6 @@ module Docyard
         log "Generated: #{output_path}" if verbose
       end
 
-      def safe_file_write(path, &block)
-        block.call
-      rescue Errno::EACCES => e
-        raise BuildError, "Permission denied writing to #{path}: #{e.message}"
-      rescue Errno::ENOSPC => e
-        raise BuildError, "Disk full, cannot write to #{path}: #{e.message}"
-      rescue Errno::EROFS => e
-        raise BuildError, "Read-only filesystem, cannot write to #{path}: #{e.message}"
-      rescue SystemCallError => e
-        raise BuildError, "Failed to write #{path}: #{e.message}"
-      end
-
       def build_sidebar_cache
         @sidebar_cache = Sidebar::Cache.new(
           docs_path: docs_path,
@@ -194,18 +188,23 @@ module Docyard
       end
 
       def generate_error_page
-        output_path = File.join(config.build.output, "404.html")
-        html_content = load_error_page_content
-        safe_file_write(output_path) { File.write(output_path, html_content) }
+        ErrorPageGenerator.new(
+          config: config,
+          docs_path: docs_path,
+          renderer: build_renderer
+        ).generate
         log "[✓] Generated 404.html"
       end
 
-      def load_error_page_content
-        error_page = File.join(docs_path, "404.html")
-        return File.read(error_page) if File.exist?(error_page)
-
-        branding = BrandingResolver.new(config).resolve
-        build_renderer.render_not_found(branding: branding)
+      def generate_root_fallback_if_needed
+        generator = RootFallbackGenerator.new(
+          config: config,
+          docs_path: docs_path,
+          sidebar_cache: sidebar_cache,
+          renderer: build_renderer
+        )
+        target = generator.generate_if_needed
+        log "[✓] Generated root redirect to #{target}" if target
       end
     end
   end
