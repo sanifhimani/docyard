@@ -462,6 +462,54 @@ RSpec.describe Docyard::Renderer do
         expect(html).not_to include('href="guide/setup.md"')
       end
     end
+
+    context "with internal absolute links and base URL" do
+      let(:renderer) { described_class.new(base_url: "/my-docs/") }
+
+      before do
+        temp_file.write("# Page\n\n[Internal](/guide/setup)\n\n[External](https://example.com)")
+        temp_file.rewind
+      end
+
+      it "prepends base URL to internal absolute links", :aggregate_failures do
+        html = renderer.render_file(temp_file.path)
+
+        expect(html).to include('href="/my-docs/guide/setup"')
+        expect(html).to include('href="https://example.com"')
+      end
+    end
+
+    context "with internal links and root base URL" do
+      let(:renderer) { described_class.new(base_url: "/") }
+
+      before do
+        temp_file.write("# Page\n\n[Internal](/guide/setup)")
+        temp_file.rewind
+      end
+
+      it "does not modify links when base URL is root", :aggregate_failures do
+        html = renderer.render_file(temp_file.path)
+
+        expect(html).to include('href="/guide/setup"')
+        expect(html).not_to include('href="//guide/setup"')
+      end
+    end
+
+    context "with links already containing base URL" do
+      let(:renderer) { described_class.new(base_url: "/my-docs/") }
+
+      before do
+        temp_file.write("# Page\n\n[Already prefixed](/my-docs/guide/setup)")
+        temp_file.rewind
+      end
+
+      it "does not double-prefix links", :aggregate_failures do
+        html = renderer.render_file(temp_file.path)
+
+        expect(html).to include('href="/my-docs/guide/setup"')
+        expect(html).not_to include('href="/my-docs/my-docs/')
+      end
+    end
   end
 
   describe "branding color" do
