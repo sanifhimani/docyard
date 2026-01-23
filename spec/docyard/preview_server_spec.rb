@@ -45,6 +45,34 @@ RSpec.describe Docyard::PreviewServer do
         expect(server.output_dir).to end_with("dist")
       end
     end
+
+    it "defaults base_url to root" do
+      Dir.chdir(temp_dir) do
+        server = described_class.new
+
+        expect(server.base_url).to eq("/")
+      end
+    end
+
+    context "with custom base URL" do
+      before do
+        Dir.chdir(temp_dir) do
+          File.write("docyard.yml", <<~YAML)
+            build:
+              output: "dist"
+              base: "/my-docs"
+          YAML
+        end
+      end
+
+      it "reads base_url from config" do
+        Dir.chdir(temp_dir) do
+          server = described_class.new
+
+          expect(server.base_url).to eq("/my-docs/")
+        end
+      end
+    end
   end
 
   describe "#start" do

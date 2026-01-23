@@ -11,12 +11,13 @@ module Docyard
   class PreviewServer
     DEFAULT_PORT = 4000
 
-    attr_reader :port, :output_dir
+    attr_reader :port, :output_dir, :base_url
 
     def initialize(port: DEFAULT_PORT)
       @port = port
       @config = Config.load
       @output_dir = File.expand_path(@config.build.output)
+      @base_url = normalize_base_url(@config.build.base)
       @launcher = nil
     end
 
@@ -38,12 +39,12 @@ module Docyard
     def print_server_info
       Docyard.logger.info("Starting preview server...")
       Docyard.logger.info("* Version: #{Docyard::VERSION}")
-      Docyard.logger.info("* Running at: http://localhost:#{port}")
+      Docyard.logger.info("* Running at: http://localhost:#{port}#{base_url}")
       Docyard.logger.info("Use Ctrl+C to stop\n")
     end
 
     def run_server
-      app = StaticFileApp.new(output_dir)
+      app = StaticFileApp.new(output_dir, base_path: base_url)
       puma_config = build_puma_config(app)
       log_writer = Puma::LogWriter.strings
 
@@ -63,6 +64,13 @@ module Docyard
         config.threads 1, 4
         config.quiet
       end
+    end
+
+    def normalize_base_url(url)
+      return "/" if url.nil? || url.empty?
+
+      url = "/#{url}" unless url.start_with?("/")
+      url.end_with?("/") ? url : "#{url}/"
     end
   end
 end
