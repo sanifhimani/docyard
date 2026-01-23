@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-01-22
+
+### Added
+- **Root Fallback Redirect** - Auto-redirect to first page when no index.md exists (#127)
+
+### Fixed
+- Breadcrumb sections without index pages now link to first navigable child (#126)
+- Error pages (404/500) now use custom branding colors (#125)
+- Base URL now correctly applied to all assets including fonts and search (#124)
+- Dev server no longer applies build.base config, always uses root path (#123)
+
 ## [1.0.0] - 2026-01-22
 
 ### Added
@@ -205,7 +216,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/sanifhimani/docyard/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/sanifhimani/docyard/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/sanifhimani/docyard/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/sanifhimani/docyard/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/sanifhimani/docyard/compare/v0.6.0...v0.7.0
