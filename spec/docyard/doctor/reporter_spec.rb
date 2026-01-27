@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Docyard::DoctorReporter do
+RSpec.describe Docyard::Doctor::Reporter do
   let(:empty_results) do
     {
       broken_links: [],
@@ -8,6 +8,8 @@ RSpec.describe Docyard::DoctorReporter do
       orphan_pages: []
     }
   end
+
+  let(:stats) { { files: 10, links: 25, images: 5 } }
 
   describe "#exit_code" do
     it "returns 0 when no issues found" do
@@ -39,8 +41,9 @@ RSpec.describe Docyard::DoctorReporter do
   end
 
   describe "#print" do
-    it "outputs 'No issues found' when clean" do
-      reporter = described_class.new(empty_results)
+    it "outputs stats and 'No issues found' when clean", :aggregate_failures do
+      reporter = described_class.new(empty_results, stats)
+      expect { reporter.print }.to output(/Checked 10 files, 25 links, 5 images/).to_stdout
       expect { reporter.print }.to output(/No issues found/).to_stdout
     end
 

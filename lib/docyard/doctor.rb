@@ -16,7 +16,7 @@ module Docyard
 
     def run
       results, stats = collect_results
-      reporter = DoctorReporter.new(results, stats)
+      reporter = Reporter.new(results, stats)
       reporter.print
       reporter.exit_code
     end
