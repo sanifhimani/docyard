@@ -14,7 +14,7 @@
   <% end %>
   <% if @show_last_updated && @last_updated %>
   <div class="page-actions__last-updated">
-    Last updated <time datetime="<%= @last_updated[:iso] %>" title="<%= @last_updated[:formatted] %>"><%= @last_updated[:relative] %></time>
+    Last updated <time datetime="<%= @last_updated[:iso] %>" title="<%= @last_updated[:formatted] %>"><%= @last_updated[:formatted_short] %></time>
   </div>
   <% end %>
 </div>
