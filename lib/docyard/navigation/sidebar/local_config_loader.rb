@@ -7,10 +7,11 @@ module Docyard
     class LocalConfigLoader
       SIDEBAR_CONFIG_FILE = "_sidebar.yml"
 
-      attr_reader :docs_path
+      attr_reader :docs_path, :key_errors
 
-      def initialize(docs_path)
+      def initialize(docs_path, validate: true)
         @docs_path = docs_path
+        @validate = validate
         @key_errors = []
       end
 
@@ -56,18 +57,18 @@ module Docyard
       def validate_items(items, path_prefix: "")
         return unless items.is_a?(Array)
 
-        items.each_with_index do |item, idx|
-          validate_item(item, "#{path_prefix}[#{idx}]")
+        items.each do |item|
+          validate_item(item, path_prefix)
         end
       end
 
-      def validate_item(item, context)
+      def validate_item(item, path_prefix)
         return unless item.is_a?(Hash)
 
         if external_link?(item)
-          validate_external_link(item, context)
+          validate_external_link(item, path_prefix)
         else
-          validate_sidebar_item(item, context)
+          validate_sidebar_item(item, path_prefix)
         end
       end
 
@@ -75,18 +76,21 @@ module Docyard
         item.key?("link") || item.key?(:link)
       end
 
-      def validate_external_link(item, context)
-        errors = Config::KeyValidator.validate(item, Config::Schema::SIDEBAR_EXTERNAL_LINK, context: context)
+      def validate_external_link(item, path_prefix)
+        link_text = item["text"] || item[:text] || item["link"] || item[:link]
+        context = build_context(path_prefix, link_text)
+        errors = Config::Schema.validate_keys(item, Config::Schema::SIDEBAR_EXTERNAL_LINK_KEYS, context: context)
         @key_errors.concat(errors)
       end
 
-      def validate_sidebar_item(item, context)
+      def validate_sidebar_item(item, path_prefix)
         slug, options = extract_slug_and_options(item)
         return unless options.is_a?(Hash)
 
-        errors = Config::KeyValidator.validate(options, Config::Schema::SIDEBAR_ITEM, context: context)
+        context = build_context(path_prefix, slug)
+        errors = Config::Schema.validate_keys(options, Config::Schema::SIDEBAR_ITEM_KEYS, context: context)
         @key_errors.concat(errors)
-        validate_nested_items(options, slug, context)
+        validate_nested_items(options, context)
       end
 
       def extract_slug_and_options(item)
@@ -98,16 +102,22 @@ module Docyard
         end
       end
 
-      def validate_nested_items(options, slug, context)
+      def build_context(prefix, name)
+        return name.to_s if prefix.empty?
+
+        "#{prefix}.#{name}"
+      end
+
+      def validate_nested_items(options, context)
         nested = options["items"] || options[:items]
         return unless nested
 
-        nested_context = slug ? "#{context}.#{slug}" : context
-        validate_items(nested, path_prefix: nested_context)
+        validate_items(nested, path_prefix: context)
       end
 
       def report_key_errors
         return if @key_errors.empty?
+        return unless @validate
 
         messages = @key_errors.map { |e| "#{e[:context]}: #{e[:message]}" }
         raise ConfigError, "Error in #{config_file_path}:\n#{messages.join("\n")}"
