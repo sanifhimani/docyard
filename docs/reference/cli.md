@@ -152,6 +152,49 @@ Run `docyard build` first. The preview server serves files from the `dist/` dire
 
 ---
 
+## docyard doctor
+
+Check your documentation for configuration errors, broken links, missing images, and orphan pages.
+
+```bash
+docyard doctor [OPTIONS]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--fix` | `false` | Auto-fix fixable issues |
+
+:::tabs
+== Check for issues
+```bash
+docyard doctor
+```
+== Auto-fix issues
+```bash
+docyard doctor --fix
+```
+:::
+
+**What it checks:**
+
+| Check | Severity | Description |
+|-------|----------|-------------|
+| Config errors | Error | Type mismatches, unknown keys, invalid values in `docyard.yml` |
+| Sidebar errors | Error | Unknown keys, typos in `_sidebar.yml` |
+| Broken links | Error | Internal links pointing to non-existent pages |
+| Missing images | Error | Image references pointing to non-existent files |
+| Orphan pages | Warning | Pages not listed in the sidebar |
+
+:::tip Auto-fix
+Many config errors are auto-fixable. The `--fix` flag can correct:
+- Typos in key names (e.g., `tittle` to `title`)
+- String booleans (e.g., `"yes"` to `true`)
+- Missing leading slashes in paths
+- Misspelled enum values (e.g., `autoo` to `auto`)
+:::
+
+---
+
 ## docyard version
 
 Show the installed Docyard version.

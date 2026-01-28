@@ -30,9 +30,18 @@ title: My Docs
 ```
 :::
 
-### "Unknown configuration key"
+### Configuration errors
 
-Check for typos in your `docyard.yml`. The error message will show the invalid key and suggest similar valid options.
+Docyard validates `docyard.yml` and `_sidebar.yml` on every `serve` and `build`. Errors include the field name and a helpful message:
+
+```
+[ERROR] Config errors in docyard.yml:
+
+  tittle
+    unknown key, did you mean 'title'?
+```
+
+Run `docyard doctor` for a full report of all issues, or `docyard doctor --fix` to auto-fix typos, boolean strings, and other common mistakes.
 
 ### Build fails silently
 
@@ -200,23 +209,25 @@ docyard build --verbose
 
 ### Assets not loading
 
-Check your `base` URL matches your deployment:
+Check your `base` path and `url` match your deployment:
 
 :::tabs
 == Custom domain
 ```yaml [docyard.yml]
+url: https://docs.example.com
 build:
-  base: https://docs.example.com
+  base: /
 ```
 == GitHub project site
 ```yaml [docyard.yml]
+url: https://username.github.io/repo-name
 build:
-  base: https://username.github.io/repo-name
+  base: /repo-name
 ```
 :::
 
-:::warning
-The `base` URL must exactly match your production URL, including the protocol (`https://`).
+:::note
+`base` is the path prefix (must start with `/`). Use the top-level `url` field for your full production URL.
 :::
 
 ### Images not displaying
