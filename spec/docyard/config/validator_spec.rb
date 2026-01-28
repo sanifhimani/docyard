@@ -1,485 +1,197 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Config::Validator do
-  include_context "with temp directory"
+  let(:valid_data) { { "title" => "Test", "description" => "A description" } }
+  let(:source_dir) { "docs" }
 
-  let(:base_config) do
-    {
-      "title" => "Documentation",
-      "description" => "",
-      "branding" => { "logo" => nil, "favicon" => nil, "credits" => true },
-      "socials" => {},
-      "tabs" => [],
-      "build" => { "output" => "dist", "base" => "/" },
-      "search" => { "enabled" => true, "placeholder" => "Search...", "exclude" => [] }
-    }
-  end
-
-  def valid_config(overrides = {})
-    deep_merge(base_config, overrides)
-  end
-
-  def deep_merge(hash1, hash2)
-    hash1.merge(hash2) do |_key, v1, v2|
-      if v2.nil?
-        v1
-      elsif v1.is_a?(Hash) && v2.is_a?(Hash)
-        deep_merge(v1, v2)
-      else
-        v2
-      end
-    end
+  def validator(data)
+    described_class.new(data, source_dir: source_dir)
   end
 
   describe "#validate!" do
-    context "with valid config" do
-      it "does not raise for default config" do
-        validator = described_class.new(valid_config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-
-      it "does not raise for valid string values" do
-        config = valid_config(
-          "title" => "My Docs",
-          "description" => "Documentation",
-          "build" => { "output" => "public", "base" => "/docs/" }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-
-      it "does not raise for valid boolean values" do
-        config = valid_config(
-          "branding" => { "credits" => false },
-          "search" => { "enabled" => false }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
+    it "does not raise when config is valid" do
+      expect { validator(valid_data).validate! }.not_to raise_error
     end
 
-    context "with invalid top-level fields" do
-      it "raises ConfigError for non-string title" do
-        config = valid_config("title" => 123)
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /title.*must be a string/m)
-      end
-
-      it "raises ConfigError for non-string description" do
-        config = valid_config("description" => ["array"])
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /description.*must be a string/m)
-      end
+    it "raises ConfigError with field name for invalid config" do
+      data = { "title" => 123, "description" => "Test" }
+      expect { validator(data).validate! }
+        .to raise_error(Docyard::ConfigError, /title/)
     end
 
-    context "with invalid build section" do
-      it "raises ConfigError for non-string output" do
-        config = valid_config("build" => { "output" => 123 })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.output.*must be a string/m)
-      end
-
-      it "raises ConfigError for output with forward slash" do
-        config = valid_config("build" => { "output" => "dist/folder" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.output.*cannot contain slashes/m)
-      end
-
-      it "raises ConfigError for output with backslash" do
-        config = valid_config("build" => { "output" => 'dist\folder' })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.output.*cannot contain slashes/m)
-      end
-
-      it "raises ConfigError for base not starting with slash" do
-        config = valid_config("build" => { "base" => "docs/" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /build\.base.*must start with/m)
-      end
-    end
-
-    context "with invalid branding section" do
-      it "raises ConfigError for non-string logo" do
-        config = valid_config("branding" => { "logo" => 123 })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /branding\.logo.*must be a file path/m)
-      end
-
-      it "raises ConfigError for missing logo file" do
-        config = valid_config("branding" => { "logo" => "nonexistent.svg" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /branding\.logo.*file not found/m)
-      end
-
-      it "does not raise for http URL logo" do
-        config = valid_config("branding" => { "logo" => "http://example.com/logo.svg" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-
-      it "does not raise for https URL logo" do
-        config = valid_config("branding" => { "logo" => "https://example.com/logo.svg" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-
-      it "raises ConfigError for non-boolean credits" do
-        config = valid_config("branding" => { "credits" => "yes" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /branding\.credits.*must be true or false/m)
-      end
-    end
-
-    context "with invalid socials section" do
-      it "raises ConfigError for non-hash socials" do
-        config = valid_config("socials" => "string")
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /socials.*must be a hash/m)
-      end
-
-      it "raises ConfigError for non-string social URL" do
-        config = valid_config("socials" => { "github" => 123 })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /socials\.github.*must be a URL/m)
-      end
-
-      it "raises ConfigError for non-array custom socials" do
-        config = valid_config("socials" => { "custom" => "string" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /socials\.custom.*must be an array/m)
-      end
-    end
-
-    context "with invalid tabs section" do
-      it "raises ConfigError for non-array tabs" do
-        config = valid_config("tabs" => "string")
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /tabs.*must be an array/m)
-      end
-
-      it "raises ConfigError for non-string tab text" do
-        config = valid_config("tabs" => [{ "text" => 123, "href" => "/guide" }])
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /tabs\[0\]\.text.*must be a string/m)
-      end
-
-      it "raises ConfigError for non-boolean external" do
-        config = valid_config("tabs" => [{ "text" => "Blog", "href" => "http://blog.example.com",
-                                           "external" => "yes" }])
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /tabs\[0\]\.external.*must be true or false/m)
-      end
-    end
-
-    context "with invalid search section" do
-      it "raises ConfigError for non-boolean enabled" do
-        config = valid_config("search" => { "enabled" => "yes" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /search\.enabled.*must be true or false/m)
-      end
-
-      it "raises ConfigError for non-array exclude" do
-        config = valid_config("search" => { "exclude" => "string" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /search\.exclude.*must be an array/m)
-      end
-    end
-
-    context "with multiple errors" do
-      it "reports all validation errors", :aggregate_failures do
-        config = valid_config(
-          "title" => 123,
-          "build" => { "base" => "no-slash" }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError) do |error|
-            expect(error.message).to include("title")
-            expect(error.message).to include("build.base")
-          end
-      end
-
-      it "formats error messages with field, error, got, and fix", :aggregate_failures do
-        config = valid_config("title" => 123)
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError) do |error|
-            expect(error.message).to include("Field: title")
-            expect(error.message).to include("Error: must be a string")
-            expect(error.message).to include("Got: Integer")
-            expect(error.message).to include("Fix:")
-          end
-      end
-    end
-
-    context "with existing branding files" do
-      it "validates successfully for existing logo file" do
-        logo_path = create_file("logo.svg", "<svg></svg>")
-        config = valid_config("branding" => { "logo" => logo_path })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-
-      it "validates successfully for URL paths without file existence check" do
-        config = valid_config("branding" => { "logo" => "https://cdn.example.com/logo.svg" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-    end
-
-    context "with valid navigation section" do
-      it "does not raise for valid CTA items" do
-        config = valid_config(
-          "navigation" => {
-            "cta" => [
-              { "text" => "Get Started", "href" => "/guide" },
-              { "text" => "GitHub", "href" => "https://github.com", "variant" => "secondary", "external" => true }
-            ]
-          }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-
-      it "does not raise for empty CTA array" do
-        config = valid_config("navigation" => { "cta" => [] })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-    end
-
-    context "with invalid navigation section" do
-      it "raises ConfigError for non-array cta" do
-        config = valid_config("navigation" => { "cta" => "string" })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /navigation\.cta.*must be an array/m)
-      end
-
-      it "raises ConfigError for non-string CTA text" do
-        config = valid_config("navigation" => { "cta" => [{ "text" => 123, "href" => "/guide" }] })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.text.*must be a string/m)
-      end
-
-      it "raises ConfigError for non-string CTA href" do
-        config = valid_config("navigation" => { "cta" => [{ "text" => "Get Started", "href" => 123 }] })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.href.*must be a string/m)
-      end
-
-      it "raises ConfigError for invalid variant" do
-        config = valid_config(
-          "navigation" => { "cta" => [{ "text" => "CTA", "href" => "/", "variant" => "invalid" }] }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.variant.*must be 'primary' or 'secondary'/m)
-      end
-
-      it "raises ConfigError for non-boolean external" do
-        config = valid_config(
-          "navigation" => { "cta" => [{ "text" => "CTA", "href" => "/", "external" => "yes" }] }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]\.external.*must be true or false/m)
-      end
-
-      it "raises ConfigError for more than 2 CTAs" do
-        config = valid_config(
-          "navigation" => {
-            "cta" => [
-              { "text" => "CTA 1", "href" => "/one" },
-              { "text" => "CTA 2", "href" => "/two" },
-              { "text" => "CTA 3", "href" => "/three" }
-            ]
-          }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /navigation\.cta.*maximum 2 CTAs allowed/m)
-      end
+    it "raises ConfigError listing all errors" do
+      data = { "title" => 123, "description" => "Test", "unknown_key" => "value" }
+      expect { validator(data).validate! }
+        .to raise_error(Docyard::ConfigError, /unknown_key.*title/m)
     end
   end
 
-  describe "unknown top-level keys" do
-    it "raises error for unknown keys with 'did you mean' suggestion" do
-      config = valid_config("sidebarr" => "distributed")
-      validator = described_class.new(config)
-
-      expect { validator.validate! }
-        .to raise_error(Docyard::ConfigError, /unknown key 'sidebarr'.*Did you mean 'sidebar'/m)
+  describe "#validate_all" do
+    it "returns empty array when config is valid" do
+      issues = validator(valid_data).validate_all
+      expect(issues.select(&:error?)).to be_empty
     end
 
-    it "raises error for unknown keys without suggestion if no close match" do
-      config = valid_config("xyzabc123" => "value")
-      validator = described_class.new(config)
-
-      expect { validator.validate! }
-        .to raise_error(Docyard::ConfigError, /unknown key 'xyzabc123'/)
-    end
-
-    it "does not raise for valid keys" do
-      validator = described_class.new(valid_config)
-
-      expect { validator.validate! }.not_to raise_error
+    it "collects all issues without raising" do
+      data = { "title" => 123, "description" => "Test", "unknown_key" => "value" }
+      issues = validator(data).validate_all
+      expect(issues.count(&:error?)).to eq(2)
     end
   end
 
-  describe "feedback section" do
-    context "when feedback is enabled without analytics" do
-      it "raises ConfigError" do
-        config = valid_config("feedback" => { "enabled" => true })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }
-          .to raise_error(Docyard::ConfigError, /feedback\.enabled.*requires analytics/m)
-      end
+  describe "type validation" do
+    it "validates string fields" do
+      data = { "title" => 123, "description" => "Test" }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "title" }
+      expect(error.message).to include("must be a string")
     end
 
-    context "when feedback is enabled with google analytics" do
-      it "does not raise" do
-        config = valid_config(
-          "feedback" => { "enabled" => true },
-          "analytics" => { "google" => "G-123456" }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
+    it "validates boolean fields" do
+      data = { "description" => "Test", "branding" => { "credits" => "yes" } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "branding.credits" }
+      expect(error.message).to include("must be true or false")
     end
 
-    context "when feedback is enabled with plausible analytics" do
-      it "does not raise" do
-        config = valid_config(
-          "feedback" => { "enabled" => true },
-          "analytics" => { "plausible" => "example.com" }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
+    it "validates url fields warn for non-http urls" do
+      data = { "description" => "Test", "url" => "not-a-url" }
+      issues = validator(data).validate_all
+      warning = issues.find { |i| i.field == "url" }
+      expect(warning.message).to include("valid URL")
     end
 
-    context "when feedback is enabled with fathom analytics" do
-      it "does not raise" do
-        config = valid_config(
-          "feedback" => { "enabled" => true },
-          "analytics" => { "fathom" => "FATHOMID" }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
+    it "validates enum fields with allowed values", :aggregate_failures do
+      data = { "description" => "Test", "sidebar" => "invalid" }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "sidebar" }
+      expect(error.message).to include("invalid value")
+      expect(error.expected).to include("config")
     end
 
-    context "when feedback is enabled with custom script analytics" do
-      it "does not raise" do
-        config = valid_config(
-          "feedback" => { "enabled" => true },
-          "analytics" => { "script" => "<script>custom</script>" }
-        )
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
-    end
-
-    context "when feedback is disabled" do
-      it "does not require analytics" do
-        config = valid_config("feedback" => { "enabled" => false })
-        validator = described_class.new(config)
-
-        expect { validator.validate! }.not_to raise_error
-      end
+    it "validates array max_items constraint", :aggregate_failures do
+      data = { "description" => "Test", "navigation" => { "cta" => [{}, {}, {}] } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "navigation.cta" }
+      expect(error.message).to include("too many items")
+      expect(error.expected).to include("maximum 2")
     end
   end
 
-  describe "unknown nested keys" do
-    it "raises error for unknown branding keys" do
-      config = valid_config("branding" => { "logoo" => "test.svg", "credits" => true })
-      validator = described_class.new(config)
-
-      expect { validator.validate! }
-        .to raise_error(Docyard::ConfigError, /branding: unknown key 'logoo'.*Did you mean 'logo'/m)
+  describe "unknown key detection" do
+    it "reports unknown top-level keys" do
+      data = { "description" => "Test", "unknown_key" => "value" }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "unknown_key" }
+      expect(error.message).to include("unknown key")
     end
 
-    it "raises error for unknown build keys" do
-      config = valid_config("build" => { "outputt" => "dist", "base" => "/" })
-      validator = described_class.new(config)
-
-      expect { validator.validate! }
-        .to raise_error(Docyard::ConfigError, /build: unknown key 'outputt'.*Did you mean 'output'/m)
+    it "reports unknown nested keys" do
+      data = { "description" => "Test", "branding" => { "unknown_nested" => "value" } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "branding.unknown_nested" }
+      expect(error).not_to be_nil
     end
 
-    it "raises error for unknown tab item keys" do
-      config = valid_config("tabs" => [{ "textt" => "Guide", "href" => "/guide" }])
-      validator = described_class.new(config)
-
-      expect { validator.validate! }
-        .to raise_error(Docyard::ConfigError, /tabs\[0\]: unknown key 'textt'.*Did you mean 'text'/m)
+    it "suggests corrections for typos" do
+      data = { "description" => "Test", "tittle" => "Test" }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "tittle" }
+      expect(error.message).to include("did you mean 'title'")
     end
 
-    it "raises error for unknown CTA item keys" do
-      config = valid_config("navigation" => { "cta" => [{ "text" => "CTA", "hreff" => "/" }] })
-      validator = described_class.new(config)
+    it "allows extra keys in socials section" do
+      data = { "description" => "Test", "socials" => { "custom_social" => "https://example.com" } }
+      issues = validator(data).validate_all
+      expect(issues.select(&:error?)).to be_empty
+    end
+  end
 
-      expect { validator.validate! }
-        .to raise_error(Docyard::ConfigError, /navigation\.cta\[0\]: unknown key 'hreff'.*Did you mean 'href'/m)
+  describe "format validation" do
+    it "validates build.output cannot contain slashes" do
+      data = { "description" => "Test", "build" => { "output" => "dist/foo" } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "build.output" }
+      expect(error.message).to include("cannot contain slashes")
+    end
+
+    it "validates build.base must start with slash" do
+      data = { "description" => "Test", "build" => { "base" => "docs" } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "build.base" }
+      expect(error.message).to include("must start with /")
+    end
+
+    it "provides fix for missing leading slash" do
+      data = { "description" => "Test", "build" => { "base" => "docs" } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "build.base" }
+      expect(error.fix).to eq({ type: :replace, value: "/docs" })
+    end
+  end
+
+  describe "cross-field validation" do
+    it "requires analytics when feedback is enabled" do
+      data = { "description" => "Test", "feedback" => { "enabled" => true } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "feedback.enabled" }
+      expect(error.message).to include("requires analytics")
+    end
+
+    it "passes when feedback enabled with analytics configured" do
+      data = {
+        "description" => "Test",
+        "feedback" => { "enabled" => true },
+        "analytics" => { "google" => "G-123" }
+      }
+      issues = validator(data).validate_all
+      expect(issues.select(&:error?)).to be_empty
+    end
+  end
+
+  describe "recommended fields" do
+    it "warns when description is missing", :aggregate_failures do
+      data = { "title" => "Test" }
+      issues = validator(data).validate_all
+      warning = issues.find { |i| i.field == "description" }
+      expect(warning).to be_warning
+      expect(warning.message).to include("recommended for better SEO")
+    end
+  end
+
+  describe "fixable issues" do
+    it "marks boolean typos as fixable", :aggregate_failures do
+      data = { "description" => "Test", "branding" => { "credits" => "yes" } }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "branding.credits" }
+      expect(error).to be_fixable
+      expect(error.fix[:value]).to be(true)
+    end
+
+    it "marks enum typos with suggestions as fixable", :aggregate_failures do
+      data = { "description" => "Test", "sidebar" => "conifg" }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "sidebar" }
+      expect(error).to be_fixable
+      expect(error.fix[:value]).to eq("config")
+    end
+
+    it "marks unknown key with suggestion as fixable", :aggregate_failures do
+      data = { "description" => "Test", "tittle" => "Test" }
+      issues = validator(data).validate_all
+      error = issues.find { |i| i.field == "tittle" }
+      expect(error).to be_fixable
+      expect(error.fix[:type]).to eq(:rename)
+    end
+  end
+
+  describe "#errors and #warnings" do
+    it "separates errors from warnings", :aggregate_failures do
+      data = { "title" => 123, "url" => "not-a-url" }
+      v = validator(data)
+      v.validate_all
+      expect(v.errors.size).to eq(1)
+      expect(v.warnings.size).to eq(2)
     end
   end
 end
