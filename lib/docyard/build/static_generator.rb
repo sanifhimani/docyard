@@ -74,7 +74,7 @@ module Docyard
 
       def generate_pages_in_parallel(markdown_files)
         Parallel.map(markdown_files, in_threads: Parallel.processor_count) do |file_path|
-          generate_page(file_path, thread_local_renderer)
+          generate_page_with_timing(file_path, thread_local_renderer)
         ensure
           Thread.current[:docyard_build_renderer] = nil
         end
@@ -83,8 +83,15 @@ module Docyard
       def generate_pages_sequentially(markdown_files)
         renderer = build_renderer
         markdown_files.map do |file_path|
-          generate_page(file_path, renderer)
+          generate_page_with_timing(file_path, renderer)
         end
+      end
+
+      def generate_page_with_timing(file_path, renderer)
+        page_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        output_path = generate_page(file_path, renderer)
+        elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - page_start
+        [output_path, elapsed]
       end
 
       def thread_local_renderer
@@ -176,7 +183,10 @@ module Docyard
       def build_verbose_details(generated_pages)
         return nil unless verbose
 
-        generated_pages.map { |p| p.delete_prefix("#{config.build.output}/") }
+        generated_pages.map do |output_path, elapsed|
+          path = output_path.delete_prefix("#{config.build.output}/")
+          "#{path.ljust(30)} #{format('%<t>.2fs', t: elapsed)}"
+        end
       end
 
       def generate_error_page

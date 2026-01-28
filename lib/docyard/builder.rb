@@ -4,6 +4,14 @@ require "fileutils"
 
 module Docyard
   class Builder
+    STEP_SHORT_LABELS = {
+      "Generating pages" => "Pages",
+      "Bundling assets" => "Assets",
+      "Copying files" => "Files",
+      "Generating SEO" => "SEO",
+      "Indexing search" => "Search"
+    }.freeze
+
     attr_reader :config, :clean, :verbose, :start_time
 
     def initialize(clean: true, verbose: false)
@@ -11,6 +19,7 @@ module Docyard
       @clean = clean
       @verbose = verbose
       @start_time = Time.now
+      @step_timings = []
     end
 
     def build
@@ -42,14 +51,27 @@ module Docyard
       run_step("Indexing search") { generate_search_index }
     end
 
-    def run_step(label)
+    def run_step(label, &)
       print "  #{label.ljust(20)}in progress"
       $stdout.flush
-      result, details = yield
-      print "\r  #{label.ljust(20)}#{format_result(label, result)}\n"
-      $stdout.flush
+      result, details, elapsed = execute_step(label, &)
+      print_step_result(label, result, elapsed)
       print_verbose_details(details) if verbose && details&.any?
       result
+    end
+
+    def execute_step(label)
+      step_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result, details = yield
+      elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - step_start
+      @step_timings << { label: STEP_SHORT_LABELS.fetch(label, label), elapsed: elapsed }
+      [result, details, elapsed]
+    end
+
+    def print_step_result(label, result, elapsed)
+      timing_suffix = verbose ? " in #{format('%<t>.2fs', t: elapsed)}" : ""
+      print "\r  #{label.ljust(20)}#{format_result(label, result)}#{timing_suffix}\n"
+      $stdout.flush
     end
 
     def print_verbose_details(details)
@@ -98,6 +120,23 @@ module Docyard
       puts "  Build complete in #{format('%.2fs', elapsed)}"
       puts "  Output: #{config.build.output}/ (#{format_size(size)})"
       puts
+      print_timing_breakdown if verbose
+    end
+
+    def print_timing_breakdown
+      total = @step_timings.sum { |t| t[:elapsed] }
+      sorted = @step_timings.sort_by { |t| -t[:elapsed] }
+
+      puts "  Timing:"
+      sorted.each { |timing| puts "    #{format_timing_line(timing, total)}" }
+      puts
+    end
+
+    def format_timing_line(timing, total)
+      label = timing[:label].ljust(12)
+      secs = format("%<t>5.2fs", t: timing[:elapsed])
+      pct = total.positive? ? (timing[:elapsed] / total * 100).round : 0
+      "#{label} #{secs} (#{format('%<p>2d', p: pct)}%)"
     end
 
     def calculate_output_size
@@ -120,9 +159,7 @@ module Docyard
 
     def bundle_assets
       require_relative "build/asset_bundler"
-      bundler = Build::AssetBundler.new(config, verbose: verbose)
-      result = bundler.bundle
-      [result, nil]
+      [Build::AssetBundler.new(config, verbose: verbose).bundle, nil]
     end
 
     def copy_static_files
