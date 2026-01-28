@@ -2,7 +2,6 @@
 
 require "yaml"
 require_relative "config/section"
-require_relative "config/schema"
 require_relative "config/validator"
 require_relative "constants"
 require_relative "utils/hash_utils"
@@ -34,15 +33,15 @@ module Docyard
 
     attr_reader :data, :file_path
 
-    def self.load(project_root = Dir.pwd)
-      new(project_root)
+    def self.load(project_root = Dir.pwd, validate: true)
+      new(project_root, validate: validate)
     end
 
-    def initialize(project_root = Dir.pwd)
+    def initialize(project_root = Dir.pwd, validate: true)
       @project_root = project_root
       @file_path = File.join(project_root, "docyard.yml")
       @data = load_config_data
-      validate!
+      validate! if validate
     end
 
     def file_exists?
@@ -98,7 +97,7 @@ module Docyard
     end
 
     def validate!
-      Validator.new(data).validate!
+      Validator.new(data, source_dir: source).validate!
     end
   end
 end
