@@ -4,7 +4,6 @@ require "fileutils"
 require "tmpdir"
 require "open3"
 require "parallel"
-require "tty-progressbar"
 require_relative "../utils/path_utils"
 
 module Docyard
@@ -14,13 +13,15 @@ module Docyard
 
       PARALLEL_THRESHOLD = 10
 
-      attr_reader :docs_path, :config, :temp_dir, :pagefind_path
+      attr_reader :docs_path, :config, :temp_dir, :pagefind_path, :page_count, :total_pages
 
       def initialize(docs_path:, config:)
         @docs_path = docs_path
         @config = config
         @temp_dir = nil
         @pagefind_path = nil
+        @page_count = 0
+        @total_pages = 0
       end
 
       def generate
@@ -29,10 +30,9 @@ module Docyard
 
         @temp_dir = Dir.mktmpdir("docyard-search-")
         generate_html_files
-        page_count = run_pagefind
+        @page_count = run_pagefind
         @pagefind_path = File.join(temp_dir, "_docyard", "pagefind")
 
-        log_success(page_count)
         pagefind_path
       rescue StandardError => e
         Docyard.logger.warn("Search index generation failed: #{e.message}")
@@ -58,36 +58,27 @@ module Docyard
         markdown_files = Dir.glob(File.join(docs_path, "**", "*.md"))
         markdown_files = filter_excluded_files(markdown_files)
         markdown_files = filter_non_indexable_files(markdown_files)
-
-        progress = TTY::ProgressBar.new(
-          "Indexing search [:bar] :current/:total (:percent)",
-          total: markdown_files.size,
-          width: 50
-        )
-        mutex = Mutex.new
+        @total_pages = markdown_files.size
 
         Logging.start_buffering
         if markdown_files.size >= PARALLEL_THRESHOLD
-          generate_files_in_parallel(markdown_files, progress, mutex)
+          generate_files_in_parallel(markdown_files)
         else
-          generate_files_sequentially(markdown_files, progress)
+          generate_files_sequentially(markdown_files)
         end
-        Logging.flush_warnings
       end
 
-      def generate_files_in_parallel(markdown_files, progress, mutex)
+      def generate_files_in_parallel(markdown_files)
         Parallel.each(markdown_files, in_threads: Parallel.processor_count) do |file_path|
           renderer = thread_local_renderer
           generate_html_file(file_path, renderer)
-          mutex.synchronize { progress.advance }
         end
       end
 
-      def generate_files_sequentially(markdown_files, progress)
+      def generate_files_sequentially(markdown_files)
         renderer = Renderer.new(base_url: "/", config: config)
         markdown_files.each do |file_path|
           generate_html_file(file_path, renderer)
-          progress.advance
         end
       end
 
@@ -152,11 +143,6 @@ module Docyard
       def extract_page_count(output)
         match = output.match(/Indexed (\d+) page/i)
         match ? match[1].to_i : 0
-      end
-
-      def log_success(page_count)
-        Docyard.logger.info("* Search index generated (#{page_count} pages indexed)")
-        Docyard.logger.debug("* Temp directory: #{temp_dir}")
       end
     end
   end

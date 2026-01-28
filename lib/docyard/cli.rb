@@ -8,6 +8,8 @@ module Docyard
       true
     end
 
+    class_option :no_color, type: :boolean, default: false, desc: "Disable colored output"
+
     desc "version", "Show docyard version"
     def version
       puts "docyard #{Docyard::VERSION}"
@@ -17,6 +19,7 @@ module Docyard
     method_option :force, type: :boolean, default: false, aliases: "-f",
                           desc: "Overwrite existing files"
     def init(project_name = nil)
+      apply_global_options
       initializer = Docyard::Initializer.new(project_name, force: options[:force])
       exit(1) unless initializer.run
     end
@@ -25,6 +28,7 @@ module Docyard
     method_option :clean, type: :boolean, default: true, desc: "Clean output directory before building"
     method_option :verbose, type: :boolean, default: false, aliases: "-v", desc: "Show verbose output"
     def build
+      apply_global_options
       require_relative "builder"
       builder = Docyard::Builder.new(
         clean: options[:clean],
@@ -39,6 +43,7 @@ module Docyard
     desc "preview", "Preview the built site locally"
     method_option :port, type: :numeric, default: 4000, aliases: "-p", desc: "Port to run preview server on"
     def preview
+      apply_global_options
       require_relative "server/preview_server"
       Docyard::PreviewServer.new(port: options[:port]).start
     end
@@ -49,6 +54,7 @@ module Docyard
     method_option :search, type: :boolean, default: false, aliases: "-s",
                            desc: "Enable search indexing (slower startup)"
     def serve
+      apply_global_options
       require_relative "server/dev_server"
       config = Docyard::Config.load
       server = Docyard::DevServer.new(
@@ -66,12 +72,19 @@ module Docyard
     desc "doctor", "Check documentation for issues"
     method_option :fix, type: :boolean, default: false, desc: "Auto-fix fixable issues"
     def doctor
+      apply_global_options
       require_relative "doctor"
       doctor = Docyard::Doctor.new(fix: options[:fix])
       exit(doctor.run)
     rescue ConfigError => e
       Docyard.logger.error(e.message)
       exit(1)
+    end
+
+    private
+
+    def apply_global_options
+      UI.enabled = false if options[:no_color]
     end
   end
 end

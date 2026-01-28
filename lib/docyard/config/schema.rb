@@ -9,17 +9,6 @@ module Docyard
       SIDEBAR_EXTERNAL_LINK_KEYS = %w[link text icon target].freeze
 
       class << self
-        def top_level_keys
-          DEFINITION.keys.map(&:to_s)
-        end
-
-        def section_keys(section)
-          section_def = DEFINITION[section.to_sym]
-          return [] unless section_def&.dig(:keys)
-
-          section_def[:keys].keys.map(&:to_s)
-        end
-
         def validate_keys(hash, valid_keys, context:)
           return [] unless hash.is_a?(Hash)
 

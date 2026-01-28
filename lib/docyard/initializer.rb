@@ -55,14 +55,14 @@ module Docyard
 
     def print_existing_files_warning
       puts
-      puts "  Warning: Existing files found:"
+      puts "  #{UI.yellow('Warning:')} Existing files found:"
       puts "    #{docs_path}/" if File.exist?(docs_path)
       puts "    #{config_path}" if File.exist?(config_path)
     end
 
     def print_abort_message
       puts
-      puts "  Aborted. Use --force to overwrite existing files."
+      puts "  #{UI.yellow('Aborted.')} Use --force to overwrite existing files."
       puts
     end
 
@@ -106,37 +106,37 @@ module Docyard
 
     def print_success
       puts
-      puts "  Docyard v#{VERSION}"
+      puts "  #{UI.bold('Docyard')} v#{VERSION}"
       puts
-      puts "  Project initialized"
+      puts "  #{UI.success('Project initialized')}"
       puts
       print_created_structure
       print_next_steps
     end
 
-    def print_created_structure
-      puts "  Created:"
+    def print_created_structure # rubocop:disable Metrics/AbcSize
+      puts "  #{UI.bold('Created:')}"
       if project_name
-        puts "    #{project_name}/"
-        puts "      docyard.yml"
-        puts "      docs/"
+        puts UI.dim("    #{project_name}/")
+        puts UI.dim("      docyard.yml")
+        puts UI.dim("      docs/")
       else
-        puts "    docyard.yml"
-        puts "    docs/"
+        puts UI.dim("    docyard.yml")
+        puts UI.dim("    docs/")
       end
-      puts "        _sidebar.yml"
-      puts "        index.md"
-      puts "        getting-started.md"
-      puts "        components.md"
-      puts "        public/"
+      puts UI.dim("        _sidebar.yml")
+      puts UI.dim("        index.md")
+      puts UI.dim("        getting-started.md")
+      puts UI.dim("        components.md")
+      puts UI.dim("        public/")
       puts
     end
 
     def print_next_steps
-      puts "  Next steps:"
+      puts "  #{UI.bold('Next steps:')}"
       puts "    cd #{project_name}" if project_name
       puts "    docyard serve"
-      puts "    Open http://localhost:4200"
+      puts "    Open #{UI.cyan('http://localhost:4200')}"
       puts
     end
   end

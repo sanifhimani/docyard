@@ -9,6 +9,8 @@ require_relative "static_file_app"
 
 module Docyard
   class PreviewServer
+    include Utils::UrlHelpers
+
     DEFAULT_PORT = 4000
 
     attr_reader :port, :output_dir, :base_url
@@ -32,18 +34,18 @@ module Docyard
     def validate_output_directory!
       return if File.directory?(output_dir)
 
-      abort "Error: #{output_dir}/ directory not found.\n" \
+      abort "#{UI.error('Error:')} #{output_dir}/ directory not found.\n" \
             "Run `docyard build` first to build the site."
     end
 
     def print_server_info
       puts
-      puts "  Docyard v#{Docyard::VERSION}"
+      puts "  #{UI.bold('Docyard')} v#{Docyard::VERSION}"
       puts
       puts "  Previewing #{output_dir}/"
-      puts "  http://localhost:#{port}#{base_url}"
+      puts "  #{UI.cyan("http://localhost:#{port}#{base_url}")}"
       puts
-      puts "  Press Ctrl+C to stop"
+      puts "  #{UI.dim('Press Ctrl+C to stop')}"
       puts
     end
 
@@ -68,13 +70,6 @@ module Docyard
         config.threads 1, 4
         config.quiet
       end
-    end
-
-    def normalize_base_url(url)
-      return "/" if url.nil? || url.empty?
-
-      url = "/#{url}" unless url.start_with?("/")
-      url.end_with?("/") ? url : "#{url}/"
     end
   end
 end

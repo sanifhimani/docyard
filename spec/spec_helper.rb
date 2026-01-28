@@ -12,21 +12,8 @@ SimpleCov.at_exit do
 end
 
 require "docyard"
-require "tty-screen"
 
 Dir[File.join(__dir__, "support", "**", "*.rb")].each { |f| require f }
-
-# Stub TTY::Screen to avoid ioctl errors in test environment
-# (StringIO doesn't support ioctl system calls)
-TTY::Screen.class_eval do
-  def self.width
-    80
-  end
-
-  def self.height
-    24
-  end
-end
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -50,6 +37,7 @@ RSpec.configure do |config|
 
   config.before do
     Docyard::Logging.logger = nil
+    Docyard::UI.enabled = false
   end
 end
 

@@ -21,9 +21,5 @@ module Docyard
     def found?
       status == :found
     end
-
-    def not_found?
-      status == :not_found
-    end
   end
 end

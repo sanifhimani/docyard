@@ -7,6 +7,8 @@ require "digest"
 module Docyard
   module Build
     class AssetBundler
+      include Utils::UrlHelpers
+
       ASSETS_PATH = File.join(__dir__, "..", "templates", "assets")
 
       attr_reader :config, :verbose
@@ -143,13 +145,6 @@ module Docyard
         output_path = File.join(config.build.output, "_docyard", filename)
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, content)
-      end
-
-      def normalize_base_url(url)
-        return "/" if url.nil? || url.empty? || url == "/"
-
-        url = "/#{url}" unless url.start_with?("/")
-        url.end_with?("/") ? url : "#{url}/"
       end
     end
   end

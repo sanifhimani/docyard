@@ -1,40 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Config::Schema do
-  describe ".top_level_keys" do
-    it "returns all top-level config keys" do
-      keys = described_class.top_level_keys
-      expect(keys).to include("title", "description", "branding", "socials")
-    end
-
-    it "returns strings not symbols" do
-      keys = described_class.top_level_keys
-      expect(keys).to all(be_a(String))
-    end
-  end
-
-  describe ".section_keys" do
-    it "returns keys for branding section" do
-      keys = described_class.section_keys(:branding)
-      expect(keys).to include("logo", "favicon", "credits", "copyright", "color")
-    end
-
-    it "returns keys for build section" do
-      keys = described_class.section_keys(:build)
-      expect(keys).to include("output", "base")
-    end
-
-    it "returns empty array for non-hash sections" do
-      keys = described_class.section_keys(:title)
-      expect(keys).to eq([])
-    end
-
-    it "returns empty array for unknown sections" do
-      keys = described_class.section_keys(:nonexistent)
-      expect(keys).to eq([])
-    end
-  end
-
   describe ".validate_keys" do
     let(:valid_keys) { %w[name age city] }
 

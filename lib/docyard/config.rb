@@ -8,8 +8,6 @@ require_relative "utils/hash_utils"
 
 module Docyard
   class Config
-    SIDEBAR_MODES = %w[config auto distributed].freeze
-
     DEFAULT_CONFIG = {
       "title" => Constants::DEFAULT_SITE_TITLE,
       "description" => "",
@@ -58,10 +56,6 @@ module Docyard
     def socials = data["socials"]
     def tabs = data["tabs"]
     def sidebar = data["sidebar"]
-
-    def sidebar_config? = sidebar == "config"
-    def sidebar_auto? = sidebar == "auto"
-    def sidebar_distributed? = sidebar == "distributed"
 
     def branding = @branding ||= Section.new(data["branding"])
     def build = @build ||= Section.new(data["build"])

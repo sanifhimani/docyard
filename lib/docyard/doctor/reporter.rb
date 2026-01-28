@@ -13,7 +13,7 @@ module Docyard
 
       def print
         puts
-        puts "  Docyard v#{VERSION}"
+        puts "  #{UI.bold('Docyard')} v#{VERSION}"
         puts
         puts "  Checking docs..."
         puts
@@ -37,7 +37,7 @@ module Docyard
         errors = issues.select(&:error?)
         warnings = issues.select(&:warning?)
 
-        puts "  Configuration        #{issue_counts(errors.size, warnings.size)}"
+        puts "  #{UI.bold('Configuration')}        #{issue_counts(errors.size, warnings.size)}"
         issues.each do |issue|
           puts "    #{issue.format_short}"
         end
@@ -48,10 +48,10 @@ module Docyard
         issues = results[:broken_links]
         return if issues.empty?
 
-        puts "  Broken links         #{pluralize(issues.size, 'error')}"
+        puts "  #{UI.bold('Broken links')}         #{UI.red(pluralize(issues.size, 'error'))}"
         issues.each do |issue|
           location = "#{issue.file}:#{issue.line}"
-          puts "    #{location.ljust(24)} #{issue.target}"
+          puts "    #{UI.dim(location.ljust(24))} #{issue.target}"
         end
         puts
       end
@@ -60,10 +60,10 @@ module Docyard
         issues = results[:missing_images]
         return if issues.empty?
 
-        puts "  Missing images       #{pluralize(issues.size, 'error')}"
+        puts "  #{UI.bold('Missing images')}       #{UI.red(pluralize(issues.size, 'error'))}"
         issues.each do |issue|
           location = "#{issue.file}:#{issue.line}"
-          puts "    #{location.ljust(24)} #{issue.target}"
+          puts "    #{UI.dim(location.ljust(24))} #{issue.target}"
         end
         puts
       end
@@ -72,7 +72,7 @@ module Docyard
         orphans = results[:orphan_pages]
         return if orphans.empty?
 
-        puts "  Orphan pages         #{pluralize(orphans.size, 'warning')}"
+        puts "  #{UI.bold('Orphan pages')}         #{UI.yellow(pluralize(orphans.size, 'warning'))}"
         orphans.each do |orphan|
           puts "    #{orphan[:file]}"
         end
@@ -83,7 +83,7 @@ module Docyard
         puts "  #{stats_summary}"
 
         if error_count.zero? && warning_count.zero?
-          puts "  No issues found"
+          puts "  #{UI.success('No issues found')}"
         else
           puts "  #{build_issue_summary}"
           print_fixable_hint
@@ -98,13 +98,13 @@ module Docyard
         return if fixable.zero?
 
         puts
-        puts "  Run with --fix to auto-fix #{pluralize(fixable, 'issue')}."
+        puts "  #{UI.cyan("Run with --fix to auto-fix #{pluralize(fixable, 'issue')}.")}"
       end
 
       def issue_counts(error_count, warning_count)
         parts = []
-        parts << pluralize(error_count, "error") if error_count.positive?
-        parts << pluralize(warning_count, "warning") if warning_count.positive?
+        parts << UI.red(pluralize(error_count, "error")) if error_count.positive?
+        parts << UI.yellow(pluralize(warning_count, "warning")) if warning_count.positive?
         parts.join(", ")
       end
 
@@ -123,8 +123,8 @@ module Docyard
 
       def build_issue_summary
         parts = []
-        parts << pluralize(error_count, "error") if error_count.positive?
-        parts << pluralize(warning_count, "warning") if warning_count.positive?
+        parts << UI.red(pluralize(error_count, "error")) if error_count.positive?
+        parts << UI.yellow(pluralize(warning_count, "warning")) if warning_count.positive?
         "Found #{parts.join(', ')}"
       end
 

@@ -5,7 +5,6 @@ require "listen"
 module Docyard
   class FileWatcher
     DEBOUNCE_DELAY = 0.1
-    ROOT_CONFIG_FILE = "docyard.yml"
     CONFIG_FILES = %w[docyard.yml _sidebar.yml].freeze
     CONTENT_EXTENSIONS = %w[.md .markdown].freeze
     ASSET_EXTENSIONS = %w[.css .js .html .erb].freeze

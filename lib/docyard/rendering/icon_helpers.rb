@@ -2,15 +2,13 @@
 
 module Docyard
   module IconHelpers
-    VALID_WEIGHTS = %w[regular bold fill light thin duotone].freeze
-
     def icon(name, weight = "regular")
       name = name.to_s
       return name if name.strip.start_with?("<svg")
 
       name = name.tr("_", "-")
       weight = weight.to_s
-      weight = "regular" unless VALID_WEIGHTS.include?(weight)
+      weight = "regular" unless Icons::VALID_WEIGHTS.include?(weight)
       weight_class = weight == "regular" ? "ph" : "ph-#{weight}"
       %(<i class="#{weight_class} ph-#{name}" aria-hidden="true"></i>)
     end
