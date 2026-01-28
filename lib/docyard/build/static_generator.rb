@@ -32,13 +32,11 @@ module Docyard
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
-        Docyard.logger.info("\n[✓] Found #{markdown_files.size} markdown files")
-
-        generate_all_pages(markdown_files)
+        generated_pages = generate_all_pages(markdown_files)
         generate_error_page
         generate_root_fallback_if_needed
 
-        markdown_files.size
+        [markdown_files.size, build_verbose_details(generated_pages)]
       ensure
         Utils::GitInfo.clear_cache
       end
@@ -46,20 +44,14 @@ module Docyard
       private
 
       def generate_all_pages(markdown_files)
-        progress = TTY::ProgressBar.new(
-          "Generating pages [:bar] :current/:total (:percent)",
-          total: markdown_files.size,
-          width: 50
-        )
-        mutex = Mutex.new
-
         Logging.start_buffering
-        if markdown_files.size >= PARALLEL_THRESHOLD
-          generate_pages_in_parallel(markdown_files, progress, mutex)
-        else
-          generate_pages_sequentially(markdown_files, progress)
-        end
+        pages = if markdown_files.size >= PARALLEL_THRESHOLD
+                  generate_pages_in_parallel(markdown_files)
+                else
+                  generate_pages_sequentially(markdown_files)
+                end
         Logging.flush_warnings
+        pages
       end
 
       def custom_landing_page?
@@ -72,7 +64,6 @@ module Docyard
           FileUtils.mkdir_p(File.dirname(output_path))
           FileUtils.cp(File.join(docs_path, "index.html"), output_path)
         end
-        log "[✓] Copied custom landing page (index.html)"
       end
 
       def collect_markdown_files
@@ -81,20 +72,18 @@ module Docyard
         files
       end
 
-      def generate_pages_in_parallel(markdown_files, progress, mutex)
-        Parallel.each(markdown_files, in_threads: Parallel.processor_count) do |file_path|
+      def generate_pages_in_parallel(markdown_files)
+        Parallel.map(markdown_files, in_threads: Parallel.processor_count) do |file_path|
           generate_page(file_path, thread_local_renderer)
-          mutex.synchronize { progress.advance }
         ensure
           Thread.current[:docyard_build_renderer] = nil
         end
       end
 
-      def generate_pages_sequentially(markdown_files, progress)
+      def generate_pages_sequentially(markdown_files)
         renderer = build_renderer
-        markdown_files.each do |file_path|
+        markdown_files.map do |file_path|
           generate_page(file_path, renderer)
-          progress.advance
         end
       end
 
@@ -114,6 +103,7 @@ module Docyard
         html_content = render_markdown_file(markdown_file_path, current_path, renderer)
         html_content = apply_search_exclusion(html_content, current_path)
         write_output(output_path, html_content)
+        output_path
       end
 
       def apply_search_exclusion(html_content, current_path)
@@ -165,7 +155,6 @@ module Docyard
           FileUtils.mkdir_p(File.dirname(output_path))
           File.write(output_path, html_content)
         end
-        log "Generated: #{output_path}" if verbose
       end
 
       def build_sidebar_cache
@@ -184,8 +173,10 @@ module Docyard
         config.source
       end
 
-      def log(message)
-        Docyard.logger.info(message) if verbose
+      def build_verbose_details(generated_pages)
+        return nil unless verbose
+
+        generated_pages.map { |p| p.delete_prefix("#{config.build.output}/") }
       end
 
       def generate_error_page
@@ -194,7 +185,6 @@ module Docyard
           docs_path: docs_path,
           renderer: build_renderer
         ).generate
-        log "[✓] Generated 404.html"
       end
 
       def generate_root_fallback_if_needed
@@ -204,8 +194,7 @@ module Docyard
           sidebar_cache: sidebar_cache,
           renderer: build_renderer
         )
-        target = generator.generate_if_needed
-        log "[✓] Generated root redirect to #{target}" if target
+        generator.generate_if_needed
       end
     end
   end

@@ -208,16 +208,6 @@ RSpec.describe Docyard::Build::AssetBundler do
       end
     end
 
-    context "with verbose mode" do
-      it "outputs bundling progress" do
-        bundler = described_class.new(config, verbose: true)
-
-        output = capture_logger_output { bundler.bundle }
-
-        expect(output).to match(/Bundling CSS/)
-      end
-    end
-
     it "preserves whitespace around + in CSS calc expressions" do
       bundler = described_class.new(config, verbose: false)
       bundler.bundle

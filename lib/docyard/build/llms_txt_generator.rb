@@ -50,7 +50,6 @@ module Docyard
       def generate_llms_txt(pages)
         output_path = File.join(config.build.output, "llms.txt")
         File.write(output_path, build_llms_txt_content(pages))
-        Docyard.logger.info("[✓] Generated llms.txt (#{pages.size} pages)")
       end
 
       def build_llms_txt_content(pages)
@@ -70,7 +69,6 @@ module Docyard
       def generate_llms_full_txt(pages)
         output_path = File.join(config.build.output, "llms-full.txt")
         File.write(output_path, build_llms_full_txt_content(pages))
-        Docyard.logger.info("[✓] Generated llms-full.txt")
       end
 
       def build_llms_full_txt_content(pages)

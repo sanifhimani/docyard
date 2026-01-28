@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Inter';
-  src: url('/_docyard/fonts/Inter-Variable.ttf') format('truetype');
+  src: url('/_docyard/fonts/Inter-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;

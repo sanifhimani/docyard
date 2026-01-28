@@ -18,7 +18,7 @@ module Docyard
         output_path = File.join(config.build.output, "sitemap.xml")
         File.write(output_path, sitemap_content)
 
-        Docyard.logger.info("[✓] Generated sitemap.xml (#{urls.size} URLs)")
+        urls.size
       end
 
       private

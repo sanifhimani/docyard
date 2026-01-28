@@ -4,8 +4,17 @@ RSpec.describe Docyard::Builder do
   include_context "with docs directory"
 
   let(:output_dir) { File.join(temp_dir, "dist") }
-  let(:bundler_double) { instance_double(Docyard::Build::AssetBundler, bundle: 2) }
-  let(:indexer_double) { instance_double(Docyard::Search::BuildIndexer, index: 0) }
+  let(:bundler_double) { instance_double(Docyard::Build::AssetBundler, bundle: [135_168, 53_248]) }
+  let(:indexer_double) { instance_double(Docyard::Search::BuildIndexer, index: [0, nil]) }
+
+  def capture_stdout
+    original_stdout = $stdout
+    $stdout = StringIO.new
+    yield
+    $stdout.string
+  ensure
+    $stdout = original_stdout
+  end
 
   before do
     allow(Docyard::Build::AssetBundler).to receive(:new).and_return(bundler_double)
@@ -67,9 +76,9 @@ RSpec.describe Docyard::Builder do
         Dir.chdir(temp_dir) do
           builder = described_class.new(clean: true, verbose: true)
 
-          output = capture_logger_output { builder.build }
+          output = capture_stdout { builder.build }
 
-          expect(output).to match(/Generated:/)
+          expect(output).to include("index.html")
         end
       end
     end

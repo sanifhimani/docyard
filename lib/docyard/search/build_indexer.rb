@@ -18,39 +18,26 @@ module Docyard
       end
 
       def index
-        return 0 unless search_enabled?
-
-        log "Generating search index..."
-
-        unless pagefind_available?
-          warn_pagefind_missing
-          return 0
-        end
+        return [0, nil] unless search_enabled?
+        return [0, nil] unless pagefind_available?
 
         run_pagefind
       end
 
       private
 
-      def warn_pagefind_missing
-        log_warning "[!] Search index skipped: Pagefind not found"
-        log_warning "    Install with: npm install -g pagefind"
-        log_warning "    Or run: npx pagefind --site #{output_dir}"
-      end
-
       def run_pagefind
         args = build_pagefind_args(output_dir)
-        log "Running: npx #{args.join(' ')}" if verbose
 
         stdout, stderr, status = Open3.capture3(PAGEFIND_COMMAND, *args)
 
         if status.success?
-          page_count = extract_page_count(stdout)
-          log "[+] Generated search index (#{page_count} pages indexed)"
-          page_count
+          count = extract_page_count(stdout)
+          details = verbose ? collect_index_details : nil
+          [count, details]
         else
-          log_warning "[!] Search indexing failed: #{stderr}"
-          0
+          Docyard.logger.warn("Search indexing failed: #{stderr}") if verbose
+          [0, nil]
         end
       end
 
@@ -62,12 +49,40 @@ module Docyard
         end
       end
 
-      def log(message)
-        Docyard.logger.info(message)
+      def collect_index_details
+        indexed, excluded = classify_pages
+        format_index_details(indexed, excluded)
       end
 
-      def log_warning(message)
-        Docyard.logger.warn(message)
+      def classify_pages
+        indexed = []
+        excluded = []
+
+        Dir.glob(File.join(output_dir, "**", "index.html")).each do |file|
+          path = extract_page_path(file)
+          classify_page(File.read(file), path, indexed, excluded)
+        end
+
+        [indexed, excluded]
+      end
+
+      def extract_page_path(file)
+        path = file.delete_prefix("#{output_dir}/").delete_suffix("/index.html")
+        path.empty? ? "/" : path
+      end
+
+      def classify_page(content, path, indexed, excluded)
+        if content.include?("data-pagefind-body")
+          indexed << path
+        elsif content.include?("data-pagefind-ignore")
+          excluded << path
+        end
+      end
+
+      def format_index_details(indexed, excluded)
+        details = indexed.sort
+        excluded.sort.each { |path| details << "(excluded: #{path})" } if excluded.any?
+        details
       end
     end
   end

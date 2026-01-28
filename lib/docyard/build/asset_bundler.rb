@@ -17,21 +17,17 @@ module Docyard
       end
 
       def bundle
-        Docyard.logger.info("\nBundling assets...")
-
-        css_hash = bundle_css
-        js_hash = bundle_js
+        css_hash, css_size = bundle_css
+        js_hash, js_size = bundle_js
 
         update_html_references(css_hash, js_hash)
 
-        2
+        [css_size, js_size]
       end
 
       private
 
       def bundle_css
-        log "  Bundling CSS..."
-
         main_css = File.read(File.join(ASSETS_PATH, "css", "main.css"))
         css_content = resolve_css_imports(main_css)
         minified = CSSminify.compress(css_content)
@@ -41,9 +37,8 @@ module Docyard
         hash = generate_hash(minified)
 
         write_bundled_asset(minified, hash, "css")
-        log_compression_stats(css_content, minified, "CSS")
 
-        hash
+        [hash, minified.bytesize]
       end
 
       def fix_calc_whitespace(css)
@@ -86,8 +81,6 @@ module Docyard
       end
 
       def bundle_js
-        log "  Bundling JS..."
-
         theme_js = File.read(File.join(ASSETS_PATH, "js", "theme.js"))
         components_js = concatenate_component_js
         js_content = [theme_js, components_js].join("\n")
@@ -96,9 +89,8 @@ module Docyard
         hash = generate_hash(minified)
 
         write_bundled_asset(minified, hash, "js")
-        log_compression_stats(js_content, minified, "JS")
 
-        hash
+        [hash, minified.bytesize]
       end
 
       def replace_js_asset_urls(js_content)
@@ -127,8 +119,6 @@ module Docyard
           content = replace_asset_references(File.read(file), css_hash, js_hash, base_url)
           File.write(file, content)
         end
-
-        log "  [✓] Updated asset references in #{html_files.size} HTML files"
       end
 
       def replace_asset_references(content, css_hash, js_hash, base_url)
@@ -155,22 +145,11 @@ module Docyard
         File.write(output_path, content)
       end
 
-      def log_compression_stats(original, minified, label)
-        original_size = (original.bytesize / 1024.0).round(1)
-        minified_size = (minified.bytesize / 1024.0).round(1)
-        reduction = (((original_size - minified_size) / original_size) * 100).round(0)
-        log "  [✓] #{label}: #{original_size} KB -> #{minified_size} KB (-#{reduction}%)"
-      end
-
       def normalize_base_url(url)
         return "/" if url.nil? || url.empty? || url == "/"
 
         url = "/#{url}" unless url.start_with?("/")
         url.end_with?("/") ? url : "#{url}/"
-      end
-
-      def log(message)
-        Docyard.logger.info(message)
       end
     end
   end

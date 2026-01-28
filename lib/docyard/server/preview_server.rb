@@ -37,10 +37,14 @@ module Docyard
     end
 
     def print_server_info
-      Docyard.logger.info("Starting preview server...")
-      Docyard.logger.info("* Version: #{Docyard::VERSION}")
-      Docyard.logger.info("* Running at: http://localhost:#{port}#{base_url}")
-      Docyard.logger.info("Use Ctrl+C to stop\n")
+      puts
+      puts "  Docyard v#{Docyard::VERSION}"
+      puts
+      puts "  Previewing #{output_dir}/"
+      puts "  http://localhost:#{port}#{base_url}"
+      puts
+      puts "  Press Ctrl+C to stop"
+      puts
     end
 
     def run_server

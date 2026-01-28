@@ -13,14 +13,12 @@ module Docyard
       end
 
       def copy
-        Docyard.logger.info("\nCopying static assets...")
-
+        @copied_files = []
         count = 0
         count += copy_public_files
         count += copy_branding_assets
-
-        log "[✓] Copied #{count} static files"
-        count
+        details = verbose ? @copied_files : nil
+        [count, details]
       end
 
       private
@@ -32,7 +30,6 @@ module Docyard
         files = find_files_in_dir(public_dir)
         files.each { |file| copy_single_file(file, "#{public_dir}/", config.build.output) }
 
-        log "[✓] Copied #{files.size} public files from #{public_dir}/" if files.any?
         files.size
       end
 
@@ -47,14 +44,13 @@ module Docyard
         FileUtils.mkdir_p(File.dirname(dest_path))
         FileUtils.cp(file, dest_path)
 
-        log "  Copied: #{relative_path}" if verbose
+        @copied_files << relative_path if verbose
       end
 
       def copy_branding_assets
         count = 0
         count += copy_default_branding_assets
         count += copy_user_branding_assets
-        log "[✓] Copied #{count} branding assets" if count.positive?
         count
       end
 
@@ -80,7 +76,7 @@ module Docyard
         dest_path = File.join(config.build.output, DOCYARD_OUTPUT_DIR, filename)
         FileUtils.mkdir_p(File.dirname(dest_path))
         FileUtils.cp(source_path, dest_path)
-        log "  Copied #{label}: #{filename}" if verbose
+        @copied_files << "#{filename} (#{label})" if verbose
         1
       end
 
@@ -96,7 +92,7 @@ module Docyard
         dest_path = File.join(config.build.output, DOCYARD_OUTPUT_DIR, "fonts", File.basename(font_file))
         FileUtils.mkdir_p(File.dirname(dest_path))
         FileUtils.cp(font_file, dest_path)
-        log "  Copied font: #{File.basename(font_file)}" if verbose
+        @copied_files << "#{File.basename(font_file)} (font)" if verbose
         1
       end
 
@@ -122,12 +118,8 @@ module Docyard
         FileUtils.mkdir_p(File.dirname(dest_path))
         FileUtils.cp(full_path, dest_path)
 
-        log "  Copied user branding: #{asset_path}" if verbose
+        @copied_files << "#{asset_path} (user branding)" if verbose
         1
-      end
-
-      def log(message)
-        Docyard.logger.info(message)
       end
     end
   end
