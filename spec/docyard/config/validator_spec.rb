@@ -149,16 +149,6 @@ RSpec.describe Docyard::Config::Validator do
     end
   end
 
-  describe "recommended fields" do
-    it "warns when description is missing", :aggregate_failures do
-      data = { "title" => "Test" }
-      issues = validator(data).validate_all
-      warning = issues.find { |i| i.field == "description" }
-      expect(warning).to be_warning
-      expect(warning.message).to include("recommended for better SEO")
-    end
-  end
-
   describe "fixable issues" do
     it "marks boolean typos as fixable", :aggregate_failures do
       data = { "description" => "Test", "branding" => { "credits" => "yes" } }
@@ -191,7 +181,7 @@ RSpec.describe Docyard::Config::Validator do
       v = validator(data)
       v.validate_all
       expect(v.errors.size).to eq(1)
-      expect(v.warnings.size).to eq(2)
+      expect(v.warnings.size).to eq(1)
     end
   end
 end

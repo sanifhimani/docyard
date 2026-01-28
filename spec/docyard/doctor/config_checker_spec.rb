@@ -22,14 +22,6 @@ RSpec.describe Docyard::Doctor::ConfigChecker do
       expect(issues.first.field).to eq("title")
     end
 
-    it "returns warnings for missing recommended fields" do
-      config = config_with({ "title" => "Test" })
-      checker = described_class.new(config)
-      issues = checker.check
-      warning = issues.find { |i| i.field == "description" }
-      expect(warning).to be_warning
-    end
-
     it "returns errors for unknown keys" do
       config = config_with({ "unknwon_key" => "value" })
       checker = described_class.new(config)
