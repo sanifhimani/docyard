@@ -159,6 +159,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
     context "with verbose mode" do
       before do
         File.write(File.join(docs_dir, "index.md"), "# Home")
+        File.write(File.join(docs_dir, "guide.md"), "# Guide")
       end
 
       it "returns page details when verbose" do
@@ -168,6 +169,16 @@ RSpec.describe Docyard::Build::StaticGenerator do
           _count, details = generator.generate
 
           expect(details.any? { |d| d.include?("index.html") }).to be true
+        end
+      end
+
+      it "includes per-page timing in details" do
+        Dir.chdir(temp_dir) do
+          generator = described_class.new(config, verbose: true)
+
+          _count, details = generator.generate
+
+          expect(details).to all(match(/\d+\.\d+s/))
         end
       end
     end

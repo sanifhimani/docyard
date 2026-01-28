@@ -81,6 +81,42 @@ RSpec.describe Docyard::Builder do
           expect(output).to include("index.html")
         end
       end
+
+      it "shows per-step timing on each step line" do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: true)
+
+          output = capture_stdout { builder.build }
+
+          expect(output).to match(/Generating pages\s+done \(\d+ pages\) in \d+\.\d+s/)
+        end
+      end
+
+      it "prints timing breakdown sorted by slowest first", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: true)
+
+          output = capture_stdout { builder.build }
+
+          expect(output).to include("Timing:")
+          expect(output).to match(/Pages\s+\d+\.\d+s\s+\(\s*\d+%\)/)
+          expect(output).to match(/Assets\s+\d+\.\d+s\s+\(\s*\d+%\)/)
+          expect(output).to match(/Search\s+\d+\.\d+s\s+\(\s*\d+%\)/)
+        end
+      end
+    end
+
+    context "without verbose option" do
+      it "does not show timing breakdown or per-step timing", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: false)
+
+          output = capture_stdout { builder.build }
+
+          expect(output).not_to include("Timing:")
+          expect(output).not_to match(/done \(\d+ pages\) in \d+\.\d+s/)
+        end
+      end
     end
 
     describe "robots.txt generation" do
