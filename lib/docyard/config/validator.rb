@@ -99,16 +99,9 @@ module Docyard
           return
         end
 
-        check_recommended(value, definition, field)
         return if value.nil?
 
         validate_type(value, definition, field)
-      end
-
-      def check_recommended(value, definition, field)
-        return unless definition[:recommended] && (value.nil? || value.to_s.strip.empty?)
-
-        add_issue(:warning, field, "is recommended for better SEO")
       end
 
       def validate_type(value, definition, field)

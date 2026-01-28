@@ -7,7 +7,7 @@ module Docyard
     module Schema
       DEFINITION = {
         title: { type: :string },
-        description: { type: :string, recommended: true },
+        description: { type: :string },
         url: { type: :url },
         og_image: { type: :string },
         twitter: { type: :string },
