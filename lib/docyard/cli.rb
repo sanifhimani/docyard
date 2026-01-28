@@ -62,5 +62,15 @@ module Docyard
       Docyard.logger.error(e.message)
       exit(1)
     end
+
+    desc "doctor", "Check documentation for issues"
+    def doctor
+      require_relative "doctor"
+      doctor = Docyard::Doctor.new
+      exit(doctor.run)
+    rescue ConfigError => e
+      Docyard.logger.error(e.message)
+      exit(1)
+    end
   end
 end

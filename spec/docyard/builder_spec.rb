@@ -4,8 +4,13 @@ RSpec.describe Docyard::Builder do
   include_context "with docs directory"
 
   let(:output_dir) { File.join(temp_dir, "dist") }
+  let(:bundler_double) { instance_double(Docyard::Build::AssetBundler, bundle: 2) }
+  let(:indexer_double) { instance_double(Docyard::Search::BuildIndexer, index: 0) }
 
   before do
+    allow(Docyard::Build::AssetBundler).to receive(:new).and_return(bundler_double)
+    allow(Docyard::Search::BuildIndexer).to receive(:new).and_return(indexer_double)
+
     create_doc("index.md", "# Home\n\nWelcome!")
     create_doc("guide.md", "# Guide\n\nContent")
     create_config(<<~YAML)

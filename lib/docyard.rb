@@ -37,5 +37,7 @@ require_relative "docyard/build/asset_bundler"
 require_relative "docyard/build/file_copier"
 require_relative "docyard/build/sitemap_generator"
 
+require_relative "docyard/doctor"
+
 module Docyard
 end
