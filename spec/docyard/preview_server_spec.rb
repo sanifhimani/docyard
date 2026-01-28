@@ -97,11 +97,20 @@ RSpec.describe Docyard::PreviewServer do
           allow(puma_launcher).to receive(:run)
           allow(Puma::Launcher).to receive(:new).and_return(puma_launcher)
 
-          output = capture_logger_output { server.start }
+          output = capture_stdout { server.start }
 
-          expect(output).to match(/Starting preview server/)
+          expect(output).to include("Docyard v")
         end
       end
+    end
+
+    def capture_stdout
+      original = $stdout
+      $stdout = StringIO.new
+      yield
+      $stdout.string
+    ensure
+      $stdout = original
     end
   end
 end

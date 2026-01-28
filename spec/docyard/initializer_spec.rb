@@ -202,7 +202,7 @@ RSpec.describe Docyard::Initializer do
 
       it "prompts for overwrite confirmation" do
         initializer.run
-        expect($stdout).to have_received(:puts).with(/Warning.*Existing files found/)
+        expect($stdout).to have_received(:puts).with("  Warning: Existing files found:")
       end
     end
   end

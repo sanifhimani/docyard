@@ -59,12 +59,12 @@ RSpec.describe Docyard::Build::SitemapGenerator do
       expect(sitemap_content).to match(%r{<lastmod>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z</lastmod>})
     end
 
-    it "outputs sitemap generation message" do
+    it "returns the number of URLs generated" do
       generator = described_class.new(config)
 
-      output = capture_logger_output { generator.generate }
+      result = generator.generate
 
-      expect(output).to match(/Generated sitemap\.xml/)
+      expect(result).to eq(2)
     end
 
     context "with base configuration" do

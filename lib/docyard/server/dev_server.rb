@@ -109,12 +109,17 @@ module Docyard
     end
 
     def print_server_info
-      Docyard.logger.info("Starting Docyard server...")
-      Docyard.logger.info("* Version: #{Docyard::VERSION}")
-      Docyard.logger.info("* Running at: http://#{host}:#{port}")
-      Docyard.logger.info("* Hot reload: ws://127.0.0.1:#{sse_port}")
-      Docyard.logger.info("* Search: #{@search_enabled ? 'enabled' : 'disabled (use --search to enable)'}")
-      Docyard.logger.info("Use Ctrl+C to stop\n")
+      puts
+      puts "  Docyard v#{Docyard::VERSION}"
+      puts
+      puts "  Serving #{docs_path}/"
+      puts "  http://#{host}:#{port}"
+      puts
+      puts "  Hot reload: ws://#{host}:#{sse_port}"
+      puts "  Search:     #{@search_enabled ? 'enabled' : 'disabled'}"
+      puts
+      puts "  Press Ctrl+C to stop"
+      puts
     end
 
     def run_server

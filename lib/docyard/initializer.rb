@@ -47,21 +47,23 @@ module Docyard
     end
 
     def user_confirms_overwrite?
-      print "\nOverwrite existing files? [y/N] "
+      puts
+      print "  Overwrite existing files? [y/N] "
       response = $stdin.gets&.strip&.downcase
       %w[y yes].include?(response)
     end
 
     def print_existing_files_warning
-      puts ""
-      puts "\e[33mWarning:\e[0m Existing files found:"
-      puts "  - #{docs_path}/" if File.exist?(docs_path)
-      puts "  - #{config_path}" if File.exist?(config_path)
+      puts
+      puts "  Warning: Existing files found:"
+      puts "    #{docs_path}/" if File.exist?(docs_path)
+      puts "    #{config_path}" if File.exist?(config_path)
     end
 
     def print_abort_message
-      puts ""
-      puts "Aborted. Use \e[1m--force\e[0m to overwrite existing files."
+      puts
+      puts "  Aborted. Use --force to overwrite existing files."
+      puts
     end
 
     def create_project_directory
@@ -103,48 +105,39 @@ module Docyard
     end
 
     def print_success
-      puts ""
-      puts "\e[32m#{success_icon} Docyard project initialized successfully!\e[0m"
-      puts ""
+      puts
+      puts "  Docyard v#{VERSION}"
+      puts
+      puts "  Project initialized"
+      puts
       print_created_structure
       print_next_steps
     end
 
-    def success_icon
-      "\u2714"
-    end
-
     def print_created_structure
-      puts "Created:"
-      puts ""
+      puts "  Created:"
       if project_name
-        puts "  \e[1m#{project_name}/\e[0m"
-        puts "  \u251C\u2500\u2500 docyard.yml"
-        puts "  \u2514\u2500\u2500 docs/"
+        puts "    #{project_name}/"
+        puts "      docyard.yml"
+        puts "      docs/"
       else
-        puts "  \e[1mdocyard.yml\e[0m"
-        puts "  \e[1mdocs/\e[0m"
+        puts "    docyard.yml"
+        puts "    docs/"
       end
-      puts "      \u251C\u2500\u2500 _sidebar.yml"
-      puts "      \u251C\u2500\u2500 index.md"
-      puts "      \u251C\u2500\u2500 getting-started.md"
-      puts "      \u251C\u2500\u2500 components.md"
-      puts "      \u2514\u2500\u2500 public/"
-      puts ""
+      puts "        _sidebar.yml"
+      puts "        index.md"
+      puts "        getting-started.md"
+      puts "        components.md"
+      puts "        public/"
+      puts
     end
 
     def print_next_steps
-      puts "Next steps:"
-      puts ""
-      if project_name
-        puts "  \e[1mcd #{project_name}\e[0m"
-        puts ""
-      end
-      puts "  Start the development server:"
-      puts "  \e[1m$ docyard serve\e[0m"
-      puts ""
-      puts "  Then open \e[4mhttp://localhost:4200\e[0m in your browser"
-      puts ""
+      puts "  Next steps:"
+      puts "    cd #{project_name}" if project_name
+      puts "    docyard serve"
+      puts "    Open http://localhost:4200"
+      puts
     end
   end
 end

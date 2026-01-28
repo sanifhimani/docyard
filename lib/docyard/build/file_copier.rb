@@ -13,13 +13,9 @@ module Docyard
       end
 
       def copy
-        Docyard.logger.info("\nCopying static assets...")
-
         count = 0
         count += copy_public_files
         count += copy_branding_assets
-
-        log "[✓] Copied #{count} static files"
         count
       end
 
@@ -32,7 +28,6 @@ module Docyard
         files = find_files_in_dir(public_dir)
         files.each { |file| copy_single_file(file, "#{public_dir}/", config.build.output) }
 
-        log "[✓] Copied #{files.size} public files from #{public_dir}/" if files.any?
         files.size
       end
 
@@ -54,7 +49,6 @@ module Docyard
         count = 0
         count += copy_default_branding_assets
         count += copy_user_branding_assets
-        log "[✓] Copied #{count} branding assets" if count.positive?
         count
       end
 

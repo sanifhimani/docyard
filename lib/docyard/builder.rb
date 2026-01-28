@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "fileutils"
-require "tty-progressbar"
 
 module Docyard
   class Builder
@@ -15,33 +14,96 @@ module Docyard
     end
 
     def build
+      print_header
       prepare_output_directory
-      log "Building static site..."
-
-      pages_built = generate_static_pages
-      bundles_created = bundle_assets
-      assets_copied = copy_static_files
-      generate_seo_files
-      pages_indexed = generate_search_index
-
-      display_summary(pages_built, bundles_created, assets_copied, pages_indexed)
+      run_build_steps
+      print_summary
       true
     rescue StandardError => e
-      error "Build failed: #{e.message}"
-      error e.backtrace.first if verbose
+      print_error(e)
       false
     end
 
     private
 
+    def print_header
+      puts
+      puts "  Docyard v#{VERSION}"
+      puts
+      puts "  Building to #{config.build.output}/..."
+      puts
+    end
+
+    def run_build_steps
+      run_step("Generating pages") { generate_static_pages }
+      run_step("Bundling assets") { bundle_assets }
+      run_step("Copying files") { copy_static_files }
+      run_step("Generating SEO") { generate_seo_files }
+      run_step("Indexing search") { generate_search_index }
+    end
+
+    def run_step(label)
+      print "  #{label.ljust(20)}in progress"
+      $stdout.flush
+      result = yield
+      print "\r  #{label.ljust(20)}#{format_result(label, result)}\n"
+      $stdout.flush
+      result
+    end
+
+    def format_result(label, result)
+      case label
+      when "Generating pages"
+        "done (#{result} pages)"
+      when "Bundling assets"
+        css, js = result
+        "done (#{format_size(css)} CSS, #{format_size(js)} JS)"
+      when "Copying files"
+        "done (#{result} files)"
+      when "Generating SEO"
+        "done (#{result.join(', ')})"
+      when "Indexing search"
+        "done (#{result} pages indexed)"
+      else
+        "done"
+      end
+    end
+
+    def format_size(bytes)
+      kb = bytes / 1024.0
+      if kb >= 1000
+        format("%.1f MB", kb / 1024.0)
+      else
+        format("%.1f KB", kb)
+      end
+    end
+
+    def print_error(error)
+      puts "failed"
+      puts
+      puts "  Error: #{error.message}"
+      puts "  #{error.backtrace.first}" if verbose
+      puts
+    end
+
+    def print_summary
+      elapsed = Time.now - start_time
+      size = calculate_output_size
+      puts
+      puts "  Build complete in #{format('%.2fs', elapsed)}"
+      puts "  Output: #{config.build.output}/ (#{format_size(size)})"
+      puts
+    end
+
+    def calculate_output_size
+      Dir.glob(File.join(config.build.output, "**", "*"))
+        .select { |f| File.file?(f) }
+        .sum { |f| File.size(f) }
+    end
+
     def prepare_output_directory
       output_dir = config.build.output
-
-      if clean && Dir.exist?(output_dir)
-        log "[✓] Cleaning #{output_dir}/ directory"
-        FileUtils.rm_rf(output_dir)
-      end
-
+      FileUtils.rm_rf(output_dir) if clean && Dir.exist?(output_dir)
       FileUtils.mkdir_p(output_dir)
     end
 
@@ -65,15 +127,14 @@ module Docyard
 
     def generate_seo_files
       require_relative "build/sitemap_generator"
-      sitemap_gen = Build::SitemapGenerator.new(config)
-      sitemap_gen.generate
+      Build::SitemapGenerator.new(config).generate
 
       require_relative "build/llms_txt_generator"
-      llms_gen = Build::LlmsTxtGenerator.new(config)
-      llms_gen.generate
+      Build::LlmsTxtGenerator.new(config).generate
 
       File.write(File.join(config.build.output, "robots.txt"), robots_txt_content)
-      log "[+] Generated robots.txt"
+
+      ["sitemap.xml", "robots.txt", "llms.txt"]
     end
 
     def generate_search_index
@@ -91,28 +152,6 @@ module Docyard
 
         Sitemap: #{base}sitemap.xml
       ROBOTS
-    end
-
-    def display_summary(pages, bundles, assets, indexed = 0)
-      elapsed = Time.now - start_time
-
-      puts "\n#{'=' * 50}"
-      puts "Build complete in #{format('%.2f', elapsed)}s"
-      puts "Output: #{config.build.output}/"
-
-      summary = "#{pages} pages, #{bundles} bundles, #{assets} static files"
-      summary += ", #{indexed} pages indexed" if indexed.positive?
-      puts summary
-
-      puts "=" * 50
-    end
-
-    def log(message)
-      Docyard.logger.info(message)
-    end
-
-    def error(message)
-      Docyard.logger.error(message)
     end
   end
 end

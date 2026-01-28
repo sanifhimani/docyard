@@ -4,7 +4,7 @@ RSpec.describe Docyard::Builder do
   include_context "with docs directory"
 
   let(:output_dir) { File.join(temp_dir, "dist") }
-  let(:bundler_double) { instance_double(Docyard::Build::AssetBundler, bundle: 2) }
+  let(:bundler_double) { instance_double(Docyard::Build::AssetBundler, bundle: [135_168, 53_248]) }
   let(:indexer_double) { instance_double(Docyard::Search::BuildIndexer, index: 0) }
 
   before do
