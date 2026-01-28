@@ -20,15 +20,15 @@ source: docs
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `title` | `string` | - | Site title |
+| `title` | `string` | `Documentation` | Site title |
 | `description` | `string` | - | Site description for SEO |
 | `url` | `string` | - | Production URL |
 | `og_image` | `string` | - | Default Open Graph image |
 | `twitter` | `string` | - | Twitter handle for cards |
 | `source` | `string` | `docs` | Documentation source directory |
 
-:::warning
-`title` is required. The build will fail without it.
+:::tip
+Setting `description` is recommended for better SEO.
 :::
 
 ---
@@ -339,14 +339,28 @@ Event name: `feedback_yes` or `feedback_no`
 ```yaml [docyard.yml]
 build:
   output: dist
-  base: https://docs.example.com
+  base: /
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `output` | `string` | `dist` | Output directory |
-| `base` | `string` | `/` | Base URL for sitemap and canonical links |
+| `base` | `string` | `/` | Base path for deployment |
 
-:::warning
-Set `base` to your production URL. This affects sitemap generation and canonical links.
+:::tabs
+== Root deployment
+```yaml [docyard.yml]
+build:
+  base: /
+```
+== Subdirectory deployment
+```yaml [docyard.yml]
+# For GitHub Pages project sites or subdirectory hosting
+build:
+  base: /repo-name
+```
+:::
+
+:::note
+`base` must start with `/`. For your production URL, use the top-level `url` field instead.
 :::
