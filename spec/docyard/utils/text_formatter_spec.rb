@@ -26,5 +26,4 @@ RSpec.describe Docyard::Utils::TextFormatter do
       expect(described_class.titleize("API")).to eq("Api")
     end
   end
-
 end
