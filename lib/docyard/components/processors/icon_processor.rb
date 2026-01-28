@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../base_processor"
+require_relative "../../rendering/icons"
 
 module Docyard
   module Components
@@ -9,7 +10,6 @@ module Docyard
         self.priority = 20
 
         ICON_PATTERN = /:([a-z][a-z0-9-]*):(?:([a-z]+):)?/i
-        VALID_WEIGHTS = %w[regular bold fill light thin duotone].freeze
 
         def postprocess(html)
           segments = split_preserving_code_blocks(html)
@@ -49,7 +49,7 @@ module Docyard
         end
 
         def render_icon(name, weight)
-          weight = "regular" unless VALID_WEIGHTS.include?(weight)
+          weight = "regular" unless Icons::VALID_WEIGHTS.include?(weight)
           weight_class = weight == "regular" ? "ph" : "ph-#{weight}"
           %(<i class="#{weight_class} ph-#{name}" aria-hidden="true"></i>)
         end

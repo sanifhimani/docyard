@@ -11,12 +11,6 @@ module Docyard
           .map(&:capitalize)
           .join(" ")
       end
-
-      def self.slugify(string)
-        string.downcase
-          .gsub(/\s+/, "-")
-          .gsub(/[^a-z0-9-]/, "")
-      end
     end
   end
 end

@@ -90,7 +90,7 @@ RSpec.describe Docyard::Router do
       it "returns not_found result", :aggregate_failures do
         result = router.resolve("/nonexistent")
 
-        expect(result).to be_not_found
+        expect(result).not_to be_found
         expect(result.file_path).to be_nil
       end
     end
@@ -101,31 +101,31 @@ RSpec.describe Docyard::Router do
       it "returns not_found for ../ traversal" do
         result = router.resolve("/../../../etc/passwd")
 
-        expect(result).to be_not_found
+        expect(result).not_to be_found
       end
 
       it "returns not_found for nested ../ traversal" do
         result = router.resolve("/guide/../../etc/passwd")
 
-        expect(result).to be_not_found
+        expect(result).not_to be_found
       end
 
       it "returns not_found for URL-encoded ../ traversal" do
         result = router.resolve("/%2e%2e/%2e%2e/etc/passwd")
 
-        expect(result).to be_not_found
+        expect(result).not_to be_found
       end
 
       it "returns not_found for double URL-encoded traversal" do
         result = router.resolve("/%252e%252e/%252e%252e/etc/passwd")
 
-        expect(result).to be_not_found
+        expect(result).not_to be_found
       end
 
       it "returns not_found for backslash traversal" do
         result = router.resolve("/..\\..\\etc\\passwd")
 
-        expect(result).to be_not_found
+        expect(result).not_to be_found
       end
     end
   end

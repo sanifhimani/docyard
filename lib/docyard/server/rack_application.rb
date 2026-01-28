@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "json"
 require "rack"
 require_relative "../navigation/page_navigation_builder"
 require_relative "../navigation/sidebar_builder"

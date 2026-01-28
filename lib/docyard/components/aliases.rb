@@ -26,11 +26,7 @@ module Docyard
     TabsProcessor = Processors::TabsProcessor
     TooltipProcessor = Processors::TooltipProcessor
 
-    CodeDetector = Support::CodeDetector
-    IconDetector = Support::Tabs::IconDetector
-
     CodeBlockFeatureExtractor = Support::CodeBlock::FeatureExtractor
-    CodeBlockIconDetector = Support::CodeBlock::IconDetector
     CodeBlockLineWrapper = Support::CodeBlock::LineWrapper
     CodeBlockPatterns = Support::CodeBlock::Patterns
     CodeLineParser = Support::CodeBlock::LineParser
