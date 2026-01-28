@@ -30,7 +30,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
       it "generates HTML files for all markdown files", :aggregate_failures do
         Dir.chdir(temp_dir) do
           generator = described_class.new(config, verbose: false)
-          count = generator.generate
+          count, _details = generator.generate
 
           expect(count).to eq(3)
           expect(File.exist?(File.join(output_dir, "index.html"))).to be true
@@ -161,17 +161,13 @@ RSpec.describe Docyard::Build::StaticGenerator do
         File.write(File.join(docs_dir, "index.md"), "# Home")
       end
 
-      it "outputs generation progress" do
+      it "returns page details when verbose" do
         Dir.chdir(temp_dir) do
-          progress_bar = instance_double(TTY::ProgressBar)
-          allow(progress_bar).to receive(:advance)
-          allow(TTY::ProgressBar).to receive(:new).and_return(progress_bar)
-
           generator = described_class.new(config, verbose: true)
 
-          output = capture_logger_output { generator.generate }
+          _count, details = generator.generate
 
-          expect(output).to match(/Generated:/)
+          expect(details.any? { |d| d.include?("index.html") }).to be true
         end
       end
     end
@@ -196,7 +192,7 @@ RSpec.describe Docyard::Build::StaticGenerator do
       it "skips index.md when index.html exists", :aggregate_failures do
         Dir.chdir(temp_dir) do
           generator = described_class.new(config, verbose: false)
-          count = generator.generate
+          count, _details = generator.generate
 
           expect(count).to eq(1)
           expect(File.exist?(File.join(output_dir, "guide", "index.html"))).to be true

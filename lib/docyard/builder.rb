@@ -45,10 +45,15 @@ module Docyard
     def run_step(label)
       print "  #{label.ljust(20)}in progress"
       $stdout.flush
-      result = yield
+      result, details = yield
       print "\r  #{label.ljust(20)}#{format_result(label, result)}\n"
       $stdout.flush
+      print_verbose_details(details) if verbose && details&.any?
       result
+    end
+
+    def print_verbose_details(details)
+      details.each { |detail| puts "      #{detail}" }
     end
 
     def format_result(label, result)
@@ -116,7 +121,8 @@ module Docyard
     def bundle_assets
       require_relative "build/asset_bundler"
       bundler = Build::AssetBundler.new(config, verbose: verbose)
-      bundler.bundle
+      result = bundler.bundle
+      [result, nil]
     end
 
     def copy_static_files
@@ -127,14 +133,16 @@ module Docyard
 
     def generate_seo_files
       require_relative "build/sitemap_generator"
-      Build::SitemapGenerator.new(config).generate
+      sitemap_result = Build::SitemapGenerator.new(config).generate
 
       require_relative "build/llms_txt_generator"
       Build::LlmsTxtGenerator.new(config).generate
 
       File.write(File.join(config.build.output, "robots.txt"), robots_txt_content)
 
-      ["sitemap.xml", "robots.txt", "llms.txt"]
+      result = ["sitemap.xml", "robots.txt", "llms.txt"]
+      details = ["sitemap.xml (#{sitemap_result} URLs)", "robots.txt", "llms.txt", "llms-full.txt"]
+      [result, details]
     end
 
     def generate_search_index

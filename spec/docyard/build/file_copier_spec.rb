@@ -52,7 +52,7 @@ RSpec.describe Docyard::Build::FileCopier do
       it "returns the number of files copied" do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: false)
-          count = copier.copy
+          count, _details = copier.copy
 
           expect(count).to be >= 2
         end
@@ -63,7 +63,7 @@ RSpec.describe Docyard::Build::FileCopier do
       it "returns 0 when no public directory exists" do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: false)
-          count = copier.copy
+          count, _details = copier.copy
 
           expect(count).to be >= 0
         end
@@ -110,13 +110,13 @@ RSpec.describe Docyard::Build::FileCopier do
         end
       end
 
-      it "outputs copy progress" do
+      it "returns file details when verbose" do
         Dir.chdir(temp_dir) do
           copier = described_class.new(config, verbose: true)
 
-          output = capture_logger_output { copier.copy }
+          _count, details = copier.copy
 
-          expect(output).to match(/Copied/)
+          expect(details).to include("test.css")
         end
       end
     end

@@ -32,12 +32,11 @@ module Docyard
         copy_custom_landing_page if custom_landing_page?
 
         markdown_files = collect_markdown_files
-
-        generate_all_pages(markdown_files)
+        generated_pages = generate_all_pages(markdown_files)
         generate_error_page
         generate_root_fallback_if_needed
 
-        markdown_files.size
+        [markdown_files.size, build_verbose_details(generated_pages)]
       ensure
         Utils::GitInfo.clear_cache
       end
@@ -46,12 +45,13 @@ module Docyard
 
       def generate_all_pages(markdown_files)
         Logging.start_buffering
-        if markdown_files.size >= PARALLEL_THRESHOLD
-          generate_pages_in_parallel(markdown_files)
-        else
-          generate_pages_sequentially(markdown_files)
-        end
+        pages = if markdown_files.size >= PARALLEL_THRESHOLD
+                  generate_pages_in_parallel(markdown_files)
+                else
+                  generate_pages_sequentially(markdown_files)
+                end
         Logging.flush_warnings
+        pages
       end
 
       def custom_landing_page?
@@ -73,7 +73,7 @@ module Docyard
       end
 
       def generate_pages_in_parallel(markdown_files)
-        Parallel.each(markdown_files, in_threads: Parallel.processor_count) do |file_path|
+        Parallel.map(markdown_files, in_threads: Parallel.processor_count) do |file_path|
           generate_page(file_path, thread_local_renderer)
         ensure
           Thread.current[:docyard_build_renderer] = nil
@@ -82,7 +82,7 @@ module Docyard
 
       def generate_pages_sequentially(markdown_files)
         renderer = build_renderer
-        markdown_files.each do |file_path|
+        markdown_files.map do |file_path|
           generate_page(file_path, renderer)
         end
       end
@@ -103,6 +103,7 @@ module Docyard
         html_content = render_markdown_file(markdown_file_path, current_path, renderer)
         html_content = apply_search_exclusion(html_content, current_path)
         write_output(output_path, html_content)
+        output_path
       end
 
       def apply_search_exclusion(html_content, current_path)
@@ -154,7 +155,6 @@ module Docyard
           FileUtils.mkdir_p(File.dirname(output_path))
           File.write(output_path, html_content)
         end
-        log "Generated: #{output_path}" if verbose
       end
 
       def build_sidebar_cache
@@ -173,8 +173,10 @@ module Docyard
         config.source
       end
 
-      def log(message)
-        Docyard.logger.info(message) if verbose
+      def build_verbose_details(generated_pages)
+        return nil unless verbose
+
+        generated_pages.map { |p| p.delete_prefix("#{config.build.output}/") }
       end
 
       def generate_error_page

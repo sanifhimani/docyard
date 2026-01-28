@@ -18,8 +18,8 @@ module Docyard
       end
 
       def index
-        return 0 unless search_enabled?
-        return 0 unless pagefind_available?
+        return [0, nil] unless search_enabled?
+        return [0, nil] unless pagefind_available?
 
         run_pagefind
       end
@@ -32,10 +32,12 @@ module Docyard
         stdout, stderr, status = Open3.capture3(PAGEFIND_COMMAND, *args)
 
         if status.success?
-          extract_page_count(stdout)
+          count = extract_page_count(stdout)
+          details = verbose ? collect_index_details : nil
+          [count, details]
         else
           Docyard.logger.warn("Search indexing failed: #{stderr}") if verbose
-          0
+          [0, nil]
         end
       end
 
@@ -45,6 +47,42 @@ module Docyard
         else
           0
         end
+      end
+
+      def collect_index_details
+        indexed, excluded = classify_pages
+        format_index_details(indexed, excluded)
+      end
+
+      def classify_pages
+        indexed = []
+        excluded = []
+
+        Dir.glob(File.join(output_dir, "**", "index.html")).each do |file|
+          path = extract_page_path(file)
+          classify_page(File.read(file), path, indexed, excluded)
+        end
+
+        [indexed, excluded]
+      end
+
+      def extract_page_path(file)
+        path = file.delete_prefix("#{output_dir}/").delete_suffix("/index.html")
+        path.empty? ? "/" : path
+      end
+
+      def classify_page(content, path, indexed, excluded)
+        if content.include?("data-pagefind-body")
+          indexed << path
+        elsif content.include?("data-pagefind-ignore")
+          excluded << path
+        end
+      end
+
+      def format_index_details(indexed, excluded)
+        details = indexed.sort
+        excluded.sort.each { |path| details << "(excluded: #{path})" } if excluded.any?
+        details
       end
     end
   end

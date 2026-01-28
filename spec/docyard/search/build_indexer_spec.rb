@@ -40,9 +40,9 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "returns 0 without running pagefind" do
-        result = indexer.index
+        count, _details = indexer.index
 
-        expect(result).to eq(0)
+        expect(count).to eq(0)
       end
     end
 
@@ -50,7 +50,8 @@ RSpec.describe Docyard::Search::BuildIndexer do
       before { stub_pagefind_available(available: false) }
 
       it "returns 0" do
-        expect(indexer.index).to eq(0)
+        count, _details = indexer.index
+        expect(count).to eq(0)
       end
     end
 
@@ -62,7 +63,8 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "returns 0" do
-        expect(indexer.index).to eq(0)
+        count, _details = indexer.index
+        expect(count).to eq(0)
       end
     end
 
@@ -73,7 +75,8 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "returns the page count" do
-        expect(indexer.index).to eq(42)
+        count, _details = indexer.index
+        expect(count).to eq(42)
       end
     end
 
@@ -84,7 +87,8 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "returns 0" do
-        expect(indexer.index).to eq(0)
+        count, _details = indexer.index
+        expect(count).to eq(0)
       end
     end
 
@@ -101,7 +105,8 @@ RSpec.describe Docyard::Search::BuildIndexer do
       end
 
       it "returns page count when exclusions are configured" do
-        expect(indexer.index).to eq(10)
+        count, _details = indexer.index
+        expect(count).to eq(10)
       end
     end
 
@@ -117,8 +122,9 @@ RSpec.describe Docyard::Search::BuildIndexer do
 
       it "returns page count with custom output directory" do
         custom_indexer = described_class.new(Docyard::Config.load(temp_dir))
+        count, _details = custom_indexer.index
 
-        expect(custom_indexer.index).to eq(5)
+        expect(count).to eq(5)
       end
     end
   end
