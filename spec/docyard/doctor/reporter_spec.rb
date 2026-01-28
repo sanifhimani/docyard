@@ -3,6 +3,7 @@
 RSpec.describe Docyard::Doctor::Reporter do
   let(:empty_results) do
     {
+      config_issues: [],
       broken_links: [],
       missing_images: [],
       orphan_pages: []
@@ -52,7 +53,7 @@ RSpec.describe Docyard::Doctor::Reporter do
         broken_links: [Docyard::Doctor::Issue.new(file: "page.md", line: 5, target: "/missing")]
       )
       reporter = described_class.new(results)
-      expect { reporter.print }.to output(/Broken Links/).to_stdout
+      expect { reporter.print }.to output(/Broken links/).to_stdout
     end
 
     it "outputs file location and target for broken links" do
@@ -68,13 +69,13 @@ RSpec.describe Docyard::Doctor::Reporter do
         missing_images: [Docyard::Doctor::Issue.new(file: "page.md", line: 3, target: "/img.png")]
       )
       reporter = described_class.new(results)
-      expect { reporter.print }.to output(/Missing Images/).to_stdout
+      expect { reporter.print }.to output(/Missing images/).to_stdout
     end
 
     it "outputs orphan pages section when present" do
       results = empty_results.merge(orphan_pages: [{ file: "orphan.md" }])
       reporter = described_class.new(results)
-      expect { reporter.print }.to output(/Orphan Pages/).to_stdout
+      expect { reporter.print }.to output(/Orphan pages/).to_stdout
     end
 
     it "outputs correct summary with singular error" do
