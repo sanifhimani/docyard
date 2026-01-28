@@ -64,9 +64,13 @@ module Docyard
       def format_message(severity, msg)
         case severity
         when "DEBUG"
-          "[DEBUG] #{msg}\n"
+          "#{UI.dim('[DEBUG]')} #{msg}\n"
         when "INFO"
           "#{msg}\n"
+        when "WARN"
+          "#{UI.warning('[WARN]')} #{msg}\n"
+        when "ERROR"
+          "#{UI.error('[ERROR]')} #{msg}\n"
         else
           "[#{severity}] #{msg}\n"
         end

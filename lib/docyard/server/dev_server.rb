@@ -33,7 +33,6 @@ module Docyard
     def start
       validate_docs_directory!
       build_sidebar_cache
-      generate_search_index if @search_enabled
       setup_hot_reload
       print_server_info
       run_server
@@ -104,22 +103,36 @@ module Docyard
     def validate_docs_directory!
       return if File.directory?(docs_path)
 
-      abort "Error: #{docs_path}/ directory not found.\n" \
+      abort "#{UI.error('Error:')} #{docs_path}/ directory not found.\n" \
             "Run `docyard init` first to create the docs structure."
     end
 
-    def print_server_info
+    def print_server_info # rubocop:disable Metrics/AbcSize
+      search_status = @search_enabled ? UI.green("enabled") : UI.dim("disabled")
+
       puts
-      puts "  Docyard v#{Docyard::VERSION}"
+      puts "  #{UI.bold('Docyard')} v#{Docyard::VERSION}"
       puts
       puts "  Serving #{docs_path}/"
-      puts "  http://#{host}:#{port}"
+      puts "  #{UI.cyan("http://#{host}:#{port}")}"
       puts
-      puts "  Hot reload: ws://#{host}:#{sse_port}"
-      puts "  Search:     #{@search_enabled ? 'enabled' : 'disabled'}"
+      puts "  Hot reload: #{UI.cyan("ws://#{host}:#{sse_port}")}"
+      puts "  Search:     #{search_status}"
+      print_indexing_status if @search_enabled
       puts
-      puts "  Press Ctrl+C to stop"
+      puts "  #{UI.dim('Press Ctrl+C to stop')}"
       puts
+    end
+
+    def print_indexing_status
+      print "  Indexing:   #{UI.dim('in progress')}"
+      $stdout.flush
+      generate_search_index
+      count = @search_indexer&.page_count || 0
+      total = @search_indexer&.total_pages || 0
+      print "\r  Indexing:   #{UI.green("done (#{count}/#{total} pages)")}\n"
+      $stdout.flush
+      Logging.flush_warnings
     end
 
     def run_server

@@ -54,17 +54,17 @@ module Docyard
       remaining_errors.positive? ? 1 : 0
     end
 
-    def print_fix_results(fixer)
+    def print_fix_results(fixer) # rubocop:disable Metrics/AbcSize
       puts
-      puts "  Docyard v#{VERSION}"
+      puts "  #{UI.bold('Docyard')} v#{VERSION}"
       puts
       if fixer.fixed_count.positive?
-        puts "  Fixed #{fixer.fixed_count} issue(s) in docyard.yml:"
+        puts "  #{UI.success("Fixed #{fixer.fixed_count} issue(s)")} in docyard.yml:"
         fixer.fixed_issues.each do |issue|
-          puts "    #{issue.field}: #{describe_fix(issue)}"
+          puts "    #{UI.dim(issue.field)}: #{describe_fix(issue)}"
         end
       else
-        puts "  No issues were auto-fixed."
+        puts "  #{UI.yellow('No issues were auto-fixed.')}"
       end
     end
 

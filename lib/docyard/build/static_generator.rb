@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "parallel"
-require "tty-progressbar"
 require_relative "../rendering/template_resolver"
 require_relative "../navigation/page_navigation_builder"
 require_relative "../navigation/sidebar/cache"

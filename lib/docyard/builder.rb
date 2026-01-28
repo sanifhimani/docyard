@@ -37,9 +37,9 @@ module Docyard
 
     def print_header
       puts
-      puts "  Docyard v#{VERSION}"
+      puts "  #{UI.bold('Docyard')} v#{VERSION}"
       puts
-      puts "  Building to #{config.build.output}/..."
+      puts "  Building to #{UI.dim("#{config.build.output}/")}..."
       puts
     end
 
@@ -52,7 +52,7 @@ module Docyard
     end
 
     def run_step(label, &)
-      print "  #{label.ljust(20)}in progress"
+      print "  #{label.ljust(20)}#{UI.dim('in progress')}"
       $stdout.flush
       result, details, elapsed = execute_step(label, &)
       print_step_result(label, result, elapsed)
@@ -69,13 +69,13 @@ module Docyard
     end
 
     def print_step_result(label, result, elapsed)
-      timing_suffix = verbose ? " in #{format('%<t>.2fs', t: elapsed)}" : ""
-      print "\r  #{label.ljust(20)}#{format_result(label, result)}#{timing_suffix}\n"
+      timing_suffix = verbose ? UI.dim(" in #{format('%<t>.2fs', t: elapsed)}") : ""
+      print "\r  #{label.ljust(20)}#{UI.green(format_result(label, result))}#{timing_suffix}\n"
       $stdout.flush
     end
 
     def print_verbose_details(details)
-      details.each { |detail| puts "      #{detail}" }
+      details.each { |detail| puts "      #{UI.dim(detail)}" }
     end
 
     def format_result(label, result)
@@ -106,19 +106,19 @@ module Docyard
     end
 
     def print_error(error)
-      puts "failed"
+      puts UI.error("failed")
       puts
-      puts "  Error: #{error.message}"
+      puts "  #{UI.error('Error:')} #{error.message}"
       puts "  #{error.backtrace.first}" if verbose
       puts
     end
 
-    def print_summary
+    def print_summary # rubocop:disable Metrics/AbcSize
       elapsed = Time.now - start_time
       size = calculate_output_size
       puts
-      puts "  Build complete in #{format('%.2fs', elapsed)}"
-      puts "  Output: #{config.build.output}/ (#{format_size(size)})"
+      puts "  #{UI.success('Build complete')} in #{format('%.2fs', elapsed)}"
+      puts "  #{UI.dim("Output: #{config.build.output}/ (#{format_size(size)})")}"
       puts
       print_timing_breakdown if verbose
     end
@@ -127,8 +127,8 @@ module Docyard
       total = @step_timings.sum { |t| t[:elapsed] }
       sorted = @step_timings.sort_by { |t| -t[:elapsed] }
 
-      puts "  Timing:"
-      sorted.each { |timing| puts "    #{format_timing_line(timing, total)}" }
+      puts "  #{UI.bold('Timing:')}"
+      sorted.each { |timing| puts "    #{UI.dim(format_timing_line(timing, total))}" }
       puts
     end
 
