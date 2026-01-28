@@ -43,7 +43,7 @@ module Docyard
       end
 
       def load_sidebar_config
-        Sidebar::LocalConfigLoader.new(docs_path).load
+        Sidebar::LocalConfigLoader.new(docs_path, validate: false).load
       end
 
       def extract_paths_from_tree(items, collected = [])

@@ -3,37 +3,44 @@
 module Docyard
   class Config
     module Schema
-      TOP_LEVEL = %w[
-        title description url og_image twitter source
-        branding socials tabs sidebar
-        build search navigation announcement
-        repo analytics feedback
-      ].freeze
+      SIDEBAR_MODES = %w[config auto distributed].freeze
+      CTA_VARIANTS = %w[primary secondary].freeze
+      SIDEBAR_ITEM_KEYS = %w[text icon badge badge_type items collapsed index group collapsible].freeze
+      SIDEBAR_EXTERNAL_LINK_KEYS = %w[link text icon target].freeze
 
-      SECTIONS = {
-        "branding" => %w[logo favicon credits copyright color],
-        "build" => %w[output base],
-        "search" => %w[enabled placeholder exclude],
-        "navigation" => %w[cta breadcrumbs],
-        "repo" => %w[url branch edit_path edit_link last_updated],
-        "analytics" => %w[google plausible fathom script],
-        "announcement" => %w[text link button dismissible],
-        "feedback" => %w[enabled question]
-      }.freeze
+      class << self
+        def top_level_keys
+          DEFINITION.keys.map(&:to_s)
+        end
 
-      TAB = %w[text href icon external].freeze
+        def section_keys(section)
+          section_def = DEFINITION[section.to_sym]
+          return [] unless section_def&.dig(:keys)
 
-      CTA = %w[text href variant external].freeze
+          section_def[:keys].keys.map(&:to_s)
+        end
 
-      ANNOUNCEMENT_BUTTON = %w[text link].freeze
+        def validate_keys(hash, valid_keys, context:)
+          return [] unless hash.is_a?(Hash)
 
-      SIDEBAR_ITEM = %w[text icon badge badge_type items collapsed index group collapsible].freeze
+          unknown = hash.keys.map(&:to_s) - valid_keys
+          unknown.map { |key| build_key_error(key, valid_keys, context) }
+        end
 
-      SIDEBAR_EXTERNAL_LINK = %w[link text icon target].freeze
+        def build_key_error(key, valid_keys, context)
+          suggestion = find_key_suggestion(key, valid_keys)
+          msg = "unknown key '#{key}'"
+          msg += ". Did you mean '#{suggestion}'?" if suggestion
+          { context: context, message: msg }
+        end
 
-      SOCIALS_BUILTIN = %w[github twitter discord slack linkedin youtube bluesky custom].freeze
-
-      CUSTOM_SOCIAL = %w[icon href].freeze
+        def find_key_suggestion(key, valid_keys)
+          checker = DidYouMean::SpellChecker.new(dictionary: valid_keys)
+          checker.correct(key).first
+        end
+      end
     end
   end
 end
+
+require_relative "schema/definition"

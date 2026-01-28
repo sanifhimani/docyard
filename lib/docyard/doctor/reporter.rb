@@ -3,15 +3,21 @@
 module Docyard
   class Doctor
     class Reporter
-      attr_reader :results, :stats
+      attr_reader :results, :stats, :fixed
 
-      def initialize(results, stats = {})
+      def initialize(results, stats = {}, fixed: false)
         @results = results
         @stats = stats
+        @fixed = fixed
       end
 
       def print
         puts
+        puts "  Docyard v#{VERSION}"
+        puts
+        puts "  Checking docs..."
+        puts
+        print_config_issues
         print_broken_links
         print_missing_images
         print_orphan_pages
@@ -24,14 +30,28 @@ module Docyard
 
       private
 
+      def print_config_issues
+        issues = results[:config_issues]
+        return if issues.empty?
+
+        errors = issues.select(&:error?)
+        warnings = issues.select(&:warning?)
+
+        puts "  Configuration        #{issue_counts(errors.size, warnings.size)}"
+        issues.each do |issue|
+          puts "    #{issue.format_short}"
+        end
+        puts
+      end
+
       def print_broken_links
         issues = results[:broken_links]
         return if issues.empty?
 
-        puts "  Broken Links"
+        puts "  Broken links         #{pluralize(issues.size, 'error')}"
         issues.each do |issue|
           location = "#{issue.file}:#{issue.line}"
-          puts "    #{location.ljust(36)} #{issue.target}"
+          puts "    #{location.ljust(24)} #{issue.target}"
         end
         puts
       end
@@ -40,10 +60,10 @@ module Docyard
         issues = results[:missing_images]
         return if issues.empty?
 
-        puts "  Missing Images"
+        puts "  Missing images       #{pluralize(issues.size, 'error')}"
         issues.each do |issue|
           location = "#{issue.file}:#{issue.line}"
-          puts "    #{location.ljust(36)} #{issue.target}"
+          puts "    #{location.ljust(24)} #{issue.target}"
         end
         puts
       end
@@ -52,7 +72,7 @@ module Docyard
         orphans = results[:orphan_pages]
         return if orphans.empty?
 
-        puts "  Orphan Pages"
+        puts "  Orphan pages         #{pluralize(orphans.size, 'warning')}"
         orphans.each do |orphan|
           puts "    #{orphan[:file]}"
         end
@@ -60,36 +80,52 @@ module Docyard
       end
 
       def print_summary
+        puts "  #{stats_summary}"
+
         if error_count.zero? && warning_count.zero?
-          puts "  Checked #{stats_summary}"
           puts "  No issues found"
         else
-          puts "  #{build_summary}"
+          puts "  #{build_issue_summary}"
+          print_fixable_hint
         end
         puts
       end
 
-      def stats_summary
-        stat_parts.compact.join(", ")
+      def print_fixable_hint
+        return if fixed
+
+        fixable = results[:config_issues].count(&:fixable?)
+        return if fixable.zero?
+
+        puts
+        puts "  Run with --fix to auto-fix #{pluralize(fixable, 'issue')}."
       end
 
-      def stat_parts
-        [
-          format_stat(:files, "file"),
-          format_stat(:links, "link"),
-          format_stat(:images, "image")
-        ]
-      end
-
-      def format_stat(key, label)
-        stats[key] && pluralize(stats[key], label)
-      end
-
-      def build_summary
+      def issue_counts(error_count, warning_count)
         parts = []
         parts << pluralize(error_count, "error") if error_count.positive?
         parts << pluralize(warning_count, "warning") if warning_count.positive?
         parts.join(", ")
+      end
+
+      def stats_summary
+        stats_parts = [
+          stat_part(:files, "file"),
+          stat_part(:links, "link"),
+          stat_part(:images, "image")
+        ].compact
+        "Checked #{stats_parts.join(', ')}"
+      end
+
+      def stat_part(key, word)
+        pluralize(stats[key], word) if stats[key]
+      end
+
+      def build_issue_summary
+        parts = []
+        parts << pluralize(error_count, "error") if error_count.positive?
+        parts << pluralize(warning_count, "warning") if warning_count.positive?
+        "Found #{parts.join(', ')}"
       end
 
       def pluralize(count, word)
@@ -97,11 +133,13 @@ module Docyard
       end
 
       def error_count
-        results[:broken_links].size + results[:missing_images].size
+        config_errors = results[:config_issues].count(&:error?)
+        config_errors + results[:broken_links].size + results[:missing_images].size
       end
 
       def warning_count
-        results[:orphan_pages].size
+        config_warnings = results[:config_issues].count(&:warning?)
+        config_warnings + results[:orphan_pages].size
       end
     end
   end

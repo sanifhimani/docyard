@@ -64,9 +64,10 @@ module Docyard
     end
 
     desc "doctor", "Check documentation for issues"
+    method_option :fix, type: :boolean, default: false, desc: "Auto-fix fixable issues"
     def doctor
       require_relative "doctor"
-      doctor = Docyard::Doctor.new
+      doctor = Docyard::Doctor.new(fix: options[:fix])
       exit(doctor.run)
     rescue ConfigError => e
       Docyard.logger.error(e.message)
