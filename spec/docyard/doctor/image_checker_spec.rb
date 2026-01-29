@@ -25,7 +25,7 @@ RSpec.describe Docyard::Doctor::ImageChecker do
       issues = checker.check
 
       expect(issues.size).to eq(1)
-      expect(issues.first.target).to eq("/images/missing.png")
+      expect(issues.first.message).to eq("/images/missing.png")
     end
 
     it "detects missing images with relative paths", :aggregate_failures do
@@ -34,7 +34,7 @@ RSpec.describe Docyard::Doctor::ImageChecker do
       issues = checker.check
 
       expect(issues.size).to eq(1)
-      expect(issues.first.target).to eq("./missing.png")
+      expect(issues.first.message).to eq("./missing.png")
     end
 
     it "validates relative images correctly" do
@@ -63,7 +63,7 @@ RSpec.describe Docyard::Doctor::ImageChecker do
       issues = checker.check
 
       expect(issues.size).to eq(1)
-      expect(issues.first.target).to eq("/missing.png")
+      expect(issues.first.message).to eq("/missing.png")
     end
 
     it "reports correct file and line number", :aggregate_failures do

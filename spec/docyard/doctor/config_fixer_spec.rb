@@ -14,12 +14,15 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
     File.read(config_path)
   end
 
-  def make_issue(field:, fix:, got: nil)
-    Docyard::Config::Issue.new(
+  def make_diagnostic(field:, fix:, got: nil)
+    details = got ? { got: got } : nil
+    Docyard::Diagnostic.new(
       severity: :error,
+      category: :CONFIG,
+      code: "CONFIG_VALIDATION",
       field: field,
       message: "test",
-      got: got,
+      details: details,
       fix: fix
     )
   end
@@ -28,7 +31,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
     context "with rename fixes" do
       it "renames misspelled keys", :aggregate_failures do
         write_config("tittle: My Site\n")
-        issue = make_issue(field: "tittle", fix: { type: :rename, from: "tittle", to: "title" })
+        issue = make_diagnostic(field: "tittle", fix: { type: :rename, from: "tittle", to: "title" })
 
         fixer = described_class.new(config_path)
         fixer.fix([issue])
@@ -39,7 +42,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
 
       it "preserves indentation when renaming nested keys" do
         write_config("search:\n  enbled: true\n")
-        issue = make_issue(field: "search.enbled", fix: { type: :rename, from: "enbled", to: "enabled" })
+        issue = make_diagnostic(field: "search.enbled", fix: { type: :rename, from: "enbled", to: "enabled" })
 
         fixer = described_class.new(config_path)
         fixer.fix([issue])
@@ -51,7 +54,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
     context "with replace fixes" do
       it "replaces boolean string with actual boolean" do
         write_config("branding:\n  credits: \"yes\"\n")
-        issue = make_issue(
+        issue = make_diagnostic(
           field: "branding.credits",
           got: "\"yes\"",
           fix: { type: :replace, value: true }
@@ -65,7 +68,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
 
       it "replaces enum values" do
         write_config("sidebar: autoo\n")
-        issue = make_issue(
+        issue = make_diagnostic(
           field: "sidebar",
           got: "autoo",
           fix: { type: :replace, value: "auto" }
@@ -79,7 +82,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
 
       it "adds quotes for paths starting with /" do
         write_config("build:\n  base: docs\n")
-        issue = make_issue(
+        issue = make_diagnostic(
           field: "build.base",
           got: "docs",
           fix: { type: :replace, value: "/docs" }
@@ -96,8 +99,8 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
       it "applies all fixes", :aggregate_failures do
         write_config("tittle: Test\nsidebar: autoo\n")
         issues = [
-          make_issue(field: "tittle", fix: { type: :rename, from: "tittle", to: "title" }),
-          make_issue(field: "sidebar", got: "autoo", fix: { type: :replace, value: "auto" })
+          make_diagnostic(field: "tittle", fix: { type: :rename, from: "tittle", to: "title" }),
+          make_diagnostic(field: "sidebar", got: "autoo", fix: { type: :replace, value: "auto" })
         ]
 
         fixer = described_class.new(config_path)
@@ -110,17 +113,19 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
       end
     end
 
-    context "with non-fixable issues" do
-      it "ignores issues without fix data" do
+    context "with non-fixable diagnostics" do
+      it "ignores diagnostics without fix data" do
         write_config("title: Test\n")
-        issue = Docyard::Config::Issue.new(
+        diagnostic = Docyard::Diagnostic.new(
           severity: :error,
+          category: :CONFIG,
+          code: "CONFIG_VALIDATION",
           field: "logo",
           message: "file not found"
         )
 
         fixer = described_class.new(config_path)
-        fixer.fix([issue])
+        fixer.fix([diagnostic])
 
         expect(fixer.fixed_count).to eq(0)
       end
@@ -128,7 +133,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
 
     context "when config file does not exist" do
       it "does nothing" do
-        issue = make_issue(field: "title", fix: { type: :rename, from: "tittle", to: "title" })
+        issue = make_diagnostic(field: "title", fix: { type: :rename, from: "tittle", to: "title" })
 
         fixer = described_class.new("/nonexistent/path.yml")
         fixer.fix([issue])
@@ -141,7 +146,7 @@ RSpec.describe Docyard::Doctor::ConfigFixer do
   describe "#fixed_issues" do
     it "returns list of issues that were fixed" do
       write_config("tittle: Test\n")
-      issue = make_issue(field: "tittle", fix: { type: :rename, from: "tittle", to: "title" })
+      issue = make_diagnostic(field: "tittle", fix: { type: :rename, from: "tittle", to: "title" })
 
       fixer = described_class.new(config_path)
       fixer.fix([issue])

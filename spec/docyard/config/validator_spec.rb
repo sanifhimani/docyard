@@ -66,7 +66,7 @@ RSpec.describe Docyard::Config::Validator do
       issues = validator(data).validate_all
       error = issues.find { |i| i.field == "sidebar" }
       expect(error.message).to include("invalid value")
-      expect(error.expected).to include("config")
+      expect(error.details[:expected]).to include("config")
     end
 
     it "validates array max_items constraint", :aggregate_failures do
@@ -74,7 +74,7 @@ RSpec.describe Docyard::Config::Validator do
       issues = validator(data).validate_all
       error = issues.find { |i| i.field == "navigation.cta" }
       expect(error.message).to include("too many items")
-      expect(error.expected).to include("maximum 2")
+      expect(error.details[:expected]).to include("maximum 2")
     end
   end
 
