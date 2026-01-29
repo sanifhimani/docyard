@@ -35,7 +35,7 @@ module Docyard
 
       def fix_replace(lines, issue)
         key = issue.field.split(".").last
-        old_val = normalize_value(issue.got)
+        old_val = normalize_value(extract_got_value(issue))
         new_val = format_value(issue.fix[:value])
 
         index = find_line_index(lines, key, old_val)
@@ -43,6 +43,10 @@ module Docyard
 
         lines[index] = lines[index].sub(/:\s*.*$/, ": #{new_val}\n")
         @fixed_issues << issue
+      end
+
+      def extract_got_value(diagnostic)
+        diagnostic.details&.dig(:got)
       end
 
       def fix_rename(lines, issue)
