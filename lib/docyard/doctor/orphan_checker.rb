@@ -19,10 +19,20 @@ module Docyard
         all_pages = collect_all_pages
         orphans = all_pages - sidebar_pages
 
-        orphans.map { |file| { file: file } }
+        orphans.map { |file| build_diagnostic(file) }
       end
 
       private
+
+      def build_diagnostic(file)
+        Diagnostic.new(
+          severity: :warning,
+          category: :ORPHAN,
+          code: "ORPHAN_PAGE",
+          message: "not linked from sidebar",
+          file: file
+        )
+      end
 
       def auto_sidebar?
         config.sidebar == "auto"

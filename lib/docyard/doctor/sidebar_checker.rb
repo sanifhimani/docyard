@@ -12,15 +12,17 @@ module Docyard
       def check
         loader = Sidebar::LocalConfigLoader.new(docs_path, validate: false)
         loader.load
-        convert_to_issues(loader.key_errors)
+        convert_to_diagnostics(loader.key_errors)
       end
 
       private
 
-      def convert_to_issues(key_errors)
+      def convert_to_diagnostics(key_errors)
         key_errors.map do |error|
-          Config::Issue.new(
+          Diagnostic.new(
             severity: :error,
+            category: :SIDEBAR,
+            code: "SIDEBAR_VALIDATION",
             field: "_sidebar.yml: #{error[:context]}",
             message: error[:message]
           )

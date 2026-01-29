@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "issue"
-
 module Docyard
   class Doctor
     class ImageChecker
@@ -17,11 +15,9 @@ module Docyard
       end
 
       def check
-        issues = []
-        markdown_files.each do |file|
-          issues.concat(check_file(file))
-        end
-        issues
+        diagnostics = []
+        markdown_files.each { |file| diagnostics.concat(check_file(file)) }
+        diagnostics
       end
 
       private
@@ -33,13 +29,13 @@ module Docyard
       def check_file(file_path)
         relative_file = file_path.delete_prefix("#{docs_path}/")
         file_dir = File.dirname(file_path)
-        issues = []
+        diagnostics = []
 
         each_line_outside_code_blocks(file_path) do |line, line_number|
-          issues.concat(check_line_for_images(line, line_number, relative_file, file_dir))
+          diagnostics.concat(check_line_for_images(line, line_number, relative_file, file_dir))
         end
 
-        issues
+        diagnostics
       end
 
       def each_line_outside_code_blocks(file_path)
@@ -59,8 +55,19 @@ module Docyard
           @images_checked += 1
           next if image_exists?(image_path, file_dir)
 
-          Issue.new(file: relative_file, line: line_number, target: image_path)
+          build_diagnostic(relative_file, line_number, image_path)
         end
+      end
+
+      def build_diagnostic(file, line, target)
+        Diagnostic.new(
+          severity: :error,
+          category: :IMAGE,
+          code: "IMAGE_MISSING",
+          message: target,
+          file: file,
+          line: line
+        )
       end
 
       def extract_image_paths(line)

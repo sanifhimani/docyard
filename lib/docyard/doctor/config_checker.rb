@@ -12,7 +12,7 @@ module Docyard
       def check
         validator = Config::Validator.new(config.data, source_dir: config.source)
         validator.validate_all
-        validator.issues
+        validator.diagnostics
       end
     end
   end

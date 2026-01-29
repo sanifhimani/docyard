@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "issue"
-
 module Docyard
   class Doctor
     class LinkChecker
@@ -19,13 +17,11 @@ module Docyard
       end
 
       def check
-        issues = []
+        diagnostics = []
         files = markdown_files
         @files_checked = files.size
-        files.each do |file|
-          issues.concat(check_file(file))
-        end
-        issues
+        files.each { |file| diagnostics.concat(check_file(file)) }
+        diagnostics
       end
 
       private
@@ -36,13 +32,13 @@ module Docyard
 
       def check_file(file_path)
         relative_file = file_path.delete_prefix("#{docs_path}/")
-        issues = []
+        diagnostics = []
 
         each_line_outside_code_blocks(file_path) do |line, line_number|
-          issues.concat(check_line_for_links(line, line_number, relative_file))
+          diagnostics.concat(check_line_for_links(line, line_number, relative_file))
         end
 
-        issues
+        diagnostics
       end
 
       def each_line_outside_code_blocks(file_path)
@@ -56,7 +52,7 @@ module Docyard
       end
 
       def check_line_for_links(line, line_number, relative_file)
-        issues = []
+        diagnostics = []
         line.scan(MARKDOWN_LINK_REGEX) do |_text, url|
           next unless internal_link?(url)
           next if image_path?(url)
@@ -65,9 +61,20 @@ module Docyard
           target_path = url.split("#").first
           next if file_exists?(target_path)
 
-          issues << Issue.new(file: relative_file, line: line_number, target: target_path)
+          diagnostics << build_diagnostic(relative_file, line_number, target_path)
         end
-        issues
+        diagnostics
+      end
+
+      def build_diagnostic(file, line, target)
+        Diagnostic.new(
+          severity: :error,
+          category: :LINK,
+          code: "LINK_BROKEN",
+          message: target,
+          file: file,
+          line: line
+        )
       end
 
       def internal_link?(url)
