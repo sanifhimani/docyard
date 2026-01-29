@@ -10,6 +10,7 @@ require_relative "component_checkers/details_checker"
 require_relative "component_checkers/badge_checker"
 require_relative "component_checkers/icon_checker"
 require_relative "component_checkers/tooltip_checker"
+require_relative "component_checkers/abbreviation_checker"
 require_relative "component_checkers/unknown_type_checker"
 
 module Docyard
@@ -25,6 +26,7 @@ module Docyard
         ComponentCheckers::BadgeChecker,
         ComponentCheckers::IconChecker,
         ComponentCheckers::TooltipChecker,
+        ComponentCheckers::AbbreviationChecker,
         ComponentCheckers::UnknownTypeChecker
       ].freeze
 
