@@ -15,7 +15,7 @@ module Docyard
           content = File.read(file_path)
 
           each_line_outside_code_blocks(content).flat_map do |line, line_number|
-            check_badges_in_line(line, relative_file, line_number)
+            check_badges_in_line(strip_inline_code(line), relative_file, line_number)
           end
         end
 

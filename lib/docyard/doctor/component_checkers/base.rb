@@ -76,6 +76,10 @@ module Docyard
           DidYouMean::SpellChecker.new(dictionary: dictionary).correct(value).first
         end
 
+        def strip_inline_code(line)
+          line.gsub(/`[^`]+`/, "")
+        end
+
         def build_unclosed_diagnostic(prefix, block, relative_file)
           build_diagnostic("#{prefix}_UNCLOSED", "unclosed :::#{block[:type]} block", relative_file, block[:line])
         end
