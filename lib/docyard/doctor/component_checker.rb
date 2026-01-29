@@ -8,6 +8,7 @@ require_relative "component_checkers/steps_checker"
 require_relative "component_checkers/code_group_checker"
 require_relative "component_checkers/details_checker"
 require_relative "component_checkers/badge_checker"
+require_relative "component_checkers/icon_checker"
 require_relative "component_checkers/unknown_type_checker"
 
 module Docyard
@@ -21,6 +22,7 @@ module Docyard
         ComponentCheckers::CodeGroupChecker,
         ComponentCheckers::DetailsChecker,
         ComponentCheckers::BadgeChecker,
+        ComponentCheckers::IconChecker,
         ComponentCheckers::UnknownTypeChecker
       ].freeze
 
