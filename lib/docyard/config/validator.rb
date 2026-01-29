@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "schema"
-require_relative "issue"
 require_relative "type_validators"
 
 module Docyard
@@ -11,12 +10,12 @@ module Docyard
 
       VALIDATORS_WITH_DEFINITION = %i[string enum hash array].freeze
 
-      attr_reader :issues
+      attr_reader :diagnostics
 
       def initialize(data, source_dir: "docs")
         @data = data
         @source_dir = source_dir
-        @issues = []
+        @diagnostics = []
       end
 
       def validate!
@@ -27,23 +26,23 @@ module Docyard
       end
 
       def validate_all
-        @issues = []
+        @diagnostics = []
         validate_unknown_keys(@data, Schema::DEFINITION, "docyard.yml")
         validate_structure(@data, Schema::DEFINITION, "")
         validate_cross_field_rules
-        @issues
+        @diagnostics
       end
 
       def errors
-        @issues.select(&:error?)
+        @diagnostics.select(&:error?)
       end
 
       def warnings
-        @issues.select(&:warning?)
+        @diagnostics.select(&:warning?)
       end
 
       def fixable_issues
-        @issues.select(&:fixable?)
+        @diagnostics.select(&:fixable?)
       end
 
       private
@@ -95,7 +94,7 @@ module Docyard
 
       def validate_field(value, definition, field)
         if value.nil? && definition[:required]
-          add_issue(:error, field, "is required")
+          add_diagnostic(:error, field, "is required")
           return
         end
 
@@ -129,23 +128,31 @@ module Docyard
         analytics = @data["analytics"]
         return if analytics.is_a?(Hash) && analytics.values.any?
 
-        add_issue(:error, "feedback.enabled", "requires analytics to be configured",
-                  expected: "configure google, plausible, fathom, or script in analytics section")
+        add_diagnostic(:error, "feedback.enabled", "requires analytics to be configured",
+                       expected: "configure google, plausible, fathom, or script in analytics section")
       end
 
-      def add_issue(severity, field, message, got: nil, expected: nil, fix: nil)
-        @issues << Issue.new(
+      def add_diagnostic(severity, field, message, got: nil, expected: nil, fix: nil)
+        @diagnostics << Diagnostic.new(
           severity: severity,
+          category: :CONFIG,
+          code: "CONFIG_VALIDATION",
           field: field,
           message: message,
-          got: got,
-          expected: expected,
+          details: build_details(got, expected),
           fix: fix
         )
       end
 
+      def build_details(got, expected)
+        details = {}
+        details[:got] = got if got
+        details[:expected] = expected if expected
+        details.empty? ? nil : details
+      end
+
       def add_type_issue(field, expected_type, value)
-        add_issue(:error, field, "must be a #{expected_type}", got: value.class.name)
+        add_diagnostic(:error, field, "must be a #{expected_type}", got: value.class.name)
       end
 
       def add_unknown_key_issue(context, key, valid_keys)
@@ -155,7 +162,7 @@ module Docyard
         message += ", did you mean '#{suggestion}'?" if suggestion
         fix = suggestion ? { type: :rename, from: key.to_s, to: suggestion } : nil
 
-        add_issue(:error, field, message, fix: fix)
+        add_diagnostic(:error, field, message, fix: fix)
       end
 
       def find_suggestion(key, valid_keys)
@@ -165,14 +172,16 @@ module Docyard
 
       def format_errors_for_exception
         lines = ["Config errors in docyard.yml:", ""]
-        errors.each do |issue|
-          lines << "  #{issue.field}"
-          lines << "    #{issue.message}"
-          lines << "    Got: #{issue.got}" if issue.got
-          lines << "    Expected: #{issue.expected}" if issue.expected
-          lines << ""
-        end
+        errors.each { |diagnostic| lines.concat(format_diagnostic_lines(diagnostic)) }
         lines.join("\n")
+      end
+
+      def format_diagnostic_lines(diagnostic)
+        lines = ["  #{diagnostic.field}", "    #{diagnostic.message}"]
+        lines << "    Got: #{diagnostic.details[:got]}" if diagnostic.details&.dig(:got)
+        lines << "    Expected: #{diagnostic.details[:expected]}" if diagnostic.details&.dig(:expected)
+        lines << ""
+        lines
       end
     end
   end
