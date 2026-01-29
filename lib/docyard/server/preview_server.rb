@@ -32,9 +32,14 @@ module Docyard
     private
 
     def validate_output_directory!
-      return if File.directory?(output_dir)
+      unless File.directory?(output_dir)
+        abort "#{UI.error('Error:')} #{output_dir}/ directory not found.\n" \
+              "Run `docyard build` first to build the site."
+      end
 
-      abort "#{UI.error('Error:')} #{output_dir}/ directory not found.\n" \
+      return if Dir.glob(File.join(output_dir, "**", "*")).any? { |f| File.file?(f) }
+
+      abort "#{UI.error('Error:')} #{output_dir}/ is empty.\n" \
             "Run `docyard build` first to build the site."
     end
 
