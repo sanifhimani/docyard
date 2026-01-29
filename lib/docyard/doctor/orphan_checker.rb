@@ -50,6 +50,8 @@ module Docyard
 
         sidebar_tree = Sidebar::ConfigBuilder.new(config_items, current_path: "/").build
         extract_paths_from_tree(sidebar_tree)
+      rescue StandardError
+        nil
       end
 
       def load_sidebar_config
