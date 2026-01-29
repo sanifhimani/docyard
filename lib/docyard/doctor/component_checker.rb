@@ -14,6 +14,8 @@ module Docyard
       STEP_ITEM_PATTERN = /^###\s+.+/
       CARD_ATTR_PATTERN = /^::card\{([^}]*)\}/
       CARD_VALID_ATTRS = %w[title icon href].freeze
+      CODE_BLOCK_WITH_LABEL = /^```\w*\s*\[/
+      CODE_BLOCK_START = /^```(\w+)/
 
       attr_reader :docs_path
 
@@ -36,13 +38,14 @@ module Docyard
         content = File.read(file_path)
         blocks = parse_blocks(content)
 
-        diagnostics = []
-        diagnostics.concat(check_callouts(blocks, content, relative_file))
-        diagnostics.concat(check_tabs(blocks, content, relative_file))
-        diagnostics.concat(check_cards(blocks, content, relative_file))
-        diagnostics.concat(check_steps(blocks, content, relative_file))
-        diagnostics.concat(check_unknown_types(content, relative_file))
-        diagnostics
+        [
+          check_callouts(blocks, content, relative_file),
+          check_tabs(blocks, content, relative_file),
+          check_cards(blocks, content, relative_file),
+          check_steps(blocks, content, relative_file),
+          check_code_group(blocks, content, relative_file),
+          check_unknown_types(content, relative_file)
+        ].flatten
       end
 
       def parse_blocks(content)
@@ -71,11 +74,8 @@ module Docyard
 
       def extract_block_content(content, start_line)
         lines = content.lines
-        start_idx = start_line
-        end_idx = lines[start_idx..].find_index { |l| l.match?(CLOSE_PATTERN) }
-        return nil unless end_idx
-
-        lines[start_idx...(start_idx + end_idx)].join
+        end_idx = lines[start_line..].find_index { |l| l.match?(CLOSE_PATTERN) }
+        end_idx ? lines[start_line...(start_line + end_idx)].join : nil
       end
 
       def each_line_outside_code_blocks(content)
@@ -89,89 +89,89 @@ module Docyard
       end
 
       def check_callouts(blocks, content, relative_file)
-        callout_blocks = blocks.select { |b| CALLOUT_TYPES.include?(b[:type]) }
-        callout_blocks.flat_map { |block| validate_callout(block, content, relative_file) }.compact
-      end
-
-      def validate_callout(block, content, relative_file)
-        return build_unclosed_diagnostic("CALLOUT", block, relative_file) unless block[:closed]
-
-        block_content = extract_block_content(content, block[:line])
-        return nil unless block_content&.strip&.empty?
-
-        build_diagnostic("CALLOUT_EMPTY", "empty callout block", relative_file, block[:line])
+        filter_blocks(blocks, CALLOUT_TYPES).flat_map do |block|
+          validate_simple_block(block, content, relative_file, "CALLOUT") do |block_content|
+            block_content&.strip&.empty? ? "empty callout block" : nil
+          end
+        end.compact
       end
 
       def check_tabs(blocks, content, relative_file)
-        tabs_blocks = blocks.select { |b| b[:type] == "tabs" }
-        tabs_blocks.flat_map { |block| validate_tabs(block, content, relative_file) }.compact
-      end
-
-      def validate_tabs(block, content, relative_file)
-        return build_unclosed_diagnostic("TABS", block, relative_file) unless block[:closed]
-
-        block_content = extract_block_content(content, block[:line])
-        return nil if block_content&.match?(TAB_ITEM_PATTERN)
-
-        msg = "empty tabs block, add '== Tab Name' to define tabs"
-        build_diagnostic("TABS_EMPTY", msg, relative_file, block[:line])
+        filter_blocks(blocks, "tabs").flat_map do |block|
+          validate_simple_block(block, content, relative_file, "TABS") do |block_content|
+            block_content&.match?(TAB_ITEM_PATTERN) ? nil : "empty tabs block, add '== Tab Name' to define tabs"
+          end
+        end.compact
       end
 
       def check_cards(blocks, content, relative_file)
-        cards_blocks = blocks.select { |b| b[:type] == "cards" }
-        diagnostics = cards_blocks.flat_map { |block| validate_cards(block, content, relative_file) }
-        diagnostics.concat(check_card_attributes(content, relative_file))
-        diagnostics.compact
-      end
-
-      def validate_cards(block, content, relative_file)
-        return build_unclosed_diagnostic("CARDS", block, relative_file) unless block[:closed]
-
-        block_content = extract_block_content(content, block[:line])
-        return nil if block_content&.match?(CARD_ITEM_PATTERN)
-
-        msg = "empty cards block, add '::card{title=\"...\"}' to define cards"
-        build_diagnostic("CARDS_EMPTY", msg, relative_file, block[:line])
+        block_diags = filter_blocks(blocks, "cards").flat_map do |block|
+          validate_simple_block(block, content, relative_file, "CARDS") do |bc|
+            bc&.match?(CARD_ITEM_PATTERN) ? nil : "empty cards block, add '::card{title=\"...\"}' to define cards"
+          end
+        end
+        (block_diags + check_card_attributes(content, relative_file)).compact
       end
 
       def check_card_attributes(content, relative_file)
         each_line_outside_code_blocks(content).flat_map do |line, line_number|
-          match = line.match(CARD_ATTR_PATTERN)
-          next [] unless match
-
-          validate_card_attrs(match[1], relative_file, line_number)
+          (match = line.match(CARD_ATTR_PATTERN)) ? validate_card_attrs(match[1], relative_file, line_number) : []
         end
       end
 
       def validate_card_attrs(attr_string, relative_file, line_number)
-        attrs = attr_string.scan(/(\w+)=/).flatten
-        unknown = attrs - CARD_VALID_ATTRS
-
+        unknown = attr_string.scan(/(\w+)=/).flatten - CARD_VALID_ATTRS
         unknown.map do |attr|
-          suggestion = find_card_attr_suggestion(attr)
-          message = "unknown card attribute '#{attr}'"
-          message += ", did you mean '#{suggestion}'?" if suggestion
-          build_diagnostic("CARD_UNKNOWN_ATTR", message, relative_file, line_number)
+          suggestion = DidYouMean::SpellChecker.new(dictionary: CARD_VALID_ATTRS).correct(attr).first
+          msg = "unknown card attribute '#{attr}'"
+          msg += ", did you mean '#{suggestion}'?" if suggestion
+          build_diagnostic("CARD_UNKNOWN_ATTR", msg, relative_file, line_number)
         end
       end
 
-      def find_card_attr_suggestion(attr)
-        DidYouMean::SpellChecker.new(dictionary: CARD_VALID_ATTRS).correct(attr).first
-      end
-
       def check_steps(blocks, content, relative_file)
-        steps_blocks = blocks.select { |b| b[:type] == "steps" }
-        steps_blocks.flat_map { |block| validate_steps(block, content, relative_file) }.compact
+        filter_blocks(blocks, "steps").flat_map do |block|
+          validate_simple_block(block, content, relative_file, "STEPS") do |block_content|
+            block_content&.match?(STEP_ITEM_PATTERN) ? nil : "empty steps block, add '### Step Title' to define steps"
+          end
+        end.compact
       end
 
-      def validate_steps(block, content, relative_file)
-        return build_unclosed_diagnostic("STEPS", block, relative_file) unless block[:closed]
+      def filter_blocks(blocks, type_filter)
+        blocks.select { |b| type_filter.is_a?(Array) ? type_filter.include?(b[:type]) : b[:type] == type_filter }
+      end
+
+      def validate_simple_block(block, content, relative_file, prefix)
+        return build_unclosed_diagnostic(prefix, block, relative_file) unless block[:closed]
 
         block_content = extract_block_content(content, block[:line])
-        return nil if block_content&.match?(STEP_ITEM_PATTERN)
+        error_msg = yield(block_content)
+        error_msg ? build_diagnostic("#{prefix}_EMPTY", error_msg, relative_file, block[:line]) : nil
+      end
 
-        msg = "empty steps block, add '### Step Title' to define steps"
-        build_diagnostic("STEPS_EMPTY", msg, relative_file, block[:line])
+      def check_code_group(blocks, content, relative_file)
+        filter_blocks(blocks, "code-group").flat_map { |b| validate_code_group(b, content, relative_file) }.compact
+      end
+
+      def validate_code_group(block, content, relative_file)
+        return build_unclosed_diagnostic("CODE_GROUP", block, relative_file) unless block[:closed]
+
+        block_content = extract_block_content(content, block[:line])
+        return empty_code_group_diagnostic(relative_file, block) unless block_content&.match?(CODE_BLOCK_WITH_LABEL)
+
+        check_unlabeled_code_blocks(block_content, relative_file, block[:line])
+      end
+
+      def empty_code_group_diagnostic(relative_file, block)
+        build_diagnostic("CODE_GROUP_EMPTY", "empty code-group, add code blocks with [labels]", relative_file, block[:line])
+      end
+
+      def check_unlabeled_code_blocks(block_content, relative_file, start_line)
+        block_content.each_line.with_index(1).filter_map do |line, offset|
+          next unless line.match?(CODE_BLOCK_START) && !line.match?(CODE_BLOCK_WITH_LABEL)
+
+          build_diagnostic("CODE_GROUP_MISSING_LABEL", "code block missing label", relative_file, start_line + offset)
+        end
       end
 
       def build_unclosed_diagnostic(prefix, block, relative_file)
@@ -186,20 +186,11 @@ module Docyard
           type = match[1].downcase
           next if ALL_CONTAINER_TYPES.include?(type)
 
-          build_unknown_type_diagnostic(type, relative_file, line_number)
+          suggestion = DidYouMean::SpellChecker.new(dictionary: ALL_CONTAINER_TYPES).correct(type).first
+          msg = "unknown component ':::#{type}'"
+          msg += ", did you mean ':::#{suggestion}'?" if suggestion
+          build_diagnostic("COMPONENT_UNKNOWN_TYPE", msg, relative_file, line_number)
         end
-      end
-
-      def build_unknown_type_diagnostic(type, relative_file, line_number)
-        suggestion = find_suggestion(type)
-        message = "unknown component ':::#{type}'"
-        message += ", did you mean ':::#{suggestion}'?" if suggestion
-
-        build_diagnostic("COMPONENT_UNKNOWN_TYPE", message, relative_file, line_number)
-      end
-
-      def find_suggestion(type)
-        DidYouMean::SpellChecker.new(dictionary: ALL_CONTAINER_TYPES).correct(type).first
       end
 
       def build_diagnostic(code, message, file, line)
