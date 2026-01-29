@@ -37,8 +37,9 @@ module Docyard
     end
 
     def location
-      return field if field
+      return "#{file}:#{field}" if file && field
       return "#{file}:#{line}" if file && line
+      return field if field
       return file if file
 
       nil
