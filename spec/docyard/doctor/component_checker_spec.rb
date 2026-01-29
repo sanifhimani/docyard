@@ -19,27 +19,6 @@ RSpec.describe Docyard::Doctor::ComponentChecker do
       expect(checker.check).to be_empty
     end
 
-    it "detects unknown type with suggestion", :aggregate_failures do
-      write_page("guide.md", ":::nite\nThis looks like a typo.\n:::")
-
-      checker = described_class.new(docs_path)
-      diagnostics = checker.check
-
-      expect(diagnostics.size).to eq(1)
-      expect(diagnostics.first.code).to eq("CALLOUT_UNKNOWN_TYPE")
-      expect(diagnostics.first.message).to include("did you mean 'note'")
-      expect(diagnostics.first.line).to eq(1)
-    end
-
-    it "detects unknown type without suggestion for unrecognizable type" do
-      write_page("guide.md", ":::foobar\nUnknown type.\n:::")
-
-      checker = described_class.new(docs_path)
-      diagnostics = checker.check
-
-      expect(diagnostics.first.message).to eq("unknown callout type 'foobar'")
-    end
-
     it "detects unclosed callout block", :aggregate_failures do
       write_page("guide.md", ":::warning\nThis block is never closed.")
 
@@ -64,14 +43,7 @@ RSpec.describe Docyard::Doctor::ComponentChecker do
     end
 
     it "ignores callouts inside code blocks" do
-      write_page("guide.md", "```markdown\n:::unknowntype\nThis is just an example.\n:::\n```")
-
-      checker = described_class.new(docs_path)
-      expect(checker.check).to be_empty
-    end
-
-    it "does not report known component types as unknown callouts" do
-      write_page("guide.md", ":::tabs\n== Tab 1\nContent\n:::")
+      write_page("guide.md", "```markdown\n:::foobar\nExample.\n:::\n```")
 
       checker = described_class.new(docs_path)
       expect(checker.check).to be_empty
@@ -84,6 +56,77 @@ RSpec.describe Docyard::Doctor::ComponentChecker do
         checker = described_class.new(docs_path)
         expect(checker.check).to be_empty
       end
+    end
+  end
+
+  describe "tabs validation" do
+    it "returns empty array for valid tabs" do
+      write_page("guide.md", ":::tabs\n== Tab 1\nContent\n== Tab 2\nMore content\n:::")
+
+      checker = described_class.new(docs_path)
+      expect(checker.check).to be_empty
+    end
+
+    it "detects empty tabs block", :aggregate_failures do
+      write_page("guide.md", ":::tabs\n:::")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.size).to eq(1)
+      expect(diagnostics.first.code).to eq("TABS_EMPTY")
+      expect(diagnostics.first.message).to include("Tab Name")
+    end
+
+    it "detects unclosed tabs block", :aggregate_failures do
+      write_page("guide.md", ":::tabs\n== Tab 1\nContent")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.size).to eq(1)
+      expect(diagnostics.first.code).to eq("TABS_UNCLOSED")
+      expect(diagnostics.first.message).to include("unclosed")
+    end
+
+    it "detects :::tab typo and suggests :::tabs", :aggregate_failures do
+      write_page("guide.md", ":::tab\n== Tab 1\nContent\n:::")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.size).to eq(1)
+      expect(diagnostics.first.code).to eq("COMPONENT_UNKNOWN_TYPE")
+      expect(diagnostics.first.message).to include("did you mean ':::tabs'")
+    end
+  end
+
+  describe "unknown component detection" do
+    it "detects unknown type with suggestion", :aggregate_failures do
+      write_page("guide.md", ":::nite\nThis looks like a typo.\n:::")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.size).to eq(1)
+      expect(diagnostics.first.code).to eq("COMPONENT_UNKNOWN_TYPE")
+      expect(diagnostics.first.message).to include("did you mean ':::note'")
+    end
+
+    it "detects unknown type without suggestion for unrecognizable type" do
+      write_page("guide.md", ":::foobar\nUnknown type.\n:::")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.first.message).to eq("unknown component ':::foobar'")
+    end
+
+    it "does not report known component types as unknown" do
+      write_page("guide.md", ":::tabs\n== Tab 1\nContent\n:::")
+
+      checker = described_class.new(docs_path)
+      expect(checker.check).to be_empty
     end
   end
 end
