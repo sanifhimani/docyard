@@ -4,10 +4,12 @@ module Docyard
   class Doctor
     class ComponentChecker
       CALLOUT_TYPES = %w[note tip important warning danger].freeze
-      KNOWN_COMPONENTS = %w[tabs cards steps code-group accordion file-tree].freeze
-      CONTAINER_PATTERN = /^:::(\w+)/
+      KNOWN_COMPONENTS = %w[tabs cards steps code-group details].freeze
+      ALL_CONTAINER_TYPES = (CALLOUT_TYPES + KNOWN_COMPONENTS).freeze
+      CONTAINER_PATTERN = /^:::(\w[\w-]*)/
       CLOSE_PATTERN = /^:::\s*$/
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
+      TAB_ITEM_PATTERN = /^==\s+.+/
 
       attr_reader :docs_path
 
@@ -32,18 +34,12 @@ module Docyard
       def check_file(file_path)
         relative_file = file_path.delete_prefix("#{docs_path}/")
         content = File.read(file_path)
-
-        check_callouts(content, relative_file)
-      end
-
-      def check_callouts(content, relative_file)
         blocks = parse_blocks(content)
+
         diagnostics = []
-
-        diagnostics.concat(check_empty_callouts(blocks, content, relative_file))
-        diagnostics.concat(check_unclosed_callouts(blocks, relative_file))
+        diagnostics.concat(check_callouts(blocks, content, relative_file))
+        diagnostics.concat(check_tabs(blocks, content, relative_file))
         diagnostics.concat(check_unknown_types(content, relative_file))
-
         diagnostics
       end
 
@@ -71,15 +67,6 @@ module Docyard
         end
       end
 
-      def check_empty_callouts(blocks, content, relative_file)
-        blocks.select { |b| CALLOUT_TYPES.include?(b[:type]) && b[:closed] }.filter_map do |block|
-          block_content = extract_block_content(content, block[:line])
-          next unless block_content&.strip&.empty?
-
-          build_diagnostic("CALLOUT_EMPTY", "empty callout block", relative_file, block[:line])
-        end
-      end
-
       def extract_block_content(content, start_line)
         lines = content.lines
         start_idx = start_line
@@ -89,10 +76,37 @@ module Docyard
         lines[start_idx...(start_idx + end_idx)].join
       end
 
-      def check_unclosed_callouts(blocks, relative_file)
-        blocks.select { |b| CALLOUT_TYPES.include?(b[:type]) && !b[:closed] }.map do |block|
-          build_diagnostic("CALLOUT_UNCLOSED", "unclosed :::#{block[:type]} block", relative_file, block[:line])
-        end
+      def check_callouts(blocks, content, relative_file)
+        callout_blocks = blocks.select { |b| CALLOUT_TYPES.include?(b[:type]) }
+        callout_blocks.flat_map { |block| validate_callout(block, content, relative_file) }.compact
+      end
+
+      def validate_callout(block, content, relative_file)
+        return build_unclosed_diagnostic("CALLOUT", block, relative_file) unless block[:closed]
+
+        block_content = extract_block_content(content, block[:line])
+        return nil unless block_content&.strip&.empty?
+
+        build_diagnostic("CALLOUT_EMPTY", "empty callout block", relative_file, block[:line])
+      end
+
+      def check_tabs(blocks, content, relative_file)
+        tabs_blocks = blocks.select { |b| b[:type] == "tabs" }
+        tabs_blocks.flat_map { |block| validate_tabs(block, content, relative_file) }.compact
+      end
+
+      def validate_tabs(block, content, relative_file)
+        return build_unclosed_diagnostic("TABS", block, relative_file) unless block[:closed]
+
+        block_content = extract_block_content(content, block[:line])
+        return nil if block_content&.match?(TAB_ITEM_PATTERN)
+
+        msg = "empty tabs block, add '== Tab Name' to define tabs"
+        build_diagnostic("TABS_EMPTY", msg, relative_file, block[:line])
+      end
+
+      def build_unclosed_diagnostic(prefix, block, relative_file)
+        build_diagnostic("#{prefix}_UNCLOSED", "unclosed :::#{block[:type]} block", relative_file, block[:line])
       end
 
       def check_unknown_types(content, relative_file)
@@ -107,7 +121,7 @@ module Docyard
           next unless match
 
           type = match[1].downcase
-          next if CALLOUT_TYPES.include?(type) || KNOWN_COMPONENTS.include?(type)
+          next if ALL_CONTAINER_TYPES.include?(type)
 
           diagnostics << build_unknown_type_diagnostic(type, relative_file, line_number)
         end
@@ -116,11 +130,15 @@ module Docyard
       end
 
       def build_unknown_type_diagnostic(type, relative_file, line_number)
-        suggestion = DidYouMean::SpellChecker.new(dictionary: CALLOUT_TYPES).correct(type).first
-        message = "unknown callout type '#{type}'"
-        message += ", did you mean '#{suggestion}'?" if suggestion
+        suggestion = find_suggestion(type)
+        message = "unknown component ':::#{type}'"
+        message += ", did you mean ':::#{suggestion}'?" if suggestion
 
-        build_diagnostic("CALLOUT_UNKNOWN_TYPE", message, relative_file, line_number)
+        build_diagnostic("COMPONENT_UNKNOWN_TYPE", message, relative_file, line_number)
+      end
+
+      def find_suggestion(type)
+        DidYouMean::SpellChecker.new(dictionary: ALL_CONTAINER_TYPES).correct(type).first
       end
 
       def build_diagnostic(code, message, file, line)
