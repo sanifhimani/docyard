@@ -26,7 +26,8 @@ module Docyard
             category: :SIDEBAR,
             code: "SIDEBAR_VALIDATION",
             field: "_sidebar.yml: #{error[:context]}",
-            message: error[:message]
+            message: error[:message],
+            fix: error[:fix]
           )
         end
       end

@@ -20,7 +20,8 @@ module Docyard
           suggestion = find_key_suggestion(key, valid_keys)
           msg = "unknown key '#{key}'"
           msg += ". Did you mean '#{suggestion}'?" if suggestion
-          { context: context, message: msg }
+          fix = suggestion ? { type: :rename, from: key, to: suggestion } : nil
+          { context: context, message: msg, key: key, fix: fix }
         end
 
         def find_key_suggestion(key, valid_keys)

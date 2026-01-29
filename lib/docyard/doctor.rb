@@ -9,6 +9,8 @@ require_relative "doctor/link_checker"
 require_relative "doctor/image_checker"
 require_relative "doctor/orphan_checker"
 require_relative "doctor/config_fixer"
+require_relative "doctor/sidebar_fixer"
+require_relative "doctor/markdown_fixer"
 require_relative "doctor/reporter"
 
 module Docyard
@@ -35,9 +37,15 @@ module Docyard
     end
 
     def run_with_fix
-      fixer = ConfigFixer.new
-      run_fix_loop(fixer)
-      print_fix_results(fixer)
+      config_fixer = ConfigFixer.new
+      sidebar_fixer = SidebarFixer.new(docs_path)
+      markdown_fixer = MarkdownFixer.new(docs_path)
+
+      run_config_fix_loop(config_fixer)
+      run_sidebar_fix(sidebar_fixer)
+      run_markdown_fix(markdown_fixer)
+
+      print_fix_results(config_fixer, sidebar_fixer, markdown_fixer)
 
       diagnostics_after, _stats_after = collect_diagnostics
       remaining_errors = diagnostics_after.count(&:error?)
@@ -46,7 +54,7 @@ module Docyard
       remaining_errors.positive? ? 1 : 0
     end
 
-    def run_fix_loop(fixer)
+    def run_config_fix_loop(fixer)
       max_iterations = 10
       max_iterations.times do
         reload_config
@@ -60,13 +68,53 @@ module Docyard
       end
     end
 
+    def run_sidebar_fix(fixer)
+      diagnostics, _stats = collect_diagnostics
+      sidebar_diagnostics = diagnostics.select { |d| d.category == :SIDEBAR && d.fixable? }
+      fixer.fix(sidebar_diagnostics)
+    end
+
+    def run_markdown_fix(fixer)
+      diagnostics, _stats = collect_diagnostics
+      component_diagnostics = diagnostics.select { |d| d.category == :COMPONENT && d.fixable? }
+      fixer.fix(component_diagnostics)
+    end
+
     def reload_config
       @config = load_config_safely
     end
 
-    def print_fix_results(fixer)
+    def print_fix_results(config_fixer, sidebar_fixer, markdown_fixer)
       print_fix_header
-      print_fixed_issues(fixer)
+      fixers = [
+        [config_fixer, "docyard.yml"],
+        [sidebar_fixer, "_sidebar.yml"],
+        [markdown_fixer, "markdown files"]
+      ]
+      total_fixed = fixers.sum { |f, _| f.fixed_count }
+
+      total_fixed.positive? ? print_all_fixes(fixers, total_fixed) : print_no_fixes
+    end
+
+    def print_all_fixes(fixers, total_fixed)
+      fixers.each { |fixer, name| print_fixer_results(fixer, name) }
+      puts "  #{UI.success("Fixed #{total_fixed} issue(s) total")}"
+    end
+
+    def print_fixer_results(fixer, name)
+      return unless fixer.fixed_count.positive?
+
+      puts "  Fixed #{fixer.fixed_count} issue(s) in #{name}:"
+      print_fixed_issues(fixer) if fixer.respond_to?(:fixed_issues)
+      puts
+    end
+
+    def print_fixed_issues(fixer)
+      fixer.fixed_issues.each { |d| puts "    #{UI.dim(d.location)}: #{describe_fix(d)}" }
+    end
+
+    def print_no_fixes
+      puts "  #{UI.yellow('No issues were auto-fixed.')}"
     end
 
     def print_fix_header
@@ -75,19 +123,11 @@ module Docyard
       puts
     end
 
-    def print_fixed_issues(fixer)
-      if fixer.fixed_count.positive?
-        puts "  #{UI.success("Fixed #{fixer.fixed_count} issue(s)")} in docyard.yml:"
-        fixer.fixed_issues.each { |d| puts "    #{UI.dim(d.field)}: #{describe_fix(d)}" }
-      else
-        puts "  #{UI.yellow('No issues were auto-fixed.')}"
-      end
-    end
-
     def describe_fix(diagnostic)
       case diagnostic.fix[:type]
-      when :rename then "renamed from '#{diagnostic.fix[:from]}' to '#{diagnostic.fix[:to]}'"
+      when :rename then "renamed '#{diagnostic.fix[:from]}' to '#{diagnostic.fix[:to]}'"
       when :replace then "changed to #{diagnostic.fix[:value].inspect}"
+      when :line_replace then "replaced '#{diagnostic.fix[:from]}' with '#{diagnostic.fix[:to]}'"
       else "fixed"
       end
     end
