@@ -94,5 +94,74 @@ RSpec.describe Docyard::Doctor::ContentChecker do
         expect(checker.check).to be_empty
       end
     end
+
+    context "when include references existing file" do
+      before do
+        write_page("shared/header.md", "# Header")
+        write_page("guide.md", "# Guide\n\n<!-- @include: shared/header.md -->")
+      end
+
+      it "returns empty array" do
+        checker = described_class.new(docs_path)
+        expect(checker.check).to be_empty
+      end
+    end
+
+    context "when include references missing file" do
+      it "returns diagnostic with file and line", :aggregate_failures do
+        write_page("guide.md", "# Guide\n\n<!-- @include: missing.md -->")
+
+        checker = described_class.new(docs_path)
+        diagnostics = checker.check
+
+        expect(diagnostics.size).to eq(1)
+        expect(diagnostics.first.code).to eq("INCLUDE_ERROR")
+        expect(diagnostics.first.message).to include("file not found")
+        expect(diagnostics.first.file).to eq("guide.md")
+        expect(diagnostics.first.line).to eq(3)
+      end
+    end
+
+    context "when include references non-markdown file" do
+      before do
+        write_page("config.json", '{"key": "value"}')
+        write_page("guide.md", "# Guide\n\n<!-- @include: config.json -->")
+      end
+
+      it "returns diagnostic for non-markdown file", :aggregate_failures do
+        checker = described_class.new(docs_path)
+        diagnostics = checker.check
+
+        expect(diagnostics.size).to eq(1)
+        expect(diagnostics.first.message).to include("non-markdown")
+      end
+    end
+
+    context "when include is inside code block" do
+      it "ignores the include" do
+        write_page("guide.md", <<~MD)
+          # Guide
+
+          ```markdown
+          <!-- @include: missing.md -->
+          ```
+        MD
+
+        checker = described_class.new(docs_path)
+        expect(checker.check).to be_empty
+      end
+    end
+
+    context "when include uses relative path" do
+      before do
+        write_page("shared/header.md", "# Header")
+        write_page("guides/intro.md", "# Intro\n\n<!-- @include: ../shared/header.md -->")
+      end
+
+      it "resolves relative path correctly" do
+        checker = described_class.new(docs_path)
+        expect(checker.check).to be_empty
+      end
+    end
   end
 end
