@@ -12,6 +12,7 @@ require_relative "component_checkers/icon_checker"
 require_relative "component_checkers/tooltip_checker"
 require_relative "component_checkers/abbreviation_checker"
 require_relative "component_checkers/image_attrs_checker"
+require_relative "component_checkers/space_after_colons_checker"
 require_relative "component_checkers/unknown_type_checker"
 
 module Docyard
@@ -29,6 +30,7 @@ module Docyard
         ComponentCheckers::TooltipChecker,
         ComponentCheckers::AbbreviationChecker,
         ComponentCheckers::ImageAttrsChecker,
+        ComponentCheckers::SpaceAfterColonsChecker,
         ComponentCheckers::UnknownTypeChecker
       ].freeze
 
