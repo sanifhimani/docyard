@@ -163,5 +163,68 @@ RSpec.describe Docyard::Doctor::ContentChecker do
         expect(checker.check).to be_empty
       end
     end
+
+    context "when snippet references existing file" do
+      before do
+        write_page("examples/app.rb", "puts 'hello'")
+        write_page("guide.md", "# Guide\n\n<<< @/examples/app.rb")
+      end
+
+      it "returns empty array" do
+        checker = described_class.new(docs_path)
+        expect(checker.check).to be_empty
+      end
+    end
+
+    context "when snippet references missing file" do
+      it "returns diagnostic with file and line", :aggregate_failures do
+        write_page("guide.md", "# Guide\n\n<<< @/examples/missing.rb")
+
+        checker = described_class.new(docs_path)
+        diagnostics = checker.check
+
+        expect(diagnostics.size).to eq(1)
+        expect(diagnostics.first.code).to eq("SNIPPET_ERROR")
+        expect(diagnostics.first.message).to include("file not found")
+        expect(diagnostics.first.file).to eq("guide.md")
+        expect(diagnostics.first.line).to eq(3)
+      end
+    end
+
+    context "when snippet references missing region" do
+      before do
+        write_page("examples/app.rb", "puts 'hello'")
+        write_page("guide.md", "# Guide\n\n<<< @/examples/app.rb#missing-region")
+      end
+
+      it "returns diagnostic for missing region", :aggregate_failures do
+        checker = described_class.new(docs_path)
+        diagnostics = checker.check
+
+        expect(diagnostics.size).to eq(1)
+        expect(diagnostics.first.message).to include("region 'missing-region' not found")
+      end
+    end
+
+    context "when snippet references existing region" do
+      before do
+        write_page("examples/app.rb", "# #region setup\nputs 'hello'\n# #endregion")
+        write_page("guide.md", "# Guide\n\n<<< @/examples/app.rb#setup")
+      end
+
+      it "returns empty array" do
+        checker = described_class.new(docs_path)
+        expect(checker.check).to be_empty
+      end
+    end
+
+    context "when snippet is inside code block" do
+      it "ignores the snippet" do
+        write_page("guide.md", "# Guide\n\n```markdown\n<<< @/missing.rb\n```")
+
+        checker = described_class.new(docs_path)
+        expect(checker.check).to be_empty
+      end
+    end
   end
 end
