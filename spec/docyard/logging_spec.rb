@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Logging do
+  before do
+    described_class.stop_buffering
+    described_class.logger = nil
+  end
+
   after do
+    described_class.stop_buffering
     described_class.logger = nil
   end
 
