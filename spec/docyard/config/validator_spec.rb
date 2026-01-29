@@ -8,24 +8,6 @@ RSpec.describe Docyard::Config::Validator do
     described_class.new(data, source_dir: source_dir)
   end
 
-  describe "#validate!" do
-    it "does not raise when config is valid" do
-      expect { validator(valid_data).validate! }.not_to raise_error
-    end
-
-    it "raises ConfigError with field name for invalid config" do
-      data = { "title" => 123, "description" => "Test" }
-      expect { validator(data).validate! }
-        .to raise_error(Docyard::ConfigError, /title/)
-    end
-
-    it "raises ConfigError listing all errors" do
-      data = { "title" => 123, "description" => "Test", "unknown_key" => "value" }
-      expect { validator(data).validate! }
-        .to raise_error(Docyard::ConfigError, /unknown_key.*title/m)
-    end
-  end
-
   describe "#validate_all" do
     it "returns empty array when config is valid" do
       issues = validator(valid_data).validate_all

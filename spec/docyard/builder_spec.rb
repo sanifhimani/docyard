@@ -148,5 +148,75 @@ RSpec.describe Docyard::Builder do
         end
       end
     end
+
+    describe "validation" do
+      it "fails when sidebar has missing files", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          create_file("docs/_sidebar.yml", "- missing-page")
+
+          builder = described_class.new
+          result = nil
+          output = capture_stdout { result = builder.build }
+
+          expect(result).to be false
+          expect(output).to include("missing-page.md")
+        end
+      end
+
+      it "passes validation with valid config and sidebar" do
+        Dir.chdir(temp_dir) do
+          create_file("docs/_sidebar.yml", "- guide")
+
+          builder = described_class.new
+          result = nil
+          capture_stdout { result = builder.build }
+
+          expect(result).to be true
+        end
+      end
+
+      it "fails on broken links in strict mode", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          create_doc("page.md", "[Broken](/nonexistent)")
+
+          builder = described_class.new(strict: true)
+          result = nil
+          output = capture_stdout { result = builder.build }
+
+          expect(result).to be false
+          expect(output).to include("/nonexistent")
+        end
+      end
+
+      it "reads strict mode from config", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          create_config(<<~YAML)
+            title: "Test"
+            build:
+              strict: true
+          YAML
+          create_doc("page.md", "[Broken](/nonexistent)")
+
+          builder = described_class.new
+          result = nil
+          output = capture_stdout { result = builder.build }
+
+          expect(result).to be false
+          expect(output).to include("/nonexistent")
+        end
+      end
+
+      it "succeeds despite broken links without strict mode" do
+        Dir.chdir(temp_dir) do
+          create_doc("page.md", "[Broken](/nonexistent)")
+
+          builder = described_class.new(strict: false)
+          result = nil
+          capture_stdout { result = builder.build }
+
+          expect(result).to be true
+        end
+      end
+    end
   end
 end
