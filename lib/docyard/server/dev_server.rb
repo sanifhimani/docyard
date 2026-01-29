@@ -31,6 +31,8 @@ module Docyard
     end
 
     def start
+      return unless passes_validation?
+
       validate_docs_directory!
       build_sidebar_cache
       setup_hot_reload
@@ -41,6 +43,15 @@ module Docyard
     end
 
     private
+
+    def passes_validation?
+      require_relative "../build/validator"
+      validator = Build::Validator.new(config)
+      return true if validator.valid?
+
+      validator.print_errors(context: "Server")
+      false
+    end
 
     def build_sidebar_cache
       @sidebar_cache = Sidebar::Cache.new(
