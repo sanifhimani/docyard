@@ -1,37 +1,32 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::ComponentCheckers::AbbreviationChecker do
-  let(:docs_path) { Dir.mktmpdir }
+  let(:docs_path) { "/docs" }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(docs_path) }
-
-  def write_page(path, content)
-    full_path = File.join(docs_path, path)
-    FileUtils.mkdir_p(File.dirname(full_path))
-    File.write(full_path, content)
+  def check(content)
+    checker.check_file(content, "#{docs_path}/guide.md")
   end
 
   it "returns empty array for valid abbreviations" do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       The API is great.
 
       *[API]: Application Programming Interface
     MD
 
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(content)).to be_empty
   end
 
   it "detects duplicate term definitions", :aggregate_failures do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       The API is great.
 
       *[API]: Application Programming Interface
       *[API]: Another Programming Interface
     MD
 
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(content)
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("ABBR_DUPLICATE")
@@ -39,14 +34,13 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::AbbreviationChecker do
   end
 
   it "detects unused abbreviations", :aggregate_failures do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       Some content here.
 
       *[SDK]: Software Development Kit
     MD
 
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(content)
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("ABBR_UNUSED")
@@ -54,18 +48,17 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::AbbreviationChecker do
   end
 
   it "ignores abbreviations inside code blocks" do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       ```markdown
       *[API]: Application Programming Interface
       ```
     MD
 
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(content)).to be_empty
   end
 
   it "detects multiple issues", :aggregate_failures do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       The API is great.
 
       *[API]: Application Programming Interface
@@ -73,8 +66,7 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::AbbreviationChecker do
       *[SDK]: Never used
     MD
 
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(content)
 
     expect(diagnostics.size).to eq(2)
     expect(diagnostics.map(&:code)).to contain_exactly("ABBR_DUPLICATE", "ABBR_UNUSED")

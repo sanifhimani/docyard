@@ -10,10 +10,7 @@ module Docyard
 
         private
 
-        def check_file(file_path)
-          relative_file = file_path.delete_prefix("#{docs_path}/")
-          content = File.read(file_path)
-
+        def process_content(content, relative_file)
           each_line_outside_code_blocks(content).flat_map do |line, line_number|
             check_badges_in_line(strip_inline_code(line), relative_file, line_number)
           end

@@ -14,17 +14,14 @@ module Docyard
           @docs_path = docs_path
         end
 
-        def check
-          markdown_files.flat_map { |file| check_file(file) }
+        def check_file(content, file_path)
+          relative_file = file_path.delete_prefix("#{docs_path}/")
+          process_content(content, relative_file)
         end
 
         private
 
-        def markdown_files
-          Dir.glob(File.join(docs_path, "**", "*.md"))
-        end
-
-        def check_file(file_path)
+        def process_content(_content, _relative_file)
           raise NotImplementedError
         end
 

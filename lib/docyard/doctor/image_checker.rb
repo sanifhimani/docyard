@@ -14,32 +14,21 @@ module Docyard
         @images_checked = 0
       end
 
-      def check
-        diagnostics = []
-        markdown_files.each { |file| diagnostics.concat(check_file(file)) }
-        diagnostics
-      end
-
-      private
-
-      def markdown_files
-        Dir.glob(File.join(docs_path, "**", "*.md"))
-      end
-
-      def check_file(file_path)
+      def check_file(content, file_path)
         relative_file = file_path.delete_prefix("#{docs_path}/")
         file_dir = File.dirname(file_path)
         diagnostics = []
 
-        each_line_outside_code_blocks(file_path) do |line, line_number|
+        each_line_outside_code_blocks(content) do |line, line_number|
           diagnostics.concat(check_line_for_images(line, line_number, relative_file, file_dir))
         end
 
         diagnostics
       end
 
-      def each_line_outside_code_blocks(file_path)
-        content = File.read(file_path)
+      private
+
+      def each_line_outside_code_blocks(content)
         in_code_block = false
 
         content.each_line.with_index(1) do |line, line_number|
@@ -91,16 +80,14 @@ module Docyard
 
       def absolute_image_exists?(image_path)
         clean_path = image_path.delete_prefix("/")
-        possible_locations = [
+        [
           File.join(docs_path, clean_path),
           File.join(docs_path, "public", clean_path)
-        ]
-        possible_locations.any? { |f| File.exist?(f) }
+        ].any? { |f| File.exist?(f) }
       end
 
       def relative_image_exists?(image_path, file_dir)
-        full_path = File.expand_path(image_path, file_dir)
-        File.exist?(full_path)
+        File.exist?(File.expand_path(image_path, file_dir))
       end
     end
   end

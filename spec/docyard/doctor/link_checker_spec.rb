@@ -1,27 +1,29 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::LinkChecker do
-  let(:temp_dir) { Dir.mktmpdir }
-  let(:checker) { described_class.new(temp_dir) }
+  let(:docs_path) { Dir.mktmpdir }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(temp_dir) }
+  after { FileUtils.remove_entry(docs_path) }
 
-  describe "#check" do
+  def check(content, file_path = "#{docs_path}/index.md")
+    checker.check_file(content, file_path)
+  end
+
+  describe "#check_file" do
     it "returns empty array when no markdown files exist" do
-      expect(checker.check).to eq([])
+      scanner = Docyard::Doctor::FileScanner.new(docs_path)
+      expect(scanner.scan.select { |d| d.category == :LINK }).to eq([])
     end
 
     it "returns empty array when all internal links are valid" do
-      File.write(File.join(temp_dir, "index.md"), "[Link](/about)")
-      File.write(File.join(temp_dir, "about.md"), "# About")
+      File.write(File.join(docs_path, "about.md"), "# About")
 
-      expect(checker.check).to eq([])
+      expect(check("[Link](/about)")).to eq([])
     end
 
     it "detects broken internal links", :aggregate_failures do
-      File.write(File.join(temp_dir, "index.md"), "[Link](/nonexistent)")
-
-      issues = checker.check
+      issues = check("[Link](/nonexistent)")
 
       expect(issues.size).to eq(1)
       expect(issues.first.file).to eq("index.md")
@@ -36,39 +38,32 @@ RSpec.describe Docyard::Doctor::LinkChecker do
         Some text
         [Link 2](/missing2)
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      issues = checker.check
+      issues = check(content)
 
       expect(issues.size).to eq(2)
       expect(issues.map(&:message)).to contain_exactly("/missing1", "/missing2")
     end
 
     it "ignores external links" do
-      File.write(File.join(temp_dir, "index.md"), "[External](https://example.com)")
-
-      expect(checker.check).to eq([])
+      expect(check("[External](https://example.com)")).to eq([])
     end
 
     it "ignores image paths" do
-      File.write(File.join(temp_dir, "index.md"), "[Screenshot](/images/shot.png)")
-
-      expect(checker.check).to eq([])
+      expect(check("[Screenshot](/images/shot.png)")).to eq([])
     end
 
     it "validates links to index files in directories" do
-      FileUtils.mkdir_p(File.join(temp_dir, "guide"))
-      File.write(File.join(temp_dir, "index.md"), "[Guide](/guide)")
-      File.write(File.join(temp_dir, "guide", "index.md"), "# Guide")
+      FileUtils.mkdir_p(File.join(docs_path, "guide"))
+      File.write(File.join(docs_path, "guide", "index.md"), "# Guide")
 
-      expect(checker.check).to eq([])
+      expect(check("[Guide](/guide)")).to eq([])
     end
 
     it "handles anchor links by checking the file portion" do
-      File.write(File.join(temp_dir, "index.md"), "[Section](/about#section)")
-      File.write(File.join(temp_dir, "about.md"), "# About")
+      File.write(File.join(docs_path, "about.md"), "# About")
 
-      expect(checker.check).to eq([])
+      expect(check("[Section](/about#section)")).to eq([])
     end
 
     it "reports correct line numbers" do
@@ -78,9 +73,8 @@ RSpec.describe Docyard::Doctor::LinkChecker do
         [Broken](/missing)
         Line 4
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      issues = checker.check
+      issues = check(content)
 
       expect(issues.first.line).to eq(3)
     end
@@ -95,9 +89,8 @@ RSpec.describe Docyard::Doctor::LinkChecker do
 
         Real content here.
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      expect(checker.check).to eq([])
+      expect(check(content)).to eq([])
     end
 
     it "ignores links inside tilde code blocks" do
@@ -106,9 +99,8 @@ RSpec.describe Docyard::Doctor::LinkChecker do
         [Link](/example)
         ~~~
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      expect(checker.check).to eq([])
+      expect(check(content)).to eq([])
     end
   end
 end

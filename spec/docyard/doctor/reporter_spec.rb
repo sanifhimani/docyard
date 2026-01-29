@@ -152,6 +152,27 @@ RSpec.describe Docyard::Doctor::Reporter do
       expect(output).to include("Broken links")
       expect(output.index("Configuration")).to be < output.index("Broken links")
     end
+
+    it "outputs duration in milliseconds when under 1 second" do
+      reporter = described_class.new(empty_diagnostics, stats, duration: 0.045)
+      output = capture_stdout { reporter.print }
+
+      expect(output).to include("Finished in 45ms")
+    end
+
+    it "outputs duration in seconds when 1 second or more" do
+      reporter = described_class.new(empty_diagnostics, stats, duration: 2.345)
+      output = capture_stdout { reporter.print }
+
+      expect(output).to include("Finished in 2.35s")
+    end
+
+    it "does not output duration when not provided" do
+      reporter = described_class.new(empty_diagnostics, stats)
+      output = capture_stdout { reporter.print }
+
+      expect(output).not_to include("Finished in")
+    end
   end
 
   def capture_stdout

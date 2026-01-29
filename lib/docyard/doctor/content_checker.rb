@@ -15,31 +15,17 @@ module Docyard
         @docs_path = docs_path
       end
 
-      def check
-        diagnostics = []
-        markdown_files.each do |file|
-          diagnostics.concat(check_file(file))
-        end
-        diagnostics
+      def check_file(content, file_path)
+        relative_file = file_path.delete_prefix("#{docs_path}/")
+
+        [
+          check_frontmatter(content, relative_file),
+          check_includes(content, file_path, relative_file),
+          check_snippets(content, relative_file)
+        ].flatten
       end
 
       private
-
-      def markdown_files
-        Dir.glob(File.join(docs_path, "**", "*.md"))
-      end
-
-      def check_file(file_path)
-        relative_file = file_path.delete_prefix("#{docs_path}/")
-        content = File.read(file_path)
-        diagnostics = []
-
-        diagnostics.concat(check_frontmatter(content, relative_file))
-        diagnostics.concat(check_includes(content, file_path, relative_file))
-        diagnostics.concat(check_snippets(content, relative_file))
-
-        diagnostics
-      end
 
       def check_frontmatter(content, relative_file)
         match = content.match(FRONTMATTER_REGEX)
@@ -52,35 +38,29 @@ module Docyard
       end
 
       def build_frontmatter_diagnostic(file, error)
-        line = error.line ? error.line + 1 : nil
-
         Diagnostic.new(
           severity: :error,
           category: :CONTENT,
           code: "FRONTMATTER_INVALID_YAML",
           message: "invalid YAML: #{error.problem}",
           file: file,
-          line: line
+          line: error.line ? error.line + 1 : nil
         )
       end
 
       def check_includes(content, file_path, relative_file)
-        diagnostics = []
+        each_line_outside_code_blocks(content).filter_map do |line_content, line_number|
+          match = line_content.match(INCLUDE_PATTERN)
+          next unless match
 
-        each_line_outside_code_blocks(content) do |line_content, line_number|
-          line_content.scan(INCLUDE_PATTERN) do
-            include_path = Regexp.last_match[1]
-            diagnostic = validate_include(include_path, file_path, relative_file, line_number)
-            diagnostics << diagnostic if diagnostic
-          end
+          validate_include(match[1], file_path, relative_file, line_number)
         end
-
-        diagnostics
       end
 
       def each_line_outside_code_blocks(content)
-        in_code_block = false
+        return enum_for(__method__, content) unless block_given?
 
+        in_code_block = false
         content.each_line.with_index(1) do |line, line_number|
           in_code_block = !in_code_block if line.match?(CODE_FENCE_REGEX)
           yield(line, line_number) unless in_code_block
@@ -90,29 +70,32 @@ module Docyard
       def validate_include(include_path, file_path, relative_file, line_number)
         full_path = resolve_include_path(include_path, file_path)
 
-        unless full_path && File.exist?(full_path)
-          return build_include_diagnostic(relative_file, line_number, include_path, "file not found")
+        unless file_exists?(full_path)
+          return build_include_diagnostic(relative_file, line_number, include_path,
+                                          "file not found")
         end
-
         unless markdown_file?(include_path)
-          return build_include_diagnostic(relative_file, line_number, include_path, "non-markdown file")
+          return build_include_diagnostic(relative_file, line_number, include_path,
+                                          "non-markdown file")
         end
 
         nil
       end
 
+      def file_exists?(path)
+        path && File.exist?(path)
+      end
+
       def resolve_include_path(include_path, current_file)
         if include_path.start_with?("./", "../")
-          base_dir = File.dirname(current_file)
-          File.expand_path(include_path, base_dir)
+          File.expand_path(include_path, File.dirname(current_file))
         else
           File.join(docs_path, include_path)
         end
       end
 
       def markdown_file?(filepath)
-        ext = File.extname(filepath).downcase
-        MARKDOWN_EXTENSIONS.include?(ext)
+        MARKDOWN_EXTENSIONS.include?(File.extname(filepath).downcase)
       end
 
       def build_include_diagnostic(file, line, include_path, message)
@@ -127,17 +110,12 @@ module Docyard
       end
 
       def check_snippets(content, relative_file)
-        diagnostics = []
-
-        each_line_outside_code_blocks(content) do |line_content, line_number|
+        each_line_outside_code_blocks(content).filter_map do |line_content, line_number|
           match = line_content.match(SNIPPET_PATTERN)
           next unless match
 
-          diagnostic = validate_snippet(match, relative_file, line_number)
-          diagnostics << diagnostic if diagnostic
+          validate_snippet(match, relative_file, line_number)
         end
-
-        diagnostics
       end
 
       def validate_snippet(match, relative_file, line_number)
@@ -146,11 +124,14 @@ module Docyard
         full_path = File.join(docs_path, filepath)
 
         unless File.exist?(full_path)
-          return build_snippet_diagnostic(relative_file, line_number, filepath, "file not found")
+          return build_snippet_diagnostic(relative_file, line_number, filepath,
+                                          "file not found")
         end
-
-        if region && !region_exists?(full_path, region)
-          return build_snippet_diagnostic(relative_file, line_number, filepath, "region '#{region}' not found")
+        if region && !region_exists?(
+          full_path, region
+        )
+          return build_snippet_diagnostic(relative_file, line_number, filepath,
+                                          "region '#{region}' not found")
         end
 
         nil
@@ -158,8 +139,7 @@ module Docyard
 
       def region_exists?(file_path, region_name)
         content = File.read(file_path)
-        region_start = %r{^[ \t]*(?://|#|/\*)\s*#region\s+#{Regexp.escape(region_name)}\b}
-        content.match?(region_start)
+        content.match?(%r{^[ \t]*(?://|#|/\*)\s*#region\s+#{Regexp.escape(region_name)}\b})
       end
 
       def build_snippet_diagnostic(file, line, snippet_path, message)

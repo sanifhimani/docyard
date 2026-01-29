@@ -18,7 +18,7 @@ require_relative "component_checkers/unknown_type_checker"
 module Docyard
   class Doctor
     class ComponentChecker
-      CHECKERS = [
+      CHECKER_CLASSES = [
         ComponentCheckers::CalloutChecker,
         ComponentCheckers::TabsChecker,
         ComponentCheckers::CardsChecker,
@@ -38,10 +38,11 @@ module Docyard
 
       def initialize(docs_path)
         @docs_path = docs_path
+        @checkers = CHECKER_CLASSES.map { |klass| klass.new(docs_path) }
       end
 
-      def check
-        CHECKERS.flat_map { |checker_class| checker_class.new(docs_path).check }
+      def check_file(content, file_path)
+        @checkers.flat_map { |checker| checker.check_file(content, file_path) }
       end
     end
   end

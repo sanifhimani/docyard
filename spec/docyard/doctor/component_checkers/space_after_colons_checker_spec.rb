@@ -1,18 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::ComponentCheckers::SpaceAfterColonsChecker do
-  let(:docs_path) { Dir.mktmpdir }
+  let(:docs_path) { "/docs" }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(docs_path) }
-
-  def write_page(path, content)
-    full_path = File.join(docs_path, path)
-    FileUtils.mkdir_p(File.dirname(full_path))
-    File.write(full_path, content)
+  def check(content)
+    checker.check_file(content, "#{docs_path}/guide.md")
   end
 
   it "returns empty array for valid syntax without space" do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       :::tip
       This is valid.
       :::
@@ -23,19 +20,17 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::SpaceAfterColonsChecker do
       :::
     MD
 
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(content)).to be_empty
   end
 
   it "detects space after colons for tip", :aggregate_failures do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       ::: tip
       Invalid syntax.
       :::
     MD
 
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(content)
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("COMPONENT_SPACE_AFTER_COLONS")
@@ -43,10 +38,7 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::SpaceAfterColonsChecker do
   end
 
   it "detects space after colons for any component", :aggregate_failures do
-    write_page("guide.md", "::: tabs\n:::\n\n::: warning\n:::")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check("::: tabs\n:::\n\n::: warning\n:::")
 
     expect(diagnostics.size).to eq(2)
     expect(diagnostics.first.message).to eq("invalid syntax '::: tabs', did you mean ':::tabs'?")
@@ -54,10 +46,7 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::SpaceAfterColonsChecker do
   end
 
   it "suggests valid component for typo with space", :aggregate_failures do
-    write_page("guide.md", "::: tab\n:::")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check("::: tab\n:::")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("COMPONENT_UNKNOWN_TYPE")
@@ -65,17 +54,14 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::SpaceAfterColonsChecker do
   end
 
   it "reports unknown component when no close match", :aggregate_failures do
-    write_page("guide.md", "::: quiz\n:::")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check("::: quiz\n:::")
 
     expect(diagnostics.first.code).to eq("COMPONENT_UNKNOWN_TYPE")
     expect(diagnostics.first.message).to eq("unknown component 'quiz'")
   end
 
   it "ignores content inside code blocks" do
-    write_page("guide.md", <<~MD)
+    content = <<~MD
       ```markdown
       ::: tip
       Example syntax
@@ -83,7 +69,6 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::SpaceAfterColonsChecker do
       ```
     MD
 
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(content)).to be_empty
   end
 end

@@ -8,9 +8,7 @@ module Docyard
 
         private
 
-        def check_file(file_path)
-          relative_file = file_path.delete_prefix("#{docs_path}/")
-          content = File.read(file_path)
+        def process_content(content, relative_file)
           blocks = parse_blocks(content)
 
           filter_blocks(blocks, "tabs").filter_map do |block|

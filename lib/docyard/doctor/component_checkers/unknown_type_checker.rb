@@ -10,10 +10,7 @@ module Docyard
 
         private
 
-        def check_file(file_path)
-          relative_file = file_path.delete_prefix("#{docs_path}/")
-          content = File.read(file_path)
-
+        def process_content(content, relative_file)
           each_line_outside_code_blocks(content).filter_map do |line, line_number|
             next unless (m = line.match(CONTAINER_PATTERN))
 

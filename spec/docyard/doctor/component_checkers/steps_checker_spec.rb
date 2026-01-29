@@ -1,28 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::ComponentCheckers::StepsChecker do
-  let(:docs_path) { Dir.mktmpdir }
+  let(:docs_path) { "/docs" }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(docs_path) }
-
-  def write_page(path, content)
-    full_path = File.join(docs_path, path)
-    FileUtils.mkdir_p(File.dirname(full_path))
-    File.write(full_path, content)
+  def check(content)
+    checker.check_file(content, "#{docs_path}/guide.md")
   end
 
   it "returns empty array for valid steps" do
-    write_page("guide.md", ":::steps\n### Step 1\nDo this first.\n### Step 2\nThen this.\n:::")
-
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(":::steps\n### Step 1\nDo this first.\n### Step 2\nThen this.\n:::")).to be_empty
   end
 
   it "detects empty steps block", :aggregate_failures do
-    write_page("guide.md", ":::steps\n:::")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(":::steps\n:::")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("STEPS_EMPTY")
@@ -30,10 +21,7 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::StepsChecker do
   end
 
   it "detects unclosed steps block", :aggregate_failures do
-    write_page("guide.md", ":::steps\n### Step 1\nContent")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(":::steps\n### Step 1\nContent")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("STEPS_UNCLOSED")

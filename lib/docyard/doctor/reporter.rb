@@ -16,12 +16,13 @@ module Docyard
 
       CATEGORY_ORDER = %i[CONFIG SIDEBAR CONTENT COMPONENT LINK IMAGE ORPHAN SYNTAX].freeze
 
-      attr_reader :diagnostics, :stats, :fixed
+      attr_reader :diagnostics, :stats, :fixed, :duration
 
-      def initialize(diagnostics, stats = {}, fixed: false)
+      def initialize(diagnostics, stats = {}, fixed: false, duration: nil)
         @diagnostics = diagnostics
         @stats = stats
         @fixed = fixed
+        @duration = duration
       end
 
       def print
@@ -85,7 +86,17 @@ module Docyard
           puts "  #{build_issue_summary}"
           print_fixable_hint
         end
+
+        puts "  #{format_duration}" if duration
         puts
+      end
+
+      def format_duration
+        if duration < 1
+          UI.dim("Finished in #{(duration * 1000).round}ms")
+        else
+          UI.dim("Finished in #{duration.round(2)}s")
+        end
       end
 
       def print_fixable_hint

@@ -1,28 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::ComponentCheckers::CalloutChecker do
-  let(:docs_path) { Dir.mktmpdir }
+  let(:docs_path) { "/docs" }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(docs_path) }
-
-  def write_page(path, content)
-    full_path = File.join(docs_path, path)
-    FileUtils.mkdir_p(File.dirname(full_path))
-    File.write(full_path, content)
+  def check(content)
+    checker.check_file(content, "#{docs_path}/guide.md")
   end
 
   it "returns empty array for valid callout" do
-    write_page("guide.md", ":::note\nThis is a note.\n:::")
-
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(":::note\nThis is a note.\n:::")).to be_empty
   end
 
   it "detects unclosed callout block", :aggregate_failures do
-    write_page("guide.md", ":::warning\nThis block is never closed.")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(":::warning\nThis block is never closed.")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("CALLOUT_UNCLOSED")
@@ -31,10 +22,7 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::CalloutChecker do
   end
 
   it "detects empty callout block", :aggregate_failures do
-    write_page("guide.md", ":::tip\n:::")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(":::tip\n:::")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("CALLOUT_EMPTY")
@@ -42,18 +30,14 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::CalloutChecker do
   end
 
   it "ignores callouts inside code blocks" do
-    write_page("guide.md", "```markdown\n:::foobar\nExample.\n:::\n```")
+    content = "```markdown\n:::foobar\nExample.\n:::\n```"
 
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(content)).to be_empty
   end
 
   %w[note tip important warning danger].each do |type|
     it "accepts valid callout type '#{type}'" do
-      write_page("guide.md", ":::#{type}\nContent.\n:::")
-
-      checker = described_class.new(docs_path)
-      expect(checker.check).to be_empty
+      expect(check(":::#{type}\nContent.\n:::")).to be_empty
     end
   end
 end

@@ -1,29 +1,21 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::ComponentCheckers::CodeGroupChecker do
-  let(:docs_path) { Dir.mktmpdir }
+  let(:docs_path) { "/docs" }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(docs_path) }
-
-  def write_page(path, content)
-    full_path = File.join(docs_path, path)
-    FileUtils.mkdir_p(File.dirname(full_path))
-    File.write(full_path, content)
+  def check(content)
+    checker.check_file(content, "#{docs_path}/guide.md")
   end
 
   it "returns empty array for valid code-group" do
     content = ":::code-group\n```js [app.js]\ncode\n```\n```rb [app.rb]\ncode\n```\n:::"
-    write_page("guide.md", content)
 
-    checker = described_class.new(docs_path)
-    expect(checker.check).to be_empty
+    expect(check(content)).to be_empty
   end
 
   it "detects empty code-group block", :aggregate_failures do
-    write_page("guide.md", ":::code-group\n:::")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(":::code-group\n:::")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("CODE_GROUP_EMPTY")
@@ -31,10 +23,7 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::CodeGroupChecker do
   end
 
   it "detects unclosed code-group block", :aggregate_failures do
-    write_page("guide.md", ":::code-group\n```js [app.js]\ncode\n```")
-
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(":::code-group\n```js [app.js]\ncode\n```")
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("CODE_GROUP_UNCLOSED")
@@ -43,10 +32,8 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::CodeGroupChecker do
 
   it "detects code block missing label", :aggregate_failures do
     content = ":::code-group\n```js [labeled.js]\ncode\n```\n```ruby\ncode\n```\n:::"
-    write_page("guide.md", content)
 
-    checker = described_class.new(docs_path)
-    diagnostics = checker.check
+    diagnostics = check(content)
 
     expect(diagnostics.size).to eq(1)
     expect(diagnostics.first.code).to eq("CODE_GROUP_MISSING_LABEL")

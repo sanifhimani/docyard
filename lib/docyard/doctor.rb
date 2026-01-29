@@ -8,6 +8,7 @@ require_relative "doctor/code_block_checker"
 require_relative "doctor/link_checker"
 require_relative "doctor/image_checker"
 require_relative "doctor/orphan_checker"
+require_relative "doctor/file_scanner"
 require_relative "doctor/config_fixer"
 require_relative "doctor/sidebar_fixer"
 require_relative "doctor/markdown_fixer"
@@ -30,8 +31,11 @@ module Docyard
     private
 
     def run_check_only
+      start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       diagnostics, stats = collect_diagnostics
-      reporter = Reporter.new(diagnostics, stats)
+      duration = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+
+      reporter = Reporter.new(diagnostics, stats, duration: duration)
       reporter.print
       reporter.exit_code
     end
@@ -146,30 +150,22 @@ module Docyard
     end
 
     def collect_diagnostics
-      link_checker = LinkChecker.new(docs_path)
-      image_checker = ImageChecker.new(docs_path)
+      file_scanner = FileScanner.new(docs_path)
+      scanner_diagnostics = file_scanner.scan
 
-      diagnostics = build_all_diagnostics(link_checker, image_checker)
-      stats = build_stats(link_checker, image_checker)
-      [diagnostics, stats]
-    end
-
-    def build_all_diagnostics(link_checker, image_checker)
-      [
+      diagnostics = [
         collect_config_and_sidebar_diagnostics,
-        collect_content_diagnostics,
-        link_checker.check,
-        image_checker.check,
+        scanner_diagnostics,
         config ? OrphanChecker.new(docs_path, config).check : []
       ].flatten
-    end
 
-    def collect_content_diagnostics
-      [
-        ContentChecker.new(docs_path).check,
-        ComponentChecker.new(docs_path).check,
-        CodeBlockChecker.new(docs_path).check
-      ].flatten
+      stats = {
+        files: file_scanner.files_scanned,
+        links: file_scanner.links_checked,
+        images: file_scanner.images_checked
+      }
+
+      [diagnostics, stats]
     end
 
     def collect_config_and_sidebar_diagnostics
@@ -177,14 +173,6 @@ module Docyard
       diagnostics.concat(ConfigChecker.new(config).check) if config
       diagnostics.concat(SidebarChecker.new(docs_path).check)
       diagnostics
-    end
-
-    def build_stats(link_checker, image_checker)
-      {
-        files: link_checker.files_checked,
-        links: link_checker.links_checked,
-        images: image_checker.images_checked
-      }
     end
   end
 end

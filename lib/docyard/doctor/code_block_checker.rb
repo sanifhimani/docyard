@@ -18,25 +18,16 @@ module Docyard
         @docs_path = docs_path
       end
 
-      def check
-        markdown_files.flat_map { |file| check_file(file) }
+      def check_file(content, file_path)
+        relative_file = file_path.delete_prefix("#{docs_path}/")
+
+        [
+          check_fence_options(content, relative_file),
+          check_inline_markers(content, relative_file)
+        ].flatten
       end
 
       private
-
-      def markdown_files
-        Dir.glob(File.join(docs_path, "**", "*.md"))
-      end
-
-      def check_file(file_path)
-        relative_file = file_path.delete_prefix("#{docs_path}/")
-        content = File.read(file_path)
-
-        diagnostics = []
-        diagnostics.concat(check_fence_options(content, relative_file))
-        diagnostics.concat(check_inline_markers(content, relative_file))
-        diagnostics
-      end
 
       def check_fence_options(content, relative_file)
         diagnostics = []
@@ -56,12 +47,11 @@ module Docyard
 
       def validate_fence_line(match, relative_file, line_number)
         options_part = match[3]
-        diagnostics = []
 
-        diagnostics.concat(validate_option(options_part, relative_file, line_number))
-        diagnostics.concat(validate_highlights(options_part, relative_file, line_number))
-
-        diagnostics
+        [
+          validate_option(options_part, relative_file, line_number),
+          validate_highlights(options_part, relative_file, line_number)
+        ].flatten
       end
 
       def validate_option(options_part, relative_file, line_number)
@@ -72,7 +62,7 @@ module Docyard
         base_option = option.split("=").first
         return [] if valid_option?(base_option)
 
-        suggestion = find_option_suggestion(base_option)
+        suggestion = suggest(base_option, VALID_OPTIONS)
         message = "unknown code block option ':#{base_option}'"
         message += ", did you mean ':#{suggestion}'?" if suggestion
 
@@ -83,10 +73,6 @@ module Docyard
         VALID_OPTIONS.include?(option) || option.match?(/^line-numbers=\d+$/)
       end
 
-      def find_option_suggestion(option)
-        DidYouMean::SpellChecker.new(dictionary: VALID_OPTIONS).correct(option).first
-      end
-
       def validate_highlights(options_part, relative_file, line_number)
         match = options_part.match(HIGHLIGHT_PATTERN)
         return [] unless match
@@ -94,19 +80,17 @@ module Docyard
         highlight_content = match[1].gsub(/\s/, "")
         return [] if highlight_content.match?(VALID_HIGHLIGHT)
 
-        message = "invalid highlight syntax '{#{match[1]}}'"
-        [build_diagnostic("CODE_BLOCK_INVALID_HIGHLIGHT", message, relative_file, line_number)]
+        [build_diagnostic("CODE_BLOCK_INVALID_HIGHLIGHT", "invalid highlight syntax '{#{match[1]}}'", relative_file,
+                          line_number)]
       end
 
       def check_inline_markers(content, relative_file)
         diagnostics = []
         in_code_block = false
-        code_block_start_line = 0
 
         content.each_line.with_index(1) do |line, line_number|
           if !in_code_block && line.match?(CODE_FENCE_START)
             in_code_block = true
-            code_block_start_line = line_number
           elsif in_code_block && line.match?(CODE_FENCE_END)
             in_code_block = false
           elsif in_code_block
@@ -118,20 +102,20 @@ module Docyard
       end
 
       def validate_inline_markers(line, relative_file, line_number)
-        line.scan(INLINE_MARKER_PATTERN).flat_map do |match|
+        line.scan(INLINE_MARKER_PATTERN).filter_map do |match|
           marker = match[0].strip
-          next [] if VALID_INLINE_MARKERS.include?(marker)
+          next if VALID_INLINE_MARKERS.include?(marker)
 
-          suggestion = find_marker_suggestion(marker)
+          suggestion = suggest(marker, VALID_INLINE_MARKERS)
           message = "unknown inline marker '[!code #{marker}]'"
           message += ", did you mean '[!code #{suggestion}]'?" if suggestion
 
-          [build_diagnostic("CODE_BLOCK_UNKNOWN_MARKER", message, relative_file, line_number)]
+          build_diagnostic("CODE_BLOCK_UNKNOWN_MARKER", message, relative_file, line_number)
         end
       end
 
-      def find_marker_suggestion(marker)
-        DidYouMean::SpellChecker.new(dictionary: VALID_INLINE_MARKERS).correct(marker).first
+      def suggest(value, dictionary)
+        DidYouMean::SpellChecker.new(dictionary: dictionary).correct(value).first
       end
 
       def build_diagnostic(code, message, file, line)
