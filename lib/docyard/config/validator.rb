@@ -18,13 +18,6 @@ module Docyard
         @diagnostics = []
       end
 
-      def validate!
-        validate_all
-        return if errors.empty?
-
-        raise ConfigError, format_errors_for_exception
-      end
-
       def validate_all
         @diagnostics = []
         validate_unknown_keys(@data, Schema::DEFINITION, "docyard.yml")
@@ -137,6 +130,7 @@ module Docyard
           severity: severity,
           category: :CONFIG,
           code: "CONFIG_VALIDATION",
+          file: "docyard.yml",
           field: field,
           message: message,
           details: build_details(got, expected),
@@ -168,20 +162,6 @@ module Docyard
       def find_suggestion(key, valid_keys)
         checker = DidYouMean::SpellChecker.new(dictionary: valid_keys)
         checker.correct(key).first
-      end
-
-      def format_errors_for_exception
-        lines = ["Config errors in docyard.yml:", ""]
-        errors.each { |diagnostic| lines.concat(format_diagnostic_lines(diagnostic)) }
-        lines.join("\n")
-      end
-
-      def format_diagnostic_lines(diagnostic)
-        lines = ["  #{diagnostic.field}", "    #{diagnostic.message}"]
-        lines << "    Got: #{diagnostic.details[:got]}" if diagnostic.details&.dig(:got)
-        lines << "    Expected: #{diagnostic.details[:expected]}" if diagnostic.details&.dig(:expected)
-        lines << ""
-        lines
       end
     end
   end
