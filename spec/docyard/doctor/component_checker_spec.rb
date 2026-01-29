@@ -160,6 +160,37 @@ RSpec.describe Docyard::Doctor::ComponentChecker do
     end
   end
 
+  describe "steps validation" do
+    it "returns empty array for valid steps" do
+      write_page("guide.md", ":::steps\n### Step 1\nDo this first.\n### Step 2\nThen this.\n:::")
+
+      checker = described_class.new(docs_path)
+      expect(checker.check).to be_empty
+    end
+
+    it "detects empty steps block", :aggregate_failures do
+      write_page("guide.md", ":::steps\n:::")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.size).to eq(1)
+      expect(diagnostics.first.code).to eq("STEPS_EMPTY")
+      expect(diagnostics.first.message).to include("### Step Title")
+    end
+
+    it "detects unclosed steps block", :aggregate_failures do
+      write_page("guide.md", ":::steps\n### Step 1\nContent")
+
+      checker = described_class.new(docs_path)
+      diagnostics = checker.check
+
+      expect(diagnostics.size).to eq(1)
+      expect(diagnostics.first.code).to eq("STEPS_UNCLOSED")
+      expect(diagnostics.first.message).to include("unclosed")
+    end
+  end
+
   describe "unknown component detection" do
     it "detects unknown type with suggestion", :aggregate_failures do
       write_page("guide.md", ":::nite\nThis looks like a typo.\n:::")
