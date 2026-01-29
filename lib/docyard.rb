@@ -3,6 +3,7 @@
 require_relative "docyard/version"
 require_relative "docyard/constants"
 require_relative "docyard/errors"
+require_relative "docyard/diagnostic"
 require_relative "docyard/ui"
 require_relative "docyard/utils/logging"
 
