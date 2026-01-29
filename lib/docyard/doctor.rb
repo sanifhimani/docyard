@@ -3,6 +3,7 @@
 require_relative "doctor/config_checker"
 require_relative "doctor/sidebar_checker"
 require_relative "doctor/content_checker"
+require_relative "doctor/component_checker"
 require_relative "doctor/link_checker"
 require_relative "doctor/image_checker"
 require_relative "doctor/orphan_checker"
@@ -115,6 +116,7 @@ module Docyard
     def build_all_diagnostics(link_checker, image_checker)
       diagnostics = collect_config_and_sidebar_diagnostics
       diagnostics.concat(ContentChecker.new(docs_path).check)
+      diagnostics.concat(ComponentChecker.new(docs_path).check)
       diagnostics.concat(link_checker.check)
       diagnostics.concat(image_checker.check)
       diagnostics.concat(OrphanChecker.new(docs_path, config).check) if config
