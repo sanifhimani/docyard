@@ -85,6 +85,12 @@ module Docyard
 
       def validate_sidebar_item(item, path_prefix)
         slug, options = extract_slug_and_options(item)
+
+        if slug.nil?
+          @key_errors << build_invalid_format_error(item, path_prefix)
+          return
+        end
+
         return unless options.is_a?(Hash)
 
         context = build_context(path_prefix, slug)
@@ -93,13 +99,20 @@ module Docyard
         validate_nested_items(options, context)
       end
 
+      def build_invalid_format_error(item, path_prefix)
+        item_desc = item.keys.first&.to_s || "item"
+        context = build_context(path_prefix, item_desc)
+        {
+          context: context,
+          message: "invalid format, expected slug-based key (e.g., 'page-name:' or '- page-name')"
+        }
+      end
+
       def extract_slug_and_options(item)
-        first_key = item.keys.first
-        if first_key.is_a?(String) && !external_link?(item)
-          [first_key, item[first_key]]
-        else
-          [nil, item]
-        end
+        return [nil, item] if item.keys.size != 1
+
+        slug = item.keys.first
+        slug.is_a?(String) ? [slug, item[slug]] : [nil, item]
       end
 
       def build_context(prefix, name)
