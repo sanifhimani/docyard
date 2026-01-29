@@ -144,7 +144,7 @@ module Docyard
     end
 
     def load_config_safely
-      Config.load(Dir.pwd, validate: false)
+      Config.load(Dir.pwd)
     rescue ConfigError
       nil
     end
