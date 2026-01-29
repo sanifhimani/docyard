@@ -1,31 +1,27 @@
 # frozen_string_literal: true
 
 require "fileutils"
+require_relative "build/step_runner"
 
 module Docyard
   class Builder
-    STEP_SHORT_LABELS = {
-      "Generating pages" => "Pages",
-      "Bundling assets" => "Assets",
-      "Copying files" => "Files",
-      "Generating SEO" => "SEO",
-      "Indexing search" => "Search"
-    }.freeze
+    attr_reader :config, :clean, :verbose, :strict, :start_time
 
-    attr_reader :config, :clean, :verbose, :start_time
-
-    def initialize(clean: true, verbose: false)
+    def initialize(clean: true, verbose: false, strict: false)
       @config = Config.new
       @clean = clean
       @verbose = verbose
+      @strict = strict || config.build.strict
       @start_time = Time.now
-      @step_timings = []
+      @step_runner = Build::StepRunner.new(verbose: verbose)
     end
 
     def build
+      return false unless passes_validation?
+
       print_header
       prepare_output_directory
-      run_build_steps
+      execute_build_steps
       print_summary
       true
     rescue StandardError => e
@@ -43,66 +39,21 @@ module Docyard
       puts
     end
 
-    def run_build_steps
-      run_step("Generating pages") { generate_static_pages }
-      run_step("Bundling assets") { bundle_assets }
-      run_step("Copying files") { copy_static_files }
-      run_step("Generating SEO") { generate_seo_files }
-      run_step("Indexing search") { generate_search_index }
+    def passes_validation?
+      require_relative "build/validator"
+      validator = Build::Validator.new(config, strict: strict)
+      return true if validator.valid?
+
+      validator.print_errors
+      false
     end
 
-    def run_step(label, &)
-      print "  #{label.ljust(20)}#{UI.dim('in progress')}"
-      $stdout.flush
-      result, details, elapsed = execute_step(label, &)
-      print_step_result(label, result, elapsed)
-      print_verbose_details(details) if verbose && details&.any?
-      result
-    end
-
-    def execute_step(label)
-      step_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      result, details = yield
-      elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - step_start
-      @step_timings << { label: STEP_SHORT_LABELS.fetch(label, label), elapsed: elapsed }
-      [result, details, elapsed]
-    end
-
-    def print_step_result(label, result, elapsed)
-      timing_suffix = verbose ? UI.dim(" in #{format('%<t>.2fs', t: elapsed)}") : ""
-      print "\r  #{label.ljust(20)}#{UI.green(format_result(label, result))}#{timing_suffix}\n"
-      $stdout.flush
-    end
-
-    def print_verbose_details(details)
-      details.each { |detail| puts "      #{UI.dim(detail)}" }
-    end
-
-    def format_result(label, result)
-      case label
-      when "Generating pages"
-        "done (#{result} pages)"
-      when "Bundling assets"
-        css, js = result
-        "done (#{format_size(css)} CSS, #{format_size(js)} JS)"
-      when "Copying files"
-        "done (#{result} files)"
-      when "Generating SEO"
-        "done (#{result.join(', ')})"
-      when "Indexing search"
-        "done (#{result} pages indexed)"
-      else
-        "done"
-      end
-    end
-
-    def format_size(bytes)
-      kb = bytes / 1024.0
-      if kb >= 1000
-        format("%.1f MB", kb / 1024.0)
-      else
-        format("%.1f KB", kb)
-      end
+    def execute_build_steps
+      @step_runner.run("Generating pages") { generate_static_pages }
+      @step_runner.run("Bundling assets") { bundle_assets }
+      @step_runner.run("Copying files") { copy_static_files }
+      @step_runner.run("Generating SEO") { generate_seo_files }
+      @step_runner.run("Indexing search") { generate_search_index }
     end
 
     def print_error(error)
@@ -113,30 +64,25 @@ module Docyard
       puts
     end
 
-    def print_summary # rubocop:disable Metrics/AbcSize
-      elapsed = Time.now - start_time
-      size = calculate_output_size
+    def print_summary
       puts
-      puts "  #{UI.success('Build complete')} in #{format('%.2fs', elapsed)}"
-      puts "  #{UI.dim("Output: #{config.build.output}/ (#{format_size(size)})")}"
+      puts "  #{UI.success('Build complete')} in #{format('%.2fs', build_duration)}"
+      puts "  #{UI.dim(output_summary)}"
       puts
-      print_timing_breakdown if verbose
+      @step_runner.print_timing_breakdown if verbose
     end
 
-    def print_timing_breakdown
-      total = @step_timings.sum { |t| t[:elapsed] }
-      sorted = @step_timings.sort_by { |t| -t[:elapsed] }
-
-      puts "  #{UI.bold('Timing:')}"
-      sorted.each { |timing| puts "    #{UI.dim(format_timing_line(timing, total))}" }
-      puts
+    def build_duration
+      Time.now - start_time
     end
 
-    def format_timing_line(timing, total)
-      label = timing[:label].ljust(12)
-      secs = format("%<t>5.2fs", t: timing[:elapsed])
-      pct = total.positive? ? (timing[:elapsed] / total * 100).round : 0
-      "#{label} #{secs} (#{format('%<p>2d', p: pct)}%)"
+    def output_summary
+      "Output: #{config.build.output}/ (#{format_size(calculate_output_size)})"
+    end
+
+    def format_size(bytes)
+      kb = bytes / 1024.0
+      kb >= 1000 ? format("%.1f MB", kb / 1024.0) : format("%.1f KB", kb)
     end
 
     def calculate_output_size
@@ -153,8 +99,7 @@ module Docyard
 
     def generate_static_pages
       require_relative "build/static_generator"
-      generator = Build::StaticGenerator.new(config, verbose: verbose)
-      generator.generate
+      Build::StaticGenerator.new(config, verbose: verbose).generate
     end
 
     def bundle_assets
@@ -164,8 +109,7 @@ module Docyard
 
     def copy_static_files
       require_relative "build/file_copier"
-      copier = Build::FileCopier.new(config, verbose: verbose)
-      copier.copy
+      Build::FileCopier.new(config, verbose: verbose).copy
     end
 
     def generate_seo_files
@@ -183,8 +127,7 @@ module Docyard
     end
 
     def generate_search_index
-      indexer = Search::BuildIndexer.new(config, verbose: verbose)
-      indexer.index
+      Search::BuildIndexer.new(config, verbose: verbose).index
     end
 
     def robots_txt_content
