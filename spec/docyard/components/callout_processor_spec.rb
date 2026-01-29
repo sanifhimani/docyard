@@ -7,7 +7,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
     context "with ::: syntax callouts" do
       it "converts note callout with default title", :aggregate_failures do
         markdown = <<~MD
-          ::: note
+          :::note
           This is a note
           :::
         MD
@@ -22,7 +22,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "converts tip callout with custom title", :aggregate_failures do
         markdown = <<~MD
-          ::: tip Pro Tip
+          :::tip Pro Tip
           This is helpful advice
           :::
         MD
@@ -36,7 +36,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "converts important callout", :aggregate_failures do
         markdown = <<~MD
-          ::: important
+          :::important
           Critical information
           :::
         MD
@@ -49,7 +49,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "converts warning callout", :aggregate_failures do
         markdown = <<~MD
-          ::: warning
+          :::warning
           Be careful here
           :::
         MD
@@ -62,7 +62,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "converts danger callout", :aggregate_failures do
         markdown = <<~MD
-          ::: danger
+          :::danger
           This is dangerous
           :::
         MD
@@ -74,7 +74,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
       end
 
       it "includes default icon for each type", :aggregate_failures do
-        markdown = "::: note\nContent\n:::"
+        markdown = ":::note\nContent\n:::"
         result = processor.preprocess(markdown)
 
         expect(result).to include("ph-")
@@ -83,7 +83,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "processes markdown content inside callouts", :aggregate_failures do
         markdown = <<~MD
-          ::: tip
+          :::tip
           This has **bold** and `code` text.
           :::
         MD
@@ -95,7 +95,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
       end
 
       it "processes code blocks inside callouts", :aggregate_failures do
-        markdown = "::: note\nExample code:\n\n```ruby\nputs \"hello\"\n```\n:::"
+        markdown = ":::note\nExample code:\n\n```ruby\nputs \"hello\"\n```\n:::"
         result = processor.preprocess(markdown)
 
         expect(result).to include("Example code:")
@@ -107,7 +107,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "handles multi-line content", :aggregate_failures do
         markdown = <<~MD
-          ::: tip
+          :::tip
           First paragraph.
 
           Second paragraph.
@@ -122,7 +122,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "ignores unknown callout types", :aggregate_failures do
         markdown = <<~MD
-          ::: unknown
+          :::unknown
           This should not be converted
           :::
         MD
@@ -135,7 +135,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
       it "handles case-insensitive type names", :aggregate_failures do
         markdown = <<~MD
-          ::: NOTE
+          :::NOTE
           Uppercase note
           :::
         MD
@@ -146,7 +146,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
       end
 
       it "handles multiple callouts in same document", :aggregate_failures do
-        markdown = "::: note\nFirst callout\n:::\n\nSome text\n\n::: tip\nSecond callout\n:::"
+        markdown = ":::note\nFirst callout\n:::\n\nSome text\n\n:::tip\nSecond callout\n:::"
         result = processor.preprocess(markdown)
 
         expect(result).to include("docyard-callout--note")
@@ -158,21 +158,21 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
     context "with edge cases" do
       it "handles empty callout content" do
-        markdown = "::: note\n:::"
+        markdown = ":::note\n:::"
         result = processor.preprocess(markdown)
 
         expect(result).to include("docyard-callout")
       end
 
       it "handles callouts with only whitespace in title" do
-        markdown = "::: note   \nContent\n:::"
+        markdown = ":::note   \nContent\n:::"
         result = processor.preprocess(markdown)
 
         expect(result).to include('docyard-callout__title">Note</div>')
       end
 
       it "does not match incomplete syntax" do
-        markdown = "::: note\nNo closing tag"
+        markdown = ":::note\nNo closing tag"
         result = processor.preprocess(markdown)
 
         expect(result).to eq(markdown)
@@ -182,7 +182,7 @@ RSpec.describe Docyard::Components::CalloutProcessor do
         markdown = <<~MD
           Regular paragraph
 
-          ::: note
+          :::note
           Callout content
           :::
 
@@ -281,35 +281,35 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
   describe "icon mapping" do
     it "uses info icon for note type" do
-      markdown = "::: note\nContent\n:::"
+      markdown = ":::note\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include("ph-")
     end
 
     it "uses lightbulb icon for tip type" do
-      markdown = "::: tip\nContent\n:::"
+      markdown = ":::tip\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include("ph-")
     end
 
     it "uses warning-circle icon for important type" do
-      markdown = "::: important\nContent\n:::"
+      markdown = ":::important\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include("ph-")
     end
 
     it "uses warning icon for warning type" do
-      markdown = "::: warning\nContent\n:::"
+      markdown = ":::warning\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include("ph-")
     end
 
     it "uses siren icon for danger type" do
-      markdown = "::: danger\nContent\n:::"
+      markdown = ":::danger\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include("ph-")
@@ -318,21 +318,21 @@ RSpec.describe Docyard::Components::CalloutProcessor do
 
   describe "ARIA roles" do
     it "uses role=note for note type" do
-      markdown = "::: note\nContent\n:::"
+      markdown = ":::note\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include('role="note"')
     end
 
     it "uses role=alert for warning type" do
-      markdown = "::: warning\nContent\n:::"
+      markdown = ":::warning\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include('role="alert"')
     end
 
     it "uses role=alert for danger type" do
-      markdown = "::: danger\nContent\n:::"
+      markdown = ":::danger\nContent\n:::"
       result = processor.preprocess(markdown)
 
       expect(result).to include('role="alert"')

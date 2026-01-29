@@ -22,7 +22,7 @@ module Docyard
 
         self.priority = 12
 
-        CODE_GROUP_PATTERN = /^:::[ \t]*code-group[ \t]*\n(.*?)^:::[ \t]*$/m
+        CODE_GROUP_PATTERN = /^:::code-group[ \t]*\n(.*?)^:::[ \t]*$/m
         CODE_BLOCK_PATTERN = /```(\w*)\s*\[([^\]]+)\]([^\n]*)\n(.*?)```/m
 
         CodeBlockFeatureExtractor = Support::CodeBlock::FeatureExtractor

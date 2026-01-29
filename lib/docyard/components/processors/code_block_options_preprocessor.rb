@@ -10,8 +10,8 @@ module Docyard
         self.priority = 5
 
         CODE_FENCE_REGEX = /^```(\w+)(?:\s*\[([^\]]+)\])?(:\S+)?(?:\s*\{([^}\n]+)\})?/
-        TABS_BLOCK_REGEX = /^:::[ \t]*tabs[ \t]*\n.*?^:::[ \t]*$/m
-        CODE_GROUP_BLOCK_REGEX = /^:::[ \t]*code-group[ \t]*\n.*?^:::[ \t]*$/m
+        TABS_BLOCK_REGEX = /^:::tabs[ \t]*\n.*?^:::[ \t]*$/m
+        CODE_GROUP_BLOCK_REGEX = /^:::code-group[ \t]*\n.*?^:::[ \t]*$/m
         EXCLUDED_LANGUAGES = %w[filetree].freeze
 
         def preprocess(content)
