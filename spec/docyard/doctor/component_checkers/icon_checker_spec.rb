@@ -71,4 +71,17 @@ RSpec.describe Docyard::Doctor::ComponentCheckers::IconChecker do
     checker = described_class.new(docs_path)
     expect(checker.check).to be_empty
   end
+
+  it "ignores icons inside inline code" do
+    write_page("guide.md", <<~MD)
+      | Syntax | Description |
+      |--------|-------------|
+      | `:icon-name:weight:` | Icon with weight |
+
+      Use `:arrow-right:invalid:` for the syntax.
+    MD
+
+    checker = described_class.new(docs_path)
+    expect(checker.check).to be_empty
+  end
 end
