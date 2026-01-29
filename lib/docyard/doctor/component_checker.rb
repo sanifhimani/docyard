@@ -10,6 +10,9 @@ module Docyard
       CLOSE_PATTERN = /^:::\s*$/
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
       TAB_ITEM_PATTERN = /^==\s+.+/
+      CARD_ITEM_PATTERN = /^::card\{/
+      CARD_ATTR_PATTERN = /^::card\{([^}]*)\}/
+      CARD_VALID_ATTRS = %w[title icon href].freeze
 
       attr_reader :docs_path
 
@@ -39,6 +42,7 @@ module Docyard
         diagnostics = []
         diagnostics.concat(check_callouts(blocks, content, relative_file))
         diagnostics.concat(check_tabs(blocks, content, relative_file))
+        diagnostics.concat(check_cards(blocks, content, relative_file))
         diagnostics.concat(check_unknown_types(content, relative_file))
         diagnostics
       end
@@ -103,6 +107,56 @@ module Docyard
 
         msg = "empty tabs block, add '== Tab Name' to define tabs"
         build_diagnostic("TABS_EMPTY", msg, relative_file, block[:line])
+      end
+
+      def check_cards(blocks, content, relative_file)
+        cards_blocks = blocks.select { |b| b[:type] == "cards" }
+        diagnostics = cards_blocks.flat_map { |block| validate_cards(block, content, relative_file) }
+        diagnostics.concat(check_card_attributes(content, relative_file))
+        diagnostics.compact
+      end
+
+      def validate_cards(block, content, relative_file)
+        return build_unclosed_diagnostic("CARDS", block, relative_file) unless block[:closed]
+
+        block_content = extract_block_content(content, block[:line])
+        return nil if block_content&.match?(CARD_ITEM_PATTERN)
+
+        msg = "empty cards block, add '::card{title=\"...\"}' to define cards"
+        build_diagnostic("CARDS_EMPTY", msg, relative_file, block[:line])
+      end
+
+      def check_card_attributes(content, relative_file)
+        diagnostics = []
+        in_code_block = false
+
+        content.each_line.with_index(1) do |line, line_number|
+          in_code_block = !in_code_block if line.match?(CODE_FENCE_REGEX)
+          next if in_code_block
+
+          match = line.match(CARD_ATTR_PATTERN)
+          next unless match
+
+          diagnostics.concat(validate_card_attrs(match[1], relative_file, line_number))
+        end
+
+        diagnostics
+      end
+
+      def validate_card_attrs(attr_string, relative_file, line_number)
+        attrs = attr_string.scan(/(\w+)=/).flatten
+        unknown = attrs - CARD_VALID_ATTRS
+
+        unknown.map do |attr|
+          suggestion = find_card_attr_suggestion(attr)
+          message = "unknown card attribute '#{attr}'"
+          message += ", did you mean '#{suggestion}'?" if suggestion
+          build_diagnostic("CARD_UNKNOWN_ATTR", message, relative_file, line_number)
+        end
+      end
+
+      def find_card_attr_suggestion(attr)
+        DidYouMean::SpellChecker.new(dictionary: CARD_VALID_ATTRS).correct(attr).first
       end
 
       def build_unclosed_diagnostic(prefix, block, relative_file)
