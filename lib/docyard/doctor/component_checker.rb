@@ -11,6 +11,7 @@ module Docyard
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
       TAB_ITEM_PATTERN = /^==\s+.+/
       CARD_ITEM_PATTERN = /^::card\{/
+      STEP_ITEM_PATTERN = /^###\s+.+/
       CARD_ATTR_PATTERN = /^::card\{([^}]*)\}/
       CARD_VALID_ATTRS = %w[title icon href].freeze
 
@@ -21,11 +22,7 @@ module Docyard
       end
 
       def check
-        diagnostics = []
-        markdown_files.each do |file|
-          diagnostics.concat(check_file(file))
-        end
-        diagnostics
+        markdown_files.flat_map { |file| check_file(file) }
       end
 
       private
@@ -43,6 +40,7 @@ module Docyard
         diagnostics.concat(check_callouts(blocks, content, relative_file))
         diagnostics.concat(check_tabs(blocks, content, relative_file))
         diagnostics.concat(check_cards(blocks, content, relative_file))
+        diagnostics.concat(check_steps(blocks, content, relative_file))
         diagnostics.concat(check_unknown_types(content, relative_file))
         diagnostics
       end
@@ -78,6 +76,16 @@ module Docyard
         return nil unless end_idx
 
         lines[start_idx...(start_idx + end_idx)].join
+      end
+
+      def each_line_outside_code_blocks(content)
+        return enum_for(__method__, content) unless block_given?
+
+        in_code_block = false
+        content.each_line.with_index(1) do |line, line_number|
+          in_code_block = !in_code_block if line.match?(CODE_FENCE_REGEX)
+          yield line, line_number unless in_code_block
+        end
       end
 
       def check_callouts(blocks, content, relative_file)
@@ -127,20 +135,12 @@ module Docyard
       end
 
       def check_card_attributes(content, relative_file)
-        diagnostics = []
-        in_code_block = false
-
-        content.each_line.with_index(1) do |line, line_number|
-          in_code_block = !in_code_block if line.match?(CODE_FENCE_REGEX)
-          next if in_code_block
-
+        each_line_outside_code_blocks(content).flat_map do |line, line_number|
           match = line.match(CARD_ATTR_PATTERN)
-          next unless match
+          next [] unless match
 
-          diagnostics.concat(validate_card_attrs(match[1], relative_file, line_number))
+          validate_card_attrs(match[1], relative_file, line_number)
         end
-
-        diagnostics
       end
 
       def validate_card_attrs(attr_string, relative_file, line_number)
@@ -159,28 +159,35 @@ module Docyard
         DidYouMean::SpellChecker.new(dictionary: CARD_VALID_ATTRS).correct(attr).first
       end
 
+      def check_steps(blocks, content, relative_file)
+        steps_blocks = blocks.select { |b| b[:type] == "steps" }
+        steps_blocks.flat_map { |block| validate_steps(block, content, relative_file) }.compact
+      end
+
+      def validate_steps(block, content, relative_file)
+        return build_unclosed_diagnostic("STEPS", block, relative_file) unless block[:closed]
+
+        block_content = extract_block_content(content, block[:line])
+        return nil if block_content&.match?(STEP_ITEM_PATTERN)
+
+        msg = "empty steps block, add '### Step Title' to define steps"
+        build_diagnostic("STEPS_EMPTY", msg, relative_file, block[:line])
+      end
+
       def build_unclosed_diagnostic(prefix, block, relative_file)
         build_diagnostic("#{prefix}_UNCLOSED", "unclosed :::#{block[:type]} block", relative_file, block[:line])
       end
 
       def check_unknown_types(content, relative_file)
-        diagnostics = []
-        in_code_block = false
-
-        content.each_line.with_index(1) do |line, line_number|
-          in_code_block = !in_code_block if line.match?(CODE_FENCE_REGEX)
-          next if in_code_block
-
+        each_line_outside_code_blocks(content).filter_map do |line, line_number|
           match = line.match(CONTAINER_PATTERN)
           next unless match
 
           type = match[1].downcase
           next if ALL_CONTAINER_TYPES.include?(type)
 
-          diagnostics << build_unknown_type_diagnostic(type, relative_file, line_number)
+          build_unknown_type_diagnostic(type, relative_file, line_number)
         end
-
-        diagnostics
       end
 
       def build_unknown_type_diagnostic(type, relative_file, line_number)
