@@ -7,6 +7,7 @@ require_relative "component_checkers/cards_checker"
 require_relative "component_checkers/steps_checker"
 require_relative "component_checkers/code_group_checker"
 require_relative "component_checkers/details_checker"
+require_relative "component_checkers/badge_checker"
 require_relative "component_checkers/unknown_type_checker"
 
 module Docyard
@@ -19,6 +20,7 @@ module Docyard
         ComponentCheckers::StepsChecker,
         ComponentCheckers::CodeGroupChecker,
         ComponentCheckers::DetailsChecker,
+        ComponentCheckers::BadgeChecker,
         ComponentCheckers::UnknownTypeChecker
       ].freeze
 
