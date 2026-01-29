@@ -31,7 +31,7 @@ module Docyard
           attrs = parse_attrs(attrs_string)
           diagnostics = []
 
-          diagnostics.concat(check_unknown_attrs(attrs.keys, relative_file, line_number))
+          diagnostics.concat(check_unknown_attrs(attrs, relative_file, line_number))
           diagnostics.concat(check_unknown_type(attrs["type"], relative_file, line_number)) if attrs.key?("type")
 
           diagnostics
@@ -45,12 +45,13 @@ module Docyard
           attrs
         end
 
-        def check_unknown_attrs(attr_names, relative_file, line_number)
-          (attr_names - VALID_ATTRS).map do |attr|
+        def check_unknown_attrs(attrs, relative_file, line_number)
+          (attrs.keys - VALID_ATTRS).map do |attr|
             sug = suggest(attr, VALID_ATTRS)
             msg = "unknown badge attribute '#{attr}'"
             msg += ", did you mean '#{sug}'?" if sug
-            build_diagnostic("BADGE_UNKNOWN_ATTR", msg, relative_file, line_number)
+            fix = sug ? { type: :line_replace, from: "#{attr}=", to: "#{sug}=" } : nil
+            build_diagnostic("BADGE_UNKNOWN_ATTR", msg, relative_file, line_number, fix: fix)
           end
         end
 
@@ -60,7 +61,8 @@ module Docyard
           sug = suggest(type_value, VALID_TYPES)
           msg = "unknown badge type '#{type_value}'"
           msg += ", did you mean '#{sug}'?" if sug
-          [build_diagnostic("BADGE_UNKNOWN_TYPE", msg, relative_file, line_number)]
+          fix = sug ? { type: :line_replace, from: "type=\"#{type_value}\"", to: "type=\"#{sug}\"" } : nil
+          [build_diagnostic("BADGE_UNKNOWN_TYPE", msg, relative_file, line_number, fix: fix)]
         end
       end
     end

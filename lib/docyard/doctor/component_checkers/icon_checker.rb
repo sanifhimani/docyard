@@ -19,13 +19,14 @@ module Docyard
         end
 
         def check_icons_in_line(line, relative_file, line_number)
-          line.scan(ICON_PATTERN).filter_map do |_icon_name, weight|
+          line.scan(ICON_PATTERN).filter_map do |icon_name, weight|
             next if VALID_WEIGHTS.include?(weight.downcase)
 
             sug = suggest(weight.downcase, VALID_WEIGHTS)
             msg = "unknown icon weight '#{weight}'"
             msg += ", did you mean '#{sug}'?" if sug
-            build_diagnostic("ICON_UNKNOWN_WEIGHT", msg, relative_file, line_number)
+            fix = sug ? { type: :line_replace, from: ":#{icon_name}:#{weight}:", to: ":#{icon_name}:#{sug}:" } : nil
+            build_diagnostic("ICON_UNKNOWN_WEIGHT", msg, relative_file, line_number, fix: fix)
           end
         end
       end

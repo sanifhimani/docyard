@@ -30,7 +30,8 @@ module Docyard
             sug = suggest(attr, VALID_ATTRS)
             msg = "unknown image attribute '#{attr}'"
             msg += ", did you mean '#{sug}'?" if sug
-            build_diagnostic("IMAGE_UNKNOWN_ATTR", msg, relative_file, line_number)
+            fix = sug ? { type: :line_replace, from: "#{attr}=", to: "#{sug}=" } : nil
+            build_diagnostic("IMAGE_UNKNOWN_ATTR", msg, relative_file, line_number, fix: fix)
           end
         end
 

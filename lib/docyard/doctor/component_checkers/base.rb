@@ -84,14 +84,15 @@ module Docyard
           build_diagnostic("#{prefix}_UNCLOSED", "unclosed :::#{block[:type]} block", relative_file, block[:line])
         end
 
-        def build_diagnostic(code, message, file, line)
+        def build_diagnostic(code, message, file, line, fix: nil)
           Diagnostic.new(
             severity: :warning,
             category: :COMPONENT,
             code: code,
             message: message,
             file: file,
-            line: line
+            line: line,
+            fix: fix
           )
         end
       end

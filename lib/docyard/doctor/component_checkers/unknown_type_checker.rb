@@ -20,11 +20,16 @@ module Docyard
             type = m[1].downcase
             next if ALL_CONTAINER_TYPES.include?(type)
 
-            sug = suggest(type, ALL_CONTAINER_TYPES)
-            msg = "unknown component ':::#{type}'"
-            msg += ", did you mean ':::#{sug}'?" if sug
-            build_diagnostic("COMPONENT_UNKNOWN_TYPE", msg, relative_file, line_number)
+            build_unknown_type_diagnostic(type, m[1], relative_file, line_number)
           end
+        end
+
+        def build_unknown_type_diagnostic(type, original_type, relative_file, line_number)
+          sug = suggest(type, ALL_CONTAINER_TYPES)
+          msg = "unknown component ':::#{type}'"
+          msg += ", did you mean ':::#{sug}'?" if sug
+          fix = sug ? { type: :line_replace, from: ":::#{original_type}", to: ":::#{sug}" } : nil
+          build_diagnostic("COMPONENT_UNKNOWN_TYPE", msg, relative_file, line_number, fix: fix)
         end
       end
     end
