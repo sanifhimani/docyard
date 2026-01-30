@@ -5,9 +5,11 @@ module Docyard
     CATEGORIES = %i[CONFIG SIDEBAR CONTENT COMPONENT SYNTAX LINK IMAGE ORPHAN].freeze
     SEVERITIES = %i[error warning].freeze
 
-    attr_reader :severity, :category, :code, :message, :file, :line, :field, :details, :fix
+    attr_reader :severity, :category, :code, :message, :file, :line, :field, :details, :fix,
+                :doc_url, :source_context
 
-    def initialize(severity:, category:, code:, message:, file: nil, line: nil, field: nil, details: nil, fix: nil)
+    def initialize(severity:, category:, code:, message:, file: nil, line: nil, field: nil,
+                   details: nil, fix: nil, doc_url: nil, source_context: nil)
       validate_severity!(severity)
       validate_category!(category)
 
@@ -20,6 +22,8 @@ module Docyard
       @field = field
       @details = details
       @fix = fix
+      @doc_url = doc_url
+      @source_context = source_context
 
       freeze
     end
@@ -62,7 +66,9 @@ module Docyard
         line: line,
         field: field,
         details: details,
-        fix: fix
+        fix: fix,
+        doc_url: doc_url,
+        source_context: source_context
       }.compact
     end
 
