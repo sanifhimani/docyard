@@ -27,17 +27,18 @@ module Docyard
     desc "build", "Build static site for production"
     method_option :clean, type: :boolean, default: true, desc: "Clean output directory before building"
     method_option :verbose, type: :boolean, default: false, aliases: "-v", desc: "Show verbose output"
+    method_option :strict, type: :boolean, default: false, desc: "Fail on any validation errors"
     def build
       apply_global_options
       require_relative "builder"
       builder = Docyard::Builder.new(
         clean: options[:clean],
-        verbose: options[:verbose]
+        verbose: options[:verbose],
+        strict: options[:strict]
       )
       exit(1) unless builder.build
     rescue ConfigError => e
-      Docyard.logger.error(e.message)
-      exit(1)
+      print_config_error(e)
     end
 
     desc "preview", "Preview the built site locally"
@@ -46,6 +47,8 @@ module Docyard
       apply_global_options
       require_relative "server/preview_server"
       Docyard::PreviewServer.new(port: options[:port]).start
+    rescue ConfigError => e
+      print_config_error(e)
     end
 
     desc "serve", "Start the development server"
@@ -65,8 +68,7 @@ module Docyard
       )
       server.start
     rescue ConfigError => e
-      Docyard.logger.error(e.message)
-      exit(1)
+      print_config_error(e)
     end
 
     desc "doctor", "Check documentation for issues"
@@ -76,15 +78,21 @@ module Docyard
       require_relative "doctor"
       doctor = Docyard::Doctor.new(fix: options[:fix])
       exit(doctor.run)
-    rescue ConfigError => e
-      Docyard.logger.error(e.message)
-      exit(1)
     end
 
     private
 
     def apply_global_options
       UI.enabled = false if options[:no_color]
+    end
+
+    def print_config_error(error)
+      puts
+      puts "  #{UI.bold('Docyard')} v#{VERSION}"
+      puts
+      puts "  #{UI.red(error.message)}"
+      puts
+      exit(1)
     end
   end
 end

@@ -9,13 +9,15 @@ require_relative "sse_server"
 require_relative "file_watcher"
 require_relative "../config"
 require_relative "../navigation/sidebar/cache"
+require_relative "../doctor/config_checker"
+require_relative "../doctor/sidebar_checker"
 
 module Docyard
   class DevServer
     DEFAULT_PORT = 4200
     DEFAULT_HOST = "localhost"
 
-    attr_reader :port, :host, :docs_path, :config, :search_enabled
+    attr_reader :port, :host, :docs_path, :config, :search_enabled, :global_diagnostics
 
     def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs", search: false)
       @port = port
@@ -28,11 +30,13 @@ module Docyard
       @file_watcher = nil
       @launcher = nil
       @sidebar_cache = nil
+      @global_diagnostics = []
     end
 
     def start
       validate_docs_directory!
       build_sidebar_cache
+      collect_global_diagnostics
       setup_hot_reload
       print_server_info
       run_server
@@ -48,6 +52,14 @@ module Docyard
         config: @config
       )
       @sidebar_cache.build
+    end
+
+    def collect_global_diagnostics
+      @global_diagnostics.clear
+      @global_diagnostics.concat(Doctor::ConfigChecker.new(@config).check)
+      @global_diagnostics.concat(Doctor::SidebarChecker.new(File.expand_path(docs_path)).check)
+    rescue StandardError => e
+      Docyard.logger.warn("Diagnostic collection failed: #{e.message}")
     end
 
     def generate_search_index
@@ -74,9 +86,20 @@ module Docyard
     end
 
     def handle_file_change(change_type)
-      invalidate_sidebar_cache if change_type == :full
+      if change_type == :full
+        reload_config
+        invalidate_sidebar_cache
+        collect_global_diagnostics
+        @sse_server.broadcast("diagnostics", { global: @global_diagnostics.map(&:to_h) })
+      end
       log_file_change(change_type)
       @sse_server.broadcast("reload", { type: change_type.to_s })
+    end
+
+    def reload_config
+      @config = Config.load
+    rescue ConfigError => e
+      Docyard.logger.warn("Config reload failed: #{e.message}")
     end
 
     def invalidate_sidebar_cache
@@ -87,7 +110,7 @@ module Docyard
     def log_file_change(change_type)
       message = case change_type
                 when :content then "Content changed, reloading..."
-                when :config then "Config changed, full reload..."
+                when :full then "Config changed, full reload..."
                 when :asset then "Asset changed, reloading..."
                 else "File changed, reloading..."
                 end
@@ -150,7 +173,8 @@ module Docyard
         config: @config,
         pagefind_path: @search_indexer&.pagefind_path,
         sse_port: sse_port,
-        sidebar_cache: @sidebar_cache
+        sidebar_cache: @sidebar_cache,
+        global_diagnostics: @global_diagnostics
       )
     end
 

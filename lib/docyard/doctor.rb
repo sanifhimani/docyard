@@ -2,10 +2,16 @@
 
 require_relative "doctor/config_checker"
 require_relative "doctor/sidebar_checker"
+require_relative "doctor/content_checker"
+require_relative "doctor/component_checker"
+require_relative "doctor/code_block_checker"
 require_relative "doctor/link_checker"
 require_relative "doctor/image_checker"
 require_relative "doctor/orphan_checker"
+require_relative "doctor/file_scanner"
 require_relative "doctor/config_fixer"
+require_relative "doctor/sidebar_fixer"
+require_relative "doctor/markdown_fixer"
 require_relative "doctor/reporter"
 
 module Docyard
@@ -19,124 +25,154 @@ module Docyard
     end
 
     def run
-      if fix
-        run_with_fix
-      else
-        run_check_only
-      end
+      fix ? run_with_fix : run_check_only
     end
 
     private
 
     def run_check_only
-      results, stats = collect_results
-      reporter = Reporter.new(results, stats)
+      start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      diagnostics, stats = collect_diagnostics
+      duration = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+
+      reporter = Reporter.new(diagnostics, stats, duration: duration)
       reporter.print
       reporter.exit_code
     end
 
     def run_with_fix
-      results, _stats = collect_results
-      fixer = ConfigFixer.new
-      fixer.fix(results[:config_issues])
+      config_fixer = ConfigFixer.new
+      sidebar_fixer = SidebarFixer.new(docs_path)
+      markdown_fixer = MarkdownFixer.new(docs_path)
 
-      print_fix_results(fixer)
+      run_config_fix_loop(config_fixer)
+      run_sidebar_fix(sidebar_fixer)
+      run_markdown_fix(markdown_fixer)
 
-      results_after, _stats_after = collect_results
-      remaining_errors = count_errors(results_after)
+      print_fix_results(config_fixer, sidebar_fixer, markdown_fixer)
 
-      if remaining_errors.positive?
-        puts
-        puts "  Remaining issues:"
-        print_remaining_issues(results_after)
-      end
+      diagnostics_after, _stats_after = collect_diagnostics
+      remaining_errors = diagnostics_after.count(&:error?)
 
+      print_remaining_issues(diagnostics_after) if remaining_errors.positive?
       remaining_errors.positive? ? 1 : 0
     end
 
-    def print_fix_results(fixer) # rubocop:disable Metrics/AbcSize
+    def run_config_fix_loop(fixer)
+      max_iterations = 10
+      max_iterations.times do
+        reload_config
+        diagnostics, _stats = collect_diagnostics
+        config_diagnostics = diagnostics.select { |d| d.category == :CONFIG && d.fixable? }
+        break if config_diagnostics.empty?
+
+        count_before = fixer.fixed_count
+        fixer.fix(config_diagnostics)
+        break if fixer.fixed_count == count_before # no progress made
+      end
+    end
+
+    def run_sidebar_fix(fixer)
+      diagnostics, _stats = collect_diagnostics
+      sidebar_diagnostics = diagnostics.select { |d| d.category == :SIDEBAR && d.fixable? }
+      fixer.fix(sidebar_diagnostics)
+    end
+
+    def run_markdown_fix(fixer)
+      diagnostics, _stats = collect_diagnostics
+      component_diagnostics = diagnostics.select { |d| d.category == :COMPONENT && d.fixable? }
+      fixer.fix(component_diagnostics)
+    end
+
+    def reload_config
+      @config = load_config_safely
+    end
+
+    def print_fix_results(config_fixer, sidebar_fixer, markdown_fixer)
+      print_fix_header
+      fixers = [
+        [config_fixer, "docyard.yml"],
+        [sidebar_fixer, "_sidebar.yml"],
+        [markdown_fixer, "markdown files"]
+      ]
+      total_fixed = fixers.sum { |f, _| f.fixed_count }
+
+      total_fixed.positive? ? print_all_fixes(fixers, total_fixed) : print_no_fixes
+    end
+
+    def print_all_fixes(fixers, total_fixed)
+      fixers.each { |fixer, name| print_fixer_results(fixer, name) }
+      puts "  #{UI.success("Fixed #{total_fixed} issue(s) total")}"
+    end
+
+    def print_fixer_results(fixer, name)
+      return unless fixer.fixed_count.positive?
+
+      puts "  Fixed #{fixer.fixed_count} issue(s) in #{name}:"
+      print_fixed_issues(fixer) if fixer.respond_to?(:fixed_issues)
+      puts
+    end
+
+    def print_fixed_issues(fixer)
+      fixer.fixed_issues.each { |d| puts "    #{UI.dim(d.location)}: #{describe_fix(d)}" }
+    end
+
+    def print_no_fixes
+      puts "  #{UI.yellow('No issues were auto-fixed.')}"
+    end
+
+    def print_fix_header
       puts
       puts "  #{UI.bold('Docyard')} v#{VERSION}"
       puts
-      if fixer.fixed_count.positive?
-        puts "  #{UI.success("Fixed #{fixer.fixed_count} issue(s)")} in docyard.yml:"
-        fixer.fixed_issues.each do |issue|
-          puts "    #{UI.dim(issue.field)}: #{describe_fix(issue)}"
-        end
-      else
-        puts "  #{UI.yellow('No issues were auto-fixed.')}"
+    end
+
+    def describe_fix(diagnostic)
+      case diagnostic.fix[:type]
+      when :rename then "renamed '#{diagnostic.fix[:from]}' to '#{diagnostic.fix[:to]}'"
+      when :replace then "changed to #{diagnostic.fix[:value].inspect}"
+      when :line_replace then "replaced '#{diagnostic.fix[:from]}' with '#{diagnostic.fix[:to]}'"
+      else "fixed"
       end
     end
 
-    def describe_fix(issue)
-      case issue.fix[:type]
-      when :rename
-        "renamed from '#{issue.fix[:from]}' to '#{issue.fix[:to]}'"
-      when :replace
-        "changed to #{issue.fix[:value].inspect}"
-      else
-        "fixed"
-      end
-    end
-
-    def print_remaining_issues(results)
-      print_config_issues(results[:config_issues])
-      print_link_issues(results[:broken_links], "broken link")
-      print_link_issues(results[:missing_images], "missing image")
+    def print_remaining_issues(diagnostics)
+      puts
+      puts "  Remaining issues:"
+      diagnostics.reject(&:fixable?).each { |d| puts "    #{d.location}: #{d.message}" }
       puts
     end
 
-    def print_config_issues(issues)
-      issues.reject(&:fixable?).each { |i| puts "    #{i.field}: #{i.message}" }
-    end
-
-    def print_link_issues(issues, label)
-      issues.each { |i| puts "    #{i.file}:#{i.line}: #{label} #{i.target}" }
-    end
-
-    def count_errors(results)
-      config_errors = results[:config_issues].count(&:error?)
-      config_errors + results[:broken_links].size + results[:missing_images].size
-    end
-
     def load_config_safely
-      Config.load(Dir.pwd, validate: false)
+      Config.load(Dir.pwd)
     rescue ConfigError
       nil
     end
 
-    def collect_results
-      link_checker = LinkChecker.new(docs_path)
-      image_checker = ImageChecker.new(docs_path)
+    def collect_diagnostics
+      file_scanner = FileScanner.new(docs_path)
+      scanner_diagnostics = file_scanner.scan
 
-      results = build_results(link_checker, image_checker)
-      stats = build_stats(link_checker, image_checker)
+      diagnostics = [
+        collect_config_and_sidebar_diagnostics,
+        scanner_diagnostics,
+        config ? OrphanChecker.new(docs_path, config).check : []
+      ].flatten
 
-      [results, stats]
-    end
-
-    def build_results(link_checker, image_checker)
-      {
-        config_issues: collect_config_issues,
-        broken_links: link_checker.check,
-        missing_images: image_checker.check,
-        orphan_pages: config ? OrphanChecker.new(docs_path, config).check : []
+      stats = {
+        files: file_scanner.files_scanned,
+        links: file_scanner.links_checked,
+        images: file_scanner.images_checked
       }
+
+      [diagnostics, stats]
     end
 
-    def collect_config_issues
-      issues = []
-      issues.concat(ConfigChecker.new(config).check) if config
-      issues.concat(SidebarChecker.new(docs_path).check)
-      issues
-    end
-
-    def build_stats(link_checker, image_checker)
-      {
-        files: link_checker.files_checked,
-        links: link_checker.links_checked,
-        images: image_checker.images_checked
-      }
+    def collect_config_and_sidebar_diagnostics
+      diagnostics = []
+      diagnostics.concat(ConfigChecker.new(config).check) if config
+      diagnostics.concat(SidebarChecker.new(docs_path).check)
+      diagnostics
     end
   end
 end

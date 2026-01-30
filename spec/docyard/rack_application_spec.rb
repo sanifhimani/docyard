@@ -291,5 +291,194 @@ RSpec.describe Docyard::RackApplication do
         end
       end
     end
+
+    context "with open-in-editor endpoint" do
+      before do
+        allow(Docyard::EditorLauncher).to receive_messages(available?: true, open: true)
+      end
+
+      it "returns 200 when editor launches successfully", :aggregate_failures do
+        env = {
+          "PATH_INFO" => "/__docyard/open-in-editor",
+          "QUERY_STRING" => "file=intro.md&line=10"
+        }
+
+        status, _headers, body = app.call(env)
+
+        expect(status).to eq(200)
+        expect(body.first).to eq("OK")
+      end
+
+      it "calls EditorLauncher.open with correct arguments" do
+        env = {
+          "PATH_INFO" => "/__docyard/open-in-editor",
+          "QUERY_STRING" => "file=intro.md&line=10"
+        }
+
+        app.call(env)
+
+        expect(Docyard::EditorLauncher).to have_received(:open)
+          .with("#{docs_path}/intro.md", 10)
+      end
+
+      it "defaults line to 1 when not provided" do
+        env = {
+          "PATH_INFO" => "/__docyard/open-in-editor",
+          "QUERY_STRING" => "file=intro.md"
+        }
+
+        app.call(env)
+
+        expect(Docyard::EditorLauncher).to have_received(:open)
+          .with("#{docs_path}/intro.md", 1)
+      end
+
+      it "returns 400 when file parameter is missing", :aggregate_failures do
+        env = {
+          "PATH_INFO" => "/__docyard/open-in-editor",
+          "QUERY_STRING" => ""
+        }
+
+        status, _headers, body = app.call(env)
+
+        expect(status).to eq(400)
+        expect(body.first).to eq("Missing file parameter")
+      end
+
+      it "returns 404 when no editor is detected", :aggregate_failures do
+        allow(Docyard::EditorLauncher).to receive(:available?).and_return(false)
+
+        env = {
+          "PATH_INFO" => "/__docyard/open-in-editor",
+          "QUERY_STRING" => "file=intro.md"
+        }
+
+        status, _headers, body = app.call(env)
+
+        expect(status).to eq(404)
+        expect(body.first).to eq("No editor detected")
+      end
+    end
+
+    context "with error overlay assets" do
+      it "serves error-overlay.css", :aggregate_failures do
+        env = {
+          "PATH_INFO" => "/_docyard/error-overlay.css",
+          "QUERY_STRING" => ""
+        }
+
+        status, headers, body = app.call(env)
+
+        expect(status).to eq(200)
+        expect(headers["Content-Type"]).to eq("text/css")
+        expect(body.first).to include(".docyard-error-overlay")
+      end
+
+      it "serves error-overlay.js", :aggregate_failures do
+        env = {
+          "PATH_INFO" => "/_docyard/error-overlay.js",
+          "QUERY_STRING" => ""
+        }
+
+        status, headers, body = app.call(env)
+
+        expect(status).to eq(200)
+        expect(headers["Content-Type"]).to eq("application/javascript")
+        expect(body.first).to include("docyard-error-overlay")
+      end
+
+      it "returns 404 for non-existent overlay assets" do
+        env = {
+          "PATH_INFO" => "/_docyard/error-overlay-nonexistent.css",
+          "QUERY_STRING" => ""
+        }
+
+        status, _headers, _body = app.call(env)
+
+        expect(status).to eq(404)
+      end
+    end
+
+    context "with error overlay injection in dev mode without diagnostics" do
+      let(:dev_app) do
+        described_class.new(docs_path: docs_path, sse_port: 4201, global_diagnostics: [])
+      end
+
+      it "does not inject overlay when no diagnostics exist", :aggregate_failures do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        _status, _headers, body = dev_app.call(env)
+
+        expect(body.first).not_to include('id="docyard-error-overlay"')
+        expect(body.first).not_to include("error-overlay.css")
+      end
+    end
+
+    context "with error overlay injection in dev mode with diagnostics" do
+      let(:global_diagnostics) do
+        [
+          Docyard::Diagnostic.new(
+            severity: :error,
+            category: :CONFIG,
+            code: "TEST",
+            message: "Test error"
+          )
+        ]
+      end
+
+      let(:dev_app) do
+        described_class.new(docs_path: docs_path, sse_port: 4201, global_diagnostics: global_diagnostics)
+      end
+
+      it "injects overlay when diagnostics exist", :aggregate_failures do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        _status, _headers, body = dev_app.call(env)
+
+        expect(body.first).to include('id="docyard-error-overlay"')
+        expect(body.first).to include("error-overlay.css")
+        expect(body.first).to include("error-overlay.js")
+      end
+
+      it "includes diagnostic data", :aggregate_failures do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        _status, _headers, body = dev_app.call(env)
+
+        expect(body.first).to include("Test error")
+        expect(body.first).to include('data-error-count="1"')
+      end
+
+      it "includes SSE port in overlay" do
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+
+        _status, _headers, body = dev_app.call(env)
+
+        expect(body.first).to include('data-sse-port="4201"')
+      end
+    end
+
+    context "without dev mode (production)" do
+      it "does not inject overlay even with diagnostics" do
+        diagnostics = [
+          Docyard::Diagnostic.new(
+            severity: :error,
+            category: :CONFIG,
+            code: "TEST",
+            message: "Test error"
+          )
+        ]
+
+        prod_app = described_class.new(
+          docs_path: docs_path,
+          global_diagnostics: diagnostics
+        )
+
+        env = { "PATH_INFO" => "/", "QUERY_STRING" => "" }
+        _status, _headers, body = prod_app.call(env)
+
+        expect(body.first).not_to include("docyard-error-overlay")
+      end
+    end
   end
 end

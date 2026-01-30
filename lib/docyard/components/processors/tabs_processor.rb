@@ -21,7 +21,7 @@ module Docyard
 
           @code_block_ranges = find_code_block_ranges(content)
 
-          content.gsub(/^:::[ \t]*tabs[ \t]*\n(.*?)^:::[ \t]*$/m) do
+          content.gsub(/^:::tabs[ \t]*\n(.*?)^:::[ \t]*$/m) do
             match = Regexp.last_match
             next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
 

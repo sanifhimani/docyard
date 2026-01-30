@@ -43,7 +43,7 @@ module Docyard
         private
 
         def process_container_syntax(markdown)
-          markdown.gsub(/^:::[ \t]*(\w+)(?:[ \t]+([^\n]+?))?[ \t]*\n(.*?)^:::[ \t]*$/m) do
+          markdown.gsub(/^:::(\w+)(?:[ \t]+([^\n]+?))?[ \t]*\n(.*?)^:::[ \t]*$/m) do
             match = Regexp.last_match
             next match[0] if inside_code_block?(match.begin(0), @code_block_ranges)
 

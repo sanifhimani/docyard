@@ -3,24 +3,31 @@
 module Docyard
   class Doctor
     class Reporter
-      attr_reader :results, :stats, :fixed
+      CATEGORY_LABELS = {
+        CONFIG: "Configuration",
+        SIDEBAR: "Sidebar",
+        CONTENT: "Content",
+        COMPONENT: "Components",
+        SYNTAX: "Syntax",
+        LINK: "Broken links",
+        IMAGE: "Missing images",
+        ORPHAN: "Orphan pages"
+      }.freeze
 
-      def initialize(results, stats = {}, fixed: false)
-        @results = results
+      CATEGORY_ORDER = %i[CONFIG SIDEBAR CONTENT COMPONENT LINK IMAGE ORPHAN SYNTAX].freeze
+
+      attr_reader :diagnostics, :stats, :fixed, :duration
+
+      def initialize(diagnostics, stats = {}, fixed: false, duration: nil)
+        @diagnostics = diagnostics
         @stats = stats
         @fixed = fixed
+        @duration = duration
       end
 
       def print
-        puts
-        puts "  #{UI.bold('Docyard')} v#{VERSION}"
-        puts
-        puts "  Checking docs..."
-        puts
-        print_config_issues
-        print_broken_links
-        print_missing_images
-        print_orphan_pages
+        print_header
+        print_categories
         print_summary
       end
 
@@ -30,53 +37,44 @@ module Docyard
 
       private
 
-      def print_config_issues
-        issues = results[:config_issues]
-        return if issues.empty?
-
-        errors = issues.select(&:error?)
-        warnings = issues.select(&:warning?)
-
-        puts "  #{UI.bold('Configuration')}        #{issue_counts(errors.size, warnings.size)}"
-        issues.each do |issue|
-          puts "    #{issue.format_short}"
-        end
+      def print_header
+        puts
+        puts "  #{UI.bold('Docyard')} v#{VERSION}"
+        puts
+        puts "  Checking docs..."
         puts
       end
 
-      def print_broken_links
-        issues = results[:broken_links]
-        return if issues.empty?
-
-        puts "  #{UI.bold('Broken links')}         #{UI.red(pluralize(issues.size, 'error'))}"
-        issues.each do |issue|
-          location = "#{issue.file}:#{issue.line}"
-          puts "    #{UI.dim(location.ljust(24))} #{issue.target}"
+      def print_categories
+        CATEGORY_ORDER.each do |category|
+          print_category(category)
         end
+      end
+
+      def print_category(category)
+        items = diagnostics_for(category)
+        return if items.empty?
+
+        print_category_header(category, items)
+        items.each { |d| puts format_diagnostic(d) }
         puts
       end
 
-      def print_missing_images
-        issues = results[:missing_images]
-        return if issues.empty?
-
-        puts "  #{UI.bold('Missing images')}       #{UI.red(pluralize(issues.size, 'error'))}"
-        issues.each do |issue|
-          location = "#{issue.file}:#{issue.line}"
-          puts "    #{UI.dim(location.ljust(24))} #{issue.target}"
-        end
-        puts
+      def diagnostics_for(category)
+        diagnostics.select { |d| d.category == category }
       end
 
-      def print_orphan_pages
-        orphans = results[:orphan_pages]
-        return if orphans.empty?
+      def print_category_header(category, items)
+        label = CATEGORY_LABELS[category] || category.to_s
+        counts = issue_counts(items.count(&:error?), items.count(&:warning?))
+        puts "  #{UI.bold(label.ljust(28))} #{counts}"
+      end
 
-        puts "  #{UI.bold('Orphan pages')}         #{UI.yellow(pluralize(orphans.size, 'warning'))}"
-        orphans.each do |orphan|
-          puts "    #{orphan[:file]}"
-        end
-        puts
+      def format_diagnostic(diagnostic)
+        prefix = diagnostic.error? ? UI.red("error") : UI.yellow("warn ")
+        location = diagnostic.location&.ljust(26) || (" " * 26)
+        suffix = diagnostic.fixable? ? " #{UI.cyan('[fixable]')}" : ""
+        "    #{prefix}   #{location} #{diagnostic.message}#{suffix}"
       end
 
       def print_summary
@@ -88,23 +86,33 @@ module Docyard
           puts "  #{build_issue_summary}"
           print_fixable_hint
         end
+
+        puts "  #{format_duration}" if duration
         puts
+      end
+
+      def format_duration
+        if duration < 1
+          UI.dim("Finished in #{(duration * 1000).round}ms")
+        else
+          UI.dim("Finished in #{duration.round(2)}s")
+        end
       end
 
       def print_fixable_hint
         return if fixed
 
-        fixable = results[:config_issues].count(&:fixable?)
+        fixable = diagnostics.count(&:fixable?)
         return if fixable.zero?
 
         puts
         puts "  #{UI.cyan("Run with --fix to auto-fix #{pluralize(fixable, 'issue')}.")}"
       end
 
-      def issue_counts(error_count, warning_count)
+      def issue_counts(errors, warnings)
         parts = []
-        parts << UI.red(pluralize(error_count, "error")) if error_count.positive?
-        parts << UI.yellow(pluralize(warning_count, "warning")) if warning_count.positive?
+        parts << UI.red(pluralize(errors, "error")) if errors.positive?
+        parts << UI.yellow(pluralize(warnings, "warning")) if warnings.positive?
         parts.join(", ")
       end
 
@@ -133,13 +141,11 @@ module Docyard
       end
 
       def error_count
-        config_errors = results[:config_issues].count(&:error?)
-        config_errors + results[:broken_links].size + results[:missing_images].size
+        diagnostics.count(&:error?)
       end
 
       def warning_count
-        config_warnings = results[:config_issues].count(&:warning?)
-        config_warnings + results[:orphan_pages].size
+        diagnostics.count(&:warning?)
       end
     end
   end

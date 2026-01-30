@@ -19,7 +19,7 @@ module Docyard
       "socials" => {},
       "tabs" => [],
       "sidebar" => "config",
-      "build" => { "output" => "dist", "base" => "/" },
+      "build" => { "output" => "dist", "base" => "/", "strict" => false },
       "search" => { "enabled" => true, "placeholder" => "Search...", "exclude" => [] },
       "navigation" => { "cta" => [], "breadcrumbs" => true },
       "announcement" => nil,
@@ -31,15 +31,14 @@ module Docyard
 
     attr_reader :data, :file_path
 
-    def self.load(project_root = Dir.pwd, validate: true)
-      new(project_root, validate: validate)
+    def self.load(project_root = Dir.pwd)
+      new(project_root)
     end
 
-    def initialize(project_root = Dir.pwd, validate: true)
+    def initialize(project_root = Dir.pwd)
       @project_root = project_root
       @file_path = File.join(project_root, "docyard.yml")
       @data = load_config_data
-      validate! if validate
     end
 
     def file_exists?
@@ -88,10 +87,6 @@ module Docyard
       message = "Invalid YAML in docyard.yml:\n\n  #{error.message}\n\nFix: Check YAML syntax"
       message += " at line #{error.line}" if error.respond_to?(:line)
       message
-    end
-
-    def validate!
-      Validator.new(data, source_dir: source).validate!
     end
   end
 end

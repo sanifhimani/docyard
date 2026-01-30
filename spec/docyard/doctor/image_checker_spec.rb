@@ -1,69 +1,65 @@
 # frozen_string_literal: true
 
 RSpec.describe Docyard::Doctor::ImageChecker do
-  let(:temp_dir) { Dir.mktmpdir }
-  let(:checker) { described_class.new(temp_dir) }
+  let(:docs_path) { Dir.mktmpdir }
+  let(:checker) { described_class.new(docs_path) }
 
-  after { FileUtils.remove_entry(temp_dir) }
+  after { FileUtils.remove_entry(docs_path) }
 
-  describe "#check" do
+  def check(content, file_path = "#{docs_path}/index.md")
+    checker.check_file(content, file_path)
+  end
+
+  describe "#check_file" do
     it "returns empty array when no markdown files exist" do
-      expect(checker.check).to eq([])
+      scanner = Docyard::Doctor::FileScanner.new(docs_path)
+      expect(scanner.scan.select { |d| d.category == :IMAGE }).to eq([])
     end
 
     it "returns empty array when all images exist" do
-      FileUtils.mkdir_p(File.join(temp_dir, "public", "images"))
-      File.write(File.join(temp_dir, "public", "images", "logo.png"), "")
-      File.write(File.join(temp_dir, "index.md"), "![Logo](/images/logo.png)")
+      FileUtils.mkdir_p(File.join(docs_path, "public", "images"))
+      File.write(File.join(docs_path, "public", "images", "logo.png"), "")
 
-      expect(checker.check).to eq([])
+      expect(check("![Logo](/images/logo.png)")).to eq([])
     end
 
     it "detects missing images with absolute paths", :aggregate_failures do
-      File.write(File.join(temp_dir, "index.md"), "![Missing](/images/missing.png)")
-
-      issues = checker.check
+      issues = check("![Missing](/images/missing.png)")
 
       expect(issues.size).to eq(1)
-      expect(issues.first.target).to eq("/images/missing.png")
+      expect(issues.first.message).to eq("Missing image '/images/missing.png'")
+      expect(issues.first.field).to eq("/images/missing.png")
     end
 
     it "detects missing images with relative paths", :aggregate_failures do
-      File.write(File.join(temp_dir, "index.md"), "![Missing](./missing.png)")
-
-      issues = checker.check
+      issues = check("![Missing](./missing.png)")
 
       expect(issues.size).to eq(1)
-      expect(issues.first.target).to eq("./missing.png")
+      expect(issues.first.message).to eq("Missing image './missing.png'")
+      expect(issues.first.field).to eq("./missing.png")
     end
 
     it "validates relative images correctly" do
-      FileUtils.mkdir_p(File.join(temp_dir, "guide"))
-      File.write(File.join(temp_dir, "guide", "image.png"), "")
-      File.write(File.join(temp_dir, "guide", "page.md"), "![Image](./image.png)")
+      FileUtils.mkdir_p(File.join(docs_path, "guide"))
+      File.write(File.join(docs_path, "guide", "image.png"), "")
 
-      expect(checker.check).to eq([])
+      expect(check("![Image](./image.png)", "#{docs_path}/guide/page.md")).to eq([])
     end
 
     it "ignores external image URLs" do
-      File.write(File.join(temp_dir, "index.md"), "![External](https://example.com/image.png)")
-
-      expect(checker.check).to eq([])
+      expect(check("![External](https://example.com/image.png)")).to eq([])
     end
 
     it "ignores protocol-relative URLs" do
-      File.write(File.join(temp_dir, "index.md"), "![External](//example.com/image.png)")
-
-      expect(checker.check).to eq([])
+      expect(check("![External](//example.com/image.png)")).to eq([])
     end
 
     it "detects missing images in HTML img tags", :aggregate_failures do
-      File.write(File.join(temp_dir, "index.md"), '<img src="/missing.png" alt="Missing">')
-
-      issues = checker.check
+      issues = check('<img src="/missing.png" alt="Missing">')
 
       expect(issues.size).to eq(1)
-      expect(issues.first.target).to eq("/missing.png")
+      expect(issues.first.message).to eq("Missing image '/missing.png'")
+      expect(issues.first.field).to eq("/missing.png")
     end
 
     it "reports correct file and line number", :aggregate_failures do
@@ -72,9 +68,8 @@ RSpec.describe Docyard::Doctor::ImageChecker do
         Some text
         ![Missing](/missing.png)
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      issues = checker.check
+      issues = check(content, "#{docs_path}/page.md")
 
       expect(issues.first.file).to eq("page.md")
       expect(issues.first.line).to eq(3)
@@ -88,9 +83,8 @@ RSpec.describe Docyard::Doctor::ImageChecker do
         ![Image](/example.png)
         ```
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      expect(checker.check).to eq([])
+      expect(check(content)).to eq([])
     end
 
     it "ignores images inside tilde code blocks" do
@@ -99,9 +93,8 @@ RSpec.describe Docyard::Doctor::ImageChecker do
         <img src="/example.png" alt="Example">
         ~~~
       MD
-      File.write(File.join(temp_dir, "page.md"), content)
 
-      expect(checker.check).to eq([])
+      expect(check(content)).to eq([])
     end
   end
 end

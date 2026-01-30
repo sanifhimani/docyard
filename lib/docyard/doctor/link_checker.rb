@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "issue"
+require_relative "../diagnostic_context"
 
 module Docyard
   class Doctor
@@ -9,44 +9,29 @@ module Docyard
       INTERNAL_LINK_REGEX = %r{^/[^/]}
       IMAGE_EXTENSIONS = %w[.png .jpg .jpeg .gif .svg .webp .ico .bmp].freeze
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
+      LINKS_DOCS_URL = nil
 
-      attr_reader :docs_path, :files_checked, :links_checked
+      attr_reader :docs_path, :links_checked
 
       def initialize(docs_path)
         @docs_path = docs_path
-        @files_checked = 0
         @links_checked = 0
       end
 
-      def check
-        issues = []
-        files = markdown_files
-        @files_checked = files.size
-        files.each do |file|
-          issues.concat(check_file(file))
+      def check_file(content, file_path)
+        relative_file = file_path.delete_prefix("#{docs_path}/")
+        diagnostics = []
+
+        each_line_outside_code_blocks(content) do |line, line_number|
+          diagnostics.concat(check_line_for_links(line, line_number, relative_file))
         end
-        issues
+
+        diagnostics
       end
 
       private
 
-      def markdown_files
-        Dir.glob(File.join(docs_path, "**", "*.md"))
-      end
-
-      def check_file(file_path)
-        relative_file = file_path.delete_prefix("#{docs_path}/")
-        issues = []
-
-        each_line_outside_code_blocks(file_path) do |line, line_number|
-          issues.concat(check_line_for_links(line, line_number, relative_file))
-        end
-
-        issues
-      end
-
-      def each_line_outside_code_blocks(file_path)
-        content = File.read(file_path)
+      def each_line_outside_code_blocks(content)
         in_code_block = false
 
         content.each_line.with_index(1) do |line, line_number|
@@ -56,8 +41,7 @@ module Docyard
       end
 
       def check_line_for_links(line, line_number, relative_file)
-        issues = []
-        line.scan(MARKDOWN_LINK_REGEX) do |_text, url|
+        line.scan(MARKDOWN_LINK_REGEX).filter_map do |_text, url|
           next unless internal_link?(url)
           next if image_path?(url)
 
@@ -65,9 +49,25 @@ module Docyard
           target_path = url.split("#").first
           next if file_exists?(target_path)
 
-          issues << Issue.new(file: relative_file, line: line_number, target: target_path)
+          build_diagnostic(relative_file, line_number, target_path)
         end
-        issues
+      end
+
+      def build_diagnostic(file, line, target)
+        full_path = File.join(docs_path, file)
+        source_context = DiagnosticContext.extract_source_context(full_path, line)
+
+        Diagnostic.new(
+          severity: :warning,
+          category: :LINK,
+          code: "LINK_BROKEN",
+          message: "Broken link to '#{target}'",
+          file: file,
+          line: line,
+          field: target,
+          doc_url: LINKS_DOCS_URL,
+          source_context: source_context
+        )
       end
 
       def internal_link?(url)
@@ -80,12 +80,11 @@ module Docyard
 
       def file_exists?(url_path)
         clean_path = url_path.chomp("/")
-        possible_files = [
+        [
           File.join(docs_path, "#{clean_path}.md"),
           File.join(docs_path, clean_path, "index.md"),
           File.join(docs_path, "#{clean_path}.html")
-        ]
-        possible_files.any? { |f| File.exist?(f) }
+        ].any? { |f| File.exist?(f) }
       end
     end
   end

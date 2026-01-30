@@ -20,7 +20,7 @@ module Docyard
         }x
 
         CODE_BLOCK_REGEX = /^```(\w*).*?\n(.*?)^```/m
-        TABS_BLOCK_REGEX = /^:::[ \t]*tabs[ \t]*\n.*?^:::[ \t]*$/m
+        TABS_BLOCK_REGEX = /^:::tabs[ \t]*\n.*?^:::[ \t]*$/m
 
         def preprocess(content)
           context[:code_block_focus_lines] ||= []

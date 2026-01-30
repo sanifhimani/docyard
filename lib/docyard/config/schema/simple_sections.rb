@@ -18,7 +18,8 @@ module Docyard
         type: :hash,
         keys: {
           output: { type: :string, format: :no_slashes },
-          base: { type: :string, format: :starts_with_slash }
+          base: { type: :string, format: :starts_with_slash },
+          strict: { type: :boolean }
         }
       }.freeze
 

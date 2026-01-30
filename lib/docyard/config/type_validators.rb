@@ -17,13 +17,13 @@ module Docyard
         when :no_slashes
           return unless value.include?("/") || value.include?("\\")
 
-          add_issue(:error, field, "cannot contain slashes", got: value,
-                                                             expected: "simple directory name like 'dist'")
+          add_diagnostic(:error, field, "cannot contain slashes", got: value,
+                                                                  expected: "simple directory name like 'dist'")
         when :starts_with_slash
           return if value.start_with?("/")
 
-          add_issue(:error, field, "must start with /", got: value,
-                                                        fix: { type: :replace, value: "/#{value}" })
+          add_diagnostic(:error, field, "must start with /", got: value,
+                                                             fix: { type: :replace, value: "/#{value}" })
         end
       end
 
@@ -35,7 +35,7 @@ module Docyard
           fix = { type: :replace, value: %w[true yes].include?(value.to_s.downcase) }
         end
 
-        add_issue(:error, field, "must be true or false", got: value.inspect, fix: fix)
+        add_diagnostic(:error, field, "must be true or false", got: value.inspect, fix: fix)
       end
 
       def validate_url(value, field)
@@ -43,7 +43,7 @@ module Docyard
         return add_type_issue(field, "URL string", value) unless value.is_a?(String)
         return if value.match?(%r{\Ahttps?://})
 
-        add_issue(:warning, field, "should be a valid URL starting with http:// or https://", got: value)
+        add_diagnostic(:warning, field, "should be a valid URL starting with http:// or https://", got: value)
       end
 
       def validate_enum(value, definition, field)
@@ -53,8 +53,8 @@ module Docyard
         suggestion = find_suggestion(value.to_s, valid_values)
         fix = suggestion ? { type: :replace, value: suggestion } : nil
 
-        add_issue(:error, field, "invalid value", got: value,
-                                                  expected: valid_values.join(", "), fix: fix)
+        add_diagnostic(:error, field, "invalid value", got: value,
+                                                       expected: valid_values.join(", "), fix: fix)
       end
 
       def validate_hash(value, definition, field)
@@ -74,8 +74,8 @@ module Docyard
       def validate_array_max_items(value, definition, field)
         return unless definition[:max_items] && value.size > definition[:max_items]
 
-        add_issue(:error, field, "has too many items", got: "#{value.size} items",
-                                                       expected: "maximum #{definition[:max_items]} items")
+        add_diagnostic(:error, field, "has too many items", got: "#{value.size} items",
+                                                            expected: "maximum #{definition[:max_items]} items")
       end
 
       def validate_array_items(value, definition, field)
@@ -96,8 +96,8 @@ module Docyard
         file_path = File.join(public_dir, value)
         return if File.exist?(file_path)
 
-        add_issue(:error, field, "file not found", got: value,
-                                                   expected: "file in #{public_dir}/ or a URL")
+        add_diagnostic(:error, field, "file not found", got: value,
+                                                        expected: "file in #{public_dir}/ or a URL")
       end
 
       def validate_hex_color(value, field)
@@ -105,8 +105,8 @@ module Docyard
         return add_type_issue(field, "hex color string", value) unless value.is_a?(String)
         return if value.match?(/\A#[0-9a-fA-F]{3}\z/) || value.match?(/\A#[0-9a-fA-F]{6}\z/)
 
-        add_issue(:error, field, "invalid hex color format", got: value,
-                                                             expected: "#RGB or #RRGGBB format (e.g., #3b82f6)")
+        add_diagnostic(:error, field, "invalid hex color format", got: value,
+                                                                  expected: "#RGB or #RRGGBB format (e.g., #3b82f6)")
       end
 
       def validate_color(value, field)

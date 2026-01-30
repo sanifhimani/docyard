@@ -115,4 +115,37 @@ RSpec.describe Docyard::Sidebar::LocalConfigLoader do
       end
     end
   end
+
+  describe "#key_errors" do
+    let(:loader) { described_class.new(docs_path, validate: false) }
+
+    context "when sidebar has invalid format" do
+      before do
+        File.write(config_file_path, <<~YAML)
+          - text: Getting Started
+            href: /getting-started
+        YAML
+      end
+
+      it "reports invalid format error", :aggregate_failures do
+        loader.load
+        expect(loader.key_errors.size).to eq(1)
+        expect(loader.key_errors.first[:message]).to include("invalid format")
+      end
+    end
+
+    context "when sidebar has valid slug-based format" do
+      before do
+        File.write(config_file_path, <<~YAML)
+          - getting-started:
+              text: Getting Started
+        YAML
+      end
+
+      it "reports no format errors" do
+        loader.load
+        expect(loader.key_errors).to be_empty
+      end
+    end
+  end
 end

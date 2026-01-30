@@ -29,7 +29,7 @@ RSpec.describe Docyard::Doctor::OrphanChecker do
       orphans = checker.check
 
       expect(orphans.size).to eq(1)
-      expect(orphans.first[:file]).to eq("orphan.md")
+      expect(orphans.first.file).to eq("orphan.md")
     end
 
     it "excludes files starting with underscore" do
@@ -64,7 +64,7 @@ RSpec.describe Docyard::Doctor::OrphanChecker do
       orphans = checker.check
 
       expect(orphans.size).to eq(1)
-      expect(orphans.first[:file]).to eq("orphan.md")
+      expect(orphans.first.file).to eq("orphan.md")
     end
   end
 end

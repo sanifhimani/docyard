@@ -16,10 +16,13 @@ RSpec.describe Docyard::UI do
   end
 
   describe ".reset!" do
-    it "clears the enabled state" do
+    it "clears the enabled state and re-evaluates", :aggregate_failures do
       described_class.enabled = true
+      expect(described_class.enabled?).to be true
+
       described_class.reset!
-      # After reset, it re-evaluates; in test env stdout is not a TTY
+      allow($stdout).to receive(:tty?).and_return(false)
+
       expect(described_class.enabled?).to be false
     end
   end
