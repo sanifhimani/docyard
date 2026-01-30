@@ -13,11 +13,15 @@ module Docyard
 
       def valid?
         @diagnostics = collect_diagnostics
-        errors.empty?
+        failing_diagnostics.empty?
       end
 
       def errors
         diagnostics.select(&:error?)
+      end
+
+      def failing_diagnostics
+        strict ? diagnostics : errors
       end
 
       def warnings
@@ -25,12 +29,12 @@ module Docyard
       end
 
       def print_errors(context: "Build")
-        return if errors.empty?
+        return if failing_diagnostics.empty?
 
         print_header
         puts "  #{UI.red("#{context} failed due to validation errors:")}"
         puts
-        errors.each { |d| puts format_error_line(d) }
+        failing_diagnostics.each { |d| puts format_diagnostic_line(d) }
         puts
       end
 
@@ -51,8 +55,12 @@ module Docyard
         puts
       end
 
-      def format_error_line(diagnostic)
-        "    #{UI.red('error')}  #{diagnostic.location.ljust(26)} #{diagnostic.message}"
+      def format_diagnostic_line(diagnostic)
+        if diagnostic.error?
+          "    #{UI.red('error')}  #{diagnostic.location.ljust(26)} #{diagnostic.message}"
+        else
+          "    #{UI.yellow('warn ')}  #{diagnostic.location.ljust(26)} #{diagnostic.message}"
+        end
       end
 
       def collect_diagnostics

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../diagnostic_context"
+
 module Docyard
   class Doctor
     class LinkChecker
@@ -7,6 +9,7 @@ module Docyard
       INTERNAL_LINK_REGEX = %r{^/[^/]}
       IMAGE_EXTENSIONS = %w[.png .jpg .jpeg .gif .svg .webp .ico .bmp].freeze
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
+      LINKS_DOCS_URL = nil
 
       attr_reader :docs_path, :links_checked
 
@@ -51,13 +54,19 @@ module Docyard
       end
 
       def build_diagnostic(file, line, target)
+        full_path = File.join(docs_path, file)
+        source_context = DiagnosticContext.extract_source_context(full_path, line)
+
         Diagnostic.new(
-          severity: :error,
+          severity: :warning,
           category: :LINK,
           code: "LINK_BROKEN",
-          message: target,
+          message: "Broken link to '#{target}'",
           file: file,
-          line: line
+          line: line,
+          field: target,
+          doc_url: LINKS_DOCS_URL,
+          source_context: source_context
         )
       end
 

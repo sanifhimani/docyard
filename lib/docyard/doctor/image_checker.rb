@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require_relative "../diagnostic_context"
+
 module Docyard
   class Doctor
     class ImageChecker
       MARKDOWN_IMAGE_REGEX = /!\[([^\]]*)\]\(([^)]+)\)/
       HTML_IMAGE_REGEX = /<img[^>]+src=["']([^"']+)["']/
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
+      IMAGES_DOCS_URL = "https://docyard.dev/write-content/images-and-videos/"
 
       attr_reader :docs_path, :images_checked
 
@@ -49,13 +52,19 @@ module Docyard
       end
 
       def build_diagnostic(file, line, target)
+        full_path = File.join(docs_path, file)
+        source_context = DiagnosticContext.extract_source_context(full_path, line)
+
         Diagnostic.new(
-          severity: :error,
+          severity: :warning,
           category: :IMAGE,
           code: "IMAGE_MISSING",
-          message: target,
+          message: "Missing image '#{target}'",
           file: file,
-          line: line
+          line: line,
+          field: target,
+          doc_url: IMAGES_DOCS_URL,
+          source_context: source_context
         )
       end
 

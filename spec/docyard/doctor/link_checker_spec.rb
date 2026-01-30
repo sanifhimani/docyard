@@ -28,7 +28,8 @@ RSpec.describe Docyard::Doctor::LinkChecker do
       expect(issues.size).to eq(1)
       expect(issues.first.file).to eq("index.md")
       expect(issues.first.line).to eq(1)
-      expect(issues.first.message).to eq("/nonexistent")
+      expect(issues.first.message).to eq("Broken link to '/nonexistent'")
+      expect(issues.first.field).to eq("/nonexistent")
     end
 
     it "detects multiple broken links in same file", :aggregate_failures do
@@ -42,7 +43,7 @@ RSpec.describe Docyard::Doctor::LinkChecker do
       issues = check(content)
 
       expect(issues.size).to eq(2)
-      expect(issues.map(&:message)).to contain_exactly("/missing1", "/missing2")
+      expect(issues.map(&:field)).to contain_exactly("/missing1", "/missing2")
     end
 
     it "ignores external links" do
