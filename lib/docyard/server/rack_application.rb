@@ -14,6 +14,9 @@ require_relative "../editor_launcher"
 
 module Docyard
   class RackApplication
+    OVERLAY_RESET_SCRIPT = "<script>try{sessionStorage.setItem('docyard-error-overlay'," \
+                           "'{\"dismissed\":false,\"lastTotalCount\":0}')}catch(e){}</script>"
+
     def initialize(docs_path:, config: nil, pagefind_path: nil, sse_port: nil, sidebar_cache: nil,
                    global_diagnostics: [])
       @docs_path = docs_path
@@ -170,11 +173,7 @@ module Docyard
     def inject_error_overlay(html, content, file_path)
       page_diags = @page_diagnostics.check(content, file_path)
       all_diagnostics = @global_diagnostics + page_diags
-
-      if all_diagnostics.empty?
-        reset_script = "<script>try{sessionStorage.setItem('docyard-error-overlay',JSON.stringify({dismissed:false,lastTotalCount:0}))}catch(e){}</script>"
-        return html.sub("</body>", "#{reset_script}</body>")
-      end
+      return html.sub("</body>", "#{OVERLAY_RESET_SCRIPT}</body>") if all_diagnostics.empty?
 
       current_file = file_path.delete_prefix("#{@docs_path}/")
       overlay = ErrorOverlay.render(

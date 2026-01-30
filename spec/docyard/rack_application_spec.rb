@@ -409,7 +409,7 @@ RSpec.describe Docyard::RackApplication do
 
         _status, _headers, body = dev_app.call(env)
 
-        expect(body.first).not_to include("docyard-error-overlay")
+        expect(body.first).not_to include('id="docyard-error-overlay"')
         expect(body.first).not_to include("error-overlay.css")
       end
     end
