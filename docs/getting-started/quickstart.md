@@ -78,7 +78,7 @@ docyard serve
 Open [http://localhost:4200](http://localhost:4200) in your browser. You should see your new documentation site.
 
 :::note
-The server watches for changes. Edit any Markdown file and the browser refreshes automatically.
+The server watches for changes. Edit any Markdown file and the browser refreshes automatically. Errors appear in an overlay at the bottom of the page.
 :::
 
 ## Edit Your First Page

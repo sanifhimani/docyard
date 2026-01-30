@@ -86,6 +86,10 @@ docyard serve --host 0.0.0.0
 Hot reload runs on a separate port (main port + 1). When serving on port 4200, the hot reload server uses port 4201.
 :::
 
+:::tip Error Overlay
+Configuration errors, broken links, and missing images appear in an overlay at the bottom of the page during development.
+:::
+
 ---
 
 ## docyard build
@@ -99,7 +103,8 @@ docyard build [OPTIONS]
 | Option | Alias | Default | Description |
 |--------|-------|---------|-------------|
 | `--clean` | - | `true` | Clean output directory before building |
-| `--verbose` | `-v` | `false` | Show detailed output |
+| `--verbose` | `-v` | `false` | Show detailed output with timing breakdown |
+| `--strict` | - | `false` | Fail on any validation errors |
 | `--no-clean` | - | - | Preserve existing output files |
 
 :::tabs
@@ -111,6 +116,10 @@ docyard build
 ```bash
 docyard build --verbose
 ```
+== Strict mode
+```bash
+docyard build --strict
+```
 == Preserve existing files
 ```bash
 docyard build --no-clean
@@ -118,7 +127,11 @@ docyard build --no-clean
 :::
 
 :::tip
-Use `--verbose` to see compression stats and detailed timing for each build step.
+Use `--verbose` to see per-page timing and compression stats.
+:::
+
+:::note Strict Mode
+Use `--strict` in CI pipelines to fail the build on any validation errors (broken links, missing images, etc.). Can also be enabled via `build.strict` in your config.
 :::
 
 ---
@@ -201,4 +214,19 @@ Show the installed Docyard version.
 
 ```bash
 docyard version
+```
+
+---
+
+## Global Options
+
+These options apply to all commands.
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--no-color` | `false` | Disable colored output |
+
+```bash
+docyard build --no-color
+docyard doctor --no-color
 ```
