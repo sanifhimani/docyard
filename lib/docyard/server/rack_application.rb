@@ -170,7 +170,11 @@ module Docyard
     def inject_error_overlay(html, content, file_path)
       page_diags = @page_diagnostics.check(content, file_path)
       all_diagnostics = @global_diagnostics + page_diags
-      return html if all_diagnostics.empty?
+
+      if all_diagnostics.empty?
+        reset_script = "<script>try{sessionStorage.setItem('docyard-error-overlay',JSON.stringify({dismissed:false,lastTotalCount:0}))}catch(e){}</script>"
+        return html.sub("</body>", "#{reset_script}</body>")
+      end
 
       current_file = file_path.delete_prefix("#{@docs_path}/")
       overlay = ErrorOverlay.render(
