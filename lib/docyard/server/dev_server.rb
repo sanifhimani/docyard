@@ -55,7 +55,7 @@ module Docyard
     end
 
     def collect_global_diagnostics
-      @global_diagnostics = []
+      @global_diagnostics.clear
       @global_diagnostics.concat(Doctor::ConfigChecker.new(@config).check)
       @global_diagnostics.concat(Doctor::SidebarChecker.new(File.expand_path(docs_path)).check)
     rescue StandardError => e
@@ -87,12 +87,19 @@ module Docyard
 
     def handle_file_change(change_type)
       if change_type == :full
+        reload_config
         invalidate_sidebar_cache
         collect_global_diagnostics
         @sse_server.broadcast("diagnostics", { global: @global_diagnostics.map(&:to_h) })
       end
       log_file_change(change_type)
       @sse_server.broadcast("reload", { type: change_type.to_s })
+    end
+
+    def reload_config
+      @config = Config.load
+    rescue ConfigError => e
+      Docyard.logger.warn("Config reload failed: #{e.message}")
     end
 
     def invalidate_sidebar_cache
@@ -103,7 +110,7 @@ module Docyard
     def log_file_change(change_type)
       message = case change_type
                 when :content then "Content changed, reloading..."
-                when :config then "Config changed, full reload..."
+                when :full then "Config changed, full reload..."
                 when :asset then "Asset changed, reloading..."
                 else "File changed, reloading..."
                 end
