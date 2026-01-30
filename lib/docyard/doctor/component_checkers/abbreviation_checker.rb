@@ -8,6 +8,10 @@ module Docyard
 
         private
 
+        def docs_url
+          "https://docyard.dev/write-content/markdown/#abbreviations"
+        end
+
         def process_content(content, relative_file)
           content_outside_code = content_without_code_blocks(content)
 

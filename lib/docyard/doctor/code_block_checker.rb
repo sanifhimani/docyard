@@ -12,6 +12,8 @@ module Docyard
       INLINE_MARKER_PATTERN = /\[!code\s+([^\]]+)\]/
       VALID_INLINE_MARKERS = %w[++ -- focus error warning].freeze
 
+      CODE_BLOCKS_DOCS_URL = "https://docyard.dev/write-content/components/code-blocks/"
+
       attr_reader :docs_path
 
       def initialize(docs_path)
@@ -125,7 +127,8 @@ module Docyard
           code: code,
           message: message,
           file: file,
-          line: line
+          line: line,
+          doc_url: CODE_BLOCKS_DOCS_URL
         )
       end
     end

@@ -8,6 +8,10 @@ module Docyard
 
         private
 
+        def docs_url
+          "https://docyard.dev/write-content/components/callouts/"
+        end
+
         def process_content(content, relative_file)
           blocks = parse_blocks(content)
 

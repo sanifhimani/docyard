@@ -9,6 +9,10 @@ module Docyard
       CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
       MARKDOWN_EXTENSIONS = %w[.md .markdown .mdx].freeze
 
+      FRONTMATTER_DOCS_URL = "https://docyard.dev/reference/frontmatter/"
+      INCLUDES_DOCS_URL = "https://docyard.dev/write-content/includes/"
+      SNIPPETS_DOCS_URL = "https://docyard.dev/write-content/components/code-blocks/"
+
       attr_reader :docs_path
 
       def initialize(docs_path)
@@ -44,7 +48,8 @@ module Docyard
           code: "FRONTMATTER_INVALID_YAML",
           message: "invalid YAML: #{error.problem}",
           file: file,
-          line: error.line ? error.line + 1 : nil
+          line: error.line ? error.line + 1 : nil,
+          doc_url: FRONTMATTER_DOCS_URL
         )
       end
 
@@ -105,7 +110,8 @@ module Docyard
           code: "INCLUDE_ERROR",
           message: "include '#{include_path}': #{message}",
           file: file,
-          line: line
+          line: line,
+          doc_url: INCLUDES_DOCS_URL
         )
       end
 
@@ -149,7 +155,8 @@ module Docyard
           code: "SNIPPET_ERROR",
           message: "snippet '#{snippet_path}': #{message}",
           file: file,
-          line: line
+          line: line,
+          doc_url: SNIPPETS_DOCS_URL
         )
       end
     end

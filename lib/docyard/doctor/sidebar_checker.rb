@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
+require_relative "../diagnostic_context"
+
 module Docyard
   class Doctor
     class SidebarChecker
+      SIDEBAR_DOCS_URL = "https://docyard.dev/customize/sidebar/"
+
       attr_reader :docs_path
 
       def initialize(docs_path)
         @docs_path = docs_path
+        @sidebar_path = File.join(docs_path, "_sidebar.yml")
       end
 
       def check
@@ -88,13 +93,30 @@ module Docyard
 
       def build_missing_file_diagnostic(slug, path_prefix, file_path)
         context = path_prefix.empty? ? slug : "#{path_prefix}/#{slug}"
+        line = find_sidebar_line(slug)
+        source_context = DiagnosticContext.extract_source_context(@sidebar_path, line) if line
+
         Diagnostic.new(
           severity: :error,
           category: :SIDEBAR,
           code: "SIDEBAR_MISSING_FILE",
-          field: "_sidebar.yml: #{context}",
-          message: "references missing file '#{file_path}.md'"
+          file: "_sidebar.yml",
+          line: line,
+          field: context,
+          message: "references missing file '#{file_path}.md'",
+          doc_url: SIDEBAR_DOCS_URL,
+          source_context: source_context
         )
+      end
+
+      def find_sidebar_line(slug)
+        return nil unless File.exist?(@sidebar_path)
+
+        lines = File.readlines(@sidebar_path)
+        lines.each_with_index do |line, index|
+          return index + 1 if line.include?("- #{slug}") || line.include?("#{slug}:")
+        end
+        nil
       end
 
       def external_link?(item)

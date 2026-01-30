@@ -8,6 +8,8 @@ module Docyard
         CLOSE_PATTERN = /^:::\s*$/
         CODE_FENCE_REGEX = /^(`{3,}|~{3,})/
 
+        COMPONENTS_DOCS_URL = "https://docyard.dev/write-content/components/"
+
         attr_reader :docs_path
 
         def initialize(docs_path)
@@ -89,8 +91,13 @@ module Docyard
             message: message,
             file: file,
             line: line,
-            fix: fix
+            fix: fix,
+            doc_url: docs_url
           )
+        end
+
+        def docs_url
+          COMPONENTS_DOCS_URL
         end
       end
     end

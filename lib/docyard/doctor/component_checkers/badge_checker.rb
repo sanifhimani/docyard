@@ -10,6 +10,10 @@ module Docyard
 
         private
 
+        def docs_url
+          "https://docyard.dev/write-content/components/badges/"
+        end
+
         def process_content(content, relative_file)
           each_line_outside_code_blocks(content).flat_map do |line, line_number|
             check_badges_in_line(strip_inline_code(line), relative_file, line_number)

@@ -9,6 +9,10 @@ module Docyard
 
         private
 
+        def docs_url
+          "https://docyard.dev/write-content/images-and-videos/"
+        end
+
         def process_content(content, relative_file)
           each_line_outside_code_blocks(content).flat_map do |line, line_number|
             check_images_in_line(strip_inline_code(line), relative_file, line_number)

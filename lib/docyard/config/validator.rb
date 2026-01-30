@@ -2,6 +2,7 @@
 
 require_relative "schema"
 require_relative "type_validators"
+require_relative "../diagnostic_context"
 
 module Docyard
   class Config
@@ -9,12 +10,15 @@ module Docyard
       include TypeValidators
 
       VALIDATORS_WITH_DEFINITION = %i[string enum hash array].freeze
+      CONFIG_DOCS_URL = "https://docyard.dev/reference/configuration/"
 
       attr_reader :diagnostics
 
       def initialize(data, source_dir: "docs")
         @data = data
         @source_dir = source_dir
+        @config_path = File.join(source_dir, "docyard.yml")
+        @config_path = "docyard.yml" unless File.exist?(@config_path)
         @diagnostics = []
       end
 
@@ -126,15 +130,21 @@ module Docyard
       end
 
       def add_diagnostic(severity, field, message, got: nil, expected: nil, fix: nil)
+        line = DiagnosticContext.find_yaml_key_line(@config_path, field)
+        source_context = DiagnosticContext.extract_source_context(@config_path, line) if line
+
         @diagnostics << Diagnostic.new(
           severity: severity,
           category: :CONFIG,
           code: "CONFIG_VALIDATION",
           file: "docyard.yml",
+          line: line,
           field: field,
           message: message,
           details: build_details(got, expected),
-          fix: fix
+          fix: fix,
+          doc_url: CONFIG_DOCS_URL,
+          source_context: source_context
         )
       end
 
