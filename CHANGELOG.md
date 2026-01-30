@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-30
+
+### Added
+- **Doctor Command** - Health check CLI with `docyard doctor` to find broken links, missing images, orphan pages, and config issues (#135)
+- **Auto-fix** - Automatically fix common issues with `docyard doctor --fix` including typos, string booleans, and missing slashes (#135)
+- **Config Validation** - Validate `docyard.yml` and `_sidebar.yml` with helpful error messages and suggestions (#138)
+- **Dev Server Error Overlay** - Bottom sheet overlay showing errors with syntax-highlighted code snippets, line numbers, and clickable file paths (#143)
+- **Strict Mode** - Fail builds on validation errors with `--strict` flag or `build.strict` config (#143)
+- **Colored CLI Output** - ANSI colors for better readability with `--no-color` flag and `NO_COLOR` env support (#142)
+- **CLI Progress Spinners** - Animated spinners and step-by-step progress display for build and serve commands (#136)
+- **Verbose Timing Breakdown** - Per-page timing in `docyard build --verbose` output (#141)
+
+### Fixed
+- "Last updated" timestamps now calculate relative time client-side for accurate display (#134)
+
+### Changed
+- Build output format updated with progress indicators (#136, #141)
+- Config validation now runs on every build (#138)
+
+### Documentation
+- Added `docyard doctor` command reference
+- Added strict mode documentation to CLI and configuration references
+- Added error overlay mention to dev server documentation
+- Updated build output examples to match current format
+
 ## [1.0.2] - 2026-01-23
 
 ### Fixed
@@ -224,7 +249,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/sanifhimani/docyard/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/sanifhimani/docyard/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/sanifhimani/docyard/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/sanifhimani/docyard/compare/v0.9.0...v1.0.0
