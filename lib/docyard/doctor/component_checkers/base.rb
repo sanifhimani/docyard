@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../diagnostic_context"
+
 module Docyard
   class Doctor
     module ComponentCheckers
@@ -17,6 +19,7 @@ module Docyard
         end
 
         def check_file(content, file_path)
+          @current_file_path = file_path
           relative_file = file_path.delete_prefix("#{docs_path}/")
           process_content(content, relative_file)
         end
@@ -84,6 +87,8 @@ module Docyard
         end
 
         def build_diagnostic(code, message, file, line, fix: nil)
+          source_context = DiagnosticContext.extract_source_context(@current_file_path, line)
+
           Diagnostic.new(
             severity: :warning,
             category: :COMPONENT,
@@ -92,7 +97,8 @@ module Docyard
             file: file,
             line: line,
             fix: fix,
-            doc_url: docs_url
+            doc_url: docs_url,
+            source_context: source_context
           )
         end
 
