@@ -340,12 +340,14 @@ Event name: `feedback_yes` or `feedback_no`
 build:
   output: dist
   base: /
+  strict: false
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `output` | `string` | `dist` | Output directory |
 | `base` | `string` | `/` | Base path for deployment |
+| `strict` | `boolean` | `false` | Fail build on validation errors |
 
 :::tabs
 == Root deployment

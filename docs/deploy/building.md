@@ -89,7 +89,24 @@ See detailed build information:
 docyard build --verbose
 ```
 
-Shows compression stats, file counts, and timing for each step.
+Shows per-page timing, compression stats, and file counts.
+
+### Strict Mode
+
+Fail the build on any validation errors:
+
+```bash
+docyard build --strict
+```
+
+Or enable in your config:
+
+```yaml [docyard.yml]
+build:
+  strict: true
+```
+
+Strict mode catches broken links, missing images, and other issues. Recommended for CI pipelines.
 
 ---
 
@@ -98,11 +115,14 @@ Shows compression stats, file counts, and timing for each step.
 A successful build displays a summary:
 
 ```
-==================================================
+Generating pages    done (42 pages)
+Bundling assets     done (120.0 KB CSS, 48.0 KB JS)
+Copying files       done (15 files)
+Generating SEO      done (sitemap.xml, robots.txt, llms.txt)
+Indexing search     done (42 pages indexed)
+
 Build complete in 1.23s
-Output: dist/
-42 pages, 2 bundles, 15 static files, 42 pages indexed
-==================================================
+Output: dist/ (3.2 MB)
 ```
 
 ---
