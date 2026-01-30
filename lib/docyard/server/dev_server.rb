@@ -9,13 +9,15 @@ require_relative "sse_server"
 require_relative "file_watcher"
 require_relative "../config"
 require_relative "../navigation/sidebar/cache"
+require_relative "../doctor/config_checker"
+require_relative "../doctor/sidebar_checker"
 
 module Docyard
   class DevServer
     DEFAULT_PORT = 4200
     DEFAULT_HOST = "localhost"
 
-    attr_reader :port, :host, :docs_path, :config, :search_enabled
+    attr_reader :port, :host, :docs_path, :config, :search_enabled, :global_diagnostics
 
     def initialize(port: DEFAULT_PORT, host: DEFAULT_HOST, docs_path: "docs", search: false)
       @port = port
@@ -28,13 +30,13 @@ module Docyard
       @file_watcher = nil
       @launcher = nil
       @sidebar_cache = nil
+      @global_diagnostics = []
     end
 
     def start
-      return unless passes_validation?
-
       validate_docs_directory!
       build_sidebar_cache
+      collect_global_diagnostics
       setup_hot_reload
       print_server_info
       run_server
@@ -44,21 +46,20 @@ module Docyard
 
     private
 
-    def passes_validation?
-      require_relative "../build/validator"
-      validator = Build::Validator.new(config)
-      return true if validator.valid?
-
-      validator.print_errors(context: "Server")
-      false
-    end
-
     def build_sidebar_cache
       @sidebar_cache = Sidebar::Cache.new(
         docs_path: File.expand_path(docs_path),
         config: @config
       )
       @sidebar_cache.build
+    end
+
+    def collect_global_diagnostics
+      @global_diagnostics = []
+      @global_diagnostics.concat(Doctor::ConfigChecker.new(@config).check)
+      @global_diagnostics.concat(Doctor::SidebarChecker.new(File.expand_path(docs_path)).check)
+    rescue StandardError => e
+      Docyard.logger.warn("Diagnostic collection failed: #{e.message}")
     end
 
     def generate_search_index
@@ -85,7 +86,11 @@ module Docyard
     end
 
     def handle_file_change(change_type)
-      invalidate_sidebar_cache if change_type == :full
+      if change_type == :full
+        invalidate_sidebar_cache
+        collect_global_diagnostics
+        @sse_server.broadcast("diagnostics", { global: @global_diagnostics.map(&:to_h) })
+      end
       log_file_change(change_type)
       @sse_server.broadcast("reload", { type: change_type.to_s })
     end
@@ -161,7 +166,8 @@ module Docyard
         config: @config,
         pagefind_path: @search_indexer&.pagefind_path,
         sse_port: sse_port,
-        sidebar_cache: @sidebar_cache
+        sidebar_cache: @sidebar_cache,
+        global_diagnostics: @global_diagnostics
       )
     end
 
