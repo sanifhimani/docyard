@@ -22,7 +22,8 @@ module Docyard
         announcement: ANNOUNCEMENT_SCHEMA,
         repo: REPO_SCHEMA,
         analytics: ANALYTICS_SCHEMA,
-        feedback: FEEDBACK_SCHEMA
+        feedback: FEEDBACK_SCHEMA,
+        social_cards: SOCIAL_CARDS_SCHEMA
       }.freeze
     end
   end
