@@ -155,7 +155,7 @@ Speed up builds by caching the Ruby environment and Pagefind binary:
 - uses: actions/cache@v4
   with:
     path: ~/.docyard/bin
-    key: docyard-pagefind
+    key: pagefind-${{ runner.os }}
 ```
 
 The Pagefind binary is downloaded automatically on first build and cached in `~/.docyard/bin/`. Caching this directory avoids re-downloading on every build.
