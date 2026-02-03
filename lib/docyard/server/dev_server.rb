@@ -111,6 +111,7 @@ module Docyard
       message = case change_type
                 when :content then "Content changed, reloading..."
                 when :full then "Config changed, full reload..."
+                when :css then "CSS changed, injecting styles..."
                 when :asset then "Asset changed, reloading..."
                 else "File changed, reloading..."
                 end
