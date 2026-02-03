@@ -80,6 +80,23 @@ module Docyard
       exit(doctor.run)
     end
 
+    desc "customize", "Generate theme customization files"
+    method_option :minimal, type: :boolean, default: false, aliases: "-m",
+                            desc: "Generate minimal files without comments"
+    def customize
+      apply_global_options
+      require_relative "customizer"
+      Docyard::Customizer.new(minimal: options[:minimal]).generate
+    rescue ConfigError => e
+      print_config_error(e)
+    rescue Errno::EACCES => e
+      print_file_error("Permission denied", e.message)
+    rescue Errno::ENOSPC
+      print_file_error("Disk full", "No space left on device")
+    rescue SystemCallError => e
+      print_file_error("File operation failed", e.message)
+    end
+
     private
 
     def apply_global_options
@@ -91,6 +108,16 @@ module Docyard
       puts "  #{UI.bold('Docyard')} v#{VERSION}"
       puts
       puts "  #{UI.red(error.message)}"
+      puts
+      exit(1)
+    end
+
+    def print_file_error(title, message)
+      puts
+      puts "  #{UI.bold('Docyard')} v#{VERSION}"
+      puts
+      puts "  #{UI.red("#{title}:")}"
+      puts "    #{message}"
       puts
       exit(1)
     end
