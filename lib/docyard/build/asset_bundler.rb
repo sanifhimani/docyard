@@ -32,6 +32,7 @@ module Docyard
       def bundle_css
         main_css = File.read(File.join(ASSETS_PATH, "css", "main.css"))
         css_content = resolve_css_imports(main_css)
+        css_content = append_custom_css(css_content)
         minified = CSSminify.compress(css_content)
         minified = fix_calc_whitespace(minified)
         minified = fix_css_math_functions(minified)
@@ -85,7 +86,8 @@ module Docyard
       def bundle_js
         theme_js = File.read(File.join(ASSETS_PATH, "js", "theme.js"))
         components_js = concatenate_component_js
-        js_content = [theme_js, components_js].join("\n")
+        custom_js = load_custom_js
+        js_content = [theme_js, components_js, custom_js].compact.join("\n")
         minified = Terser.compile(js_content)
         minified = replace_js_asset_urls(minified)
         hash = generate_hash(minified)
@@ -145,6 +147,20 @@ module Docyard
         output_path = File.join(config.build.output, "_docyard", filename)
         FileUtils.mkdir_p(File.dirname(output_path))
         File.write(output_path, content)
+      end
+
+      def append_custom_css(css_content)
+        custom_path = File.join(config.source, "_custom", "styles.css")
+        return css_content unless File.exist?(custom_path)
+
+        "#{css_content}\n#{File.read(custom_path)}"
+      end
+
+      def load_custom_js
+        custom_path = File.join(config.source, "_custom", "scripts.js")
+        return nil unless File.exist?(custom_path)
+
+        File.read(custom_path)
       end
     end
   end
