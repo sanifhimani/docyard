@@ -7,10 +7,6 @@ description: Deploy Docyard to Vercel or Netlify with zero configuration
 
 Deploy your documentation with zero configuration on Vercel or Netlify.
 
-:::tip Social Cards
-Both Vercel and Netlify build images include libvips, so [social cards](/customize/social-cards) work out of the box. No additional setup needed.
-:::
-
 ## Vercel
 
 ### Quick Deploy
@@ -59,8 +55,7 @@ Without this, all pages will show the deployment time instead of their actual mo
 3. Update your config:
 
 ```yaml [docyard.yml]
-build:
-  base: https://docs.example.com
+url: https://docs.example.com
 ```
 
 ---
@@ -116,8 +111,7 @@ The `|| true` ensures the build continues even if the repo is already complete (
 3. Update your config:
 
 ```yaml [docyard.yml]
-build:
-  base: https://docs.example.com
+url: https://docs.example.com
 ```
 
 ---
@@ -143,3 +137,10 @@ Set `GOOGLE_ANALYTICS_ID` in your platform's environment settings.
 
 Both Vercel and Netlify automatically create preview deployments for pull requests. This lets you review documentation changes before merging.
 
+:::tip Social Cards
+Both Vercel and Netlify build images include libvips, so [social cards](/customize/social-cards) work out of the box.
+:::
+
+:::tip Search
+The Pagefind binary is downloaded and cached automatically. Both platforms preserve the cache between builds.
+:::
