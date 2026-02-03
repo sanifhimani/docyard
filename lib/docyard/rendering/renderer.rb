@@ -8,7 +8,7 @@ require_relative "og_helpers"
 require_relative "branding_variables"
 
 module Docyard
-  class Renderer
+  class Renderer # rubocop:disable Metrics/ClassLength
     include Utils::UrlHelpers
     include Utils::HtmlHelpers
     include IconHelpers
@@ -153,6 +153,15 @@ module Docyard
       @toc = navigation[:toc] || []
       @breadcrumbs = navigation[:breadcrumbs]
       @raw_markdown = raw_markdown
+      assign_custom_file_variables
+    end
+
+    def assign_custom_file_variables
+      source_dir = config&.source || "docs"
+      custom_css_path = File.join(source_dir, "_custom", "styles.css")
+      custom_js_path = File.join(source_dir, "_custom", "scripts.js")
+      @custom_css_exists = File.exist?(custom_css_path)
+      @custom_js_exists = File.exist?(custom_js_path)
     end
 
     def assign_template_variables(template_options)

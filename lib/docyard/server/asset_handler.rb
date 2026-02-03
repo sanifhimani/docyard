@@ -8,8 +8,9 @@ module Docyard
     TEMPLATES_ASSETS_PATH = File.join(__dir__, "../templates", "assets")
     CACHE_MAX_AGE = 3600
     DEFAULT_PUBLIC_DIR = "docs/public"
+    DEFAULT_DOCS_PATH = "docs"
 
-    attr_reader :public_dir
+    attr_reader :public_dir, :docs_path
 
     CONTENT_TYPES = {
       ".css" => "text/css; charset=utf-8",
@@ -30,8 +31,9 @@ module Docyard
       ".webm" => "video/webm"
     }.freeze
 
-    def initialize(public_dir: DEFAULT_PUBLIC_DIR)
+    def initialize(public_dir: DEFAULT_PUBLIC_DIR, docs_path: DEFAULT_DOCS_PATH)
       @public_dir = public_dir
+      @docs_path = docs_path
     end
 
     def serve_docyard_assets(request_path)
@@ -39,6 +41,8 @@ module Docyard
 
       return serve_components_css if asset_path == "css/components.css"
       return serve_components_js if asset_path == "js/components.js"
+      return serve_custom_css if asset_path == "css/custom.css"
+      return serve_custom_js if asset_path == "js/custom.js"
 
       file_path = safe_asset_path(asset_path, TEMPLATES_ASSETS_PATH)
       return forbidden_response unless file_path
@@ -89,6 +93,28 @@ module Docyard
     def serve_components_js
       content = concatenate_component_js
       headers = build_cache_headers(content)
+      headers["Content-Type"] = "application/javascript; charset=utf-8"
+
+      [200, headers, [content]]
+    end
+
+    def serve_custom_css
+      custom_path = File.join(docs_path, "_custom", "styles.css")
+      return not_found_response unless File.exist?(custom_path)
+
+      content = File.read(custom_path)
+      headers = build_cache_headers(content, File.mtime(custom_path))
+      headers["Content-Type"] = "text/css; charset=utf-8"
+
+      [200, headers, [content]]
+    end
+
+    def serve_custom_js
+      custom_path = File.join(docs_path, "_custom", "scripts.js")
+      return not_found_response unless File.exist?(custom_path)
+
+      content = File.read(custom_path)
+      headers = build_cache_headers(content, File.mtime(custom_path))
       headers["Content-Type"] = "application/javascript; charset=utf-8"
 
       [200, headers, [content]]
