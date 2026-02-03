@@ -27,6 +27,14 @@ RSpec.describe Docyard::CLI do
     it "defines serve command" do
       expect(described_class.commands).to have_key("serve")
     end
+
+    it "defines doctor command" do
+      expect(described_class.commands).to have_key("doctor")
+    end
+
+    it "defines customize command" do
+      expect(described_class.commands).to have_key("customize")
+    end
   end
 
   describe "build command options" do
@@ -65,6 +73,28 @@ RSpec.describe Docyard::CLI do
 
     it "has search option defaulting to false" do
       expect(options[:search].default).to be false
+    end
+  end
+
+  describe "doctor command options" do
+    let(:command) { described_class.commands["doctor"] }
+    let(:options) { command.options }
+
+    it "has fix option defaulting to false" do
+      expect(options[:fix].default).to be false
+    end
+  end
+
+  describe "customize command options" do
+    let(:command) { described_class.commands["customize"] }
+    let(:options) { command.options }
+
+    it "has minimal option defaulting to false" do
+      expect(options[:minimal].default).to be false
+    end
+
+    it "has -m alias for minimal option" do
+      expect(options[:minimal].aliases).to include("-m")
     end
   end
 

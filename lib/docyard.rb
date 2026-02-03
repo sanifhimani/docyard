@@ -27,6 +27,7 @@ require_relative "docyard/navigation/prev_next_builder"
 require_relative "docyard/config/branding_resolver"
 
 require_relative "docyard/initializer"
+require_relative "docyard/customizer"
 require_relative "docyard/cli"
 
 require_relative "docyard/search/pagefind_support"

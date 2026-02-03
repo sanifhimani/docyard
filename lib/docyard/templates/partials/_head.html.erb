@@ -94,4 +94,8 @@
 </style>
 <% end %>
 
+<% if @dev_mode && @custom_css_exists %>
+<link rel="stylesheet" href="/_docyard/css/custom.css">
+<% end %>
+
 <%= render_partial('_analytics') %>

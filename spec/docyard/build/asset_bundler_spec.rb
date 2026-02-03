@@ -220,5 +220,75 @@ RSpec.describe Docyard::Build::AssetBundler do
 
       expect(calc_with_plus).to all(match(/\s\+\s/))
     end
+
+    context "with custom CSS file" do
+      before do
+        docs_dir = File.join(temp_dir, "docs", "_custom")
+        FileUtils.mkdir_p(docs_dir)
+        File.write(File.join(docs_dir, "styles.css"), <<~CSS)
+          :root {
+            --primary: #ff0000;
+          }
+          .custom-class {
+            color: var(--primary);
+          }
+        CSS
+      end
+
+      it "includes custom CSS in the bundle", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          bundler = described_class.new(config, verbose: false)
+          bundler.bundle
+
+          css_file = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.css")).first
+          css_content = File.read(css_file)
+
+          expect(css_content).to include("--primary:#f00")
+          expect(css_content).to include(".custom-class")
+        end
+      end
+    end
+
+    context "with custom JS file" do
+      before do
+        docs_dir = File.join(temp_dir, "docs", "_custom")
+        FileUtils.mkdir_p(docs_dir)
+        File.write(File.join(docs_dir, "scripts.js"), <<~JS)
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('Custom script loaded');
+          });
+        JS
+      end
+
+      it "includes custom JS in the bundle" do
+        Dir.chdir(temp_dir) do
+          bundler = described_class.new(config, verbose: false)
+          bundler.bundle
+
+          js_file = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.js")).first
+          js_content = File.read(js_file)
+
+          expect(js_content).to include("Custom script loaded")
+        end
+      end
+    end
+
+    context "without custom files" do
+      it "works normally when no custom CSS exists" do
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        css_files = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.css"))
+        expect(css_files.size).to eq(1)
+      end
+
+      it "works normally when no custom JS exists" do
+        bundler = described_class.new(config, verbose: false)
+        bundler.bundle
+
+        js_files = Dir.glob(File.join(output_dir, "_docyard", "bundle.*.js"))
+        expect(js_files.size).to eq(1)
+      end
+    end
   end
 end
