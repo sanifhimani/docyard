@@ -2,7 +2,7 @@
 
 require "docyard/build/social_cards/homepage_card"
 
-RSpec.describe Docyard::Build::SocialCards::HomepageCard do
+RSpec.describe Docyard::Build::SocialCards::HomepageCard, skip: !VIPS_AVAILABLE && "libvips not installed" do
   let(:temp_dir) { Dir.mktmpdir }
   let(:output_dir) { File.join(temp_dir, "dist") }
   let(:config) do

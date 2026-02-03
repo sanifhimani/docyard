@@ -3,7 +3,6 @@
 require "fileutils"
 require "yaml"
 require "parallel"
-require "vips"
 require_relative "social_cards/card_renderer"
 require_relative "social_cards/homepage_card"
 require_relative "social_cards/doc_card"
@@ -26,6 +25,7 @@ module Docyard
       end
 
       def generate
+        ensure_vips_available!
         pages = collect_pages
         generate_cards_for(pages)
         [successful_count, build_verbose_details]
@@ -90,14 +90,17 @@ module Docyard
         derive_title_from_path(url_path)
       end
 
+      def ensure_vips_available!
+        require "vips"
+      rescue LoadError
+        raise Docyard::Error, SocialCards::CardRenderer::VIPS_INSTALL_INSTRUCTIONS
+      end
+
       def generate_card(page)
         output_path = File.join(config.build.output, OUTPUT_DIR, url_to_filename(page[:url_path]))
         card = build_card_for(page)
         card.render(output_path)
         output_path
-      rescue Vips::Error => e
-        log_card_error(page, "Vips rendering failed: #{e.message}")
-        nil
       rescue StandardError => e
         log_card_error(page, e.message)
         nil

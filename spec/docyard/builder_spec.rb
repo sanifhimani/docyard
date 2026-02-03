@@ -149,7 +149,7 @@ RSpec.describe Docyard::Builder do
       end
     end
 
-    describe "social cards generation when enabled" do
+    describe "social cards generation when enabled", skip: !VIPS_AVAILABLE && "libvips not installed" do
       before do
         create_config(<<~YAML)
           title: "Test Docs"

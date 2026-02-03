@@ -1,11 +1,23 @@
 # frozen_string_literal: true
 
-require "vips"
-
 module Docyard
   module Build
     module SocialCards
       class CardRenderer
+        VIPS_INSTALL_INSTRUCTIONS = <<~MSG.strip
+          Social cards require libvips to be installed.
+
+          Install libvips:
+            macOS:  brew install vips
+            Ubuntu: sudo apt install libvips-dev
+            Fedora: sudo dnf install vips-devel
+
+          Then run: bundle install
+
+          Or disable social cards in docyard.yml:
+            social_cards:
+              enabled: false
+        MSG
         WIDTH = 1200
         HEIGHT = 630
         BACKGROUND_COLOR = "#121212"
@@ -103,9 +115,16 @@ module Docyard
         end
 
         def save_as_png(svg_content, output_path)
+          require_vips!
           FileUtils.mkdir_p(File.dirname(output_path))
           image = Vips::Image.svgload_buffer(svg_content, dpi: 96)
           image.write_to_file(output_path, compression: 9, palette: true)
+        end
+
+        def require_vips!
+          require "vips"
+        rescue LoadError
+          raise Docyard::Error, VIPS_INSTALL_INSTRUCTIONS
         end
       end
     end

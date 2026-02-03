@@ -60,3 +60,11 @@ end
 RSpec.configure do |config|
   config.include LoggerTestHelpers
 end
+
+# Check if libvips is available for social cards tests
+VIPS_AVAILABLE = begin
+  require "vips"
+  true
+rescue LoadError
+  false
+end

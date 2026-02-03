@@ -2,7 +2,7 @@
 
 require "docyard/build/social_cards/card_renderer"
 
-RSpec.describe Docyard::Build::SocialCards::CardRenderer do
+RSpec.describe Docyard::Build::SocialCards::CardRenderer, skip: !VIPS_AVAILABLE && "libvips not installed" do
   let(:temp_dir) { Dir.mktmpdir }
   let(:output_dir) { File.join(temp_dir, "dist") }
   let(:config) do
