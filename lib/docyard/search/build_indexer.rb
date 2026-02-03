@@ -24,6 +24,12 @@ module Docyard
 
       private
 
+      def pagefind_available?
+        result = super
+        Docyard.logger.warn("Search disabled: Pagefind binary not available") unless result
+        result
+      end
+
       def run_pagefind
         command = pagefind_command
         args = build_pagefind_args(output_dir)

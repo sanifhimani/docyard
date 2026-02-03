@@ -56,6 +56,11 @@ RSpec.describe Docyard::Search::BuildIndexer do
         count, _details = indexer.index
         expect(count).to eq(0)
       end
+
+      it "logs a warning" do
+        output = capture_logger_output { indexer.index }
+        expect(output).to include("Search disabled: Pagefind binary not available")
+      end
     end
 
     context "when pagefind is available and succeeds" do
