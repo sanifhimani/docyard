@@ -37,6 +37,7 @@
     icon: palette
     items:
       - branding
+      - theming
       - social-cards
       - sidebar
       - landing-pages

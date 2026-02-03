@@ -208,6 +208,42 @@ Many config errors are auto-fixable. The `--fix` flag can correct:
 
 ---
 
+## docyard customize
+
+Generate theme customization files in `docs/_custom/`.
+
+```bash
+docyard customize [OPTIONS]
+```
+
+| Option | Alias | Default | Description |
+|--------|-------|---------|-------------|
+| `--minimal` | `-m` | `false` | Generate minimal files without comments |
+
+:::tabs
+== Default (annotated)
+```bash
+docyard customize
+```
+== Minimal output
+```bash
+docyard customize -m
+```
+:::
+
+**Generated files:**
+
+```filetree
+docs/
+  _custom/
+    styles.css *
+    scripts.js
+```
+
+The generated `styles.css` contains all available CSS variables organized by category, ready to uncomment and customize. See [Theming](/customize/theming) for details.
+
+---
+
 ## docyard version
 
 Show the installed Docyard version.
