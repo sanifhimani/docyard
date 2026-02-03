@@ -1,6 +1,6 @@
 ---
 title: Branding
-description: Customize logo, favicon, colors, and footer
+description: Customize logo, favicon, brand colors, copyright, and social links
 ---
 
 # Branding

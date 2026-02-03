@@ -1,9 +1,10 @@
 ---
 title: Docyard
-description: Write markdown. Get a stunning documentation site with search, dark mode, and 10+ components. Zero configuration required.
+description: Documentation generator for Markdown. Get a docs site with search, dark mode, and components. No configuration required.
+social_cards:
+  title: Markdown to beautiful docs in seconds
 landing:
   hero:
-    badge: "v1.0.0 is out"
     title: "Markdown to beautiful docs in seconds"
     tagline: "Write markdown. Get a stunning documentation site with search, dark mode, and 10+ components. Zero configuration required."
     custom_visual:

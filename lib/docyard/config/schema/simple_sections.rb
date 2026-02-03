@@ -73,6 +73,13 @@ module Docyard
           question: { type: :string }
         }
       }.freeze
+
+      SOCIAL_CARDS_SCHEMA = {
+        type: :hash,
+        keys: {
+          enabled: { type: :boolean }
+        }
+      }.freeze
     end
   end
 end

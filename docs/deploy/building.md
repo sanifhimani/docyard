@@ -1,6 +1,6 @@
 ---
 title: Building
-description: Build your documentation for production
+description: Build static HTML, CSS, JS, sitemap, and search index for production
 ---
 
 # Building
@@ -20,6 +20,7 @@ dist/
   _docyard/
     bundle.abc123.css
     bundle.abc123.js
+    og/ # social cards (when enabled)
     pagefind/
   getting-started/
     index.html
@@ -51,6 +52,9 @@ CSS and JavaScript are combined into single files with content-based hashes for 
 
 ### Search Index
 Pagefind generates a search index in `_docyard/pagefind/` that powers client-side search.
+
+### Social Cards
+When enabled, PNG images are generated in `_docyard/og/` for social media sharing. See [Social Cards](/customize/social-cards) to enable.
 
 ---
 

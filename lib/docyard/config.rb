@@ -26,7 +26,8 @@ module Docyard
       "repo" => { "url" => nil, "branch" => "main", "edit_path" => nil, "edit_link" => true,
                   "last_updated" => true },
       "analytics" => { "google" => nil, "plausible" => nil, "fathom" => nil, "script" => nil },
-      "feedback" => { "enabled" => false, "question" => "Was this page helpful?" }
+      "feedback" => { "enabled" => false, "question" => "Was this page helpful?" },
+      "social_cards" => { "enabled" => false }
     }.freeze
 
     attr_reader :data, :file_path
@@ -63,6 +64,7 @@ module Docyard
     def repo = @repo ||= Section.new(data["repo"])
     def analytics = @analytics ||= Section.new(data["analytics"])
     def feedback = @feedback ||= Section.new(data["feedback"])
+    def social_cards = @social_cards ||= Section.new(data["social_cards"])
 
     def announcement
       @announcement ||= data["announcement"] ? Section.new(data["announcement"]) : nil

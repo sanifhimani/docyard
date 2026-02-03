@@ -1,6 +1,6 @@
 ---
 title: Components
-description: Rich components to enhance your documentation
+description: Tabs, callouts, code blocks, steps, cards, accordions, and more Markdown components
 ---
 
 # Components

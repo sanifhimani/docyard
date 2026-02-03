@@ -119,5 +119,45 @@ RSpec.describe Docyard::OgHelpers do
         expect(instance.instance_variable_get(:@og_twitter)).to eq("@docyard")
       end
     end
+
+    context "with social cards enabled" do
+      let(:branding) { { site_url: "https://example.com", social_cards_enabled: true } }
+
+      it "auto-assigns generated card path for root page" do
+        instance.assign_og_variables(branding, nil, nil, "/")
+
+        expect(instance.instance_variable_get(:@og_image)).to eq("https://example.com/_docyard/og/index.png")
+      end
+
+      it "auto-assigns generated card path for nested page" do
+        instance.assign_og_variables(branding, nil, nil, "/guide/quickstart")
+
+        expect(instance.instance_variable_get(:@og_image)).to eq("https://example.com/_docyard/og/guide/quickstart.png")
+      end
+
+      it "uses explicit page og_image over generated card" do
+        instance.assign_og_variables(branding, nil, "/custom-og.png", "/guide")
+
+        expect(instance.instance_variable_get(:@og_image)).to eq("https://example.com/custom-og.png")
+      end
+
+      it "uses site og_image over generated card" do
+        branding_with_og = branding.merge(og_image: "/site-og.png")
+
+        instance.assign_og_variables(branding_with_og, nil, nil, "/guide")
+
+        expect(instance.instance_variable_get(:@og_image)).to eq("https://example.com/site-og.png")
+      end
+    end
+
+    context "with social cards disabled" do
+      let(:branding) { { site_url: "https://example.com", social_cards_enabled: false } }
+
+      it "returns nil when no og_image is configured" do
+        instance.assign_og_variables(branding, nil, nil, "/")
+
+        expect(instance.instance_variable_get(:@og_image)).to be_nil
+      end
+    end
   end
 end

@@ -1,6 +1,6 @@
 ---
 title: Code Blocks
-description: Syntax highlighting and advanced code features
+description: Syntax highlighting, line numbers, line highlighting, and copy button
 ---
 
 # Code Blocks
