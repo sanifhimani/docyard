@@ -149,6 +149,61 @@ RSpec.describe Docyard::Builder do
       end
     end
 
+    describe "social cards generation when enabled" do
+      before do
+        create_config(<<~YAML)
+          title: "Test Docs"
+          build:
+            output: "dist"
+            base: "/"
+          social_cards:
+            enabled: true
+        YAML
+      end
+
+      it "generates social card images", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: false)
+          capture_stdout { builder.build }
+
+          expect(File.exist?(File.join(output_dir, "_docyard/og/index.png"))).to be true
+          expect(File.exist?(File.join(output_dir, "_docyard/og/guide.png"))).to be true
+        end
+      end
+
+      it "shows social cards step in output", :aggregate_failures do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: false)
+
+          output = capture_stdout { builder.build }
+
+          expect(output).to include("Social cards")
+          expect(output).to match(/Social cards\s+done \(\d+ cards\)/)
+        end
+      end
+    end
+
+    describe "social cards generation when disabled" do
+      it "does not generate social card images" do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: false)
+          capture_stdout { builder.build }
+
+          expect(Dir.exist?(File.join(output_dir, "_docyard/og"))).to be false
+        end
+      end
+
+      it "does not show social cards step in output" do
+        Dir.chdir(temp_dir) do
+          builder = described_class.new(clean: true, verbose: false)
+
+          output = capture_stdout { builder.build }
+
+          expect(output).not_to include("Social cards")
+        end
+      end
+    end
+
     describe "validation" do
       it "fails when sidebar has missing files", :aggregate_failures do
         Dir.chdir(temp_dir) do

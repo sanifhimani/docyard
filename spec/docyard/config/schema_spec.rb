@@ -39,7 +39,7 @@ RSpec.describe Docyard::Config::Schema do
     it "defines all expected top-level keys" do
       expected = %i[title description url og_image twitter source sidebar
                     branding socials tabs build search navigation
-                    announcement repo analytics feedback]
+                    announcement repo analytics feedback social_cards]
       expect(described_class::DEFINITION.keys).to match_array(expected)
     end
 

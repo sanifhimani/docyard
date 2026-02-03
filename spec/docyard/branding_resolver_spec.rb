@@ -1253,5 +1253,43 @@ RSpec.describe Docyard::BrandingResolver do
         expect(result[:primary_color]).to eq({ light: "oklch(0.61 0.11 222)" })
       end
     end
+
+    context "with default social cards config" do
+      it "returns social_cards_enabled false by default" do
+        result = resolver.resolve
+
+        expect(result[:social_cards_enabled]).to be false
+      end
+    end
+
+    context "when social cards is enabled" do
+      before do
+        create_config(<<~YAML)
+          social_cards:
+            enabled: true
+        YAML
+      end
+
+      it "returns social_cards_enabled true" do
+        result = resolver.resolve
+
+        expect(result[:social_cards_enabled]).to be true
+      end
+    end
+
+    context "when social cards is explicitly disabled" do
+      before do
+        create_config(<<~YAML)
+          social_cards:
+            enabled: false
+        YAML
+      end
+
+      it "returns social_cards_enabled false" do
+        result = resolver.resolve
+
+        expect(result[:social_cards_enabled]).to be false
+      end
+    end
   end
 end
