@@ -84,11 +84,10 @@ docs/
 docs.example.com
 ```
 
-2. Update your base URL:
+2. Update your site URL:
 
 ```yaml [docyard.yml]
-build:
-  base: https://docs.example.com
+url: https://docs.example.com
 ```
 
 3. Configure DNS with your domain provider
@@ -100,8 +99,9 @@ build:
 For project sites at `username.github.io/repo-name/`:
 
 ```yaml [docyard.yml]
+url: https://username.github.io/repo-name
 build:
-  base: https://username.github.io/repo-name
+  base: /repo-name
 ```
 
 ---
@@ -144,14 +144,21 @@ steps:
 
 ## Caching
 
-Speed up builds by caching the Ruby environment:
+Speed up builds by caching the Ruby environment and Pagefind binary:
 
 ```yaml [.github/workflows/docs.yml]
 - uses: ruby/setup-ruby@v1
   with:
     ruby-version: "3.2"
     bundler-cache: true
+
+- uses: actions/cache@v4
+  with:
+    path: ~/.docyard/bin
+    key: pagefind-${{ runner.os }}
 ```
+
+The Pagefind binary is downloaded automatically on first build and cached in `~/.docyard/bin/`. Caching this directory avoids re-downloading on every build.
 
 ---
 

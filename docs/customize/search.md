@@ -55,7 +55,7 @@ By default, search is only indexed during `docyard build`. To enable search whil
 docyard serve --search
 ```
 
-This generates a search index at startup. Requires Node.js to be installed (Pagefind is downloaded automatically via npx).
+This generates a search index at startup. The Pagefind binary is downloaded automatically on first run and cached in `~/.docyard/bin/`.
 
 ---
 

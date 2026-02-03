@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "open3"
-
 module Docyard
   module Search
     module PagefindSupport
@@ -10,14 +8,18 @@ module Docyard
       end
 
       def pagefind_available?
-        _stdout, _stderr, status = Open3.capture3("npx", "pagefind", "--version")
-        status.success?
-      rescue Errno::ENOENT
-        false
+        !PagefindBinary.executable.nil?
+      end
+
+      def pagefind_command
+        executable = PagefindBinary.executable
+        return nil unless executable
+
+        executable == "npx" ? %w[npx pagefind] : [executable]
       end
 
       def build_pagefind_args(site_dir)
-        args = ["pagefind", "--site", site_dir, "--output-subdir", "_docyard/pagefind"]
+        args = ["--site", site_dir, "--output-subdir", "_docyard/pagefind"]
 
         exclusions = config.search.exclude || []
         exclusions.each do |pattern|

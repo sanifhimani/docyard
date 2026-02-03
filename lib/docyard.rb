@@ -30,6 +30,7 @@ require_relative "docyard/initializer"
 require_relative "docyard/customizer"
 require_relative "docyard/cli"
 
+require_relative "docyard/search/pagefind_binary"
 require_relative "docyard/search/pagefind_support"
 require_relative "docyard/search/dev_indexer"
 require_relative "docyard/search/build_indexer"
