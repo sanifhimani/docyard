@@ -1,6 +1,6 @@
 ---
 title: Callouts
-description: Highlight important information with callout boxes
+description: Tip, warning, danger, note, and important callout boxes in Markdown
 ---
 
 # Callouts

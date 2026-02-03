@@ -1,6 +1,6 @@
 ---
 title: Sidebar
-description: Configure navigation structure and sidebar modes
+description: Configure sidebar navigation with config, auto, or distributed modes
 ---
 
 # Sidebar

@@ -1,11 +1,15 @@
 ---
 title: Vercel & Netlify
-description: Deploy to Vercel or Netlify
+description: Deploy Docyard to Vercel or Netlify with zero configuration
 ---
 
 # Vercel & Netlify
 
 Deploy your documentation with zero configuration on Vercel or Netlify.
+
+:::tip Social Cards
+Both Vercel and Netlify build images include libvips, so [social cards](/customize/social-cards) work out of the box. No additional setup needed.
+:::
 
 ## Vercel
 

@@ -1,6 +1,6 @@
 ---
 title: Search
-description: Configure full-text search
+description: Full-text search powered by Pagefind with keyboard shortcuts and filtering
 ---
 
 # Search

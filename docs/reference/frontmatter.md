@@ -1,6 +1,6 @@
 ---
 title: Frontmatter
-description: Page-level configuration options
+description: YAML frontmatter options for title, description, navigation, and landing pages
 ---
 
 # Frontmatter
@@ -35,6 +35,29 @@ og_image: /images/getting-started-og.png
 | `title` | `string` | Page title (used in browser tab and sidebar) |
 | `description` | `string` | Page description for SEO meta tags |
 | `og_image` | `string` | Open Graph image for social sharing (overrides site default) |
+
+---
+
+## Social Cards
+
+Override auto-generated social card content for individual pages.
+
+```yaml
+---
+social_cards:
+  title: Custom Card Title
+  description: Custom description for social sharing
+---
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `social_cards.title` | `string` | Override card title (~22 chars before truncation) |
+| `social_cards.description` | `string` | Override card description (~70 chars before truncation) |
+
+:::note
+These only affect the generated social card image, not the page's SEO metadata. Requires `social_cards.enabled: true` in your site config. See [Social Cards](/customize/social-cards) for full documentation.
+:::
 
 ---
 

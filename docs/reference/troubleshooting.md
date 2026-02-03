@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description: Common issues and solutions
+description: Fix build errors, broken links, missing pages, and configuration issues
 ---
 
 # Troubleshooting

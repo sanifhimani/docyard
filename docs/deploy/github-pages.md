@@ -1,6 +1,6 @@
 ---
 title: GitHub Pages
-description: Deploy to GitHub Pages
+description: Deploy Docyard to GitHub Pages with GitHub Actions workflow
 ---
 
 # GitHub Pages
@@ -113,6 +113,32 @@ The `fetch-depth: 0` option in the workflow above is required for accurate "Last
 :::
 
 If you don't need "Last updated" timestamps, you can omit this option for faster checkouts.
+
+---
+
+## Social Cards
+
+If you've enabled [social cards](/customize/social-cards), add libvips to your workflow:
+
+```yaml [.github/workflows/docs.yml]
+steps:
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  - name: Install libvips
+    run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
+  - uses: ruby/setup-ruby@v1
+    with:
+      ruby-version: "3.2"
+
+  - name: Install Docyard
+    run: gem install docyard
+
+  - name: Build
+    run: docyard build
+```
 
 ---
 

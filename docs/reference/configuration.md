@@ -366,3 +366,22 @@ build:
 :::note
 `base` must start with `/`. For your production URL, use the top-level `url` field instead.
 :::
+
+---
+
+## Social Cards
+
+Auto-generate Open Graph images for social media sharing.
+
+```yaml [docyard.yml]
+social_cards:
+  enabled: true
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | `boolean` | `false` | Generate OG images for all pages |
+
+:::important
+Social cards require libvips to be installed. See [Social Cards](/customize/social-cards) for setup instructions and customization options.
+:::

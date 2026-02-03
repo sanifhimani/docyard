@@ -1,6 +1,6 @@
 ---
 title: Tabs
-description: Organize content into switchable tabs
+description: Tabbed content for code examples, platform instructions, and comparisons
 ---
 
 # Tabs

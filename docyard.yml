@@ -26,3 +26,6 @@ feedback:
 build:
   output: "dist"
   base: "/"
+
+social_cards:
+  enabled: true

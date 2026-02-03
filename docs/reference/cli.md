@@ -1,6 +1,6 @@
 ---
 title: CLI
-description: Command line interface reference
+description: Docyard commands - init, serve, build, preview, and doctor
 ---
 
 # CLI

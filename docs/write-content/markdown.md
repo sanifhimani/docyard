@@ -1,6 +1,6 @@
 ---
 title: Markdown
-description: Write documentation using standard Markdown syntax
+description: GitHub Flavored Markdown with tables, task lists, footnotes, and syntax highlighting
 ---
 
 # Markdown

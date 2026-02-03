@@ -1,6 +1,6 @@
 ---
 title: Landing Pages
-description: Create hero sections and feature grids
+description: Hero sections, feature grids, and custom visuals for documentation homepages
 ---
 
 # Landing Pages

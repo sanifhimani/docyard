@@ -37,22 +37,20 @@
     icon: palette
     items:
       - branding
+      - social-cards
       - sidebar
-      - landing-pages:
-          text: Landing Pages
+      - landing-pages
       - navigation
       - search
       - announcement
-      - error-pages:
-          text: Error Pages
+      - error-pages
 
 - deploy:
     text: Deploy
     icon: cloud-arrow-up
     items:
       - building
-      - github-pages:
-          text: GitHub Pages
+      - github-pages
       - vercel-and-netlify:
           text: Vercel & Netlify
 
