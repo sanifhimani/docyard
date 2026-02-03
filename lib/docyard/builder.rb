@@ -52,6 +52,7 @@ module Docyard
       @step_runner.run("Generating pages") { generate_static_pages }
       @step_runner.run("Bundling assets") { bundle_assets }
       @step_runner.run("Copying files") { copy_static_files }
+      @step_runner.run("Social cards") { generate_social_cards } if social_cards_enabled?
       @step_runner.run("Generating SEO") { generate_seo_files }
       @step_runner.run("Indexing search") { generate_search_index }
     end
@@ -128,6 +129,15 @@ module Docyard
 
     def generate_search_index
       Search::BuildIndexer.new(config, verbose: verbose).index
+    end
+
+    def generate_social_cards
+      require_relative "build/social_cards_generator"
+      Build::SocialCardsGenerator.new(config, verbose: verbose).generate
+    end
+
+    def social_cards_enabled?
+      config.social_cards&.enabled == true
     end
 
     def robots_txt_content

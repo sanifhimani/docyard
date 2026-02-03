@@ -38,7 +38,7 @@ module Docyard
         site_options, logo_options, search_options, credits_options, social_options,
         navigation_options, tabs_options, announcement_options, repo_options, analytics_options,
         color_options
-      ].reduce({}, :merge)
+      ].reduce({}, :merge).merge(social_cards_enabled: config.social_cards&.enabled == true)
     end
 
     def site_options

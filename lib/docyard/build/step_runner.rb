@@ -5,6 +5,7 @@ module Docyard
     class StepRunner
       STEP_SHORT_LABELS = {
         "Generating pages" => "Pages",
+        "Social cards" => "Cards",
         "Bundling assets" => "Assets",
         "Copying files" => "Files",
         "Generating SEO" => "SEO",
@@ -59,6 +60,7 @@ module Docyard
       def format_result(label, result)
         case label
         when "Generating pages" then "done (#{result} pages)"
+        when "Social cards" then "done (#{result} cards)"
         when "Bundling assets" then format_assets_result(result)
         when "Copying files" then "done (#{result} files)"
         when "Generating SEO" then "done (#{result.join(', ')})"
