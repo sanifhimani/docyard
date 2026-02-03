@@ -69,6 +69,10 @@ module Docyard
       frontmatter["og_image"]
     end
 
+    def social_cards
+      frontmatter["social_cards"]
+    end
+
     def toc
       @context[:toc] || []
     end
