@@ -15,6 +15,8 @@ RSpec.describe Docyard::Search::PagefindSupport do
 
   before { instance.config = config }
 
+  after { Docyard::Search::PagefindBinary.reset! }
+
   describe "#search_enabled?" do
     it "returns true when search is enabled" do
       expect(instance.search_enabled?).to be true
@@ -34,28 +36,42 @@ RSpec.describe Docyard::Search::PagefindSupport do
   end
 
   describe "#pagefind_available?" do
-    it "returns true when pagefind command succeeds" do
-      allow(Open3).to receive(:capture3)
-        .with("npx", "pagefind", "--version")
-        .and_return(["1.0.0", "", instance_double(Process::Status, success?: true)])
+    it "returns true when PagefindBinary.executable returns a path" do
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return("/path/to/pagefind")
 
       expect(instance.pagefind_available?).to be true
     end
 
-    it "returns false when pagefind command fails" do
-      allow(Open3).to receive(:capture3)
-        .with("npx", "pagefind", "--version")
-        .and_return(["", "error", instance_double(Process::Status, success?: false)])
+    it "returns true when PagefindBinary.executable returns npx" do
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return("npx")
+
+      expect(instance.pagefind_available?).to be true
+    end
+
+    it "returns false when PagefindBinary.executable returns nil" do
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return(nil)
 
       expect(instance.pagefind_available?).to be false
     end
+  end
 
-    it "returns false when npx is not found" do
-      allow(Open3).to receive(:capture3)
-        .with("npx", "pagefind", "--version")
-        .and_raise(Errno::ENOENT)
+  describe "#pagefind_command" do
+    it "returns array with binary path when executable is a path" do
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return("/path/to/pagefind")
 
-      expect(instance.pagefind_available?).to be false
+      expect(instance.pagefind_command).to eq(["/path/to/pagefind"])
+    end
+
+    it "returns array with npx and pagefind when executable is npx" do
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return("npx")
+
+      expect(instance.pagefind_command).to eq(%w[npx pagefind])
+    end
+
+    it "returns nil when executable is nil" do
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return(nil)
+
+      expect(instance.pagefind_command).to be_nil
     end
   end
 
@@ -63,7 +79,7 @@ RSpec.describe Docyard::Search::PagefindSupport do
     it "returns base args with site directory and output subdir", :aggregate_failures do
       result = instance.build_pagefind_args("/path/to/site")
 
-      expect(result).to include("pagefind", "--site", "/path/to/site")
+      expect(result).to include("--site", "/path/to/site")
       expect(result).to include("--output-subdir", "_docyard/pagefind")
     end
 
@@ -81,7 +97,7 @@ RSpec.describe Docyard::Search::PagefindSupport do
 
       result = instance.build_pagefind_args("/path/to/site")
 
-      expect(result).to include("pagefind", "--site", "/path/to/site")
+      expect(result).to include("--site", "/path/to/site")
       expect(result).to include("--output-subdir", "_docyard/pagefind")
     end
   end

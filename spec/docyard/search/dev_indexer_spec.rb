@@ -19,10 +19,11 @@ RSpec.describe Docyard::Search::DevIndexer do
   let(:failure_status) { instance_double(Process::Status, success?: false) }
 
   def stub_pagefind_available(available: true)
-    status = available ? success_status : failure_status
-    allow(Open3).to receive(:capture3)
-      .with("npx", "pagefind", "--version")
-      .and_return(["1.0.0", "", status])
+    if available
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return("npx")
+    else
+      allow(Docyard::Search::PagefindBinary).to receive(:executable).and_return(nil)
+    end
   end
 
   def stub_pagefind_run(success: true, output: "Running pagefind...", error: "")
@@ -44,6 +45,7 @@ RSpec.describe Docyard::Search::DevIndexer do
 
   after do
     indexer.cleanup
+    Docyard::Search::PagefindBinary.reset!
   end
 
   describe "#generate" do

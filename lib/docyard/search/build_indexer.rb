@@ -7,8 +7,6 @@ module Docyard
     class BuildIndexer
       include PagefindSupport
 
-      PAGEFIND_COMMAND = "npx"
-
       attr_reader :config, :output_dir, :verbose
 
       def initialize(config, verbose: false)
@@ -27,9 +25,10 @@ module Docyard
       private
 
       def run_pagefind
+        command = pagefind_command
         args = build_pagefind_args(output_dir)
 
-        stdout, stderr, status = Open3.capture3(PAGEFIND_COMMAND, *args)
+        stdout, stderr, status = Open3.capture3(*command, *args)
 
         if status.success?
           count = extract_page_count(stdout)

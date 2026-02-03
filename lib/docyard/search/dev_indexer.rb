@@ -50,7 +50,7 @@ module Docyard
 
       def pagefind_available?
         result = super
-        Docyard.logger.warn("Search disabled: Pagefind not found (npm install -g pagefind)") unless result
+        Docyard.logger.warn("Search disabled: Pagefind binary not available") unless result
         result
       end
 
@@ -132,8 +132,9 @@ module Docyard
       end
 
       def run_pagefind
+        command = pagefind_command
         args = build_pagefind_args(temp_dir)
-        stdout, stderr, status = Open3.capture3("npx", *args)
+        stdout, stderr, status = Open3.capture3(*command, *args)
 
         raise "Pagefind failed: #{stderr}" unless status.success?
 
