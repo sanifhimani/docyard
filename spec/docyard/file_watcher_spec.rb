@@ -52,9 +52,9 @@ RSpec.describe Docyard::FileWatcher do
       expect(watcher.instance_variable_get(:@pending_changes)[:config]).to be true
     end
 
-    it "categorizes css files as asset" do
+    it "categorizes css files as css" do
       watcher.send(:categorize_change, "/docs/style.css")
-      expect(watcher.instance_variable_get(:@pending_changes)[:asset]).to be true
+      expect(watcher.instance_variable_get(:@pending_changes)[:css]).to be true
     end
 
     it "categorizes js files as asset" do
@@ -65,22 +65,27 @@ RSpec.describe Docyard::FileWatcher do
 
   describe "change type determination" do
     it "prioritizes config over content" do
-      watcher.instance_variable_set(:@pending_changes, { content: true, config: true, asset: false })
+      watcher.instance_variable_set(:@pending_changes, { content: true, config: true, css: false, asset: false })
       expect(watcher.send(:determine_change_type, watcher.instance_variable_get(:@pending_changes))).to eq(:full)
     end
 
     it "returns content when only content changed" do
-      watcher.instance_variable_set(:@pending_changes, { content: true, config: false, asset: false })
+      watcher.instance_variable_set(:@pending_changes, { content: true, config: false, css: false, asset: false })
       expect(watcher.send(:determine_change_type, watcher.instance_variable_get(:@pending_changes))).to eq(:content)
     end
 
+    it "returns css when only css changed" do
+      watcher.instance_variable_set(:@pending_changes, { content: false, config: false, css: true, asset: false })
+      expect(watcher.send(:determine_change_type, watcher.instance_variable_get(:@pending_changes))).to eq(:css)
+    end
+
     it "returns asset when only asset changed" do
-      watcher.instance_variable_set(:@pending_changes, { content: false, config: false, asset: true })
+      watcher.instance_variable_set(:@pending_changes, { content: false, config: false, css: false, asset: true })
       expect(watcher.send(:determine_change_type, watcher.instance_variable_get(:@pending_changes))).to eq(:asset)
     end
 
     it "returns nil when nothing changed" do
-      watcher.instance_variable_set(:@pending_changes, { content: false, config: false, asset: false })
+      watcher.instance_variable_set(:@pending_changes, { content: false, config: false, css: false, asset: false })
       expect(watcher.send(:determine_change_type, watcher.instance_variable_get(:@pending_changes))).to be_nil
     end
   end
