@@ -1,6 +1,9 @@
 ---
 title: Badges
-description: Inline status indicators
+description: Inline status indicators for versions, features, and labels.
+social_cards:
+  title: Badges
+  description: Add inline labels for status and versions.
 ---
 
 # Badges

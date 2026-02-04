@@ -1,6 +1,9 @@
 ---
 title: Includes
-description: Reuse content across multiple pages
+description: Reuse content across multiple pages by importing Markdown files.
+social_cards:
+  title: Includes
+  description: Import and reuse content across pages.
 ---
 
 # Includes

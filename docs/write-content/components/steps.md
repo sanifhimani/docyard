@@ -1,6 +1,9 @@
 ---
 title: Steps
-description: Create numbered step-by-step instructions
+description: Create numbered step-by-step instructions.
+social_cards:
+  title: Steps
+  description: Guide users through numbered instructions.
 ---
 
 # Steps
@@ -10,32 +13,26 @@ Guide users through a process with numbered steps.
 ## Basic Usage
 
 :::steps
-### Install Docyard
-
-Install the gem from RubyGems:
+### Clone the repository
 
 ```bash
-gem install docyard
+git clone https://github.com/user/repo.git
+cd repo
 ```
 
-### Create a Project
-
-Generate a new documentation site:
+### Install dependencies
 
 ```bash
-docyard init my-docs
-cd my-docs
+bundle install
 ```
 
-### Start the Server
-
-Run the development server:
+### Run the tests
 
 ```bash
-docyard serve
+bundle exec rspec
 ```
 
-Open http://localhost:4200 to see your site.
+All tests should pass before submitting a pull request.
 :::
 
 ---

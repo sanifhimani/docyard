@@ -1,6 +1,9 @@
 ---
 title: Search
-description: Full-text search powered by Pagefind with keyboard shortcuts and filtering
+description: Full-text search powered by Pagefind with keyboard shortcuts and filtering.
+social_cards:
+  title: Search
+  description: Full-text search with keyboard navigation.
 ---
 
 # Search

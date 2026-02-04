@@ -3,7 +3,7 @@
     position: relative;
     width: 100%;
     max-width: 800px;
-    height: 480px;
+    height: 420px;
     margin: 0 auto;
     padding-top: 16px;
   }
@@ -13,12 +13,11 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-2xl);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     overflow: visible;
-    /* Entrance animation */
     opacity: 0;
     animation: cardEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-               cardFloat 6s ease-in-out infinite;
+      cardFloat 6s ease-in-out infinite;
     animation-delay: var(--entrance-delay, 0s), var(--float-delay, 0s);
   }
 
@@ -27,6 +26,7 @@
       opacity: 0;
       transform: translateY(20px) rotate(var(--card-rotate, 0deg));
     }
+
     to {
       opacity: 1;
       transform: translateY(0) rotate(var(--card-rotate, 0deg));
@@ -34,9 +34,12 @@
   }
 
   @keyframes cardFloat {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0) rotate(var(--card-rotate, 0deg));
     }
+
     50% {
       transform: translateY(var(--float-distance, -8px)) rotate(var(--card-rotate, 0deg));
     }
@@ -47,15 +50,22 @@
       animation: none;
       opacity: 1;
     }
-    .showcase-filetree {
+
+    .showcase-code {
       animation: none;
       opacity: 1;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -45%);
+    }
+
+    .showcase-callout {
+      animation: none;
+      opacity: 1;
+      transform: translateX(-50%);
     }
   }
 
   .dark .showcase-card {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
   }
 
   .showcase-label {
@@ -72,19 +82,43 @@
     letter-spacing: 0.05em;
   }
 
-  /* Callout Card - matches docyard-callout */
+  /* Callout Card - Bottom Center */
   .showcase-callout {
-    top: 20px;
-    left: 40px;
-    width: 280px;
-    --card-rotate: -2deg;
-    --entrance-delay: 0.1s;
-    --float-delay: 0.5s;
-    --float-distance: -6px;
-    animation-duration: 0.4s, 5s;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    --card-rotate: 0deg;
+    --entrance-delay: 0.4s;
+    --float-delay: 0.8s;
+    --float-distance: -5px;
+    animation: calloutEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+      calloutFloat 6s ease-in-out infinite;
+    animation-delay: 0.4s, 0.8s;
     padding: 0;
     border-color: var(--callout-note-border);
     background: var(--callout-note-background);
+    z-index: 1;
+  }
+
+  @keyframes calloutEntrance {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes calloutFloat {
+    0%, 100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      transform: translateX(-50%) translateY(-5px);
+    }
   }
 
   .callout-inner {
@@ -121,26 +155,138 @@
     opacity: 0.9;
   }
 
-  /* Code Block Card - matches docyard-code-block */
-  .showcase-code {
-    top: 20px;
+  /* File Tree Card - Bottom Right */
+  .showcase-filetree {
+    bottom: 60px;
     right: 40px;
-    width: 280px;
-    --card-rotate: 1.5deg;
-    --entrance-delay: 0.2s;
-    --float-delay: 0s;
+    width: 220px;
+    padding: 16px;
+    --card-rotate: -2deg;
+    --entrance-delay: 0.4s;
+    --float-delay: 1s;
     --float-distance: -7px;
     animation-duration: 0.4s, 5.5s;
+    z-index: 1;
+  }
+
+  .filetree {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .filetree-list {
+    list-style: none;
+    margin: 0;
     padding: 0;
-    background: var(--code-block-bg);
-    border-color: var(--code-block-border);
+  }
+
+  .filetree-list .filetree-list {
+    margin-left: 4px;
+    padding-left: 14px;
+    border-left: 1px solid var(--border);
+  }
+
+  .filetree-item {
+    list-style: none;
+  }
+
+  .filetree-entry {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    margin: 0 -6px;
+    border-radius: var(--radius-md);
+  }
+
+  .filetree-entry--highlighted {
+    background: oklch(from var(--primary) l c h / 10%);
+  }
+
+  .filetree-entry--highlighted .filetree-name {
+    color: var(--primary);
+  }
+
+  .filetree-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+  }
+
+  .filetree-icon--folder {
+    color: var(--muted-foreground);
+  }
+
+  .filetree-icon--file {
+    opacity: 0.6;
+  }
+
+  .filetree-name {
+    color: var(--foreground);
+  }
+
+  .filetree-name--folder {
+    font-weight: 500;
+  }
+
+  /* Code Block - CENTER HERO */
+  .showcase-code {
+    top: 45%;
+    left: 50%;
+    width: 380px;
+    padding: 0;
+    z-index: 10;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3), 0 0 0 1px oklch(from var(--primary) l c h / 0.25);
+    --card-rotate: 0deg;
+    --entrance-delay: 0s;
+    --float-delay: 0.3s;
+    --float-distance: -10px;
+    animation: codeEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+      codeFloat 8s ease-in-out infinite;
+    animation-delay: var(--entrance-delay), var(--float-delay);
+    background: var(--card);
+    border-color: var(--border);
+  }
+
+  @keyframes codeEntrance {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -45%) translateY(24px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -45%) translateY(0);
+    }
+  }
+
+  @keyframes codeFloat {
+
+    0%,
+    100% {
+      transform: translate(-50%, -45%) translateY(0);
+    }
+
+    50% {
+      transform: translate(-50%, -45%) translateY(-10px);
+    }
+  }
+
+  .dark .showcase-code {
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px oklch(from var(--primary) l c h / 0.35);
+  }
+
+  .showcase-code .showcase-label {
+    background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l - 0.1) c h));
   }
 
   .code-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 10px 16px;
     background: var(--code-block-header-bg);
     border-bottom: 1px solid var(--code-block-header-border);
     font-size: 0.75rem;
@@ -165,8 +311,17 @@
     font-size: 0.7rem;
     color: var(--muted-foreground);
     background: var(--code-block-copy-bg);
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+    font-family: inherit;
+  }
+
+  .code-copy:hover {
+    background: var(--primary);
+    color: var(--primary-foreground);
   }
 
   .code-copy svg {
@@ -174,142 +329,78 @@
     height: 12px;
   }
 
+  .code-copy.copied {
+    background: var(--callout-tip-background);
+    color: var(--callout-tip-foreground);
+  }
+
   .code-body {
-    display: flex;
-    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
-    overflow: hidden;
-  }
-
-  .code-lines {
-    padding: 16px 0;
-    text-align: right;
-    user-select: none;
-    background: var(--code-block-gutter-bg);
-    color: var(--muted-foreground);
-    opacity: 0.5;
+    padding: 20px 24px;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.7;
-  }
-
-  .code-lines span {
-    display: block;
-    padding: 0 12px;
-    min-width: 2.5rem;
-  }
-
-  .code-content {
-    flex: 1;
-    padding: 16px;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.7;
+    font-size: 0.9rem;
+    line-height: 1.9;
     color: var(--foreground);
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+    min-height: 120px;
+    background: var(--card);
   }
 
   .code-line {
     display: block;
+    white-space: nowrap;
+    min-height: 1.8em;
   }
 
-  .code-keyword { color: oklch(0.7 0.15 300); }
-  .code-string { color: oklch(0.7 0.15 145); }
-  .code-comment { color: var(--muted-foreground); }
-
-  /* Tabs Card - matches docyard-tabs */
-  .showcase-tabs {
-    bottom: 60px;
-    left: 60px;
-    width: 260px;
-    --card-rotate: 1deg;
-    --entrance-delay: 0.3s;
-    --float-delay: 1s;
-    --float-distance: -5px;
-    animation-duration: 0.4s, 6.5s;
-    padding: 0;
+  .code-prompt {
+    color: var(--primary);
+    user-select: none;
   }
 
-  .tabs-list-wrapper {
-    position: relative;
-    padding: 0 16px;
-    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-  }
-
-  .tabs-list-wrapper::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .tabs-list {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding-bottom: 12px;
-  }
-
-  .tab-item {
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--muted-foreground);
-    position: relative;
-  }
-
-  .tab-item.active {
-    color: var(--foreground);
-  }
-
-  .tab-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 0;
-    right: 0;
-    height: 2px;
+  .typing-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.1em;
     background: var(--primary);
-    border-radius: 1px;
-    z-index: 1;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: cursorBlink 1s infinite;
   }
 
-  .tabs-panel {
-    padding: 16px;
-    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  @keyframes cursorBlink {
+
+    0%,
+    50% {
+      opacity: 1;
+    }
+
+    51%,
+    100% {
+      opacity: 0;
+    }
   }
 
-  .tabs-code {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--muted-foreground);
-    background: var(--muted);
-    padding: 12px;
-    border-radius: var(--radius-lg);
-  }
-
-  /* Steps Card - matches docyard-steps */
+  /* Steps Card - Vertical */
   .showcase-steps {
-    bottom: 30px;
-    right: 60px;
+    bottom: 60px;
+    left: 40px;
     width: 240px;
-    --card-rotate: -1deg;
-    --entrance-delay: 0.35s;
+    --card-rotate: 1deg;
+    --entrance-delay: 0.5s;
     --float-delay: 1.5s;
     --float-distance: -6px;
     animation-duration: 0.4s, 7s;
-    padding: 20px;
+    padding: 16px;
+    z-index: 1;
   }
 
   .step-item {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     position: relative;
   }
 
   .step-item:not(:last-child) {
-    padding-bottom: 20px;
+    padding-bottom: 16px;
   }
 
   .step-indicator {
@@ -320,15 +411,15 @@
   }
 
   .step-num {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     background: var(--primary);
     color: var(--primary-foreground);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     flex-shrink: 0;
   }
@@ -337,134 +428,27 @@
     width: 2px;
     flex: 1;
     background: var(--border);
-    margin-top: 8px;
+    margin-top: 6px;
   }
 
   .step-content {
     flex: 1;
-    padding-top: 4px;
+    padding-top: 3px;
   }
 
   .step-content h4 {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--foreground);
-    margin: 0 0 4px 0;
+    margin: 0 0 2px 0;
     line-height: 1.3;
   }
 
   .step-content p {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--muted-foreground);
     line-height: 1.4;
     margin: 0;
-  }
-
-  /* File Tree Card - CENTER HIGHLIGHT */
-  .showcase-filetree {
-    top: 50%;
-    left: 50%;
-    width: 260px;
-    padding: 20px;
-    z-index: 10;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px oklch(from var(--primary) l c h / 0.2);
-    --card-rotate: 0deg;
-    --entrance-delay: 0s;
-    --float-delay: 0.3s;
-    --float-distance: -10px;
-    animation: filetreeEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-               filetreeFloat 8s ease-in-out infinite;
-    animation-delay: var(--entrance-delay), var(--float-delay);
-  }
-
-  @keyframes filetreeEntrance {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -50%) translateY(24px);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%) translateY(0);
-    }
-  }
-
-  @keyframes filetreeFloat {
-    0%, 100% {
-      transform: translate(-50%, -50%) translateY(0);
-    }
-    50% {
-      transform: translate(-50%, -50%) translateY(-10px);
-    }
-  }
-
-  .dark .showcase-filetree {
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px oklch(from var(--primary) l c h / 0.3);
-  }
-
-  .showcase-filetree .showcase-label {
-    background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l - 0.1) c h));
-  }
-
-  .filetree {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.6;
-  }
-
-  .filetree-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .filetree-list .filetree-list {
-    margin-left: 4px;
-    padding-left: 16px;
-    border-left: 1px solid var(--border);
-  }
-
-  .filetree-item {
-    list-style: none;
-  }
-
-  .filetree-entry {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 8px;
-    margin: 0 -8px;
-    border-radius: var(--radius-md);
-  }
-
-  .filetree-entry--highlighted {
-    background: oklch(from var(--primary) l c h / 10%);
-  }
-
-  .filetree-entry--highlighted .filetree-name {
-    color: var(--primary);
-  }
-
-  .filetree-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    color: var(--muted-foreground);
-  }
-
-  .filetree-icon--folder {
-    color: var(--muted-foreground);
-  }
-
-  .filetree-icon--file {
-    opacity: 0.6;
-  }
-
-  .filetree-name {
-    color: var(--foreground);
-  }
-
-  .filetree-name--folder {
-    font-weight: 500;
   }
 
   /* Glow effects */
@@ -476,17 +460,24 @@
     pointer-events: none;
   }
 
-  .showcase-glow-1 { top: -30px; left: -30px; }
-  .showcase-glow-2 { bottom: -30px; right: -30px; }
+  .showcase-glow-1 {
+    top: -30px;
+    left: -30px;
+  }
+
+  .showcase-glow-2 {
+    bottom: -30px;
+    right: -30px;
+  }
 
   .showcase-glow-center {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, oklch(from var(--primary) l c h / 0.12) 0%, transparent 60%);
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, oklch(from var(--primary) l c h / 0.15) 0%, transparent 60%);
     pointer-events: none;
     z-index: 5;
   }
@@ -495,7 +486,7 @@
     .showcase {
       transform: scale(0.9);
       transform-origin: top center;
-      height: 450px;
+      height: 400px;
     }
   }
 
@@ -507,29 +498,33 @@
       height: 420px;
     }
 
-    /* Spread cards out more */
-    .showcase-callout {
-      top: 10px;
-      left: 0;
-    }
-
     .showcase-code {
-      top: 10px;
-      right: 0;
-    }
-
-    .showcase-tabs {
-      bottom: 30px;
-      left: 0;
-    }
-
-    .showcase-steps {
-      bottom: 0;
-      right: 0;
+      top: 45%;
     }
 
     .showcase-filetree {
-      top: 45%;
+      top: 10px;
+      bottom: auto;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%) rotate(0deg);
+      --card-rotate: 0deg;
+    }
+
+    .showcase-callout {
+      bottom: 40px;
+      left: 20%;
+      right: auto;
+      transform: translateX(-50%) rotate(0deg);
+      --card-rotate: 0deg;
+    }
+
+    .showcase-steps {
+      bottom: 40px;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%) rotate(0deg);
+      --card-rotate: 0deg;
     }
   }
 
@@ -537,7 +532,23 @@
     .showcase {
       width: 600px;
       transform: scale(0.75);
-      height: 380px;
+      height: 400px;
+    }
+
+    .showcase-code {
+      top: 45%;
+    }
+
+    .showcase-callout {
+      bottom: 30px;
+      left: 20%;
+      transform: translateX(-50%) rotate(0deg);
+    }
+
+    .showcase-steps {
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) rotate(0deg);
     }
   }
 
@@ -545,7 +556,23 @@
     .showcase {
       width: 550px;
       transform: scale(0.7);
-      height: 350px;
+      height: 380px;
+    }
+
+    .showcase-code {
+      top: 45%;
+    }
+
+    .showcase-callout {
+      bottom: 20px;
+      left: 20%;
+      transform: translateX(-50%) rotate(0deg);
+    }
+
+    .showcase-steps {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) rotate(0deg);
     }
   }
 </style>
@@ -555,45 +582,73 @@
   <div class="showcase-glow showcase-glow-2"></div>
   <div class="showcase-glow-center"></div>
 
-  <!-- File Tree - CENTER HIGHLIGHT -->
+  <!-- Callout - Top Left -->
+  <div class="showcase-card showcase-callout">
+    <div class="showcase-label">Callout</div>
+    <div class="callout-inner">
+      <div class="callout-icon">
+        <svg viewBox="0 0 256 256" fill="currentColor">
+          <path
+            d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"
+            opacity="0.2" />
+          <path
+            d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V96a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z" />
+        </svg>
+      </div>
+      <div class="callout-content">
+        <div class="callout-title">Note</div>
+        <div class="callout-text">Five callout types with GitHub-style alert syntax.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Tree - Top Right -->
   <div class="showcase-card showcase-filetree">
     <div class="showcase-label">File Tree</div>
     <div class="filetree">
       <ul class="filetree-list">
         <li class="filetree-item">
           <div class="filetree-entry">
-            <svg class="filetree-icon filetree-icon--folder" viewBox="0 0 256 256" fill="currentColor"><path d="M216,72H131.31L104,44.69A15.88,15.88,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.41,15.41,0,0,0,39.39,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40Z" opacity="0.2"/><path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM92.69,56l16,16H40V56ZM216,200H40V88H216Z"/></svg>
-            <span class="filetree-name filetree-name--folder">docs</span>
+            <svg class="filetree-icon filetree-icon--folder" viewBox="0 0 256 256" fill="currentColor">
+              <path
+                d="M216,72H131.31L104,44.69A15.88,15.88,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.41,15.41,0,0,0,39.39,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40Z"
+                opacity="0.2" />
+              <path
+                d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM92.69,56l16,16H40V56ZM216,200H40V88H216Z" />
+            </svg>
+            <span class="filetree-name filetree-name--folder">my-docs</span>
           </div>
           <ul class="filetree-list">
             <li class="filetree-item">
               <div class="filetree-entry filetree-entry--highlighted">
-                <svg class="filetree-icon filetree-icon--file" viewBox="0 0 256 256" fill="currentColor"><path d="M208,88H152V32Z" opacity="0.2"/><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"/></svg>
-                <span class="filetree-name">index.md</span>
+                <svg class="filetree-icon filetree-icon--file" viewBox="0 0 256 256" fill="currentColor">
+                  <path d="M208,88H152V32Z" opacity="0.2" />
+                  <path
+                    d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z" />
+                </svg>
+                <span class="filetree-name">docyard.yml</span>
               </div>
             </li>
             <li class="filetree-item">
               <div class="filetree-entry">
-                <svg class="filetree-icon filetree-icon--file" viewBox="0 0 256 256" fill="currentColor"><path d="M208,88H152V32Z" opacity="0.2"/><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"/></svg>
-                <span class="filetree-name">getting-started.md</span>
-              </div>
-            </li>
-            <li class="filetree-item">
-              <div class="filetree-entry">
-                <svg class="filetree-icon filetree-icon--folder" viewBox="0 0 256 256" fill="currentColor"><path d="M216,72H131.31L104,44.69A15.88,15.88,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.41,15.41,0,0,0,39.39,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40Z" opacity="0.2"/><path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM92.69,56l16,16H40V56ZM216,200H40V88H216Z"/></svg>
-                <span class="filetree-name filetree-name--folder">components</span>
+                <svg class="filetree-icon filetree-icon--folder" viewBox="0 0 256 256" fill="currentColor">
+                  <path
+                    d="M216,72H131.31L104,44.69A15.88,15.88,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.41,15.41,0,0,0,39.39,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40Z"
+                    opacity="0.2" />
+                  <path
+                    d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM92.69,56l16,16H40V56ZM216,200H40V88H216Z" />
+                </svg>
+                <span class="filetree-name filetree-name--folder">docs</span>
               </div>
               <ul class="filetree-list">
                 <li class="filetree-item">
                   <div class="filetree-entry">
-                    <svg class="filetree-icon filetree-icon--file" viewBox="0 0 256 256" fill="currentColor"><path d="M208,88H152V32Z" opacity="0.2"/><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"/></svg>
-                    <span class="filetree-name">callouts.md</span>
-                  </div>
-                </li>
-                <li class="filetree-item">
-                  <div class="filetree-entry">
-                    <svg class="filetree-icon filetree-icon--file" viewBox="0 0 256 256" fill="currentColor"><path d="M208,88H152V32Z" opacity="0.2"/><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"/></svg>
-                    <span class="filetree-name">tabs.md</span>
+                    <svg class="filetree-icon filetree-icon--file" viewBox="0 0 256 256" fill="currentColor">
+                      <path d="M208,88H152V32Z" opacity="0.2" />
+                      <path
+                        d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z" />
+                    </svg>
+                    <span class="filetree-name">index.md</span>
                   </div>
                 </li>
               </ul>
@@ -604,59 +659,35 @@
     </div>
   </div>
 
-  <!-- Callout -->
-  <div class="showcase-card showcase-callout">
-    <div class="showcase-label">Callout</div>
-    <div class="callout-inner">
-      <div class="callout-icon">
-        <svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" opacity="0.2"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V96a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/></svg>
-      </div>
-      <div class="callout-content">
-        <div class="callout-title">Note</div>
-        <div class="callout-text">Docyard supports GitHub-style alerts with custom styling.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Code Block -->
+  <!-- Code Block - CENTER HERO with typing -->
   <div class="showcase-card showcase-code">
-    <div class="showcase-label">Code Block</div>
+    <div class="showcase-label">Quick Start</div>
     <div class="code-header">
-      <svg class="code-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
+      <svg class="code-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 17l6-6-6-6M12 19h8" />
+      </svg>
       <span class="code-title">terminal</span>
-      <span class="code-copy">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        Copy
-      </span>
+      <button class="code-copy" onclick="copyCommands(this)">
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" />
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+        </svg>
+        <svg class="check-icon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span class="copy-text">Copy</span>
+      </button>
     </div>
-    <div class="code-body">
-      <div class="code-lines">
-        <span>1</span>
-        <span>2</span>
-      </div>
-      <div class="code-content">
-        <span class="code-line"><span class="code-comment"># Install and run</span></span>
-        <span class="code-line">gem install docyard</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="showcase-card showcase-tabs">
-    <div class="showcase-label">Tabs</div>
-    <div class="tabs-list-wrapper">
-      <div class="tabs-list">
-        <div class="tab-item active">npm</div>
-        <div class="tab-item">yarn</div>
-        <div class="tab-item">pnpm</div>
-      </div>
-    </div>
-    <div class="tabs-panel">
-      <div class="tabs-code">npm install package</div>
+    <div class="code-body" id="codeBody">
+      <span class="code-line"><span class="code-prompt">$</span> <span id="cmd1"></span><span class="typing-cursor"
+          id="cursor"></span></span>
+      <span class="code-line"><span class="code-prompt">$</span> <span id="cmd2"></span></span>
+      <span class="code-line"><span class="code-prompt">$</span> <span id="cmd3"></span></span>
     </div>
   </div>
 
-  <!-- Steps -->
+  <!-- Steps - Bottom Right, Vertical -->
   <div class="showcase-card showcase-steps">
     <div class="showcase-label">Steps</div>
     <div class="step-item">
@@ -666,7 +697,7 @@
       </div>
       <div class="step-content">
         <h4>Install</h4>
-        <p>Add the gem to your project</p>
+        <p>Add the gem to your system</p>
       </div>
     </div>
     <div class="step-item">
@@ -675,8 +706,8 @@
         <div class="step-connector"></div>
       </div>
       <div class="step-content">
-        <h4>Configure</h4>
-        <p>Customize your settings</p>
+        <h4>Write</h4>
+        <p>Create your Markdown files</p>
       </div>
     </div>
     <div class="step-item">
@@ -684,9 +715,96 @@
         <div class="step-num">3</div>
       </div>
       <div class="step-content">
-        <h4>Deploy</h4>
-        <p>Ship to any static host</p>
+        <h4>Ship</h4>
+        <p>Deploy to any static host</p>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    const commands = [
+      'gem install docyard',
+      'docyard init',
+      'docyard serve'
+    ];
+
+    const commandsToCopy = commands.join('\n');
+
+    window.copyCommands = function (btn) {
+      navigator.clipboard.writeText(commandsToCopy).then(() => {
+        btn.classList.add('copied');
+        btn.querySelector('.copy-icon').style.display = 'none';
+        btn.querySelector('.check-icon').style.display = 'block';
+        btn.querySelector('.copy-text').textContent = 'Copied!';
+
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.querySelector('.copy-icon').style.display = 'block';
+          btn.querySelector('.check-icon').style.display = 'none';
+          btn.querySelector('.copy-text').textContent = 'Copy';
+        }, 2000);
+      });
+    };
+
+    // Typing animation - character by character, loops
+    const charDelay = 45;
+    const lineDelay = 300;
+    const restartDelay = 2500;
+    const cursor = document.getElementById('cursor');
+
+    let currentLine = 0;
+    let currentChar = 0;
+
+    function moveCursor(lineIndex) {
+      const cmdSpan = document.getElementById('cmd' + (lineIndex + 1));
+      if (cmdSpan && cursor) {
+        cmdSpan.parentNode.appendChild(cursor);
+      }
+    }
+
+    function resetAnimation() {
+      // Clear all command text
+      for (let i = 1; i <= commands.length; i++) {
+        document.getElementById('cmd' + i).textContent = '';
+      }
+      currentLine = 0;
+      currentChar = 0;
+      moveCursor(0);
+      typeNextChar();
+    }
+
+    function typeNextChar() {
+      if (currentLine >= commands.length) {
+        // Done typing, wait then restart
+        setTimeout(resetAnimation, restartDelay);
+        return;
+      }
+
+      const cmd = commands[currentLine];
+      const cmdEl = document.getElementById('cmd' + (currentLine + 1));
+
+      if (currentChar < cmd.length) {
+        cmdEl.textContent += cmd[currentChar];
+        currentChar++;
+        setTimeout(typeNextChar, charDelay);
+      } else {
+        currentLine++;
+        currentChar = 0;
+        if (currentLine < commands.length) {
+          moveCursor(currentLine);
+          setTimeout(typeNextChar, lineDelay);
+        } else {
+          setTimeout(resetAnimation, restartDelay);
+        }
+      }
+    }
+
+    // Start typing after code block entrance animation
+    setTimeout(() => {
+      moveCursor(0);
+      typeNextChar();
+    }, 600);
+  })();
+</script>

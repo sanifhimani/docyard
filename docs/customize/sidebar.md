@@ -1,6 +1,9 @@
 ---
 title: Sidebar
-description: Configure sidebar navigation with config, auto, or distributed modes
+description: Configure sidebar navigation with config, auto, or distributed modes.
+social_cards:
+  title: Sidebar
+  description: Configure navigation with three different modes.
 ---
 
 # Sidebar

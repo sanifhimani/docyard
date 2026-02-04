@@ -1,6 +1,9 @@
 ---
 title: Announcement
-description: Add an announcement banner to your site
+description: Add an announcement banner to your site.
+social_cards:
+  title: Announcement
+  description: Display banners for updates and promotions.
 ---
 
 # Announcement

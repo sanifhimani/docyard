@@ -1,11 +1,16 @@
 ---
 title: Social Cards
-description: Auto-generate Open Graph images for social sharing
+description: Auto-generate Open Graph images for social sharing.
+social_cards:
+  title: Social Cards
+  description: Auto-generated Open Graph images.
 ---
 
 # Social Cards
 
 Generate Open Graph images automatically for every page.
+
+![Example social card](/images/social-cards.png)
 
 ## Enable
 

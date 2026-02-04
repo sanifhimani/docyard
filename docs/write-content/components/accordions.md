@@ -1,6 +1,9 @@
 ---
 title: Accordions
-description: Collapsible content sections
+description: Collapsible content sections for FAQs and optional details.
+social_cards:
+  title: Accordions
+  description: Hide content behind collapsible sections.
 ---
 
 # Accordions

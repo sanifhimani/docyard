@@ -1,6 +1,9 @@
 ---
 title: Icons
-description: Use Phosphor Icons inline in your content
+description: Use Phosphor Icons inline in your content.
+social_cards:
+  title: Icons
+  description: Add Phosphor Icons inline in your docs.
 ---
 
 # Icons

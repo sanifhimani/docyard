@@ -1,6 +1,9 @@
 ---
 title: Callouts
-description: Tip, warning, danger, note, and important callout boxes in Markdown
+description: Tip, warning, danger, note, and important callout boxes in Markdown.
+social_cards:
+  title: Callouts
+  description: Highlight important information with colored boxes.
 ---
 
 # Callouts

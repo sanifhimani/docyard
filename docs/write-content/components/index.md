@@ -1,11 +1,14 @@
 ---
 title: Components
-description: Tabs, callouts, code blocks, steps, cards, accordions, and more Markdown components
+description: Tabs, callouts, code blocks, steps, cards, accordions, and more. All from simple Markdown.
+social_cards:
+  title: Components
+  description: Tabs, callouts, code blocks, steps, and more.
 ---
 
 # Components
 
-Docyard provides a set of components to make your documentation more interactive and visually appealing. All components use simple Markdown syntax.
+All components use Markdown syntax. No HTML or JSX required.
 
 ---
 
@@ -66,5 +69,9 @@ Add Phosphor Icons inline in your content.
 
 ::card{title="Tooltips" icon="chat-circle-text" href="/write-content/components/tooltips"}
 Add hover explanations for terms and acronyms.
+::
+
+::card{title="Abbreviations" icon="text-aa" href="/write-content/components/abbreviations"}
+Define abbreviations once, hover to see definitions.
 ::
 :::

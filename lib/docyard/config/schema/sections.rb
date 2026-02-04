@@ -15,7 +15,6 @@ module Docyard
           slack: { type: :url },
           linkedin: { type: :url },
           youtube: { type: :url },
-          bluesky: { type: :url },
           custom: {
             type: :array,
             items: {

@@ -1,6 +1,9 @@
 ---
 title: Error Pages
-description: Customize the 404 page
+description: Customize the 404 page.
+social_cards:
+  title: Error Pages
+  description: Customize the 404 page.
 ---
 
 # Error Pages

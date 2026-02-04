@@ -1,6 +1,9 @@
 ---
 title: Tabs
-description: Tabbed content for code examples, platform instructions, and comparisons
+description: Tabbed content for code examples, platform instructions, and comparisons.
+social_cards:
+  title: Tabs
+  description: Organize content into switchable panels.
 ---
 
 # Tabs
@@ -74,17 +77,17 @@ Combine icons with code for platform-specific content:
 :::tabs
 == :apple-logo: macOS
 ```bash
-brew install docyard
+brew install git
 ```
 
 == :linux-logo: Linux
 ```bash
-sudo apt install docyard
+sudo apt install git
 ```
 
 == :windows-logo: Windows
 ```powershell
-choco install docyard
+winget install Git.Git
 ```
 :::
 

@@ -1,33 +1,18 @@
 ---
 title: Images & Videos
-description: Add images with captions and embed videos
+description: Add images with captions, lightbox, and embed YouTube, Vimeo, or self-hosted videos.
+social_cards:
+  title: Images & Videos
+  description: Images with captions and video embeds.
 ---
 
 # Images & Videos
 
-Enhance your documentation with images and video embeds.
+Add images with captions and sizing. Embed videos from YouTube, Vimeo, or your own files.
 
-## Static Assets
-
-Place images and videos in `docs/public/`. During build, these files are copied to the root of your site.
-
-```filetree
-docs/
-  public/
-    images/
-      logo.png
-    videos/
-      demo.mp4
-```
-
-Reference them with root-relative paths:
-
-```markdown
-![Logo](/images/logo.png)
-::video[/videos/demo.mp4]
-```
-
----
+:::note
+Place images and videos in `docs/public/` and reference them with root-relative paths like `/images/photo.jpg`.
+:::
 
 ## Images
 
