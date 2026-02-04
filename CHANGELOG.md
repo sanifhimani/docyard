@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-02-03
+
+### Added
+- **Social Cards** - Auto-generate Open Graph images for social sharing with `social_cards.enabled: true` config (#146)
+- **Customize Command** - Generate theme customization files with `docyard customize` for custom CSS variables and scripts (#147)
+- **Pagefind Standalone Binary** - Download and cache Pagefind binary in `~/.docyard/bin/` for faster, more reliable search indexing without npx (#148)
+
+### Fixed
+- **Hot Reload JS Reinitialization** - Components now properly reinitialize when content changes during development (#149)
+
+### Documentation
+- Added new pages: Abbreviations component, Docs for AI (llms.txt)
+- Removed Troubleshooting page
+- Removed unsupported bluesky platform (33 platforms now supported)
+
 ## [1.1.0] - 2026-01-30
 
 ### Added
@@ -249,7 +264,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/sanifhimani/docyard/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/sanifhimani/docyard/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/sanifhimani/docyard/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/sanifhimani/docyard/compare/v1.0.0...v1.0.1
