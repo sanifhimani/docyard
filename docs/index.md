@@ -1,12 +1,12 @@
 ---
 title: Docyard
-description: Documentation generator for Markdown. Get a docs site with search, dark mode, and components. No configuration required.
+description: Documentation generator for Markdown. Search, dark mode, and 10+ components included. No configuration required.
 social_cards:
-  title: Markdown to beautiful docs in seconds
+  title: Markdown to docs in seconds
 landing:
   hero:
-    title: "Markdown to beautiful docs in seconds"
-    tagline: "Write markdown. Get a stunning documentation site with search, dark mode, and 10+ components. Zero configuration required."
+    title: "Markdown to docs in seconds"
+    tagline: "Search, dark mode, and 10+ components. Built in, not bolted on."
     custom_visual:
       html: "hero.html"
       placement: "bottom"
@@ -14,29 +14,30 @@ landing:
       - text: Get Started
         link: /getting-started
         variant: primary
-      - text: View on GitHub
+      - text: GitHub
         link: https://github.com/sanifhimani/docyard
         icon: github-logo
         variant: secondary
   features_header:
-    title: "Built for developers"
-    description: "Everything you need. Nothing you don't."
+    title: "Out of the box"
+    description: "No plugins required. No configuration needed."
   features:
     - title: Zero Config
-      description: Works instantly out of the box. Add config only when you need it.
+      description: Three commands to a full docs site. Add config only when you need it.
       icon: lightning
-    - title: Built-in Search
-      description: Full-text search with keyboard navigation. Powered by Pagefind.
-      icon: magnifying-glass
     - title: Hot Reload
-      description: Real-time preview the moment you save.
+      description: See changes the moment you save. No manual refresh.
       icon: arrow-clockwise
     - title: 10+ Components
       description: Callouts, tabs, steps, cards, code groups. All from simple markdown.
       icon: lego
-      size: large
+    - title: Built-in Search
+      description: Full-text search that indexes automatically. Keyboard navigation built in.
+      icon: magnifying-glass
     - title: Fast Builds
-      description: No webpack, no bundlers. Just fast static HTML generation.
+      description: No webpack, no Node.js. Just static HTML you can deploy anywhere.
       icon: rocket-launch
-      size: large
+    - title: AI-Ready
+      description: Generates llms.txt for AI tools. Works with Cursor, Claude Code, and ChatGPT.
+      icon: robot
 ---

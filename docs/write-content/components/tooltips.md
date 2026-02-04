@@ -1,6 +1,9 @@
 ---
 title: Tooltips
-description: Add hover explanations for terms
+description: Add hover explanations for terms, acronyms, and jargon.
+social_cards:
+  title: Tooltips
+  description: Add hover explanations for terms.
 ---
 
 # Tooltips

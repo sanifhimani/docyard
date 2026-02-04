@@ -1,6 +1,9 @@
 ---
 title: GitHub Pages
-description: Deploy Docyard to GitHub Pages with GitHub Actions workflow
+description: Deploy Docyard to GitHub Pages with GitHub Actions.
+social_cards:
+  title: GitHub Pages
+  description: Automated deployment with GitHub Actions.
 ---
 
 # GitHub Pages
@@ -35,6 +38,12 @@ jobs:
         with:
           ruby-version: "3.2"
 
+      - name: Cache Pagefind
+        uses: actions/cache@v4
+        with:
+          path: ~/.docyard/bin
+          key: pagefind-${{ runner.os }}
+
       - name: Install Docyard
         run: gem install docyard
 
@@ -58,39 +67,36 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
+:::tip
+The cache step stores the Pagefind binary so it doesn't re-download on every build.
+:::
+
+:::important
+The `fetch-depth: 0` option is required for accurate "Last updated" timestamps. Without it, all pages show the deployment time instead of their actual modification date.
+:::
+
 ---
 
 ## Enable GitHub Pages
 
-1. Go to your repository **Settings**
-2. Navigate to **Pages** in the sidebar
-3. Under **Build and deployment**, select **GitHub Actions**
+1. Go to repository **Settings** > **Pages**
+2. Under **Build and deployment**, select **GitHub Actions**
 
 ---
 
 ## Custom Domain
 
-To use a custom domain:
-
-1. Add a `CNAME` file to `docs/public/`:
-
-```filetree
-docs/
-  public/
-    CNAME *
-```
+Add a `CNAME` file to `docs/public/`:
 
 ```text [docs/public/CNAME]
 docs.example.com
 ```
 
-2. Update your site URL:
+Update your config:
 
 ```yaml [docyard.yml]
 url: https://docs.example.com
 ```
-
-3. Configure DNS with your domain provider
 
 ---
 
@@ -106,69 +112,11 @@ build:
 
 ---
 
-## Git History
-
-:::important
-The `fetch-depth: 0` option in the workflow above is required for accurate "Last updated" timestamps. Without full git history, all pages will show the deployment time instead of their actual modification date.
-:::
-
-If you don't need "Last updated" timestamps, you can omit this option for faster checkouts.
-
----
-
 ## Social Cards
 
-If you've enabled [social cards](/customize/social-cards), add libvips to your workflow:
+If you've enabled social cards, add libvips before the build step:
 
-```yaml [.github/workflows/docs.yml]
-steps:
-  - uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-
-  - name: Install libvips
-    run: sudo apt-get update && sudo apt-get install -y libvips-dev
-
-  - uses: ruby/setup-ruby@v1
-    with:
-      ruby-version: "3.2"
-
-  - name: Install Docyard
-    run: gem install docyard
-
-  - name: Build
-    run: docyard build
+```yaml
+- name: Install libvips
+  run: sudo apt-get update && sudo apt-get install -y libvips-dev
 ```
-
----
-
-## Caching
-
-Speed up builds by caching the Ruby environment and Pagefind binary:
-
-```yaml [.github/workflows/docs.yml]
-- uses: ruby/setup-ruby@v1
-  with:
-    ruby-version: "3.2"
-    bundler-cache: true
-
-- uses: actions/cache@v4
-  with:
-    path: ~/.docyard/bin
-    key: pagefind-${{ runner.os }}
-```
-
-The Pagefind binary is downloaded automatically on first build and cached in `~/.docyard/bin/`. Caching this directory avoids re-downloading on every build.
-
----
-
-## Branch Protection
-
-Recommended settings for production documentation:
-
-1. Go to **Settings** > **Branches**
-2. Add a rule for `main`
-3. Enable:
-   - Require pull request reviews
-   - Require status checks to pass
-   - Require branches to be up to date

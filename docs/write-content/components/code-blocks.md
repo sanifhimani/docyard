@@ -1,11 +1,14 @@
 ---
 title: Code Blocks
-description: Syntax highlighting, line numbers, line highlighting, and copy button
+description: Syntax highlighting, line numbers, line highlighting, and copy button.
+social_cards:
+  title: Code Blocks
+  description: Syntax highlighting with line numbers and highlighting.
 ---
 
 # Code Blocks
 
-Display code with syntax highlighting, line numbers, and annotations.
+Display code with syntax highlighting, line numbers, and highlighting.
 
 ## Basic
 
@@ -32,8 +35,8 @@ def calculate(a, b):
     return a + b
 ```
 
-```bash [install.sh]
-npm install docyard
+```bash [deploy.sh]
+git push origin main
 ```
 
 ---

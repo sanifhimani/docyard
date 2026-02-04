@@ -1,11 +1,14 @@
 ---
 title: Theming
-description: Customize colors, typography, spacing, and other CSS variables
+description: Customize colors, typography, spacing, and other CSS variables.
+social_cards:
+  title: Theming
+  description: Full control over colors, fonts, and layout.
 ---
 
 # Theming
 
-Go beyond brand colors with full control over Docyard's design tokens.
+Customize colors, typography, spacing, and layout with CSS variables.
 
 ## Quick Start
 

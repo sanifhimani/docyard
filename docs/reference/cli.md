@@ -1,40 +1,26 @@
 ---
 title: CLI
-description: Docyard commands - init, serve, build, preview, and doctor
+description: Docyard commands - init, serve, build, preview, doctor, and customize.
+social_cards:
+  title: CLI Reference
+  description: All Docyard commands and options.
 ---
 
 # CLI
 
-Complete reference for Docyard commands.
-
 ## docyard init
 
-Initialize a new Docyard project.
+Create a new Docyard project.
 
 ```bash
 docyard init [PROJECT_NAME]
 ```
 
-| Option | Alias | Default | Description |
-|--------|-------|---------|-------------|
-| `--force` | `-f` | `false` | Overwrite existing files |
+| Option | Alias | Description |
+|--------|-------|-------------|
+| `--force` | `-f` | Overwrite existing files |
 
-:::tabs
-== Initialize in current directory
-```bash
-docyard init
-```
-== Initialize in new directory
-```bash
-docyard init my-docs
-```
-== Overwrite existing files
-```bash
-docyard init --force
-```
-:::
-
-**Generated files:**
+Creates the following structure:
 
 ```filetree
 my-docs/
@@ -54,40 +40,17 @@ my-docs/
 Start the development server with hot reload.
 
 ```bash
-docyard serve [OPTIONS]
+docyard serve
 ```
 
 | Option | Alias | Default | Description |
 |--------|-------|---------|-------------|
-| `--port` | `-p` | `4200` | Port to run the server on |
-| `--host` | `-h` | `localhost` | Host to bind the server to |
+| `--port` | `-p` | `4200` | Server port |
+| `--host` | `-h` | `localhost` | Host to bind to |
 | `--search` | `-s` | `false` | Enable search indexing |
 
-:::tabs
-== Default
-```bash
-docyard serve
-```
-== Custom port
-```bash
-docyard serve -p 3000
-```
-== With search
-```bash
-docyard serve --search
-```
-== Expose to network
-```bash
-docyard serve --host 0.0.0.0
-```
-:::
-
-:::note Hot Reload
-Hot reload runs on a separate port (main port + 1). When serving on port 4200, the hot reload server uses port 4201.
-:::
-
-:::tip Error Overlay
-Configuration errors, broken links, and missing images appear in an overlay at the bottom of the page during development.
+:::tip
+Use `--host 0.0.0.0` to expose the server to your local network.
 :::
 
 ---
@@ -97,172 +60,77 @@ Configuration errors, broken links, and missing images appear in an overlay at t
 Build the static site for production.
 
 ```bash
-docyard build [OPTIONS]
-```
-
-| Option | Alias | Default | Description |
-|--------|-------|---------|-------------|
-| `--clean` | - | `true` | Clean output directory before building |
-| `--verbose` | `-v` | `false` | Show detailed output with timing breakdown |
-| `--strict` | - | `false` | Fail on any validation errors |
-| `--no-clean` | - | - | Preserve existing output files |
-
-:::tabs
-== Standard build
-```bash
 docyard build
 ```
-== Verbose output
-```bash
-docyard build --verbose
-```
-== Strict mode
-```bash
-docyard build --strict
-```
-== Preserve existing files
-```bash
-docyard build --no-clean
-```
-:::
+
+| Option | Alias | Description |
+|--------|-------|-------------|
+| `--verbose` | `-v` | Show per-page timing and compression stats |
+| `--strict` | | Fail on broken links, missing images, invalid config |
+| `--no-clean` | | Preserve existing files in output directory |
 
 :::tip
-Use `--verbose` to see per-page timing and compression stats.
-:::
-
-:::note Strict Mode
-Use `--strict` in CI pipelines to fail the build on any validation errors (broken links, missing images, etc.). Can also be enabled via `build.strict` in your config.
+Use `--strict` in CI pipelines to catch issues before deployment.
 :::
 
 ---
 
 ## docyard preview
 
-Preview the built site locally. Useful for testing production builds before deployment.
+Preview the production build locally.
 
 ```bash
-docyard preview [OPTIONS]
+docyard build && docyard preview
 ```
 
 | Option | Alias | Default | Description |
 |--------|-------|---------|-------------|
-| `--port` | `-p` | `4000` | Port to run preview server on |
-
-:::tabs
-== Build and preview
-```bash
-docyard build && docyard preview
-```
-== Custom port
-```bash
-docyard preview -p 8080
-```
-:::
-
-:::important
-Run `docyard build` first. The preview server serves files from the `dist/` directory.
-:::
+| `--port` | `-p` | `4000` | Server port |
 
 ---
 
 ## docyard doctor
 
-Check your documentation for configuration errors, broken links, missing images, and orphan pages.
+Check for configuration errors, broken links, missing images, and orphan pages.
 
-```bash
-docyard doctor [OPTIONS]
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--fix` | `false` | Auto-fix fixable issues |
-
-:::tabs
-== Check for issues
 ```bash
 docyard doctor
 ```
-== Auto-fix issues
-```bash
-docyard doctor --fix
-```
-:::
 
-**What it checks:**
+| Option | Description |
+|--------|-------------|
+| `--fix` | Auto-fix typos, string booleans, missing slashes |
 
 | Check | Severity | Description |
 |-------|----------|-------------|
-| Config errors | Error | Type mismatches, unknown keys, invalid values in `docyard.yml` |
-| Sidebar errors | Error | Unknown keys, typos in `_sidebar.yml` |
-| Broken links | Error | Internal links pointing to non-existent pages |
-| Missing images | Error | Image references pointing to non-existent files |
-| Orphan pages | Warning | Pages not listed in the sidebar |
-
-:::tip Auto-fix
-Many config errors are auto-fixable. The `--fix` flag can correct:
-- Typos in key names (e.g., `tittle` to `title`)
-- String booleans (e.g., `"yes"` to `true`)
-- Missing leading slashes in paths
-- Misspelled enum values (e.g., `autoo` to `auto`)
-:::
+| Config errors | Error | Invalid `docyard.yml` |
+| Sidebar errors | Error | Invalid `_sidebar.yml` |
+| Broken links | Error | Links to non-existent pages |
+| Missing images | Error | Images that don't exist |
+| Orphan pages | Warning | Pages not in sidebar |
 
 ---
 
 ## docyard customize
 
-Generate theme customization files in `docs/_custom/`.
+Generate theme customization files.
 
-```bash
-docyard customize [OPTIONS]
-```
-
-| Option | Alias | Default | Description |
-|--------|-------|---------|-------------|
-| `--minimal` | `-m` | `false` | Generate minimal files without comments |
-
-:::tabs
-== Default (annotated)
 ```bash
 docyard customize
 ```
-== Minimal output
-```bash
-docyard customize -m
-```
-:::
 
-**Generated files:**
+| Option | Alias | Description |
+|--------|-------|-------------|
+| `--minimal` | `-m` | Generate without comments |
 
-```filetree
-docs/
-  _custom/
-    styles.css *
-    scripts.js
-```
-
-The generated `styles.css` contains all available CSS variables organized by category, ready to uncomment and customize. See [Theming](/customize/theming) for details.
+Creates `docs/_custom/styles.css` and `docs/_custom/scripts.js`. See [Theming](/customize/theming) for details.
 
 ---
 
 ## docyard version
 
-Show the installed Docyard version.
+Show the installed version.
 
 ```bash
 docyard version
-```
-
----
-
-## Global Options
-
-These options apply to all commands.
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--no-color` | `false` | Disable colored output |
-
-```bash
-docyard build --no-color
-docyard doctor --no-color
 ```

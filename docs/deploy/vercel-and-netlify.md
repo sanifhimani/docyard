@@ -1,6 +1,9 @@
 ---
 title: Vercel & Netlify
-description: Deploy Docyard to Vercel or Netlify with zero configuration
+description: Deploy Docyard to Vercel or Netlify with zero configuration.
+social_cards:
+  title: Vercel & Netlify
+  description: Zero-config deployment to Vercel or Netlify.
 ---
 
 # Vercel & Netlify
@@ -11,9 +14,16 @@ Deploy your documentation with zero configuration on Vercel or Netlify.
 
 ### Quick Deploy
 
-1. Push your project to GitHub
-2. Import the repository on [vercel.com](https://vercel.com)
-3. Configure build settings:
+:::steps
+### Push to GitHub
+
+Push your project to a GitHub repository.
+
+### Import on Vercel
+
+Import the repository on <a href="https://vercel.com" target="_blank">vercel.com</a>.
+
+### Configure build settings
 
 | Setting | Value |
 |---------|-------|
@@ -22,7 +32,10 @@ Deploy your documentation with zero configuration on Vercel or Netlify.
 | Output Directory | `dist` |
 | Install Command | (leave empty) |
 
-4. Click **Deploy**
+### Deploy
+
+Click **Deploy**.
+:::
 
 ### vercel.json
 
@@ -64,16 +77,26 @@ url: https://docs.example.com
 
 ### Quick Deploy
 
-1. Push your project to GitHub
-2. Import the repository on [netlify.com](https://netlify.com)
-3. Configure build settings:
+:::steps
+### Push to GitHub
+
+Push your project to a GitHub repository.
+
+### Import on Netlify
+
+Import the repository on <a href="https://netlify.com" target="_blank">netlify.com</a>.
+
+### Configure build settings
 
 | Setting | Value |
 |---------|-------|
 | Build Command | `gem install docyard && docyard build` |
 | Publish Directory | `dist` |
 
-4. Click **Deploy site**
+### Deploy
+
+Click **Deploy site**.
+:::
 
 ### netlify.toml
 
@@ -115,27 +138,6 @@ url: https://docs.example.com
 ```
 
 ---
-
-## Environment Variables
-
-Both platforms support environment variables for sensitive configuration.
-
-### Analytics
-
-Instead of committing analytics IDs:
-
-```yaml [docyard.yml]
-analytics:
-  google: ${GOOGLE_ANALYTICS_ID}
-```
-
-Set `GOOGLE_ANALYTICS_ID` in your platform's environment settings.
-
----
-
-## Preview Deployments
-
-Both Vercel and Netlify automatically create preview deployments for pull requests. This lets you review documentation changes before merging.
 
 :::tip Social Cards
 Both Vercel and Netlify build images include libvips, so [social cards](/customize/social-cards) work out of the box.

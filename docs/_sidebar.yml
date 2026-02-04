@@ -30,6 +30,7 @@
             - badges
             - icons
             - tooltips
+            - abbreviations
             - file-tree
 
 - customize:
@@ -38,12 +39,12 @@
     items:
       - branding
       - theming
-      - social-cards
       - sidebar
-      - landing-pages
       - navigation
+      - landing-pages
       - search
       - announcement
+      - social-cards
       - error-pages
 
 - deploy:
@@ -51,6 +52,8 @@
     icon: cloud-arrow-up
     items:
       - building
+      - llms-txt:
+          text: Docs for AI
       - github-pages
       - vercel-and-netlify:
           text: Vercel & Netlify
@@ -63,4 +66,3 @@
           text: CLI
       - configuration
       - frontmatter
-      - troubleshooting

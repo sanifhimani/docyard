@@ -1,6 +1,9 @@
 ---
 title: Configuration
-description: Complete docyard.yml reference
+description: Complete docyard.yml reference.
+social_cards:
+  title: Configuration
+  description: Complete docyard.yml reference.
 ---
 
 # Configuration
@@ -27,10 +30,6 @@ source: docs
 | `twitter` | `string` | - | Twitter handle for cards |
 | `source` | `string` | `docs` | Documentation source directory |
 
-:::tip
-Setting `description` is recommended for better SEO.
-:::
-
 ---
 
 ## Branding
@@ -41,7 +40,7 @@ branding:
   favicon: /favicon.ico
   color: "#3b82f6"
   credits: false
-  copyright: "2024 My Company"
+  copyright: "2026 My Company"
 ```
 
 | Option | Type | Default | Description |
@@ -52,20 +51,14 @@ branding:
 | `credits` | `boolean` | `true` | Show "Built with Docyard" |
 | `copyright` | `string` | - | Footer copyright text |
 
-### Color Variants
+For different light/dark colors:
 
-Specify different colors for light and dark modes:
-
-```yaml [docyard.yml]
+```yaml
 branding:
   color:
     light: "#3b82f6"
     dark: "#60a5fa"
 ```
-
-:::tip
-Use a lighter shade for dark mode to maintain visual contrast.
-:::
 
 ---
 
@@ -78,13 +71,9 @@ socials:
   discord: https://discord.gg/example
 ```
 
-:::details{title="Supported Platforms (34)"}
-`github` `twitter` `x` `discord` `slack` `linkedin` `youtube` `bluesky` `instagram` `facebook` `tiktok` `reddit` `mastodon` `threads` `pinterest` `medium` `gitlab` `figma` `dribbble` `behance` `codepen` `codesandbox` `notion` `spotify` `soundcloud` `whatsapp` `telegram` `snapchat` `patreon` `paypal` `stripe` `twitch` `google-podcasts` `apple-podcasts`
-:::
+33 platforms supported. See [Branding](/customize/branding#supported-platforms) for the full list.
 
 ### Custom Links
-
-Add links with custom icons using any [Phosphor icon](https://phosphoricons.com) name:
 
 ```yaml [docyard.yml]
 socials:
@@ -94,15 +83,6 @@ socials:
       href: /feed.xml
     - icon: envelope
       href: mailto:hello@example.com
-```
-
-You can also use inline SVG for custom icons:
-
-```yaml [docyard.yml]
-socials:
-  custom:
-    - icon: '<svg viewBox="0 0 24 24">...</svg>'
-      href: https://example.com
 ```
 
 ---
@@ -130,9 +110,7 @@ tabs:
 | `icon` | `string` | - | Phosphor icon name |
 | `external` | `boolean` | `false` | Open in new tab |
 
-:::note
 Tabs filter the sidebar to show only content under the active tab's path.
-:::
 
 ---
 
@@ -148,7 +126,7 @@ sidebar: config
 | `auto` | Auto-generated from directory structure |
 | `distributed` | Local `_sidebar.yml` files in subdirectories |
 
-See [Sidebar Configuration](/customize/sidebar) for detailed setup.
+See [Sidebar](/customize/sidebar) for detailed setup.
 
 ---
 
@@ -170,16 +148,11 @@ navigation:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `cta` | `array` | `[]` | Header CTA buttons (max 2) |
+| `cta[].text` | `string` | - | Button text |
+| `cta[].href` | `string` | - | Link URL |
+| `cta[].variant` | `string` | `primary` | `primary` or `secondary` |
+| `cta[].external` | `boolean` | `false` | Open in new tab |
 | `breadcrumbs` | `boolean` | `true` | Show breadcrumb navigation |
-
-### CTA Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `text` | `string` | - | Button text |
-| `href` | `string` | - | Link URL |
-| `variant` | `string` | `primary` | `primary` or `secondary` |
-| `external` | `boolean` | `false` | Open in new tab |
 
 ---
 
@@ -198,15 +171,7 @@ search:
 |--------|------|---------|-------------|
 | `enabled` | `boolean` | `true` | Enable search |
 | `placeholder` | `string` | `Search...` | Search input placeholder |
-| `exclude` | `array` | `[]` | URL patterns to exclude |
-
-### Exclude Patterns
-
-| Pattern | Matches |
-|---------|---------|
-| `/changelog/*` | All pages under `/changelog/` |
-| `/draft-*` | Pages starting with `/draft-` |
-| `/internal/**` | All nested pages under `/internal/` |
+| `exclude` | `array` | `[]` | Glob patterns to exclude |
 
 ---
 
@@ -230,10 +195,6 @@ announcement:
 | `button.link` | `string` | - | Button URL |
 | `dismissible` | `boolean` | `true` | Allow users to dismiss |
 
-:::note
-When dismissed, the preference is stored in localStorage for 7 days.
-:::
-
 ---
 
 ## Repository
@@ -242,6 +203,7 @@ When dismissed, the preference is stored in localStorage for 7 days.
 repo:
   url: https://github.com/example/docs
   branch: main
+  edit_path: docs
   edit_link: true
   last_updated: true
 ```
@@ -250,27 +212,9 @@ repo:
 |--------|------|---------|-------------|
 | `url` | `string` | - | Repository URL |
 | `branch` | `string` | `main` | Default branch |
-| `edit_path` | `string` | `docs` | Path to docs directory in the repo |
+| `edit_path` | `string` | `docs` | Path to docs in repo (for monorepos) |
 | `edit_link` | `boolean` | `true` | Show "Edit this page" link |
 | `last_updated` | `boolean` | `true` | Show last updated date |
-
-### Edit Path
-
-Use `edit_path` when your documentation lives in a non-standard location:
-
-```yaml [docyard.yml]
-# Monorepo: docs are in packages/docs/
-repo:
-  url: https://github.com/example/monorepo
-  edit_path: packages/docs
-
-# Custom folder name
-repo:
-  url: https://github.com/example/project
-  edit_path: documentation
-```
-
-This ensures "Edit this page" links point to the correct file path in your repository.
 
 ---
 
@@ -295,8 +239,6 @@ analytics:
 
 ## Feedback
 
-Add a "Was this page helpful?" widget to collect reader feedback.
-
 ```yaml [docyard.yml]
 feedback:
   enabled: true
@@ -308,29 +250,7 @@ feedback:
 | `enabled` | `boolean` | `false` | Enable feedback widget |
 | `question` | `string` | `Was this page helpful?` | Question text |
 
-:::important
-Feedback requires analytics to be configured. Responses are sent as events to your analytics provider (Google Analytics, Plausible, or Fathom).
-:::
-
-### Event Format
-
-:::tabs
-== Google Analytics
-Event name: `page_feedback`
-
-Properties:
-- `feedback_page` - Page path
-- `helpful` - `"yes"` or `"no"`
-- `value` - `1` or `0`
-== Plausible
-Event name: `Feedback`
-
-Properties:
-- `helpful` - `"yes"` or `"no"`
-- `page` - Page path
-== Fathom
-Event name: `feedback_yes` or `feedback_no`
-:::
+Feedback requires analytics to be configured. Responses are sent as events to your analytics provider.
 
 ---
 
@@ -346,32 +266,12 @@ build:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `output` | `string` | `dist` | Output directory |
-| `base` | `string` | `/` | Base path for deployment |
+| `base` | `string` | `/` | Base path (use `/repo-name` for GitHub project sites) |
 | `strict` | `boolean` | `false` | Fail build on validation errors |
-
-:::tabs
-== Root deployment
-```yaml [docyard.yml]
-build:
-  base: /
-```
-== Subdirectory deployment
-```yaml [docyard.yml]
-# For GitHub Pages project sites or subdirectory hosting
-build:
-  base: /repo-name
-```
-:::
-
-:::note
-`base` must start with `/`. For your production URL, use the top-level `url` field instead.
-:::
 
 ---
 
 ## Social Cards
-
-Auto-generate Open Graph images for social media sharing.
 
 ```yaml [docyard.yml]
 social_cards:
@@ -382,6 +282,4 @@ social_cards:
 |--------|------|---------|-------------|
 | `enabled` | `boolean` | `false` | Generate OG images for all pages |
 
-:::important
-Social cards require libvips to be installed. See [Social Cards](/customize/social-cards) for setup instructions and customization options.
-:::
+Requires libvips. See [Social Cards](/customize/social-cards) for setup.

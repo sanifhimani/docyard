@@ -1,9 +1,14 @@
 ---
 title: Project Structure
-description: How files and directories are organized in a Docyard project
+description: Learn how Docyard organizes your docs - content, navigation, assets, and configuration.
+social_cards:
+  title: Project Structure
+  description: How files and directories are organized in Docyard.
 ---
 
 # Project Structure
+
+Running `docyard init` generates everything you need to get started.
 
 ```filetree
 my-docs/
@@ -18,23 +23,11 @@ my-docs/
       logo.svg
 ```
 
-## Configuration
-
-The `docyard.yml` file in your project root controls your site's settings.
-
-```yaml [docyard.yml]
-title: My Documentation
-description: Documentation for my project
-
-build:
-  base: https://docs.example.com
-```
-
-This is where you set your site title, description, branding, analytics, and more. See [Configuration](/reference/configuration) for all options.
+You only need to edit what you want to change. Everything works out of the box.
 
 ## Content
 
-The `docs/` directory holds your Markdown files. Each file becomes a page on your site.
+The `docs/` directory is where your Markdown files live. Each file becomes a page.
 
 | File | URL |
 |------|-----|
@@ -50,25 +43,19 @@ The `index.md` in your docs root is your landing page. It supports a hero sectio
 
 ## Navigation
 
-The `_sidebar.yml` file defines your sidebar structure.
+The `_sidebar.yml` file controls your sidebar. It's generated for you based on your files, but you can customize it.
 
 ```yaml [docs/_sidebar.yml]
+- getting-started
+
 - guides:
     text: Guides
     icon: book-open
     items:
-      - getting-started
       - deployment
-
-- reference:
-    text: Reference
-    icon: book-bookmark
-    items:
-      - api
-      - cli
 ```
 
-Reference pages by filename without the `.md` extension.
+Reference pages by filename without the `.md` extension. See [Sidebar](/customize/sidebar) for more options.
 
 :::note
 Docyard uses [Phosphor Icons](https://phosphoricons.com). Browse their library to find icons for your sidebar, cards, and components.
@@ -89,9 +76,9 @@ Reference images in your Markdown:
 ![Screenshot](/images/screenshot.png)
 ```
 
-### Auto-detected Files
+### Auto-detected files
 
-Place these files in `public/` and Docyard picks them up automatically:
+Drop these files in `public/` and Docyard picks them up automatically:
 
 | File | What it does |
 |------|--------------|
@@ -99,4 +86,18 @@ Place these files in `public/` and Docyard picks them up automatically:
 | `logo-dark.svg` | Logo for dark mode (optional) |
 | `favicon.ico` | Browser tab icon |
 
-No configuration required - just drop the files in.
+No configuration needed.
+
+## Configuration
+
+The `docyard.yml` file sets your site title and description. Most other settings have sensible defaults.
+
+```yaml [docyard.yml]
+title: My Documentation
+description: Documentation for my project
+
+build:
+  base: https://docs.example.com
+```
+
+See [Configuration](/reference/configuration) for all options.

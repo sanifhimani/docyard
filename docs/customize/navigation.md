@@ -1,6 +1,9 @@
 ---
 title: Navigation
-description: Configure breadcrumbs, prev/next links, TOC, and header navigation
+description: Configure breadcrumbs, prev/next links, TOC, and header navigation.
+social_cards:
+  title: Navigation
+  description: Breadcrumbs, prev/next links, TOC, and header CTAs.
 ---
 
 # Navigation

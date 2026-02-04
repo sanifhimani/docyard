@@ -1,6 +1,9 @@
 ---
 title: Landing Pages
-description: Hero sections, feature grids, and custom visuals for documentation homepages
+description: Hero sections, feature grids, and custom visuals for documentation homepages.
+social_cards:
+  title: Landing Pages
+  description: Heroes, feature grids, and custom visuals.
 ---
 
 # Landing Pages
@@ -233,7 +236,7 @@ landing:
       description: Automatic theme switching
       icon: moon
     - title: Components
-      description: 20+ built-in components
+      description: 10+ built-in components
       icon: lego
       link: /components
 ---

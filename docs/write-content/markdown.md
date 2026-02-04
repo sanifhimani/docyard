@@ -1,6 +1,9 @@
 ---
 title: Markdown
-description: GitHub Flavored Markdown with tables, task lists, footnotes, and syntax highlighting
+description: GitHub Flavored Markdown with tables, task lists, and syntax highlighting.
+social_cards:
+  title: Markdown
+  description: Write docs in GitHub Flavored Markdown.
 ---
 
 # Markdown
@@ -18,14 +21,14 @@ Learn the basics in 10 minutes with the [CommonMark tutorial](https://commonmark
 
 ~~Strikethrough~~ and `inline code`
 
-[Link text](https://example.com)
+[Link text](https://docyard.dev)
 ```
 
 **Bold text** and *italic text*
 
 ~~Strikethrough~~ and `inline code`
 
-[Link text](https://example.com)
+[Link text](https://docyard.dev)
 
 ## Headings
 
@@ -61,6 +64,18 @@ Headings automatically generate anchor links. `## Getting Started` becomes `#get
 1. First step
 2. Second step
 3. Third step
+
+## Task Lists
+
+```markdown
+- [x] Completed task
+- [ ] Incomplete task
+- [ ] Another task
+```
+
+- [x] Completed task
+- [ ] Incomplete task
+- [ ] Another task
 
 ## Code Blocks
 
@@ -116,7 +131,7 @@ See [Code Blocks](/write-content/components/code-blocks) for line highlighting, 
 ![Alt text](/images/screenshot.png)
 ```
 
-Place images in `docs/public/` and reference them with absolute paths.
+See [Images & Videos](/write-content/images-and-videos) for captions, sizing, and video embeds.
 
 ## Horizontal Rules
 
@@ -156,20 +171,6 @@ Override auto-generated heading anchors:
 
 Link to it with `[text](#custom-id)`.
 
-## Abbreviations
+## What's next
 
-Define abbreviations once, use them everywhere:
-
-```markdown
-The HTML specification is maintained by the W3C.
-
-*[HTML]: HyperText Markup Language
-*[W3C]: World Wide Web Consortium
-```
-
-The HTML specification is maintained by the W3C.
-
-*[HTML]: HyperText Markup Language
-*[W3C]: World Wide Web Consortium
-
-Hover over the abbreviations above to see their definitions.
+For callouts, tabs, steps, code groups, and more, see [Components](/write-content/components).

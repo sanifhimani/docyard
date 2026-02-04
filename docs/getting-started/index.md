@@ -1,71 +1,26 @@
 ---
-title: Introduction
-description: What is Docyard and why use it for your documentation
+title: What is Docyard?
+description: Docyard is a Markdown documentation generator with built-in search, dark mode, and 10+ components. No configuration required.
+social_cards:
+  title: What is Docyard?
+  description: Markdown to docs in seconds. No configuration required.
 ---
 
-# Introduction
+# What is Docyard?
 
-Docyard is a static site generator for documentation. It transforms your Markdown files into a polished, searchable documentation website with sensible defaults and zero configuration.
+Docyard is a static site generator that turns Markdown files into documentation websites. You get search, dark mode, syntax highlighting, and components like callouts, tabs, and code groups - all without configuration.
 
-```bash
-gem install docyard
-docyard init my-docs
-docyard serve
-```
+## Who is it for?
 
-## Features
+Anyone who needs documentation - project docs, internal wikis, knowledge bases, or personal notes. If you prefer writing in Markdown over complex CMS tools, want documentation that's easy to maintain, and don't want to deal with setup overhead, Docyard is for you.
 
-:::cards
-::card{title="Syntax Highlighting" icon="code"}
-Over 100 languages supported out of the box with automatic language detection.
-::
+## What's included
 
-::card{title="Full-Text Search" icon="magnifying-glass"}
-Pagefind-powered search that works entirely client-side. Fast, private, and offline-capable.
-::
+- **For developers** - Hot reload, simple CLI, zero config to start
+- **For your readers** - Full-text search, dark mode, responsive design, 10+ components
+- **For production** - Static HTML, SEO meta tags, llms.txt for AI tools
 
-::card{title="Dark Mode" icon="moon"}
-Automatic theme switching based on system preferences, with manual toggle available.
-::
+## Requirements
 
-::card{title="Components" icon="lego"}
-Callouts, tabs, code groups, steps, cards, and more. All with clean, consistent styling.
-::
-
-::card{title="Responsive Design" icon="device-mobile"}
-Optimized for every screen size with touch-friendly navigation on mobile.
-::
-
-::card{title="Deploy Anywhere" icon="cloud-arrow-up"}
-Generates static HTML that works on any hosting platform.
-::
-:::
-
-## How It Works
-
-:::steps
-### Write
-
-Create your documentation in Markdown. Organize files however you like - Docyard figures out the structure.
-
-### Preview
-
-Run `docyard serve` to start a local server with hot reload. See your changes instantly.
-
-### Build
-
-Run `docyard build` to generate optimized static files ready for production.
-
-### Deploy
-
-Upload the output to GitHub Pages, Vercel, Netlify, or any static hosting service.
-:::
-
-## Built With Ruby
-
-Docyard is distributed as a Ruby gem. A single install gives you everything - the CLI, the build system, and all dependencies bundled together.
-
-:::tip
-Already have Ruby installed? You're one command away from your first docs site.
-:::
+Ruby 3.2 or higher. That's the only dependency.
 

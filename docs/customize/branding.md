@@ -1,11 +1,14 @@
 ---
 title: Branding
-description: Customize logo, favicon, brand colors, copyright, and social links
+description: Customize logo, favicon, brand colors, copyright, and social links.
+social_cards:
+  title: Branding
+  description: Logo, favicon, colors, and social links.
 ---
 
 # Branding
 
-Make your documentation site your own with custom branding.
+Customize your logo, favicon, brand color, and social links.
 
 ## Logo
 
@@ -140,7 +143,6 @@ socials:
 | YouTube | `youtube` |
 | Slack | `slack` |
 | Mastodon | `mastodon` |
-| Bluesky | `bluesky` |
 
 == Social
 | Platform | Key |
@@ -231,4 +233,4 @@ socials:
 |--------|------|-------------|
 | `socials.<platform>` | `string` | URL for the platform |
 
-All 34 platforms listed above are supported with automatic icon detection.
+All 33 platforms listed above are supported with automatic icon detection.

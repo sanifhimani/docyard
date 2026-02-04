@@ -1,6 +1,9 @@
 ---
 title: File Tree
-description: Display directory structures
+description: Display directory and file structures with highlighting and comments.
+social_cards:
+  title: File Tree
+  description: Visualize folder and file structures.
 ---
 
 # File Tree

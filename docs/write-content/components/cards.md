@@ -1,6 +1,9 @@
 ---
 title: Cards
-description: Link to pages with visual card components
+description: Link to pages with visual card components.
+social_cards:
+  title: Cards
+  description: Create visual links to pages or resources.
 ---
 
 # Cards

@@ -1,6 +1,9 @@
 ---
 title: Code Groups
-description: Group related code blocks with tabs
+description: Group related code blocks with tabs for different languages or package managers.
+social_cards:
+  title: Code Groups
+  description: Show code in multiple languages or package managers.
 ---
 
 # Code Groups
@@ -15,15 +18,15 @@ Code groups support all [code block features](/write-content/components/code-blo
 
 :::code-group
 ```npm [npm]
-npm install docyard
+npm install axios
 ```
 
 ```yarn [yarn]
-yarn add docyard
+yarn add axios
 ```
 
 ```pnpm [pnpm]
-pnpm add docyard
+pnpm add axios
 ```
 :::
 
