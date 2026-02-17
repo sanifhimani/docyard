@@ -52,6 +52,8 @@
     icon: cloud-arrow-up
     items:
       - building
+      - deploy-command:
+          text: Deploy Command
       - llms-txt:
           text: Docs for AI
       - github-pages
