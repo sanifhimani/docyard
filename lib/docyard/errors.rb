@@ -8,4 +8,6 @@ module Docyard
   class SidebarConfigError < Error; end
 
   class BuildError < Error; end
+
+  class DeployError < Error; end
 end
