@@ -35,6 +35,10 @@ RSpec.describe Docyard::CLI do
     it "defines customize command" do
       expect(described_class.commands).to have_key("customize")
     end
+
+    it "defines deploy command" do
+      expect(described_class.commands).to have_key("deploy")
+    end
   end
 
   describe "build command options" do
@@ -95,6 +99,23 @@ RSpec.describe Docyard::CLI do
 
     it "has -m alias for minimal option" do
       expect(options[:minimal].aliases).to include("-m")
+    end
+  end
+
+  describe "deploy command options" do
+    let(:command) { described_class.commands["deploy"] }
+    let(:options) { command.options }
+
+    it "has to option with no default" do
+      expect(options[:to].default).to be_nil
+    end
+
+    it "has prod option defaulting to true" do
+      expect(options[:prod].default).to be true
+    end
+
+    it "has skip_build option defaulting to false" do
+      expect(options[:skip_build].default).to be false
     end
   end
 

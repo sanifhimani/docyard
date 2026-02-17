@@ -8,7 +8,7 @@ social_cards:
 
 # Vercel & Netlify
 
-Deploy your documentation with zero configuration on Vercel or Netlify.
+Deploy your documentation with zero configuration on Vercel or Netlify, or use the [deploy command](/deploy/deploy-command).
 
 ## Vercel
 

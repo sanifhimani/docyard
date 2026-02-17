@@ -1,6 +1,6 @@
 ---
 title: CLI
-description: Docyard commands - init, serve, build, preview, doctor, and customize.
+description: Docyard commands - init, serve, build, deploy, preview, doctor, and customize.
 social_cards:
   title: CLI Reference
   description: All Docyard commands and options.
@@ -72,6 +72,24 @@ docyard build
 :::tip
 Use `--strict` in CI pipelines to catch issues before deployment.
 :::
+
+---
+
+## docyard deploy
+
+Build and deploy to a hosting platform.
+
+```bash
+docyard deploy --to github-pages
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--to` | auto-detect | Target platform (`vercel`, `netlify`, `cloudflare`, `github-pages`) |
+| `--no-prod` | `false` | Deploy a preview instead of production |
+| `--skip-build` | `false` | Skip build, deploy existing output |
+
+See [Deploy Command](/deploy/deploy-command) for platform setup details.
 
 ---
 

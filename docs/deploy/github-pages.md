@@ -8,7 +8,7 @@ social_cards:
 
 # GitHub Pages
 
-Deploy your documentation to GitHub Pages with automated builds.
+Deploy your documentation to GitHub Pages with automated builds or the [deploy command](/deploy/deploy-command).
 
 ## GitHub Actions Workflow
 
