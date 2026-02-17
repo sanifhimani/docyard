@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-02-17
+
+### Added
+- **Deploy Command** - One-command deployment with `docyard deploy` supporting Vercel, Netlify, Cloudflare Pages, and GitHub Pages (#153)
+- **Platform Auto-Detection** - Automatically detects deployment platform from project config files (e.g. `vercel.json`, `netlify.toml`)
+
+### Documentation
+- Added Deploy Command page with per-platform setup instructions
+- Updated CLI reference with `docyard deploy` options
+- Cross-linked existing GitHub Pages, Vercel, and Netlify docs to deploy command
+
 ## [1.2.0] - 2026-02-03
 
 ### Added
@@ -264,7 +275,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/sanifhimani/docyard/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/sanifhimani/docyard/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/sanifhimani/docyard/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/sanifhimani/docyard/compare/v1.0.1...v1.0.2
