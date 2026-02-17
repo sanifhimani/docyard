@@ -80,6 +80,23 @@ module Docyard
       exit(doctor.run)
     end
 
+    desc "deploy", "Deploy the built site to a hosting platform"
+    method_option :to, type: :string, desc: "Target platform (vercel, netlify, cloudflare, github-pages)"
+    method_option :prod, type: :boolean, default: true, desc: "Deploy to production"
+    method_option :skip_build, type: :boolean, default: false, desc: "Skip building before deploy"
+    def deploy
+      apply_global_options
+      require_relative "deploy/deployer"
+      deployer = Deploy::Deployer.new(
+        to: options[:to],
+        production: options[:prod],
+        skip_build: options[:skip_build]
+      )
+      exit(1) unless deployer.deploy
+    rescue ConfigError => e
+      print_config_error(e)
+    end
+
     desc "customize", "Generate theme customization files"
     method_option :minimal, type: :boolean, default: false, aliases: "-m",
                             desc: "Generate minimal files without comments"
