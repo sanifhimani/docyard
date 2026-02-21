@@ -45,7 +45,7 @@ docyard serve
 
 | Option | Alias | Default | Description |
 |--------|-------|---------|-------------|
-| `--port` | `-p` | `4200` | Server port |
+| `--port` | `-p` | `{{ default_port }}` | Server port |
 | `--host` | `-h` | `localhost` | Host to bind to |
 | `--search` | `-s` | `false` | Enable search indexing |
 
@@ -103,7 +103,7 @@ docyard build && docyard preview
 
 | Option | Alias | Default | Description |
 |--------|-------|---------|-------------|
-| `--port` | `-p` | `4000` | Server port |
+| `--port` | `-p` | `{{ preview_port }}` | Server port |
 
 ---
 

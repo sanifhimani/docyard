@@ -29,3 +29,9 @@ build:
 
 social_cards:
   enabled: true
+
+variables:
+  version: 1.3.0
+  min_ruby: "3.2"
+  default_port: 4200
+  preview_port: 4000

@@ -22,5 +22,5 @@ Anyone who needs documentation - project docs, internal wikis, knowledge bases, 
 
 ## Requirements
 
-Ruby 3.2 or higher. That's the only dependency.
+Ruby {{ min_ruby }} or higher. That's the only dependency.
 

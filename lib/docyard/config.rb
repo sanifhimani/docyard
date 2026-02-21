@@ -27,7 +27,8 @@ module Docyard
                   "last_updated" => true },
       "analytics" => { "google" => nil, "plausible" => nil, "fathom" => nil, "script" => nil },
       "feedback" => { "enabled" => false, "question" => "Was this page helpful?" },
-      "social_cards" => { "enabled" => false }
+      "social_cards" => { "enabled" => false },
+      "variables" => {}
     }.freeze
 
     attr_reader :data, :file_path
@@ -65,6 +66,7 @@ module Docyard
     def analytics = @analytics ||= Section.new(data["analytics"])
     def feedback = @feedback ||= Section.new(data["feedback"])
     def social_cards = @social_cards ||= Section.new(data["social_cards"])
+    def variables = data["variables"]
 
     def announcement
       @announcement ||= data["announcement"] ? Section.new(data["announcement"]) : nil

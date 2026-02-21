@@ -283,3 +283,19 @@ social_cards:
 | `enabled` | `boolean` | `false` | Generate OG images for all pages |
 
 Requires libvips. See [Social Cards](/customize/social-cards) for setup.
+
+---
+
+## Variables
+
+```yaml [docyard.yml]
+variables:
+  version: 2.5.0
+  min_ruby: "3.0"
+  links:
+    docs: https://docs.example.com
+```
+
+Define values once, reuse across all pages with `{{ name }}` syntax. Supports dot notation for nested values (`{{ links.docs }}`). Not replaced inside code blocks unless the language has a `-vars` suffix.
+
+See [Variables](/write-content/variables) for usage details.
