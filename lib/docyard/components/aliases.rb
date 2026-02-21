@@ -25,6 +25,7 @@ module Docyard
     TableWrapperProcessor = Processors::TableWrapperProcessor
     TabsProcessor = Processors::TabsProcessor
     TooltipProcessor = Processors::TooltipProcessor
+    VariablesProcessor = Processors::VariablesProcessor
 
     CodeBlockFeatureExtractor = Support::CodeBlock::FeatureExtractor
     CodeBlockLineWrapper = Support::CodeBlock::LineWrapper

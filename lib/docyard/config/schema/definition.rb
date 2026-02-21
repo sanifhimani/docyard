@@ -23,7 +23,8 @@ module Docyard
         repo: REPO_SCHEMA,
         analytics: ANALYTICS_SCHEMA,
         feedback: FEEDBACK_SCHEMA,
-        social_cards: SOCIAL_CARDS_SCHEMA
+        social_cards: SOCIAL_CARDS_SCHEMA,
+        variables: { type: :hash, allow_extra_keys: true, keys: {} }
       }.freeze
     end
   end
