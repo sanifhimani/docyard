@@ -13,8 +13,8 @@ Three commands to a running docs site.
 :::steps
 ### Install
 
-```bash
-gem install docyard
+```bash-vars
+gem install docyard -v {{ version }}
 ```
 
 ### Create
@@ -30,7 +30,7 @@ cd my-docs
 docyard serve
 ```
 
-Open [localhost:4200](http://localhost:4200). Your site is running.
+Open [localhost:{{ default_port }}](http://localhost:{{ default_port }}). Your site is running.
 :::
 
 ## Make a change
@@ -55,7 +55,7 @@ Static files are generated in `dist/`. Deploy to any host.
 
 ## Need Ruby?
 
-Docyard requires Ruby 3.2+. Check your version:
+Docyard requires Ruby {{ min_ruby }}+. Check your version:
 
 ```bash
 ruby -v

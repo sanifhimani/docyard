@@ -15,6 +15,7 @@
       - images-and-videos:
           text: Images & Videos
       - includes
+      - variables
       - components:
           text: Components
           icon: lego
