@@ -84,6 +84,8 @@
   --callout-danger-background: rgba(254, 242, 242, 0.5);
   --callout-danger-border: rgba(239, 68, 68, 0.2);
 
+  --code-annotation-size: 1.25em;
+
   --code-block-bg: oklab(0 0 0 / 0.03);
   --code-block-border: oklab(0 0 0 / 0.06);
   --code-block-header-bg: oklab(0 0 0 / 0.02);

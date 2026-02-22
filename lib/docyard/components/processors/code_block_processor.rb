@@ -33,11 +33,17 @@ module Docyard
         def initialize_postprocess_state(html)
           @block_index = 0
           @options = context[:code_block_options] || []
+          initialize_line_feature_state
+          @tabs_ranges = TabsRangeFinder.find_ranges(html)
+        end
+
+        def initialize_line_feature_state
           @diff_lines = context[:code_block_diff_lines] || []
           @focus_lines = context[:code_block_focus_lines] || []
           @error_lines = context[:code_block_error_lines] || []
           @warning_lines = context[:code_block_warning_lines] || []
-          @tabs_ranges = TabsRangeFinder.find_ranges(html)
+          @annotation_markers = context[:code_block_annotation_markers] || []
+          @annotation_content = context[:code_block_annotation_content] || []
         end
 
         def process_all_highlight_blocks(html)
@@ -99,25 +105,28 @@ module Docyard
 
         def build_block_data(code_text, opts, show_line_numbers, start_line, title_data)
           {
-            text: code_text,
-            highlights: opts[:highlights],
+            text: code_text, highlights: opts[:highlights],
+            show_line_numbers: show_line_numbers, start_line: start_line,
+            line_numbers: show_line_numbers ? LineNumbers.generate_numbers(code_text, start_line) : [],
+            title: title_data[:title], icon: title_data[:icon], icon_source: title_data[:icon_source]
+          }.merge(current_line_features)
+        end
+
+        def current_line_features
+          {
             diff_lines: @diff_lines[@block_index] || {},
             focus_lines: @focus_lines[@block_index] || {},
             error_lines: @error_lines[@block_index] || {},
             warning_lines: @warning_lines[@block_index] || {},
-            show_line_numbers: show_line_numbers,
-            line_numbers: show_line_numbers ? LineNumbers.generate_numbers(code_text, start_line) : [],
-            start_line: start_line,
-            title: title_data[:title],
-            icon: title_data[:icon],
-            icon_source: title_data[:icon_source]
+            annotation_markers: @annotation_markers[@block_index] || {},
+            annotation_content: @annotation_content[@block_index] || {}
           }
         end
 
         def process_html_for_highlighting(original_html, block_data)
           needs_wrapping = block_data[:highlights].any? || block_data[:diff_lines].any? ||
                            block_data[:focus_lines].any? || block_data[:error_lines].any? ||
-                           block_data[:warning_lines].any?
+                           block_data[:warning_lines].any? || block_data[:annotation_markers].any?
           return original_html unless needs_wrapping
 
           wrap_code_block(original_html, block_data)
@@ -150,7 +159,8 @@ module Docyard
         def line_feature_locals(block_data)
           { highlights: block_data[:highlights], diff_lines: block_data[:diff_lines],
             focus_lines: block_data[:focus_lines], error_lines: block_data[:error_lines],
-            warning_lines: block_data[:warning_lines] }
+            warning_lines: block_data[:warning_lines], annotation_markers: block_data[:annotation_markers],
+            annotation_content: block_data[:annotation_content] }
         end
 
         def title_locals(block_data)

@@ -48,6 +48,17 @@ module Docyard
               ;\s*\[!code\s+warning\]
             )[^\S\n]*
           }x
+
+          ANNOTATION_MARKER_PATTERN = %r{
+            (?:
+              //\s*\((\d+)\)\s*$              |
+              \#\s*\((\d+)\)\s*$              |
+              /\*\s*\((\d+)\)\s*\*/\s*$       |
+              --\s*\((\d+)\)\s*$              |
+              <!--\s*\((\d+)\)\s*-->\s*$      |
+              ;\s*\((\d+)\)\s*$
+            )
+          }x
         end
       end
     end

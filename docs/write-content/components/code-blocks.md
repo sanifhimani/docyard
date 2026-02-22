@@ -1,9 +1,9 @@
 ---
 title: Code Blocks
-description: Syntax highlighting, line numbers, line highlighting, and copy button.
+description: Syntax highlighting, line numbers, line highlighting, annotations, and copy button.
 social_cards:
   title: Code Blocks
-  description: Syntax highlighting with line numbers and highlighting.
+  description: Syntax highlighting with line numbers, highlighting, and annotations.
 ---
 
 # Code Blocks
@@ -140,6 +140,52 @@ const config = {
 
 ---
 
+## Annotations
+
+Place `(N)` markers inside code comments and write a matching ordered list immediately after the code block. Both the markers and the list are removed from the rendered output -- only the clickable icons and popovers remain.
+
+```yaml [docyard.yml]
+theme:
+  name: docyard # (1)
+  features:
+    - content.code.annotate # (2)
+    - navigation.tabs # (3)
+```
+
+1. The theme name determines the overall look of your documentation site.
+2. Enables code annotations, allowing inline explanations on code blocks.
+3. Adds tab-based navigation to the top of the page.
+
+Annotation content supports full markdown. Use indentation (2+ spaces) to continue a list item across multiple lines:
+
+```javascript [server.js]
+const app = express(); // (1)
+app.listen(3000); // (2)
+```
+
+1. Creates an Express application instance. See the
+   [Express docs](https://expressjs.com/en/starter/hello-world.html)
+   for configuration options.
+2. Starts listening on port `3000`. Common alternatives:
+   - `process.env.PORT` -- use an environment variable
+   - `0` -- let the OS assign a random available port
+
+Annotations work with all other code block features:
+
+```typescript [utils.ts]:line-numbers {1}
+export function add(a: number, b: number) { // (1)
+  return a + b;
+}
+```
+
+1. TypeScript generics and type annotations are fully supported.
+
+:::important
+The ordered list must immediately follow the code block. If there is other content between the closing fence and the list, the markers will render as plain text.
+:::
+
+---
+
 ## Combined Features
 
 Mix and match any features:
@@ -232,6 +278,16 @@ const deprecated = true; // [!code warning]
 ```
 ````
 
+**Annotations:**
+
+````markdown
+```js
+const app = createApp(); // (1)
+```
+
+1. Explanation for the annotated line.
+````
+
 **Full syntax:**
 
 ````text
@@ -256,11 +312,10 @@ const deprecated = true; // [!code warning]
 | Focus | `// [!code focus]` | Dims other lines |
 | Error | `// [!code error]` | Red error highlight |
 | Warning | `// [!code warning]` | Yellow warning highlight |
+| Annotation | `// (1)` + ordered list | Clickable popover with explanation |
 
 | Import | Syntax |
 |--------|--------|
 | File | `<<< @/path/file.js` |
 | Region | `<<< @/path/file.js#region-name` |
 | With highlights | `<<< @/path/file.js {1-3}` |
-
-**Supported comment styles:** `//`, `#`, `/* */`, `--`, `<!-- -->`, `;`

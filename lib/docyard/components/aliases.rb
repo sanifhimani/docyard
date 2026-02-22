@@ -10,6 +10,7 @@ module Docyard
     CalloutProcessor = Processors::CalloutProcessor
     CodeBlockProcessor = Processors::CodeBlockProcessor
     CodeGroupProcessor = Processors::CodeGroupProcessor
+    CodeBlockAnnotationPreprocessor = Processors::CodeBlockAnnotationPreprocessor
     CodeBlockDiffPreprocessor = Processors::CodeBlockDiffPreprocessor
     CodeBlockFocusPreprocessor = Processors::CodeBlockFocusPreprocessor
     CodeBlockOptionsPreprocessor = Processors::CodeBlockOptionsPreprocessor
