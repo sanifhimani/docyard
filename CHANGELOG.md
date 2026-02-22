@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-02-22
+
+### Added
+- **Code Annotations** - Clickable inline markers in code blocks with popover explanations using `// (1)` syntax and a matching ordered list (#156)
+- **Variables** - Template variables with `{{ variable }}` syntax, defined in `docyard.yml` under `variables:` (#155)
+
+### Documentation
+- Added Code Annotations section to Code Blocks page
+- Added Variables page with usage examples and configuration reference
+
 ## [1.3.0] - 2026-02-17
 
 ### Added
@@ -275,7 +285,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial gem structure
 - Project scaffolding
 
-[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/sanifhimani/docyard/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/sanifhimani/docyard/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/sanifhimani/docyard/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/sanifhimani/docyard/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/sanifhimani/docyard/compare/v1.0.2...v1.1.0
