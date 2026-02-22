@@ -24,8 +24,16 @@ module Docyard
               source_line = index + 1
               display_line = block_data[:start_line] + index
               classes = build_line_classes(source_line, display_line, block_data)
-              %(<span class="#{classes}">#{line}</span>)
+              annotation = annotation_badge(source_line, block_data)
+              line_with_badge = insert_before_newline(line, annotation)
+              %(<span class="#{classes}">#{line_with_badge}</span>)
             end
+          end
+
+          def insert_before_newline(line, annotation)
+            return line if annotation.empty?
+
+            line.end_with?("\n") ? "#{line.chomp}#{annotation}\n" : "#{line}#{annotation}"
           end
 
           DIFF_CLASSES = { addition: "docyard-code-line--diff-add", deletion: "docyard-code-line--diff-remove" }.freeze
@@ -42,6 +50,22 @@ module Docyard
               ("docyard-code-line--error" if block_data[:error_lines][source_line]),
               ("docyard-code-line--warning" if block_data[:warning_lines][source_line])
             ].compact
+          end
+
+          ANNOTATION_ICON = "<i class=\"ph ph-plus-circle\" aria-hidden=\"true\"></i>"
+
+          def annotation_badge(source_line, block_data)
+            markers = block_data[:annotation_markers] || {}
+            num = markers[source_line]
+            return "" unless num
+
+            content = (block_data[:annotation_content] || {})[num]
+            return "" unless content
+
+            escaped = content.gsub("&", "&amp;").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;")
+            %(<button class="docyard-code-annotation" data-annotation-id="#{num}") +
+              %( data-annotation-content="#{escaped}" type="button" aria-label="Annotation #{num}">) +
+              %(#{ANNOTATION_ICON}</button>)
           end
         end
       end
