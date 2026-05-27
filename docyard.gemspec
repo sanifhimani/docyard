@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "parallel", "~> 1.26"
   spec.add_dependency "puma", "~> 7.0"
   spec.add_dependency "rack", "~> 3.0"
-  spec.add_dependency "rouge", "~> 4.0"
+  spec.add_dependency "rouge", ">= 4", "< 6"
   spec.add_dependency "terser", "~> 1.2"
   spec.add_dependency "thor", "~> 1.4"
 
