@@ -170,7 +170,7 @@ module Docyard
 
       def normalize_options(options)
         return {} if options.nil?
-        return options if options.is_a?(Hash) && options.keys.all? { |k| k.is_a?(Symbol) }
+        return options if options.is_a?(Hash) && options.keys.all?(Symbol)
 
         options.transform_keys(&:to_sym)
       end

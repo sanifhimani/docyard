@@ -82,7 +82,7 @@ RSpec.describe Docyard::Sidebar::LocalConfigLoader do
       it "returns nil and logs warning", :aggregate_failures do
         output = capture_logger_output { loader.load }
 
-        expect(output).to match(/Invalid YAML/)
+        expect(output).to include("Invalid YAML")
         expect(loader.load).to be_nil
       end
     end
