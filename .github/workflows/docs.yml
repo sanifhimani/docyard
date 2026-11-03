@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -35,7 +35,7 @@ jobs:
           bundler-cache: true
 
       - name: Cache Pagefind binary
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.docyard/bin
           key: pagefind-${{ runner.os }}
@@ -49,7 +49,7 @@ jobs:
         run: echo "docyard.dev" > dist/CNAME
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -64,4 +64,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

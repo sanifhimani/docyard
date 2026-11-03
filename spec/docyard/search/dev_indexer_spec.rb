@@ -148,7 +148,7 @@ RSpec.describe Docyard::Search::DevIndexer do
       it "returns nil and logs error", :aggregate_failures do
         output = capture_logger_output { indexer.generate }
 
-        expect(output).to match(/Search index generation failed/)
+        expect(output).to include("Search index generation failed")
         expect(indexer.pagefind_path).to be_nil
       end
 
