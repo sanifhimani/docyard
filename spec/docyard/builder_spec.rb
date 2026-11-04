@@ -147,6 +147,40 @@ RSpec.describe Docyard::Builder do
           expect(robots_content).to include("Sitemap: /my-docs/sitemap.xml")
         end
       end
+
+      it "uses absolute sitemap URL when url is configured" do
+        Dir.chdir(temp_dir) do
+          create_config(<<~YAML)
+            url: "https://docs.example.com"
+            build:
+              output: "dist"
+              base: "/"
+          YAML
+
+          described_class.new(clean: true, verbose: false).build
+
+          robots_content = File.read(File.join(output_dir, "robots.txt"))
+
+          expect(robots_content).to include("Sitemap: https://docs.example.com/sitemap.xml")
+        end
+      end
+
+      it "handles trailing slash in configured url" do
+        Dir.chdir(temp_dir) do
+          create_config(<<~YAML)
+            url: "https://example.com/my-docs/"
+            build:
+              output: "dist"
+              base: "/my-docs/"
+          YAML
+
+          described_class.new(clean: true, verbose: false).build
+
+          robots_content = File.read(File.join(output_dir, "robots.txt"))
+
+          expect(robots_content).to include("Sitemap: https://example.com/my-docs/sitemap.xml")
+        end
+      end
     end
 
     describe "social cards generation when enabled", skip: !VIPS_AVAILABLE && "libvips not installed" do

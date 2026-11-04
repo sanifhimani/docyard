@@ -141,14 +141,14 @@ module Docyard
     end
 
     def robots_txt_content
-      base = config.build.base
-      base = "#{base}/" unless base.end_with?("/")
+      base = config.url || config.build.base
+      base = base.chomp("/")
 
       <<~ROBOTS
         User-agent: *
         Allow: /
 
-        Sitemap: #{base}sitemap.xml
+        Sitemap: #{base}/sitemap.xml
       ROBOTS
     end
   end
