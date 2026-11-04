@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-03
+
+### Fixed
+- `robots.txt` now uses an absolute Sitemap URL when `url` is configured (#165, #166)
+- `sitemap.xml` entries now use absolute URLs when `url` is configured, as required by the sitemaps protocol (#169)
+
+### Changed
+- Widened dependency ranges to support newer major versions: `rouge` (< 6), `puma` (< 9), and `parallel` (< 3) (#159, #161, #162)
+
 ## [1.4.0] - 2026-02-22
 
 ### Added
