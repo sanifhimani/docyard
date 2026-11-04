@@ -98,5 +98,38 @@ RSpec.describe Docyard::Build::SitemapGenerator do
         expect(sitemap_content).to include("<loc>/getting-started</loc>")
       end
     end
+
+    context "with url configuration" do
+      before do
+        config.data["url"] = "https://docs.example.com"
+      end
+
+      it "uses absolute URLs", :aggregate_failures do
+        generator = described_class.new(config)
+        generator.generate
+
+        sitemap_content = File.read(File.join(output_dir, "sitemap.xml"))
+
+        expect(sitemap_content).to include("<loc>https://docs.example.com/</loc>")
+        expect(sitemap_content).to include("<loc>https://docs.example.com/getting-started</loc>")
+      end
+    end
+
+    context "with url and base configuration" do
+      before do
+        config.data["url"] = "https://example.com/my-docs/"
+        config.data["build"]["base"] = "/my-docs/"
+      end
+
+      it "uses url without duplicating base", :aggregate_failures do
+        generator = described_class.new(config)
+        generator.generate
+
+        sitemap_content = File.read(File.join(output_dir, "sitemap.xml"))
+
+        expect(sitemap_content).to include("<loc>https://example.com/my-docs/</loc>")
+        expect(sitemap_content).to include("<loc>https://example.com/my-docs/getting-started</loc>")
+      end
+    end
   end
 end
