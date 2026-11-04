@@ -60,7 +60,7 @@ build:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `output` | `string` | `dist` | Output directory |
-| `base` | `string` | `/` | Base URL for sitemap and canonical links |
+| `base` | `string` | `/` | Base path the site is served from (use `/repo-name` for GitHub project sites) |
 | `strict` | `boolean` | `false` | Fail on broken links and missing images |
 
 ---

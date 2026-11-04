@@ -25,7 +25,7 @@ source: docs
 |--------|------|---------|-------------|
 | `title` | `string` | `Documentation` | Site title |
 | `description` | `string` | - | Site description for SEO |
-| `url` | `string` | - | Production URL |
+| `url` | `string` | - | Production URL, including the base path if any (e.g. `https://username.github.io/repo-name`). Used for absolute links in sitemap, robots.txt, canonical, Open Graph, and llms.txt |
 | `og_image` | `string` | - | Default Open Graph image |
 | `twitter` | `string` | - | Twitter handle for cards |
 | `source` | `string` | `docs` | Documentation source directory |
