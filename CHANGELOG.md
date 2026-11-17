@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `<meta name="description">` now uses the page's frontmatter `description`, falling back to the site description
+
 ## [1.4.1] - 2026-11-03
 
 ### Fixed

@@ -74,6 +74,7 @@ module Docyard
       template = File.read(layout_path)
 
       assign_content_variables(content, page_title, navigation, raw_markdown)
+      @page_description = page_description
       assign_branding_variables(branding, current_path)
       assign_og_variables(branding, page_description, page_og_image, current_path)
       assign_template_variables(template_options)

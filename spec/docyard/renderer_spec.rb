@@ -350,6 +350,22 @@ RSpec.describe Docyard::Renderer do
 
         expect(html).to include('property="og:description" content="Site description"')
       end
+
+      it "renders meta description from page description when provided" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          page_description: "Page-specific description",
+          branding: branding
+        )
+
+        expect(html).to include('name="description" content="Page-specific description"')
+      end
+
+      it "falls back to site description for meta description when page description is nil" do
+        html = renderer.render(content: "<p>Content</p>", branding: branding)
+
+        expect(html).to include('name="description" content="Site description"')
+      end
     end
 
     context "with og_image" do
