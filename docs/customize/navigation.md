@@ -65,6 +65,19 @@ Breadcrumbs are automatically truncated when the path has more than 3 levels.
 
 ---
 
+## Logo Link
+
+By default, the logo in the header links to the root of your documentation. Point it somewhere else with `logo_link`:
+
+```yaml [docyard.yml]
+navigation:
+  logo_link: "https://example.com"
+```
+
+Internal paths like `/guide/` are prefixed with `build.base`. Full URLs are used as-is.
+
+---
+
 ## Prev/Next Links
 
 Navigation links at the bottom of each page are auto-generated from your sidebar structure.
@@ -180,6 +193,7 @@ navigation:
 |--------|------|---------|-------------|
 | `navigation.cta` | `array` | `[]` | Header CTA buttons (max 2) |
 | `navigation.breadcrumbs` | `boolean` | `true` | Show breadcrumbs |
+| `navigation.logo_link` | `string` | `/` | Where the header logo links to |
 
 ### Prev/Next Frontmatter
 

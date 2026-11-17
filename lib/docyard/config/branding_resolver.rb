@@ -109,7 +109,8 @@ module Docyard
     def navigation_options
       cta_items = config.navigation.cta || []
       {
-        header_ctas: normalize_cta_items(cta_items)
+        header_ctas: normalize_cta_items(cta_items),
+        logo_link: config.navigation.logo_link || "/"
       }
     end
 

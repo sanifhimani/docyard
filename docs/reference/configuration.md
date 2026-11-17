@@ -143,6 +143,7 @@ navigation:
       variant: secondary
       external: true
   breadcrumbs: true
+  logo_link: /
 ```
 
 | Option | Type | Default | Description |
@@ -153,6 +154,7 @@ navigation:
 | `cta[].variant` | `string` | `primary` | `primary` or `secondary` |
 | `cta[].external` | `boolean` | `false` | Open in new tab |
 | `breadcrumbs` | `boolean` | `true` | Show breadcrumb navigation |
+| `logo_link` | `string` | `/` | Where the header logo links to (path or URL) |
 
 ---
 

@@ -21,7 +21,7 @@ module Docyard
       "sidebar" => "config",
       "build" => { "output" => "dist", "base" => "/", "strict" => false },
       "search" => { "enabled" => true, "placeholder" => "Search...", "exclude" => [] },
-      "navigation" => { "cta" => [], "breadcrumbs" => true },
+      "navigation" => { "cta" => [], "breadcrumbs" => true, "logo_link" => nil },
       "announcement" => nil,
       "repo" => { "url" => nil, "branch" => "main", "edit_path" => nil, "edit_link" => true,
                   "last_updated" => true },
