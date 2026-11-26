@@ -12,7 +12,7 @@ group :development, :test do
   gem "rubocop-rake", "~> 0.7"
   gem "rubocop-rspec", "~> 3.0"
   gem "ruby-vips", "~> 2.2"
-  gem "simplecov", "~> 0.22", require: false
+  gem "simplecov", "~> 1.2", require: false
 end
 
 gem "irb"
