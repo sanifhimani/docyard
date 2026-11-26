@@ -110,6 +110,23 @@ RSpec.describe Docyard::Config::Validator do
       error = issues.find { |i| i.field == "build.base" }
       expect(error.fix).to eq({ type: :replace, value: "/docs" })
     end
+
+    it "warns when navigation.logo_link is neither a path nor a URL", :aggregate_failures do
+      data = { "description" => "Test", "navigation" => { "logo_link" => "guide/" } }
+      issues = validator(data).validate_all
+      warning = issues.find { |i| i.field == "navigation.logo_link" }
+      expect(warning).to be_warning
+      expect(warning.message).to include("path starting with /")
+      expect(warning.fix).to eq({ type: :replace, value: "/guide/" })
+    end
+
+    it "accepts navigation.logo_link paths and URLs" do
+      %w[/ /guide/ http://example.com https://example.com].each do |link|
+        data = { "description" => "Test", "navigation" => { "logo_link" => link } }
+        issues = validator(data).validate_all
+        expect(issues.find { |i| i.field == "navigation.logo_link" }).to be_nil
+      end
+    end
   end
 
   describe "cross-field validation" do

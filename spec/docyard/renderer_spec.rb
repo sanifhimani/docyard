@@ -39,6 +39,31 @@ RSpec.describe Docyard::Renderer do
       expect(html).to include("site-logo-dark")
     end
 
+    it "links the logo to the site root by default" do
+      html = renderer.render(content: "<p>Content</p>")
+
+      expect(html).to include('<a href="/" class="header-logo">')
+    end
+
+    it "links the logo to the configured logo_link" do
+      html = renderer.render(content: "<p>Content</p>", branding: { logo_link: "/guide/" })
+
+      expect(html).to include('<a href="/guide/" class="header-logo">')
+    end
+
+    it "links the logo to an external logo_link as-is" do
+      html = renderer.render(content: "<p>Content</p>", branding: { logo_link: "https://example.com" })
+
+      expect(html).to include('<a href="https://example.com" class="header-logo">')
+    end
+
+    it "prefixes the logo_link with the base URL" do
+      html = described_class.new(base_url: "/my-docs/").render(content: "<p>Content</p>",
+                                                               branding: { logo_link: "/guide/" })
+
+      expect(html).to include('<a href="/my-docs/guide/" class="header-logo">')
+    end
+
     it "renders with favicon when provided" do
       html = renderer.render(content: "<p>Content</p>", branding: { favicon: "favicon.ico" })
 

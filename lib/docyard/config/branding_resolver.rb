@@ -44,7 +44,7 @@ module Docyard
     def site_options
       {
         site_title: config.title || Constants::DEFAULT_SITE_TITLE,
-        site_description: config.description || "",
+        site_description: config.description,
         site_url: config.url,
         og_image: config.og_image,
         twitter: config.twitter,
@@ -109,7 +109,8 @@ module Docyard
     def navigation_options
       cta_items = config.navigation.cta || []
       {
-        header_ctas: normalize_cta_items(cta_items)
+        header_ctas: normalize_cta_items(cta_items),
+        logo_link: config.navigation.logo_link
       }
     end
 

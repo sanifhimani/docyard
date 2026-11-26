@@ -407,6 +407,21 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
+    context "when logo_link is configured" do
+      before do
+        create_config(<<~YAML)
+          navigation:
+            logo_link: "https://example.com"
+        YAML
+      end
+
+      it "returns the configured logo_link" do
+        result = resolver.resolve
+
+        expect(result[:logo_link]).to eq("https://example.com")
+      end
+    end
+
     context "with default copyright" do
       it "returns nil copyright by default" do
         result = resolver.resolve

@@ -14,17 +14,31 @@ module Docyard
 
       def validate_format(value, format, field)
         case format
-        when :no_slashes
-          return unless value.include?("/") || value.include?("\\")
-
-          add_diagnostic(:error, field, "cannot contain slashes", got: value,
-                                                                  expected: "simple directory name like 'dist'")
-        when :starts_with_slash
-          return if value.start_with?("/")
-
-          add_diagnostic(:error, field, "must start with /", got: value,
-                                                             fix: { type: :replace, value: "/#{value}" })
+        when :no_slashes then validate_no_slashes(value, field)
+        when :starts_with_slash then validate_starts_with_slash(value, field)
+        when :url_or_absolute_path then validate_url_or_absolute_path(value, field)
         end
+      end
+
+      def validate_no_slashes(value, field)
+        return unless value.include?("/") || value.include?("\\")
+
+        add_diagnostic(:error, field, "cannot contain slashes", got: value,
+                                                                expected: "simple directory name like 'dist'")
+      end
+
+      def validate_starts_with_slash(value, field)
+        return if value.start_with?("/")
+
+        add_diagnostic(:error, field, "must start with /", got: value,
+                                                           fix: { type: :replace, value: "/#{value}" })
+      end
+
+      def validate_url_or_absolute_path(value, field)
+        return if value.start_with?("/") || value.match?(%r{\Ahttps?://})
+
+        add_diagnostic(:warning, field, "should be a path starting with / or a URL starting with http(s)://",
+                       got: value, fix: { type: :replace, value: "/#{value}" })
       end
 
       def validate_boolean(value, field)
