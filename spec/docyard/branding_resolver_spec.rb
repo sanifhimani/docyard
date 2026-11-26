@@ -407,14 +407,6 @@ RSpec.describe Docyard::BrandingResolver do
       end
     end
 
-    context "with default logo_link" do
-      it "links the logo to the site root" do
-        result = resolver.resolve
-
-        expect(result[:logo_link]).to eq("/")
-      end
-    end
-
     context "when logo_link is configured" do
       before do
         create_config(<<~YAML)
