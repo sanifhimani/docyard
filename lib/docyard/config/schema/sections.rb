@@ -42,7 +42,7 @@ module Docyard
         type: :hash,
         keys: {
           breadcrumbs: { type: :boolean },
-          logo_link: { type: :string },
+          logo_link: { type: :string, format: :url_or_absolute_path },
           cta: {
             type: :array,
             max_items: 2,
