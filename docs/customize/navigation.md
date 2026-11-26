@@ -74,7 +74,7 @@ navigation:
   logo_link: "https://example.com"
 ```
 
-Internal paths like `/guide/` are prefixed with `build.base`. Full URLs are used as-is.
+Internal paths need a leading `/`, for example `/guide/`, and are prefixed with `build.base` for the resulting URL. Full URLs are used as-is.
 
 ---
 
