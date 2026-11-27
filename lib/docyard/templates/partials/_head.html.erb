@@ -1,6 +1,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="<%= @page_description || @site_description %>">
+<meta name="description" content="<%= escape_html_attribute(@page_description || @site_description) %>">
 <meta name="view-transition" content="same-origin">
 <title><%= @page_title %> | <%= @site_title %></title>
 <link rel="icon" href="<%= asset_path(@favicon) %>" type="image/svg+xml">
@@ -13,7 +13,7 @@
 <meta property="og:title" content="<%= @page_title %>">
 <meta property="og:url" content="<%= @og_url %>">
 <% if @og_description && !@og_description.empty? %>
-<meta property="og:description" content="<%= @og_description %>">
+<meta property="og:description" content="<%= escape_html_attribute(@og_description) %>">
 <% end %>
 <% if @og_image %>
 <meta property="og:image" content="<%= @og_image %>">
@@ -22,7 +22,7 @@
 <meta name="twitter:card" content="<%= @og_image ? 'summary_large_image' : 'summary' %>">
 <meta name="twitter:title" content="<%= @page_title %>">
 <% if @og_description && !@og_description.empty? %>
-<meta name="twitter:description" content="<%= @og_description %>">
+<meta name="twitter:description" content="<%= escape_html_attribute(@og_description) %>">
 <% end %>
 <% if @og_image %>
 <meta name="twitter:image" content="<%= @og_image %>">

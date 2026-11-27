@@ -366,6 +366,21 @@ RSpec.describe Docyard::Renderer do
 
         expect(html).to include('name="description" content="Site description"')
       end
+
+      it "escapes quotes in description meta tags" do
+        html = renderer.render(
+          content: "<p>Content</p>",
+          page_description: 'Say "hi" & "bye"',
+          branding: branding
+        )
+
+        escaped = "Say &quot;hi&quot; & &quot;bye&quot;"
+        expect(html).to include(
+          %(name="description" content="#{escaped}"),
+          %(property="og:description" content="#{escaped}"),
+          %(name="twitter:description" content="#{escaped}")
+        )
+      end
     end
 
     context "with og_image" do
