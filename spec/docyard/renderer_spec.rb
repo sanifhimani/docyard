@@ -367,6 +367,23 @@ RSpec.describe Docyard::Renderer do
         expect(html).to include('name="description" content="Site description"')
       end
 
+      it "falls back to site description when page description is blank" do
+        html = renderer.render(content: "<p>Content</p>", page_description: " ", branding: branding)
+
+        expect(html).to include(
+          'name="description" content="Site description"',
+          'property="og:description" content="Site description"',
+          'name="twitter:description" content="Site description"'
+        )
+      end
+
+      it "does not keep a previous page's description when the next page's is blank" do
+        renderer.render(content: "<p>Content</p>", page_description: "First page", branding: branding)
+        html = renderer.render(content: "<p>Content</p>", page_description: "", branding: branding)
+
+        expect(html).to include('name="description" content="Site description"')
+      end
+
       it "escapes quotes in description meta tags" do
         html = renderer.render(
           content: "<p>Content</p>",

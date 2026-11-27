@@ -74,9 +74,9 @@ module Docyard
       template = File.read(layout_path)
 
       assign_content_variables(content, page_title, navigation, raw_markdown)
-      @page_description = page_description
+      @page_description = page_description.to_s.strip.empty? ? nil : page_description
       assign_branding_variables(branding, current_path)
-      assign_og_variables(branding, page_description, page_og_image, current_path)
+      assign_og_variables(branding, @page_description, page_og_image, current_path)
       assign_template_variables(template_options)
       assign_git_info(branding, file_path)
       assign_feedback_variables
